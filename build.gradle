@@ -1,10 +1,38 @@
 import static org.gradle.api.JavaVersion.*
 
 apply plugin: 'java'
-apply plugin: 'idea'
+apply plugin: 'cobertura'
 apply plugin: 'application'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'fatjar'
+apply plugin: 'idea'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.mapvine:gradle-cobertura-plugin:1.0'
+        classpath 'eu.appsatori:gradle-fatjar-plugin:0.2-rc1'
+    }
+}
 
 mainClassName = "com.tesco.adapters.core.Controller"
+
+fatJar {
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+}
+
+task zip(type: Zip) {
+    from fatJar.outputs.files
+    from('.') {
+        include "*.properties"
+        include "runImport"
+    }
+}
 
 // group is the groupId
 group = 'com.tesco.adapters'
@@ -24,10 +52,64 @@ repositories {
 }
 
 dependencies {
+    compile group: 'com.google.guava', name: 'guava', version: '13.0.1'
+    compile group: 'net.sf.opencsv', name: 'opencsv', version: '2.3'
+    compile group: 'org.mongodb', name: 'mongo-java-driver', version: '2.11.1'
+    compile group: 'org.codehaus.jackson', name: 'jackson-mapper-asl', version: '1.9.12'
+    compile group: 'commons-configuration', name: 'commons-configuration', version: '1.7'
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.5'
     compile group: 'ch.qos.logback', name: 'logback-core', version: '1.0.11'
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.0.11'
+    compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.1.3'
 
+    testCompile group: 'org.testng', name: 'testng', version: '6.8'
+    testCompile group: 'org.mongodb', name: 'mongo-java-driver', version: '2.11.1'
+    testCompile group: 'org.uncommons', name: 'reportng', version: '1.1.3'
+    testCompile group: 'org.mockito', name: 'mockito-all', version: '1.9.0'
+    testCompile group: 'org.easytesting', name: 'fest-assert-core', version: '2.0M8'
+    // workaround for a known issue with TestNG 6.x: explicitly add Guice (Gradle will fail to run tests otherwise)
+    testCompile group: 'com.google.inject', name: 'guice', version: '3.0'
+}
+
+// ensure that test resources (src/test/resources) are added to CLASSPATH;
+// see http://forums.gradle.org/gradle/topics/tests_arent_executed_when_setting_the_test_runtimeclasspath and
+// http://gradle.org/docs/current/dsl/org.gradle.api.tasks.testing.Test.html#org.gradle.api.tasks.testing.Test:classpath
+sourceSets {
+    main {
+        runtimeClasspath = files(output.resourcesDir) + runtimeClasspath
+    }
+    test {
+        runtimeClasspath = files(output.resourcesDir) + runtimeClasspath
+    }
+}
+
+test {
+    systemProperties 'logback.configurationFile': 'src/test/resources/logback.groovy'
+    systemProperties 'environment': System.getProperty("environment")
+    jvmArgs '-XX:-UseSplitVerifier'
+
+    useTestNG() {
+        suiteXmlBuilder().suite(name: 'rms-adapter', parallel: 'tests') {
+            test(name: 'all-tests') {
+                packages {
+                    'package'(name: 'com.tesco.*')
+                }
+            }
+        }
+    }
+
+    options {
+        listeners << 'org.uncommons.reportng.HTMLReporter'
+        listeners << 'org.uncommons.reportng.JUnitXMLReporter'
+    }
+    ext.useDefaultListeners = true
+    ext.workingDirectory = 'build/'
+}
+
+// see https://github.com/Mapvine/gradle-cobertura-plugin
+cobertura {
+    format = 'xml'
+    includes = ['**/*.java']
 }
 
 run {
