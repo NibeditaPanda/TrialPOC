@@ -1,0 +1,35 @@
+import static org.gradle.api.JavaVersion.VERSION_1_7
+import static org.gradle.api.JavaVersion.VERSION_1_7
+
+apply plugin: 'java'
+apply plugin: 'idea'
+
+repositories {
+    mavenCentral()
+}
+
+
+sourceCompatibility = VERSION_1_7
+targetCompatibility = VERSION_1_7
+
+dependencies {
+    compile group: 'com.yammer.dropwizard', name: 'dropwizard-core', version: '0.6.2'
+}
+
+
+apply plugin: 'application'
+
+mainClassName = 'com.tesco.services.Controller'
+
+
+run {
+    def environment = System.getProperty('environment')
+    if (!environment){
+        environment = 'local'
+    }
+    args 'server', environment + '.yml'
+}
+
+
+
+
