@@ -1,26 +1,29 @@
 package com.tesco.adapters.core;
 
 import com.mongodb.DBCollection;
-import com.tesco.adapters.rpm.RPMProductWriter;
+import com.tesco.adapters.rpm.RPMPricetWriter;
 
 import java.io.IOException;
 
 public class Controller {
 
     private DBCollection priceCollection;
-    private String rpmPriceCsvFilePath;
+    private DBCollection storeCollection;
+    private String RPMPriceZoneCsvFilePath;
+    private String RPMStoreZoneCsvFilePath;
 
-    public Controller(DBCollection priceCollection, String rpmPriceCsvFilePath) {
+    public Controller(DBCollection priceCollection, DBCollection storeCollection, String RPMPriceZoneCsvFilePath, String RPMStoreZoneCsvFilePath) {
         this.priceCollection = priceCollection;
-        this.rpmPriceCsvFilePath = rpmPriceCsvFilePath;
+        this.storeCollection = storeCollection;
+        this.RPMPriceZoneCsvFilePath = RPMPriceZoneCsvFilePath;
+        this.RPMStoreZoneCsvFilePath = RPMStoreZoneCsvFilePath;
     }
 
     public static void main(String[] args) {
 
     }
 
-    public void fetchAndSaveBasePriceForProducts() throws IOException {
-        new RPMProductWriter(priceCollection, rpmPriceCsvFilePath).write();
-
+    public void fetchAndSavePriceDetails() throws IOException {
+        new RPMPricetWriter(priceCollection, storeCollection, RPMPriceZoneCsvFilePath, RPMStoreZoneCsvFilePath).write();
     }
 }

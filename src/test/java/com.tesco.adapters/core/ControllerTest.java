@@ -1,39 +1,28 @@
 package com.tesco.adapters.core;
 
 import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
 
 import java.io.IOException;
 
-import static com.tesco.adapters.core.PriceKeys.ITEM_NUMBER;
-import static com.tesco.adapters.core.PriceKeys.NATIONAL_PRICE;
-import static com.tesco.adapters.core.PriceKeys.ZONE_ID;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static com.tesco.adapters.core.PriceKeys.*;
 
 public class ControllerTest {
 
-    private DBCollection collection;
+    protected DBCollection priceCollection;
+    protected DBCollection storeCollection;
 
     @BeforeClass
     public void setUp() throws IOException {
-        DBFactory.getCollection("prices").drop();
-        collection = DBFactory.getCollection("prices");
+        DBFactory.getCollection(PRICE_COLLECTION).drop();
+        priceCollection = DBFactory.getCollection(PRICE_COLLECTION);
 
-        String RPMPriceCsvFilePath = "../PriceAdapters/src/test/java/com/tesco/adapters/rpm/fixtures/price.csv";
-        new Controller(collection, RPMPriceCsvFilePath).fetchAndSaveBasePriceForProducts();
-    }
+        DBFactory.getCollection(STORE_COLLECTION).drop();
+        storeCollection = DBFactory.getCollection(STORE_COLLECTION);
 
-
-    @Test
-    public void shouldImportPriceDataFromProductPriceRMSDump() {
-        DBObject productWithPrice = collection.find((DBObject) JSON.parse(String.format("{\"%s\": \"050925811\"}", ITEM_NUMBER))).toArray().get(0);
-
-        assertThat(productWithPrice.get(ZONE_ID)).isEqualTo("5");
-        assertThat(productWithPrice.get(ITEM_NUMBER)).isEqualTo("050925811");
-        assertThat(productWithPrice.get(NATIONAL_PRICE)).isEqualTo("1.33");
+        String RPMPriceZoneCsvFilePath = "../PriceAdapters/src/test/java/com/tesco/adapters/rpm/fixtures/price_zone.csv";
+        String RPMStoreZoneCsvFilePath = "../PriceAdapters/src/test/java/com/tesco/adapters/rpm/fixtures/store_zone.csv";
+        new Controller(priceCollection, storeCollection, RPMPriceZoneCsvFilePath, RPMStoreZoneCsvFilePath).fetchAndSavePriceDetails();
     }
 
 }

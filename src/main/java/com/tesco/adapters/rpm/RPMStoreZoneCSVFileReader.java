@@ -11,20 +11,17 @@ import java.util.List;
 
 import static com.tesco.adapters.core.PriceKeys.*;
 
-public class RPMPriceCSVFileReader {
-
+public class RPMStoreZoneCSVFileReader {
     private final CSVReader csvReader;
-    private final int itemNumberIndex;
+    private final int storeIndex;
     private final int zoneIdIndex;
-    private final int nationalPriceIndex;
 
-    public RPMPriceCSVFileReader(String filePath) throws IOException {
+    public RPMStoreZoneCSVFileReader(String filePath) throws IOException {
         csvReader = new CSVReader(new FileReader(filePath));
 
         List<String> headers = Arrays.asList(csvReader.readNext());
-        itemNumberIndex = headers.indexOf("ITEM");
+        storeIndex = headers.indexOf("STORE");
         zoneIdIndex = headers.indexOf("ZONE_ID");
-        nationalPriceIndex = headers.indexOf("SELLING_RETAIL");
     }
 
     public DBObject getNext() throws IOException {
@@ -34,15 +31,13 @@ public class RPMPriceCSVFileReader {
             return null;
         }
 
-        String itemNumber = nextline[itemNumberIndex];
+        String storeId = nextline[storeIndex];
         String zoneId = nextline[zoneIdIndex];
-        String nationalPrice = nextline[nationalPriceIndex];
 
-        DBObject price = new BasicDBObject();
-        price.put(ITEM_NUMBER, itemNumber);
-        price.put(ZONE_ID, zoneId);
-        price.put(NATIONAL_PRICE, nationalPrice);
+        DBObject store = new BasicDBObject();
+        store.put(STORE_ID, storeId);
+        store.put(ZONE_ID, zoneId);
 
-        return price;
+        return store;
     }
 }

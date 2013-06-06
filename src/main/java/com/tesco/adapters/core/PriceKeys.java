@@ -4,4 +4,7 @@ public class PriceKeys {
     public static final String ITEM_NUMBER = "itemNumber";
     public static final String ZONE_ID = "zoneId";
     public static final String NATIONAL_PRICE = "nationalPrice";
+    public static final String STORE_ID = "storeId";
+    public static final String PRICE_COLLECTION = "prices";
+    public static final String STORE_COLLECTION = "stores";
 }
