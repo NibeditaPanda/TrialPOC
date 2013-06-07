@@ -8,47 +8,46 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.*;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 @Path("/price")
 @Produces(MediaType.APPLICATION_JSON)
 public class PriceResource {
 
     private PriceDAO priceDAO;
-    HashMap<String,String> queryParamToMongoKeyMap = new HashMap<String, String>();
 
     public PriceResource(PriceDAO priceDAO) {
         this.priceDAO = priceDAO;
-        queryParamToMongoKeyMap.put("item_number", "itemNumber");
     }
 
     @GET
     public Response get(@Context UriInfo uriInfo) {
         MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
+        if(queryParameters.size() == 0) return notFound();
 
-        String key = null;
-        String value = null;
+        String value;
+        List<DBObject> result = null;
 
-        Set<String> keys = queryParameters.keySet();
-        for (String queryParamKey : keys){
-            if (queryParamToMongoKeyMap.containsKey(queryParamKey.toLowerCase())) {
-                key = queryParamToMongoKeyMap.get(queryParamKey.toLowerCase());
-                value = queryParameters.getFirst(queryParamKey);
-                break;
-            }
+        value = queryParameters.getFirst("zone");
+        if(value != null) {
+            result = priceDAO.getPriceByZone(value);
         }
 
-        if(key == null) return notFound();
+        value = queryParameters.getFirst("item_number");
+        if(value != null) {
+            result = priceDAO.getPriceBy("itemNumber", value);
+        }
 
-        List<DBObject> price = priceDAO.getPriceBy(key, value);
-        System.out.println(price);
-        return buildResponse(price, Optional.fromNullable(queryParameters.getFirst("callback")));
+        value = queryParameters.getFirst("store");
+        if(value != null) {
+            result = priceDAO.getPriceByStore(value);
+        }
+
+        return buildResponse(result, Optional.fromNullable(queryParameters.getFirst("callback")));
     }
 
     private Response buildResponse(List<DBObject> price, Optional<String> callback) {
-        if (price.isEmpty())
+        if (price == null || price.isEmpty())
             return notFound();
         if (callback.isPresent())
             return ok(callback.get() + "(" + price + ")");

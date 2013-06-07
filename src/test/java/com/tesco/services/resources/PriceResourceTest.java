@@ -16,17 +16,27 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 public class PriceResourceTest extends ResourceTest {
 
-    String priceForProduct = "{\"itemNumber\": \"053752428\", \"zones\": {\"5\": {\"price\": \"3\"}}}";
+    String priceOne = "{\"itemNumber\": \"053752428\", \"zones\": {\"5\": {\"price\": \"3\"}, \"2\": {\"price\": \"1\"}}}";
+    String priceTwo = "{\"itemNumber\": \"053752429\", \"zones\": {\"2\": {\"price\": \"3\"}}}";
+    String storeOne = "{\"storeId\": \"2002\",\"zoneId\": \"5\" }";
+    String storeTwo = "{\"storeId\": \"2006\",\"zoneId\": \"2\" }";
     private DBCollection prices;
+    private DBCollection stores;
 
     @Override
     protected void setUpResources() throws Exception {
         Configuration configuration = new TestConfiguration();
         DBFactory dbFactory = new DBFactory(configuration);
         dbFactory.getCollection("prices").drop();
+        dbFactory.getCollection("stores").drop();
 
         prices = dbFactory.getCollection("prices");
-        prices.insert((DBObject) JSON.parse(priceForProduct));
+        prices.insert((DBObject) JSON.parse(priceOne));
+        prices.insert((DBObject) JSON.parse(priceTwo));
+
+        stores = dbFactory.getCollection("stores");
+        stores.insert((DBObject) JSON.parse(storeOne));
+        stores.insert((DBObject) JSON.parse(storeTwo));
 
         addResource(new PriceResource(new PriceDAO(configuration)));
     }
@@ -64,6 +74,44 @@ public class PriceResourceTest extends ResourceTest {
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(404);
+    }
+
+    @Test
+    public void shouldReturnPriceByZone(){
+        WebResource resource = client().resource("/price?zone=5");
+        ClientResponse response = resource.get(ClientResponse.class);
+        String stringResponse = resource.get(String.class);
+
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(stringResponse).contains("053752428");
+        assertThat(stringResponse).doesNotContain("053752429");
+
+        resource = client().resource("/price?zone=2");
+        response = resource.get(ClientResponse.class);
+        stringResponse = resource.get(String.class);
+
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(stringResponse).contains("053752428");
+        assertThat(stringResponse).contains("053752429");
+    }
+
+    @Test
+    public void shouldReturnPriceByStore(){
+        WebResource resource = client().resource("/price?store=2002");
+        ClientResponse response = resource.get(ClientResponse.class);
+        String stringResponse = resource.get(String.class);
+
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(stringResponse).contains("053752428");
+        assertThat(stringResponse).doesNotContain("053752429");
+
+        resource = client().resource("/price?store=2006");
+        response = resource.get(ClientResponse.class);
+        stringResponse = resource.get(String.class);
+
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(stringResponse).contains("053752428");
+        assertThat(stringResponse).contains("053752429");
     }
 
 
