@@ -1,7 +1,6 @@
 package com.tesco.adapters.core;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
+import com.mongodb.*;
 import com.mongodb.util.JSON;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -34,29 +33,23 @@ public class ControllerIntegrationTest {
 
     @Test
     public void shouldImportAllPricesFromRPMPriceDump() throws IOException {
-        List<DBObject> prices = priceCollection.find((DBObject) JSON.parse(String.format("{\"%s\": \"050925811\"}", ITEM_NUMBER))).toArray();
-
-        DBObject productWithPrice = prices.get(0);
-
-        assertThat(prices.size()).isEqualTo(1);
-        assertThat(productWithPrice.get(ZONE_ID)).isEqualTo("5");
-        assertThat(productWithPrice.get(ITEM_NUMBER)).isEqualTo("050925811");
-        assertThat(productWithPrice.get(NATIONAL_PRICE)).isEqualTo("1.33");
-
+        DBObject query = QueryBuilder.start(ITEM_NUMBER).is("050925811").and(
+                QueryBuilder.start(String.format("%s.%s.%s", ZONES, "5", PRICE)).is("1.33").get()).get();
+        List<DBObject> priceResults = priceCollection.find(query).toArray();
+        assertThat(priceResults.size()).isEqualTo(1);
     }
 
     @Test
-    public void shouldImportAndUpdateAllPricesFromRPMPriceDump() throws IOException {
-        String filePath = "../PriceAdapters/src/test/java/com/tesco/adapters/rpm/fixtures/price_zone_to_update.csv";
-        new Controller(priceCollection, storeCollection, filePath, rpmStoreZoneCsvFilePath).fetchAndSavePriceDetails();
+    public void shouldImportAndUpdateZonePricesFromRPMPriceDump() throws IOException {
+        DBObject query = QueryBuilder.start(ITEM_NUMBER).is("050940579").and(
+                QueryBuilder.start(String.format("%s.%s.%s", ZONES, "5", PRICE)).is("5.33").get()).get();
+        List<DBObject> priceResults = priceCollection.find(query).toArray();
+        assertThat(priceResults.size()).isEqualTo(1);
 
-        List<DBObject> prices = priceCollection.find((DBObject) JSON.parse(String.format("{\"%s\": \"050925811\"}", ITEM_NUMBER))).toArray();
-        DBObject productWithPrice = prices.get(0);
-
-        assertThat(prices.size()).isEqualTo(1);
-        assertThat(productWithPrice.get(ZONE_ID)).isEqualTo("5");
-        assertThat(productWithPrice.get(ITEM_NUMBER)).isEqualTo("050925811");
-        assertThat(productWithPrice.get(NATIONAL_PRICE)).isEqualTo("2.33");
+        query = QueryBuilder.start(ITEM_NUMBER).is("050940579").and(
+                QueryBuilder.start(String.format("%s.%s.%s", ZONES, "3", PRICE)).is("2.33").get()).get();
+        priceResults = priceCollection.find(query).toArray();
+        assertThat(priceResults.size()).isEqualTo(1);
     }
 
     @Test
@@ -65,7 +58,7 @@ public class ControllerIntegrationTest {
         DBObject productWithPrice = stores.get(0);
 
         assertThat(stores.size()).isEqualTo(1);
-        assertThat(productWithPrice.get(ZONE_ID)).isEqualTo("5");
+        assertThat(productWithPrice.get(ZONE_ID)).isEqualTo("6");
         assertThat(productWithPrice.get(STORE_ID)).isEqualTo("2002");
     }
 

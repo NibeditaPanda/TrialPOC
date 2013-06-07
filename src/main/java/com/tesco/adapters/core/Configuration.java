@@ -14,7 +14,7 @@ public class Configuration {
             if (StringUtils.isBlank(app_env)) {
                 LoggerFactory.getLogger(Configuration.class)
                         .warn("No environment specified. Setting it to test for test runs. " +
-                                "You should have this property specified for PRODUCTION deployment");
+                                "You should have this property specified for PRODUCTION deployment. Setting to test by default...");
                 app_env = "test";
             }
             instance = new PropertiesConfiguration(app_env + ".properties");

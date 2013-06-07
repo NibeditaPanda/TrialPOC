@@ -7,8 +7,7 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 
-import static com.tesco.adapters.core.PriceKeys.ITEM_NUMBER;
-import static com.tesco.adapters.core.PriceKeys.STORE_ID;
+import static com.tesco.adapters.core.PriceKeys.*;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class Controller {
@@ -28,8 +27,8 @@ public class Controller {
 
     public static void main(String[] args) {
         logger.info("Firing up...");
-        DBCollection priceCollection = DBFactory.getCollection("price");
-        DBCollection storeCollection = DBFactory.getCollection("store");
+        DBCollection priceCollection = DBFactory.getCollection(PRICE_COLLECTION);
+        DBCollection storeCollection = DBFactory.getCollection(STORE_COLLECTION);
 
         try {
             String RPMPriceZoneCsvFilePath = Configuration.get().getString("rpm.price.data.dump");

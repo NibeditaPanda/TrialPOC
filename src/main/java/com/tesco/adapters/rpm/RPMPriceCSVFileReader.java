@@ -40,8 +40,7 @@ public class RPMPriceCSVFileReader {
 
         DBObject price = new BasicDBObject();
         price.put(ITEM_NUMBER, itemNumber);
-        price.put(ZONE_ID, zoneId);
-        price.put(NATIONAL_PRICE, nationalPrice);
+        price.put(String.format("%s.%s.%s", ZONES, zoneId, PRICE), nationalPrice);
 
         return price;
     }
