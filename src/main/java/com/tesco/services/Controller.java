@@ -1,5 +1,6 @@
 package com.tesco.services;
 
+import com.tesco.services.DAO.PriceDAO;
 import com.tesco.services.resources.PriceResource;
 import com.yammer.dropwizard.Service;
 import com.yammer.dropwizard.config.Bootstrap;
@@ -18,6 +19,6 @@ public class Controller extends Service<Configuration> {
 
     @Override
     public void run(Configuration configuration, Environment environment) throws Exception {
-        environment.addResource(new PriceResource());
+        environment.addResource(new PriceResource(new PriceDAO(configuration)));
     }
 }

@@ -5,9 +5,33 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Configuration extends com.yammer.dropwizard.config.Configuration {
 
     @JsonProperty
-    private String name;
+    private String DBHost;
+    @JsonProperty
+    private String DBName;
+    @JsonProperty
+    private String DBPort;
+    @JsonProperty
+    private String Password;
+    @JsonProperty
+    private String Username;
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return Username;
+    }
+
+    public String getPassword() {
+        return Password;
+    }
+
+    public String getDBHost() {
+        return DBHost;
+    }
+
+    public String getDBName() {
+        return DBName;
+    }
+
+    public int getDBPort() {
+        return Integer.parseInt(DBPort);
     }
 }
