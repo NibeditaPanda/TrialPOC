@@ -58,6 +58,7 @@ public class ControllerIntegrationTest {
         DBObject productWithPrice = stores.get(0);
 
         assertThat(stores.size()).isEqualTo(1);
+        assertThat(productWithPrice.get(CURRENCY)).isEqualTo("GBP");
         assertThat(productWithPrice.get(ZONE_ID)).isEqualTo("6");
         assertThat(productWithPrice.get(STORE_ID)).isEqualTo("2002");
     }

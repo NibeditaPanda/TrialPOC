@@ -15,6 +15,7 @@ public class RPMStoreZoneCSVFileReader {
     private final CSVReader csvReader;
     private final int storeIndex;
     private final int zoneIdIndex;
+    private final int currencyIndex;
 
     public RPMStoreZoneCSVFileReader(String filePath) throws IOException {
         csvReader = new CSVReader(new FileReader(filePath));
@@ -22,6 +23,7 @@ public class RPMStoreZoneCSVFileReader {
         List<String> headers = Arrays.asList(csvReader.readNext());
         storeIndex = headers.indexOf("STORE");
         zoneIdIndex = headers.indexOf("ZONE_ID");
+        currencyIndex = headers.indexOf("CURRENCY_CODE");
     }
 
     public DBObject getNext() throws IOException {
@@ -33,10 +35,12 @@ public class RPMStoreZoneCSVFileReader {
 
         String storeId = nextline[storeIndex];
         String zoneId = nextline[zoneIdIndex];
+        String currency = nextline[currencyIndex];
 
         DBObject store = new BasicDBObject();
         store.put(STORE_ID, storeId);
         store.put(ZONE_ID, zoneId);
+        store.put(CURRENCY, currency);
 
         return store;
     }
