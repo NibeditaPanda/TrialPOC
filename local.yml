@@ -1,5 +1,8 @@
 DBHost: localhost
-DBName: tescoService
+DBName: priceService
 DBPort: 27017
 Username:
 Password:
+http:
+  port: 8081
+  adminPort: 9081

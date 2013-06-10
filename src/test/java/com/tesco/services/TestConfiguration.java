@@ -16,7 +16,7 @@ public class TestConfiguration extends Configuration {
         if("ci".equalsIgnoreCase(app_env)) {
             return "KaYIvBPHSZ3OAsmo4lGAQ";
         }
-        return "test";
+        return "testPriceService";
     }
 
     @Override
