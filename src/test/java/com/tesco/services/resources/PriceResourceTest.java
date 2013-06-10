@@ -76,43 +76,4 @@ public class PriceResourceTest extends ResourceTest {
         assertThat(response.getStatus()).isEqualTo(404);
     }
 
-    @Test
-    public void shouldReturnPriceByZone(){
-        WebResource resource = client().resource("/price?zone=5");
-        ClientResponse response = resource.get(ClientResponse.class);
-        String stringResponse = resource.get(String.class);
-
-        assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(stringResponse).contains("053752428");
-        assertThat(stringResponse).doesNotContain("053752429");
-
-        resource = client().resource("/price?zone=2");
-        response = resource.get(ClientResponse.class);
-        stringResponse = resource.get(String.class);
-
-        assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(stringResponse).contains("053752428");
-        assertThat(stringResponse).contains("053752429");
-    }
-
-    @Test
-    public void shouldReturnPriceByStore(){
-        WebResource resource = client().resource("/price?store=2002");
-        ClientResponse response = resource.get(ClientResponse.class);
-        String stringResponse = resource.get(String.class);
-
-        assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(stringResponse).contains("053752428");
-        assertThat(stringResponse).doesNotContain("053752429");
-
-        resource = client().resource("/price?store=2006");
-        response = resource.get(ClientResponse.class);
-        stringResponse = resource.get(String.class);
-
-        assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(stringResponse).contains("053752428");
-        assertThat(stringResponse).contains("053752429");
-    }
-
-
 }

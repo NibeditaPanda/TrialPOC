@@ -23,32 +23,14 @@ public class PriceResource {
     @GET
     public Response get(@Context UriInfo uriInfo) {
         MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
-        if(queryParameters.size() == 0) return notFound();
-
-        String value;
-        List<DBObject> result = null;
-
-        value = queryParameters.getFirst("zone");
-        if(value != null) {
-            result = priceDAO.getPriceByZone(value);
-        }
-
-        value = queryParameters.getFirst("item_number");
-        if(value != null) {
-            result = priceDAO.getPriceBy("itemNumber", value);
-        }
-
-        value = queryParameters.getFirst("store");
-        if(value != null) {
-            result = priceDAO.getPriceByStore(value);
-        }
-
-        return buildResponse(result, Optional.fromNullable(queryParameters.getFirst("callback")));
+        String itemNumber = queryParameters.getFirst("item_number");
+        if (itemNumber == null) return notFound();
+        List<DBObject> result = priceDAO.getPriceBy("itemNumber", itemNumber);
+        if (result.isEmpty()) return notFound();
+        return buildResponse(result.get(0), Optional.fromNullable(queryParameters.getFirst("callback")));
     }
 
-    private Response buildResponse(List<DBObject> price, Optional<String> callback) {
-        if (price == null || price.isEmpty())
-            return notFound();
+    private Response buildResponse(DBObject price, Optional<String> callback) {
         if (callback.isPresent())
             return ok(callback.get() + "(" + price + ")");
         return ok(price);
