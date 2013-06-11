@@ -18,8 +18,8 @@ public class PriceResourceTest extends ResourceTest {
 
     String priceOne = "{\"itemNumber\": \"053752428\", \"zones\": {\"5\": {\"price\": \"3\"}, \"2\": {\"price\": \"1\"}}}";
     String priceTwo = "{\"itemNumber\": \"053752429\", \"zones\": {\"2\": {\"price\": \"3\"}}}";
-    String storeOne = "{\"storeId\": \"2002\",\"zoneId\": \"5\" }";
-    String storeTwo = "{\"storeId\": \"2006\",\"zoneId\": \"2\" }";
+    String storeOne = "{\"storeId\": \"2002\",\"zoneId\": \"5\", \"currency\": \"GBP\" }";
+    String storeTwo = "{\"storeId\": \"2006\",\"zoneId\": \"2\", \"currency\": \"GBP\" }";
     private DBCollection prices;
     private DBCollection stores;
 
@@ -42,7 +42,19 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     @Test
-    public void shouldReturn200ResponseWhenItemIsFound() {
+    public void shouldReturn200ResponseWhenSearchingForItemAndStore() {
+        WebResource resource = client().resource("/price?item_number=053752428&store=2006");
+        ClientResponse response = resource.get(ClientResponse.class);
+        String stringResponse = resource.get(String.class);
+
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(stringResponse).contains("\"itemNumber\":\"053752428\"");
+        assertThat(stringResponse).contains("\"price\":\"1\"");
+        assertThat(stringResponse).contains("\"currency\":\"GBP\"");
+    }
+
+    @Test
+    public void shouldReturn200ResponseWithNationalPriceWhenSearchingForItemAndNoStore() {
         WebResource resource = client().resource("/price?item_number=053752428");
         ClientResponse response = resource.get(ClientResponse.class);
         String stringResponse = resource.get(String.class);
@@ -50,11 +62,20 @@ public class PriceResourceTest extends ResourceTest {
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(stringResponse).contains("\"itemNumber\":\"053752428\"");
         assertThat(stringResponse).contains("\"price\":\"3\"");
+        assertThat(stringResponse).contains("\"currency\":\"GBP\"");
     }
 
     @Test
     public void shouldReturn404ResponseWhenItemIsNotFound() {
         WebResource resource = client().resource("/price?item_number=some_non_existant");
+        ClientResponse response = resource.get(ClientResponse.class);
+
+        assertThat(response.getStatus()).isEqualTo(404);
+    }
+
+    @Test
+    public void shouldReturn404ResponseWhenStoreIsNotFound() {
+        WebResource resource = client().resource("/price?item_number=053752428&store=some_non_existant");
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(404);

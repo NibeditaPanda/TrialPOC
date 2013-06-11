@@ -8,7 +8,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.*;
-import java.util.List;
 
 @Path("/price")
 @Produces(MediaType.APPLICATION_JSON)
@@ -23,11 +22,19 @@ public class PriceResource {
     @GET
     public Response get(@Context UriInfo uriInfo) {
         MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
+
         String itemNumber = queryParameters.getFirst("item_number");
         if (itemNumber == null) return notFound();
-        List<DBObject> result = priceDAO.getPriceBy("itemNumber", itemNumber);
-        if (result.isEmpty()) return notFound();
-        return buildResponse(result.get(0), Optional.fromNullable(queryParameters.getFirst("callback")));
+
+        DBObject result;
+
+        String storeId = queryParameters.getFirst("store");
+        if (storeId != null) result = priceDAO.getPriceByStore(itemNumber, storeId);
+        else result = priceDAO.getNationalPrice(itemNumber);
+
+        if (result == null) return notFound();
+
+        return buildResponse(result, Optional.fromNullable(queryParameters.getFirst("callback")));
     }
 
     private Response buildResponse(DBObject price, Optional<String> callback) {
