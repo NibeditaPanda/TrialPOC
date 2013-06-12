@@ -10,4 +10,4 @@ then
 fi
 
 java -jar -Denvironment=$1 $2 server $1.yml &
-echo $! > productService.pid
+echo $! > priceService.pid
