@@ -25,7 +25,7 @@ if ARGV.length != 2
   exit_script %^
     Usage: ruby import_data_qa.rb <adapter zip> <csv file zip>
     Note: Remember to set correct values for data dump in qa.properties.
-          The files will be extracted to the same location
+          The files will be extracted to /tmp/to_process
   ^
 end
 
@@ -46,6 +46,9 @@ begin
     puts "*"*100
     puts "creating folder structures if not exist..."
     ssh.exec! "mkdir -p /tmp/priceAdapters"
+    ssh.exec! "mkdir -p /tmp/to_process/price"
+    ssh.exec! "mkdir -p /tmp/processed/price"
+    ssh.exec! "mkdir -p /tmp/logs/price"
 
     puts "*"*100
     puts "cleaning old artifacts..."
