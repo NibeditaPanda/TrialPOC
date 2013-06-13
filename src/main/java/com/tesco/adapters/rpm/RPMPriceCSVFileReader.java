@@ -16,7 +16,8 @@ public class RPMPriceCSVFileReader {
     private final CSVReader csvReader;
     private final int itemNumberIndex;
     private final int zoneIdIndex;
-    private final int nationalPriceIndex;
+    private final int priceIndex;
+    private final int promotionalPriceIndex;
 
     public RPMPriceCSVFileReader(String filePath) throws IOException {
         csvReader = new CSVReader(new FileReader(filePath));
@@ -24,7 +25,8 @@ public class RPMPriceCSVFileReader {
         List<String> headers = Arrays.asList(csvReader.readNext());
         itemNumberIndex = headers.indexOf("ITEM");
         zoneIdIndex = headers.indexOf("ZONE_ID");
-        nationalPriceIndex = headers.indexOf("SELLING_RETAIL");
+        priceIndex = headers.indexOf("SELLING_RETAIL");
+        promotionalPriceIndex = headers.indexOf("SIMPLE_PROMO_RETAIL");
     }
 
     public DBObject getNext() throws IOException {
@@ -36,12 +38,14 @@ public class RPMPriceCSVFileReader {
 
         String itemNumber = nextline[itemNumberIndex];
         String zoneId = nextline[zoneIdIndex];
-        String nationalPrice = nextline[nationalPriceIndex];
+        String price = nextline[priceIndex];
+        String promotionalPrice = nextline[promotionalPriceIndex];
 
-        DBObject price = new BasicDBObject();
-        price.put(ITEM_NUMBER, itemNumber);
-        price.put(String.format("%s.%s.%s", ZONES, zoneId, PRICE), nationalPrice);
+        DBObject priceObject = new BasicDBObject();
+        priceObject.put(ITEM_NUMBER, itemNumber);
+        priceObject.put(String.format("%s.%s.%s", ZONES, zoneId, PRICE), price);
+        priceObject.put(String.format("%s.%s.%s", ZONES, zoneId, PROMO_PRICE), promotionalPrice);
 
-        return price;
+        return priceObject;
     }
 }
