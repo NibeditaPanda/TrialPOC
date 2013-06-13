@@ -1,1 +1,1 @@
-./libs/gradle-1.5/bin/gradle clean build -x jar test zip -Denvironment=ci
+gradle clean build -x jar test zip -Denvironment=ci
