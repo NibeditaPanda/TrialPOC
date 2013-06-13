@@ -5,7 +5,7 @@ public class TestConfiguration extends Configuration {
     public int getDBPort() {
         String app_env = System.getProperty("environment");
         if("ci".equalsIgnoreCase(app_env)) {
-            return 10093;
+            return 10073;
         }
         return 27017;
     }
@@ -14,7 +14,7 @@ public class TestConfiguration extends Configuration {
     public String getDBName() {
         String app_env = System.getProperty("environment");
         if("ci".equalsIgnoreCase(app_env)) {
-            return "KaYIvBPHSZ3OAsmo4lGAQ";
+            return "5oCmuVVgkTcse96lhOdmkA";
         }
         return "testPriceService";
     }
@@ -41,7 +41,7 @@ public class TestConfiguration extends Configuration {
     public String getPassword() {
         String app_env = System.getProperty("environment");
         if("ci".equalsIgnoreCase(app_env)) {
-            return "56dcbcf21addbe3a4369b331240d479f";
+            return "6073eeb96870d332b016680d932748b5";
         }
         return "";
     }
