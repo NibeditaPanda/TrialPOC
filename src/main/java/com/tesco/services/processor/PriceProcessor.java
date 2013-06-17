@@ -22,16 +22,16 @@ public class PriceProcessor {
     }
 
     public Optional<DBObject> getPricesFor(String itemNumber, String storeId) {
-        if (storeId != null) return Optional.fromNullable(getPriceByStore(itemNumber, storeId));
+        if (storeId != null) return getPriceByStore(itemNumber, storeId);
         return getNationalPrice(itemNumber);
     }
 
-    private DBObject getPriceByStore(String itemNumber, String storeId) {
+    private Optional<DBObject> getPriceByStore(String itemNumber, String storeId) {
 
         Optional<DBObject> item = priceDAO.getPrice(itemNumber);
         Optional<DBObject> store = priceDAO.getStore(storeId);
 
-        if (!item.isPresent() || !store.isPresent()) return null;
+        if (!item.isPresent() || !store.isPresent()) return Optional.absent();
 
         String zoneId = store.get().get(ZONE_ID).toString();
         String currency = store.get().get(CURRENCY).toString();
@@ -41,7 +41,7 @@ public class PriceProcessor {
         String price = zone.get(PRICE).toString();
         String promoPrice = zone.get(PROMO_PRICE).toString();
 
-        return buildPriceResponse(itemNumber, price, promoPrice, currency);
+        return Optional.fromNullable(buildPriceResponse(itemNumber, price, promoPrice, currency));
     }
 
     private Optional<DBObject> getNationalPrice(String itemNumber) {
