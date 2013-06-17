@@ -5,10 +5,9 @@ import com.mongodb.DBObject;
 import com.tesco.services.DAO.PriceDAO;
 import com.tesco.services.processor.PriceProcessor;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.*;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 @Path("/price")
 @Produces(MediaType.APPLICATION_JSON)
@@ -21,17 +20,17 @@ public class PriceResource {
     }
 
     @GET
-    public Response get(@Context UriInfo uriInfo) {
-        MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
+    @Path("/{itemNumber}")
+    public Response get(@PathParam("itemNumber") String itemNumber,
+                        @QueryParam("store") Optional<String> storeId,
+                        @QueryParam("callback") Optional<String> callback) {
 
-        String itemNumber = queryParameters.getFirst("item_number");
-        String storeId = queryParameters.getFirst("store");
         if (itemNumber == null) return notFound();
 
         Optional<DBObject> prices = priceProcessor.getPricesFor(itemNumber, storeId);
         if (!prices.isPresent()) return notFound();
 
-        return buildResponse(prices.get(), Optional.fromNullable(queryParameters.getFirst("callback")));
+        return buildResponse(prices.get(), callback);
     }
 
     private Response buildResponse(DBObject price, Optional<String> callback) {

@@ -31,8 +31,7 @@ public class PriceResourceTest extends ResourceTest {
         DBObject store = (DBObject) JSON.parse("{\"storeId\": \"randomStore\",\"zoneId\": \"2\", \"currency\": \"GBP\" }");
         when(priceDAO.getStore("randomStore")).thenReturn(Optional.fromNullable(store));
 
-
-        WebResource resource = client().resource("/price?item_number=randomItem&store=randomStore");
+        WebResource resource = client().resource("/price/randomItem?store=randomStore");
         ClientResponse response = resource.get(ClientResponse.class);
         String stringResponse = resource.get(String.class);
 
@@ -49,7 +48,7 @@ public class PriceResourceTest extends ResourceTest {
         when(priceDAO.getPrice("randomItem")).thenReturn(Optional.fromNullable(price));
         when(priceDAO.getStore("some_non_existent_store")).thenReturn(Optional.<DBObject>absent());
 
-        WebResource resource = client().resource("/price?item_number=randomItem");
+        WebResource resource = client().resource("/price/randomItem");
         ClientResponse response = resource.get(ClientResponse.class);
         String stringResponse = resource.get(String.class);
 
@@ -64,7 +63,7 @@ public class PriceResourceTest extends ResourceTest {
     public void shouldReturn404ResponseWhenItemIsNotFound() {
         when(priceDAO.getPrice("some_non_existent")).thenReturn(Optional.<DBObject>absent());
 
-        WebResource resource = client().resource("/price?item_number=some_non_existent");
+        WebResource resource = client().resource("/price/some_non_existent");
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(404);
@@ -75,7 +74,7 @@ public class PriceResourceTest extends ResourceTest {
         when(priceDAO.getPrice("some_non_existent_item")).thenReturn(Optional.<DBObject>absent());
         when(priceDAO.getStore("some_non_existent_store")).thenReturn(Optional.<DBObject>absent());
 
-        WebResource resource = client().resource("/price?item_number=some_non_existent_item&store=some_non_existent_store");
+        WebResource resource = client().resource("/price/some_non_existent_item?store=some_non_existent_store");
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(404);
@@ -86,15 +85,15 @@ public class PriceResourceTest extends ResourceTest {
         WebResource resource = client().resource("/price");
         ClientResponse response = resource.get(ClientResponse.class);
 
-        assertThat(response.getStatus()).isEqualTo(404);
+        assertThat(response.getStatus()).isEqualTo(405);
     }
 
     @Test
     public void shouldReturn404WhenInvalidQueryParamGiven() {
-        WebResource resource = client().resource("/price?something=blah");
+        WebResource resource = client().resource("/price?store=blah");
         ClientResponse response = resource.get(ClientResponse.class);
 
-        assertThat(response.getStatus()).isEqualTo(404);
+        assertThat(response.getStatus()).isEqualTo(405);
     }
 
 }

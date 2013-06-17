@@ -21,8 +21,8 @@ public class PriceProcessor {
         this.priceDAO = priceDAO;
     }
 
-    public Optional<DBObject> getPricesFor(String itemNumber, String storeId) {
-        if (storeId != null) return getPriceByStore(itemNumber, storeId);
+    public Optional<DBObject> getPricesFor(String itemNumber, Optional<String> storeId) {
+        if (storeId.isPresent()) return getPriceByStore(itemNumber, storeId.get());
         return getNationalPrice(itemNumber);
     }
 
