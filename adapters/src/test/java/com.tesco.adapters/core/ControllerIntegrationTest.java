@@ -28,8 +28,8 @@ public class ControllerIntegrationTest {
         DBFactory.getCollection(STORE_COLLECTION).drop();
         storeCollection = DBFactory.getCollection(STORE_COLLECTION);
 
-        rpmPriceZoneCsvFilePath = "../PriceAdapters/src/test/java/com/tesco/adapters/rpm/fixtures/price_zone.csv";
-        rpmStoreZoneCsvFilePath = "../PriceAdapters/src/test/java/com/tesco/adapters/rpm/fixtures/store_zone.csv";
+        rpmPriceZoneCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/price_zone.csv";
+        rpmStoreZoneCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/store_zone.csv";
         new Controller(priceCollection, storeCollection, rpmPriceZoneCsvFilePath, rpmStoreZoneCsvFilePath).fetchAndSavePriceDetails();
     }
 
@@ -76,7 +76,7 @@ public class ControllerIntegrationTest {
 
     @Test
     public void shouldImportAndUpdateStoreAndZoneMapping() throws IOException {
-        String filePath = "../PriceAdapters/src/test/java/com/tesco/adapters/rpm/fixtures/store_zone_to_update.csv";
+        String filePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/store_zone_to_update.csv";
         new Controller(priceCollection, storeCollection, rpmPriceZoneCsvFilePath, filePath).fetchAndSavePriceDetails();
 
         List<DBObject> stores = storeCollection.find((DBObject) JSON.parse(format("{\"%s\": \"2002\"}", STORE_ID))).toArray();
