@@ -27,6 +27,7 @@ fatJar {
 }
 
 task zip(type: Zip) {
+    archiveName = 'price-adapters'
     from fatJar.outputs.files
     from('.') {
         include "*.properties"
