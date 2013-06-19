@@ -1,0 +1,13 @@
+#!/bin/bash
+EXPECTED_ARGS=2
+if [ $# -ne $EXPECTED_ARGS ]
+then
+  echo "Usage: sh runService <environment> <jar file>"
+  echo "Make sure:"
+  echo "    - environment passed in has an existing property yml file"
+  echo "    - yml file points to a running mongodb instance"
+  exit 1
+fi
+
+java -jar -Denvironment=$1 $2 server $1.yml &
+echo $! > priceService.pid
