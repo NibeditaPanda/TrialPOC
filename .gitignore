@@ -1,5 +1,4 @@
 *.class
-build/*
 
 # Package Files #
 *.jar
@@ -11,5 +10,8 @@ build/*
 *.iws
 
 
-.gradle/*
+**/.gradle/*
+**/.idea/*
+**/build/*
+
 logs/
