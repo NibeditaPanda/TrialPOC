@@ -1,0 +1,30 @@
+#!/bin/bash
+EXPECTED_ARGS=2
+if [ $# -ne $EXPECTED_ARGS ]
+then
+  echo "Usage: sh runImport <environment> <jar file>"
+  echo "Make sure:"
+  echo "    - environment passed in has an existing property file"
+  echo "    - property file points to existing data dump filepaths"
+  exit 1
+fi
+
+TO_PROCESS_PATH=/tmp/to_process/price
+PROCESSED_PATH=/tmp/processed/price
+LOG_PATH=/tmp/logs/price
+
+rm -rf $LOG_PATH/*
+
+java -jar -Denvironment=$1 $2
+
+if [ ! -d $LOG_PATH ]; then
+  mkdir -p $LOG_PATH
+fi
+
+cp logs/* $LOG_PATH
+
+if [ ! -d $PROCESSED_PATH ]; then
+  mkdir -p $PROCESSED_PATH
+fi
+
+zip -r $PROCESSED_PATH/$(date +%Y%m%d-%T).zip $LOG_PATH $TO_PROCESS_PATH/*
