@@ -27,7 +27,7 @@ fatJar {
 }
 
 task zip(type: Zip) {
-    archiveName = 'price-adapters'
+    baseName = 'price-adapters'
     from fatJar.outputs.files
     from('.') {
         include "*.properties"
@@ -35,13 +35,18 @@ task zip(type: Zip) {
     }
 }
 
+allprojects {
+    def versionNumber = System.getenv("BUILD_NUMBER")
+    if (versionNumber) {
+        project.version = project.myVersion
+    } else {
+        project.version = 'developer-build'
+    }
+}
+
 // group is the groupId
 group = 'com.tesco.adapters'
 //the default artifactId is the project name, which is per default the directory name of the project
-def versionNumber = System.getenv("BUILD_NUMBER")
-if (versionNumber) {
-    version = versionNumber
-}
 
 sourceCompatibility = VERSION_1_7
 targetCompatibility = VERSION_1_7
