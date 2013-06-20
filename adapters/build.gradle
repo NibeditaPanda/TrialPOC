@@ -38,7 +38,7 @@ task zip(type: Zip) {
 allprojects {
     def versionNumber = System.getenv("BUILD_NUMBER")
     if (versionNumber) {
-        project.version = project.myVersion
+        project.version = versionNumber
     } else {
         project.version = 'developer-build'
     }
