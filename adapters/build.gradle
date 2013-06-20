@@ -21,6 +21,7 @@ buildscript {
 mainClassName = "com.tesco.adapters.core.Controller"
 
 fatJar {
+    baseName = 'price-adapters'
     manifest {
         attributes 'Main-Class': mainClassName
     }
