@@ -63,6 +63,7 @@ task zip(type: Zip) {
     from ('.'){
         include "*.yml"
         include 'runService'
+        include 'version'
     }
 }
 

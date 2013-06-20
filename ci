@@ -1,5 +1,5 @@
-echo $BUILD_NUMBER > version
 cd adapters
 gradle clean build -x jar test zip -Denvironment=ci
 cd ../service
+echo $BUILD_NUMBER > version
 gradle clean build -x jar test zip -Denvironment=ci
