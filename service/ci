@@ -1,2 +1,0 @@
-echo $BUILD_NUMBER > version
-gradle clean build -x jar test zip -Denvironment=ci
