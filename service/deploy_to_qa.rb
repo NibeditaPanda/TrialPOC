@@ -13,15 +13,30 @@ PORT = 22
 #SERVER = "productsvc-qa.cloudapp.net"
 #PORT = 51882
 
+HEALTHCHECK_URL="localhost:9081/healthcheck"
+
 def stop_service_on_qa ssh
   begin
     ssh.exec! "cd /tmp/priceService && kill -9 $(cat priceService.pid)"
   rescue
     puts "-"*20
-    puts "unable to stop - service may already be stopped"
-    puts "carry on cleaning /tmp/service..."
+    puts "unable to find pid file... Make sure process is run using script!"
     puts "-"*20
   end
+
+  puts "Waiting for Service to stop..."
+  result = :running
+  5.times do
+    response = ssh.exec! "curl #{HEALTHCHECK_URL}"
+    if response.include? "couldn't connect to host"
+      result = :stopped
+      break
+    end
+    puts "Waiting 2s before rechecking..."
+    sleep 2
+  end
+  exit_script "Unable to stop service!! Try stopping service manually" if result == :running
+  puts "Cleaning destination folder..."
   ssh.exec! "rm -rf /tmp/priceService/*"
 end
 
@@ -76,10 +91,19 @@ begin
       puts line
     end
 
-    result = ssh.exec! "echo $?"
-    puts "*"*100
-    if result.to_i != 0
-      exit_script "SOMETHING WENT WRONG" if result != 0
+    result = :stopped
+    5.times do
+      response = ssh.exec! "curl #{HEALTHCHECK_URL}"
+      if response.include? "OK"
+        result = :running
+        break
+      end
+      puts "Waiting 2s before rechecking..."
+      sleep 2
+    end
+    if  result == :stopped
+      puts ssh.exec! "cd /tmp/priceService && echo \"OUTPUT: \" $(cat output.txt) && echo \"ERROR: \" $(cat error.txt)"
+      exit_script "SERVICE NOT STARTED!!"
     end
     puts "SERVICE STARTED! Have a nice day :)"
   end

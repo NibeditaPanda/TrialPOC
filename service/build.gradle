@@ -50,6 +50,7 @@ dependencies {
 mainClassName = 'com.tesco.services.Controller'
 
 fatJar {
+    baseName = 'price-service'
     manifest {
         attributes 'Main-Class': mainClassName
     }
