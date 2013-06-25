@@ -6,7 +6,6 @@ apply plugin: 'application'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'fatjar'
-apply plugin: 'idea'
 
 
 
