@@ -16,6 +16,7 @@ LOG_PATH=/tmp/logs/price
 rm -rf $LOG_PATH/*
 
 java -jar -Denvironment=$1 $2
+echo $? > result.txt
 
 if [ ! -d $LOG_PATH ]; then
   mkdir -p $LOG_PATH

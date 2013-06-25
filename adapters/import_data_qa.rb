@@ -72,10 +72,10 @@ begin
       print line
     end
 
-    result = ssh.exec! "echo $?"
+    result = ssh.exec! "cd /tmp/priceAdapters && cat result.txt"
     puts "*"*100
-    if result.to_i != 0
-      exit_script "SOMETHING WENT WRONG" if result != 0
+    if result.chomp != "0"
+      exit_script "SOMETHING WENT WRONG"
     end
     puts "IMPORT FINISHED! Have a nice day :)"
   end
