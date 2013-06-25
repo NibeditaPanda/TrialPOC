@@ -8,6 +8,15 @@ apply plugin: 'idea'
 apply plugin: 'fatjar'
 apply plugin: 'idea'
 
+
+
+idea{
+    module{
+        name = "PriceAdapters"
+    }
+}
+
+
 buildscript {
     repositories {
         mavenCentral()
