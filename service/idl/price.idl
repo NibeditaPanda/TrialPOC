@@ -22,7 +22,7 @@ http://api.example.com/v1/price/...
 	@namespacePrefix "example.com.services";
 	@version 1.0.0, "draft","2013/6/25","first draft of version 1.0";
 
-    list<Price> get(mandatory string itemNumber, string store, string callback) throws ProductNotFoundException {
+    list<Price> get(mandatory string itemNumber, string store, string callback) throws PriceUnavailableException {
     	@description
         "
         #Overview
@@ -30,12 +30,8 @@ http://api.example.com/v1/price/...
         ##Example
           $ curl -I http://productsvc-qa.cloudapp.net/price/059310015
             HTTP/1.1 200 OK
-            Server: nginx/1.4.1
-            Date: Tue, 25 Jun 2013 14:16:34 GMT
             Content-Type: application/json
-            Content-Length: 0
-            Connection: keep-alive
-
+            
           $ curl http://productsvc-qa.cloudapp.net/price/059310015
             [{\"itemNumber\":\"059310015\",\"price\":\"5\",\"promoPrice\":\"5\",\"currency\":\"GBP\"}]
 
@@ -58,12 +54,12 @@ http://api.example.com/v1/price/...
         @parameter currency, "";
     }
 
-	exception ProductNotFoundException(
+	exception PriceUnavailableException(
 		string message,
 		HttpStatusCode statusCode)
 	{
-		@description "Exception indicating that no product was found.";
-		@parameter message, "A message describing reason for location not found.";
+		@description "Exception indicating that no price for the item was found.";
+		@parameter message, "No price for the item was found";
 		@parameter statusCode, "Http status code.";
 	}
 
