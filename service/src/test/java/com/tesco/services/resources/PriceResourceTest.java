@@ -81,10 +81,11 @@ public class PriceResourceTest extends ResourceTest {
 
     @Test
     public void shouldReturn404ResponseWhenStoreIsNotFound() {
-        when(priceDAO.getPrice("some_non_existent_item")).thenReturn(Optional.<DBObject>absent());
+        DBObject price = (DBObject) JSON.parse("{\"itemNumber\": \"randomItem\", \"zones\": {\"5\": {\"price\": \"3.00\", \"promoPrice\" : \"2.33\"}, \"2\": {\"price\": \"2.00\", \"promoPrice\" : \"1.33\"}}}");
+        when(priceDAO.getPrice("randomItem")).thenReturn(Optional.fromNullable(price));
         when(priceDAO.getStore("some_non_existent_store")).thenReturn(Optional.<DBObject>absent());
 
-        WebResource resource = client().resource("/price/some_non_existent_item?store=some_non_existent_store");
+        WebResource resource = client().resource("/price/randomItem?store=some_non_existent_store");
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(404);
