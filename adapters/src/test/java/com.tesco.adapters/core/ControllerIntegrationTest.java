@@ -33,20 +33,11 @@ public class ControllerIntegrationTest {
     }
 
     @Test
-    public void shouldImportAllPricesFromRPMPriceDump() throws IOException {
+    public void shouldImportPriceFromRPMPriceDump() throws IOException {
         DBObject query = QueryBuilder.start(ITEM_NUMBER).is("050925811").and(
                 QueryBuilder.start(format("%s.%s.%s", ZONES, "5", PRICE)).is("1.33").get()).get();
         List<DBObject> priceResults = priceCollection.find(query).toArray();
         assertThat(priceResults.size()).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldImportAndUpdateZonePromotionalPricesFromRPMPriceDump() throws IOException {
-        DBObject query = QueryBuilder.start(ITEM_NUMBER).is("050925811").get();
-        DBObject price = priceCollection.find(query).toArray().get(0);
-        DBObject zones = (DBObject) price.get(format("%s", ZONES));
-        DBObject prices = (DBObject) zones.get("5");
-        assertThat(prices.get(PROMO_PRICE)).isEqualTo("2.33");
     }
 
     @Test
@@ -60,6 +51,15 @@ public class ControllerIntegrationTest {
                 QueryBuilder.start(format("%s.%s.%s", ZONES, "3", PRICE)).is("2.33").get()).get();
         priceResults = priceCollection.find(query).toArray();
         assertThat(priceResults.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldImportAndUpdateZonePromotionalPricesFromRPMPriceDump() throws IOException {
+        DBObject query = QueryBuilder.start(ITEM_NUMBER).is("050925811").get();
+        DBObject price = priceCollection.find(query).toArray().get(0);
+        DBObject zones = (DBObject) price.get(format("%s", ZONES));
+        DBObject prices = (DBObject) zones.get("5");
+        assertThat(prices.get(PROMO_PRICE)).isEqualTo("2.33");
     }
 
     @Test

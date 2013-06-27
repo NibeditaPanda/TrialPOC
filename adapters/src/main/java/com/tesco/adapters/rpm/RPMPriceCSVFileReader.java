@@ -11,7 +11,7 @@ import java.util.List;
 
 import static com.tesco.adapters.core.PriceKeys.*;
 
-public class RPMPriceCSVFileReader {
+public class RPMPriceCSVFileReader implements RPMCSVFileReader {
 
     private final CSVReader csvReader;
     private final int itemNumberIndex;

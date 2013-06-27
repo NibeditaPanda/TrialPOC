@@ -11,13 +11,13 @@ import java.util.List;
 
 import static com.tesco.adapters.core.PriceKeys.*;
 
-public class RPMStoreZoneCSVFileReader {
+public class RPMStoreCSVFileReader implements RPMCSVFileReader{
     private final CSVReader csvReader;
     private final int storeIndex;
     private final int zoneIdIndex;
     private final int currencyIndex;
 
-    public RPMStoreZoneCSVFileReader(String filePath) throws IOException {
+    public RPMStoreCSVFileReader(String filePath) throws IOException {
         csvReader = new CSVReader(new FileReader(filePath));
 
         List<String> headers = Arrays.asList(csvReader.readNext());

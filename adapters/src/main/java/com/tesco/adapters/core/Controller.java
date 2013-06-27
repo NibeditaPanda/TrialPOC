@@ -2,7 +2,7 @@ package com.tesco.adapters.core;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
-import com.tesco.adapters.rpm.RPMPricetWriter;
+import com.tesco.adapters.rpm.RPMWriter;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -48,7 +48,7 @@ public class Controller {
 
     public void fetchAndSavePriceDetails() throws IOException {
         indexMongo();
-        new RPMPricetWriter(priceCollection, storeCollection, RPMPriceZoneCsvFilePath, RPMStoreZoneCsvFilePath, RPMPromotionCsvFilePath).write();
+        new RPMWriter(priceCollection, storeCollection, RPMPriceZoneCsvFilePath, RPMStoreZoneCsvFilePath, RPMPromotionCsvFilePath).write();
     }
 
     private void indexMongo() {
