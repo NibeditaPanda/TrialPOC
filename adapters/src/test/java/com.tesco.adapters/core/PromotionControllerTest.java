@@ -16,7 +16,6 @@ public class PromotionControllerTest extends ControllerIntegrationTest{
     @Test
     public void shouldImportListOfPromotionsPerPriceZone() throws IOException {
         List<DBObject> priceZones = priceCollection.find((DBObject) JSON.parse(format("{\"%s\": \"070918248\"}", ITEM_NUMBER))).toArray();
-        System.out.println(((DBObject)((DBObject)priceZones.get(0).get(ZONES)).get("6")).get(PROMOTIONS));
         List<DBObject> zone6Promotions = (List<DBObject>) ((DBObject)((DBObject)priceZones.get(0).get(ZONES)).get("6")).get(PROMOTIONS);
         List<DBObject> zone7Promotions = (List<DBObject>) ((DBObject)((DBObject)priceZones.get(0).get(ZONES)).get("7")).get(PROMOTIONS);
 
@@ -29,6 +28,14 @@ public class PromotionControllerTest extends ControllerIntegrationTest{
         assertThat(zone7Promotions.get(0).get(PROMOTION_CF_DESCRIPTION_2)).isEqualTo("3 LIONS KICK|& TRICK BALL");
         assertThat(zone7Promotions.get(0).keySet()).doesNotContain(ZONE_ID);
         assertThat(zone7Promotions.get(0).keySet()).doesNotContain(ITEM_NUMBER);
+    }
+
+    @Test
+    public void shouldNotImportDuplicatePromotions() throws IOException {
+        List<DBObject> priceZones = priceCollection.find((DBObject) JSON.parse(format("{\"%s\": \"066367922\"}", ITEM_NUMBER))).toArray();
+        List<DBObject> zone12Promotions = (List<DBObject>) ((DBObject)((DBObject)priceZones.get(0).get(ZONES)).get("12")).get(PROMOTIONS);
+
+        assertThat(zone12Promotions.size()).isEqualTo(1);
     }
 
 
