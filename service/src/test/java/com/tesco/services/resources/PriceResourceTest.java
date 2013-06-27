@@ -26,7 +26,12 @@ public class PriceResourceTest extends ResourceTest {
 
     @Test
     public void shouldReturnPricesForZoneCorrespondingToStoreWhenSearchingForItemAtAParticularStore() {
-        DBObject price = (DBObject) JSON.parse("{\"itemNumber\": \"randomItem\", \"zones\": {\"5\": {\"price\": \"3.00\", \"promoPrice\" : \"2.33\"}, \"2\": {\"price\": \"2.00\", \"promoPrice\" : \"1.33\"}}}");
+        DBObject price = (DBObject) JSON.parse("{" +
+                "\"itemNumber\": \"randomItem\", " +
+                "\"zones\": " +
+                    "{\"5\": {\"price\": \"3.00\", \"promoPrice\" : \"2.33\", \"promotions\":[{\"offerName\":\"promo1\",\"startDate\":\"date1\",\"endDate\":\"date2\",\"cfDescription1\":\"blah\",\"cfDescription2\":\"blah\"}]}, " +
+                    "\"2\": {\"price\": \"2.00\", \"promoPrice\" : \"1.33\", \"promotions\":[{\"offerName\":\"promo1\",\"startDate\":\"date1\",\"endDate\":\"date2\",\"cfDescription1\":\"blah\",\"cfDescription2\":\"blah\"}]}}" +
+                "}");
         when(priceDAO.getPrice("randomItem")).thenReturn(Optional.fromNullable(price));
         DBObject store = (DBObject) JSON.parse("{\"storeId\": \"randomStore\",\"zoneId\": \"2\", \"currency\": \"GBP\" }");
         when(priceDAO.getStore("randomStore")).thenReturn(Optional.fromNullable(store));
@@ -40,6 +45,11 @@ public class PriceResourceTest extends ResourceTest {
         assertThat(stringResponse).contains("\"price\":\"2.00\"");
         assertThat(stringResponse).contains("\"promoPrice\":\"1.33\"");
         assertThat(stringResponse).contains("\"currency\":\"GBP\"");
+        assertThat(stringResponse).contains("\"offerName\":\"promo1\"");
+        assertThat(stringResponse).contains("\"startDate\":\"date1\"");
+        assertThat(stringResponse).contains("\"endDate\":\"date2\"");
+        assertThat(stringResponse).contains("\"cfDescription1\":\"blah\"");
+        assertThat(stringResponse).contains("\"cfDescription2\":\"blah\"");
     }
 
     @Test

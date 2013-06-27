@@ -5,6 +5,8 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.tesco.services.DAO.PriceDAO;
 
+import java.util.List;
+
 public class PriceProcessor {
 
     public static final String NATIONAL_ZONE = "5";
@@ -14,6 +16,7 @@ public class PriceProcessor {
     public static final String PRICE = "price";
     public static final String PROMO_PRICE = "promoPrice";
     public static final String CURRENCY = "currency";
+    public static final String PROMOTIONS = "promotions";
 
     public PriceDAO priceDAO;
 
@@ -40,8 +43,8 @@ public class PriceProcessor {
         DBObject zone = (DBObject) zones.get(zoneId);
         String price = zone.get(PRICE).toString();
         String promoPrice = zone.get(PROMO_PRICE).toString();
-
-        return Optional.fromNullable(buildPriceResponse(itemNumber, price, promoPrice, currency));
+        List<DBObject> promotions = (List<DBObject>) ((DBObject) ((DBObject) item.get().get(ZONES)).get(zoneId)).get(PROMOTIONS);
+        return Optional.fromNullable(buildPriceResponse(itemNumber, price, promoPrice, currency, promotions));
     }
 
     private Optional<DBObject> getNationalPrice(String itemNumber) {
@@ -49,17 +52,19 @@ public class PriceProcessor {
         if (item.isPresent()) {
             String price = ((DBObject) ((DBObject) item.get().get(ZONES)).get(NATIONAL_ZONE)).get(PRICE).toString();
             String promoPrice = ((DBObject) ((DBObject) item.get().get(ZONES)).get(NATIONAL_ZONE)).get(PROMO_PRICE).toString();
-            return Optional.fromNullable(buildPriceResponse(itemNumber, price, promoPrice, DEFAULT_CURRENCY));
+            List<DBObject> promotions = (List<DBObject>) ((DBObject) ((DBObject) item.get().get(ZONES)).get(NATIONAL_ZONE)).get(PROMOTIONS);
+            return Optional.fromNullable(buildPriceResponse(itemNumber, price, promoPrice, DEFAULT_CURRENCY, promotions));
         }
         return item;
     }
 
-    private DBObject buildPriceResponse(String itemNumber, String price, String promoPrice, String currency) {
+    private DBObject buildPriceResponse(String itemNumber, String price, String promoPrice, String currency, List<DBObject> promotions) {
         BasicDBObject responseObject = new BasicDBObject();
         responseObject.put(PriceDAO.ITEM_NUMBER, itemNumber);
         responseObject.put(PRICE, price);
         responseObject.put(PROMO_PRICE, promoPrice);
         responseObject.put(CURRENCY, currency);
+        responseObject.put(PROMOTIONS, promotions);
         return responseObject;
     }
 }

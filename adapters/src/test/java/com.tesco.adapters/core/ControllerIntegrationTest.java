@@ -17,8 +17,6 @@ public class ControllerIntegrationTest {
 
     protected DBCollection priceCollection;
     protected DBCollection storeCollection;
-    private String rpmPriceZoneCsvFilePath;
-    private String rpmStoreZoneCsvFilePath;
 
     @BeforeMethod
     public void setUp() throws IOException {
@@ -28,9 +26,10 @@ public class ControllerIntegrationTest {
         DBFactory.getCollection(STORE_COLLECTION).drop();
         storeCollection = DBFactory.getCollection(STORE_COLLECTION);
 
-        rpmPriceZoneCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/price_zone.csv";
-        rpmStoreZoneCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/store_zone.csv";
-        new Controller(priceCollection, storeCollection, rpmPriceZoneCsvFilePath, rpmStoreZoneCsvFilePath).fetchAndSavePriceDetails();
+        String rpmPriceZoneCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/price_zone.csv";
+        String rpmStoreZoneCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/store_zone.csv";
+        String rpmPromotionCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/prom_extract.csv";
+        new Controller(priceCollection, storeCollection, rpmPriceZoneCsvFilePath, rpmStoreZoneCsvFilePath, rpmPromotionCsvFilePath).fetchAndSavePriceDetails();
     }
 
     @Test
@@ -76,8 +75,10 @@ public class ControllerIntegrationTest {
 
     @Test
     public void shouldImportAndUpdateStoreAndZoneMapping() throws IOException {
-        String filePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/store_zone_to_update.csv";
-        new Controller(priceCollection, storeCollection, rpmPriceZoneCsvFilePath, filePath).fetchAndSavePriceDetails();
+        String rpmPriceZoneCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/price_zone.csv";
+        String rpmStoreZoneUpdateFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/store_zone_to_update.csv";
+        String rpmPromotionCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/prom_extract.csv";
+        new Controller(priceCollection, storeCollection, rpmPriceZoneCsvFilePath, rpmStoreZoneUpdateFilePath, rpmPromotionCsvFilePath).fetchAndSavePriceDetails();
 
         List<DBObject> stores = storeCollection.find((DBObject) JSON.parse(format("{\"%s\": \"2002\"}", STORE_ID))).toArray();
         DBObject productWithPrice = stores.get(0);

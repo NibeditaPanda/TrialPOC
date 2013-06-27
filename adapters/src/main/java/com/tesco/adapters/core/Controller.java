@@ -16,13 +16,16 @@ public class Controller {
     private DBCollection storeCollection;
     private String RPMPriceZoneCsvFilePath;
     private String RPMStoreZoneCsvFilePath;
+    private String RPMPromotionCsvFilePath;
     private static final Logger logger = getLogger("Price_Controller");
 
-    public Controller(DBCollection priceCollection, DBCollection storeCollection, String RPMPriceZoneCsvFilePath, String RPMStoreZoneCsvFilePath) {
+
+    public Controller(DBCollection priceCollection, DBCollection storeCollection, String RPMPriceZoneCsvFilePath, String RPMStoreZoneCsvFilePath, String RPMPromotionCsvFilePath) {
         this.priceCollection = priceCollection;
         this.storeCollection = storeCollection;
         this.RPMPriceZoneCsvFilePath = RPMPriceZoneCsvFilePath;
         this.RPMStoreZoneCsvFilePath = RPMStoreZoneCsvFilePath;
+        this.RPMPromotionCsvFilePath = RPMPromotionCsvFilePath;
     }
 
     public static void main(String[] args) {
@@ -33,8 +36,9 @@ public class Controller {
         try {
             String RPMPriceZoneCsvFilePath = Configuration.get().getString("rpm.price.data.dump");
             String RPMStoreZoneCSVFilePath = Configuration.get().getString("rpm.store.data.dump");
+            String RPMPromotionCsvFilePath = Configuration.get().getString("rpm.promotion.data.dump");
 
-            Controller controller = new Controller(priceCollection, storeCollection, RPMPriceZoneCsvFilePath, RPMStoreZoneCSVFilePath);
+            Controller controller = new Controller(priceCollection, storeCollection, RPMPriceZoneCsvFilePath, RPMStoreZoneCSVFilePath, RPMPromotionCsvFilePath);
             controller.fetchAndSavePriceDetails();
         } catch (Exception exception) {
             logger.error("Error importing data", exception);
@@ -44,7 +48,7 @@ public class Controller {
 
     public void fetchAndSavePriceDetails() throws IOException {
         indexMongo();
-        new RPMPricetWriter(priceCollection, storeCollection, RPMPriceZoneCsvFilePath, RPMStoreZoneCsvFilePath).write();
+        new RPMPricetWriter(priceCollection, storeCollection, RPMPriceZoneCsvFilePath, RPMStoreZoneCsvFilePath, RPMPromotionCsvFilePath).write();
     }
 
     private void indexMongo() {
