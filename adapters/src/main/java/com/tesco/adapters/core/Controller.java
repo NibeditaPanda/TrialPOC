@@ -47,10 +47,13 @@ public class Controller {
             tempPriceCollection.rename(PRICE_COLLECTION, true);
             tempStoreCollection.rename(STORE_COLLECTION, true);
 
+            logger.info("Successfully imported data for " + new Date());
+
         } catch (Exception exception) {
             logger.error("Error importing data", exception);
             throw new RuntimeException(exception);
         }
+
     }
 
     private static String getTempCollectionName(String baseCollectionName) {
