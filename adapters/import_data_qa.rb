@@ -47,7 +47,6 @@ begin
     puts "creating folder structures if not exist..."
     ssh.exec! "mkdir -p /tmp/priceAdapters"
     ssh.exec! "mkdir -p /tmp/to_process/price"
-    ssh.exec! "mkdir -p /tmp/processed/price"
     ssh.exec! "mkdir -p /tmp/logs/price"
 
     puts "*"*100

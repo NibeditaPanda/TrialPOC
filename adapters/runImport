@@ -10,7 +10,6 @@ then
 fi
 
 TO_PROCESS_PATH=/tmp/to_process/price
-PROCESSED_PATH=/tmp/processed/price
 LOG_PATH=/tmp/logs/price
 
 rm -rf $LOG_PATH/*
@@ -22,10 +21,4 @@ if [ ! -d $LOG_PATH ]; then
   mkdir -p $LOG_PATH
 fi
 
-cp logs/* $LOG_PATH
-
-if [ ! -d $PROCESSED_PATH ]; then
-  mkdir -p $PROCESSED_PATH
-fi
-
-zip -r $PROCESSED_PATH/$(date +%Y%m%d-%T).zip $LOG_PATH $TO_PROCESS_PATH/*
+cp logs/* $LOG_PATHx
