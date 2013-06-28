@@ -21,4 +21,4 @@ if [ ! -d $LOG_PATH ]; then
   mkdir -p $LOG_PATH
 fi
 
-cp logs/* $LOG_PATHx
+cp logs/* $LOG_PATH
