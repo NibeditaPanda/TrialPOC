@@ -93,6 +93,7 @@ public class PriceResourceTest extends ResourceTest {
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(404);
+        assertThat(response.getEntity(String.class)).isEqualTo("Product not found");
     }
 
     @Test
@@ -105,6 +106,7 @@ public class PriceResourceTest extends ResourceTest {
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(404);
+        assertThat(response.getEntity(String.class)).isEqualTo("Store not found");
     }
 
     @Test
@@ -113,6 +115,7 @@ public class PriceResourceTest extends ResourceTest {
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(400);
+        assertThat(response.getEntity(String.class)).isEqualTo("Invalid request");
     }
 
     @Test
@@ -121,6 +124,7 @@ public class PriceResourceTest extends ResourceTest {
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(400);
+        assertThat(response.getEntity(String.class)).isEqualTo("Invalid request");
     }
 
     @Test
@@ -132,7 +136,16 @@ public class PriceResourceTest extends ResourceTest {
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(400);
+        assertThat(response.getEntity(String.class)).isEqualTo("Invalid request");
+    }
 
+    @Test
+    public void shouldReturn400ResponseWhenTryingToAccessRootURL() {
+        WebResource resource = client().resource("/");
+        ClientResponse response = resource.get(ClientResponse.class);
+
+        assertThat(response.getStatus()).isEqualTo(400);
+        assertThat(response.getEntity(String.class)).isEqualTo("Invalid request");
     }
 
 }

@@ -6,18 +6,20 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import static com.tesco.services.HTTPResponses.badRequest;
+
 @Path("/")
 @Produces(MediaType.APPLICATION_JSON)
 public class RootResource {
 
     @GET
     public Response getRoot(){
-        return Response.status(400).build();
+        return badRequest();
     }
 
     @GET
     @Path("/{invalidPath}")
     public Response get(){
-        return Response.status(400).build();
+        return badRequest();
     }
 }

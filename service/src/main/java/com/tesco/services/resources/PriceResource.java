@@ -3,6 +3,7 @@ package com.tesco.services.resources;
 import com.google.common.base.Optional;
 import com.mongodb.DBObject;
 import com.tesco.services.DAO.PriceDAO;
+import com.tesco.services.Exceptions.ItemNotFoundException;
 import com.tesco.services.processor.PriceProcessor;
 
 import javax.ws.rs.*;
@@ -10,6 +11,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
+import static com.tesco.services.HTTPResponses.*;
 
 @Path("/price")
 @Produces(MediaType.APPLICATION_JSON)
@@ -28,18 +31,20 @@ public class PriceResource {
                         @Context UriInfo uriInfo,
                         @QueryParam("callback") Optional<String> callback) {
 
-        if((uriInfo.getQueryParameters().size() > 0) && !storeId.isPresent()) return badRequest();
-        if (itemNumber == null) return notFound();
+        if ((uriInfo.getQueryParameters().size() > 0) && !storeId.isPresent()) return badRequest();
 
-        Optional<DBObject> prices = priceProcessor.getPricesFor(itemNumber, storeId);
-        if (!prices.isPresent()) return notFound();
-
-        return buildResponse(prices.get(), callback);
+        DBObject prices;
+        try {
+            prices = priceProcessor.getPricesFor(itemNumber, storeId);
+        } catch (ItemNotFoundException exception) {
+            return notFound(exception.getMessage());
+        }
+        return buildResponse(prices, callback);
     }
 
     @GET
     @Path("/")
-    public Response get(){
+    public Response get() {
         return badRequest();
     }
 
@@ -47,17 +52,5 @@ public class PriceResource {
         if (callback.isPresent())
             return ok(callback.get() + "(" + price + ")");
         return ok(price);
-    }
-
-    private Response ok(Object entity) {
-        return Response.status(200).entity(entity).build();
-    }
-
-    private Response notFound() {
-        return Response.status(404).build();
-    }
-
-    private Response badRequest() {
-        return Response.status(400).build();
     }
 }
