@@ -63,6 +63,21 @@ public class ControllerIntegrationTest {
     }
 
     @Test
+    public void shouldImportZonePriceAndPromoPriceFromRPMPriceDumpsOnRefresh() throws IOException {
+        String rpmPriceZoneCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/price_zone_to_update.csv";
+        String rpmStoreZoneUpdateFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/store_zone.csv";
+        String rpmPromotionCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/prom_extract.csv";
+        new Controller(priceCollection, storeCollection, rpmPriceZoneCsvFilePath, rpmStoreZoneUpdateFilePath, rpmPromotionCsvFilePath).fetchAndSavePriceDetails();
+
+        DBObject query = QueryBuilder.start(ITEM_NUMBER).is("050925811").get();
+        DBObject price = priceCollection.find(query).toArray().get(0);
+        DBObject zones = (DBObject) price.get(format("%s", ZONES));
+        DBObject prices = (DBObject) zones.get("5");
+        assertThat(prices.get(PRICE)).isEqualTo("20.33");
+        assertThat(prices.get(PROMO_PRICE)).isEqualTo("12.33");
+    }
+
+    @Test
     public void shouldImportStoreAndZoneMapping() {
         List<DBObject> stores = storeCollection.find((DBObject) JSON.parse(format("{\"%s\": \"2002\"}", STORE_ID))).toArray();
         DBObject productWithPrice = stores.get(0);
@@ -74,7 +89,7 @@ public class ControllerIntegrationTest {
     }
 
     @Test
-    public void shouldImportAndUpdateStoreAndZoneMapping() throws IOException {
+    public void shouldImportStoreAndZoneMappingOnRefresh() throws IOException {
         String rpmPriceZoneCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/price_zone.csv";
         String rpmStoreZoneUpdateFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/store_zone_to_update.csv";
         String rpmPromotionCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/prom_extract.csv";
