@@ -6,8 +6,10 @@ import com.tesco.services.DAO.PriceDAO;
 import com.tesco.services.processor.PriceProcessor;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 @Path("/price")
 @Produces(MediaType.APPLICATION_JSON)
@@ -23,14 +25,22 @@ public class PriceResource {
     @Path("/{itemNumber}")
     public Response get(@PathParam("itemNumber") String itemNumber,
                         @QueryParam("store") Optional<String> storeId,
+                        @Context UriInfo uriInfo,
                         @QueryParam("callback") Optional<String> callback) {
 
+        if((uriInfo.getQueryParameters().size() > 0) && !storeId.isPresent()) return badRequest();
         if (itemNumber == null) return notFound();
 
         Optional<DBObject> prices = priceProcessor.getPricesFor(itemNumber, storeId);
         if (!prices.isPresent()) return notFound();
 
         return buildResponse(prices.get(), callback);
+    }
+
+    @GET
+    @Path("/")
+    public Response get(){
+        return badRequest();
     }
 
     private Response buildResponse(DBObject price, Optional<String> callback) {
@@ -45,5 +55,9 @@ public class PriceResource {
 
     private Response notFound() {
         return Response.status(404).build();
+    }
+
+    private Response badRequest() {
+        return Response.status(400).build();
     }
 }

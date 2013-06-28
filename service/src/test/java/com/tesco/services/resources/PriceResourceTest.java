@@ -21,7 +21,9 @@ public class PriceResourceTest extends ResourceTest {
     protected void setUpResources() throws Exception {
         priceDAO = mock(PriceDAO.class);
         PriceResource priceResource = new PriceResource(priceDAO);
+        RootResource rootResource = new RootResource();
         addResource(priceResource);
+        addResource(rootResource);
     }
 
     @Test
@@ -70,6 +72,20 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     @Test
+    public void shouldIgnoreOtherInvalidQueryParamsIfPassedStoreParam() {
+        DBObject price = (DBObject) JSON.parse("{ \"itemNumber\": \"randomItem\", \"zones\": " +
+                    "{\"5\": {\"price\": \"3.00\", \"promoPrice\" : \"2.33\", \"promotions\":[{\"offerName\":\"promo1\",\"startDate\":\"date1\",\"endDate\":\"date2\",\"cfDescription1\":\"blah\",\"cfDescription2\":\"blah\"}]}}}");
+        when(priceDAO.getPrice("randomItem")).thenReturn(Optional.fromNullable(price));
+        DBObject store = (DBObject) JSON.parse("{\"storeId\": \"randomStore\",\"zoneId\": \"5\", \"currency\": \"GBP\" }");
+        when(priceDAO.getStore("randomStore")).thenReturn(Optional.fromNullable(store));
+
+        WebResource resource = client().resource("/price/randomItem?store=randomStore&someinvalidparam=blah");
+        ClientResponse response = resource.get(ClientResponse.class);
+
+        assertThat(response.getStatus()).isEqualTo(200);
+    }
+
+    @Test
     public void shouldReturn404ResponseWhenItemIsNotFound() {
         when(priceDAO.getPrice("some_non_existent")).thenReturn(Optional.<DBObject>absent());
 
@@ -92,19 +108,31 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     @Test
-    public void shouldReturn404WhenNoQueryGiven() {
-        WebResource resource = client().resource("/price");
+    public void shouldReturn400WhenReachingInvalidResource(){
+        WebResource resource = client().resource("/non-existant");
         ClientResponse response = resource.get(ClientResponse.class);
 
-        assertThat(response.getStatus()).isEqualTo(405);
+        assertThat(response.getStatus()).isEqualTo(400);
     }
 
     @Test
-    public void shouldReturn404WhenInvalidQueryParamGiven() {
-        WebResource resource = client().resource("/price?store=blah");
+    public void shouldReturn400WhenNoQueryGiven() {
+        WebResource resource = client().resource("/price");
         ClientResponse response = resource.get(ClientResponse.class);
 
-        assertThat(response.getStatus()).isEqualTo(405);
+        assertThat(response.getStatus()).isEqualTo(400);
+    }
+
+    @Test
+    public void shouldReturn400ResponseWhenPassedInvalidQueryParam() {
+        DBObject price = (DBObject) JSON.parse("{\"itemNumber\": \"randomItem\", \"zones\": {\"5\": {\"price\": \"3.00\", \"promoPrice\" : \"2.33\"}, \"2\": {\"price\": \"2.00\", \"promoPrice\" : \"1.33\"}}}");
+        when(priceDAO.getPrice("randomItem")).thenReturn(Optional.fromNullable(price));
+
+        WebResource resource = client().resource("/price/randomItem?someInvalidQuery=blah");
+        ClientResponse response = resource.get(ClientResponse.class);
+
+        assertThat(response.getStatus()).isEqualTo(400);
+
     }
 
 }
