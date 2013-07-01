@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static com.google.common.io.Files.readLines;
+import static com.tesco.services.HTTPResponses.*;
 import static java.nio.charset.Charset.defaultCharset;
 
 @Path("/price/version")
@@ -26,13 +27,13 @@ public class VersionResource {
             String versionJson = String.format("{\"version\": \"%s\"}", version);
 
             if (callback.isPresent()) {
-                return Response.status(200).entity((callback.get() + "(" + versionJson + ")")).build();
+                return ok((callback.get() + "(" + versionJson + ")"));
             }
-            return Response.status(200).entity(versionJson).build();
+            return ok(versionJson);
 
         } catch (IOException e) {
             System.out.println(e.toString());
-            return Response.status(404).entity(e).build();
+            return notFound(e.getMessage());
         }
 
     }
