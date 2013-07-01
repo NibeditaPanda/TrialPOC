@@ -1,0 +1,31 @@
+{
+    "itemNumber":"randomItem",
+    "zones":{
+        "5":{
+            "price":"3.00",
+            "promoPrice":"2.33",
+            "promotions":[
+                {
+                    "offerName":"promo1",
+                    "startDate":"date1",
+                    "endDate":"date2",
+                    "cfDescription1":"blah",
+                    "cfDescription2":"blah"
+                }
+            ]
+        },
+        "2":{
+            "price":"2.00",
+            "promoPrice":"1.33",
+            "promotions":[
+                {
+                    "offerName":"promo1",
+                    "startDate":"date1",
+                    "endDate":"date2",
+                    "cfDescription1":"blah",
+                    "cfDescription2":"blah"
+                }
+            ]
+        }
+    }
+}

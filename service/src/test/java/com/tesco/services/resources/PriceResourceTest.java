@@ -9,6 +9,11 @@ import com.tesco.services.DAO.PriceDAO;
 import com.yammer.dropwizard.testing.ResourceTest;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -26,58 +31,59 @@ public class PriceResourceTest extends ResourceTest {
         addResource(rootResource);
     }
 
-    @Test
-    public void shouldReturnPricesForZoneCorrespondingToStoreWhenSearchingForItemAtAParticularStore() {
-        DBObject price = (DBObject) JSON.parse("{" +
-                "\"itemNumber\": \"randomItem\", " +
-                "\"zones\": " +
-                    "{\"5\": {\"price\": \"3.00\", \"promoPrice\" : \"2.33\", \"promotions\":[{\"offerName\":\"promo1\",\"startDate\":\"date1\",\"endDate\":\"date2\",\"cfDescription1\":\"blah\",\"cfDescription2\":\"blah\"}]}, " +
-                    "\"2\": {\"price\": \"2.00\", \"promoPrice\" : \"1.33\", \"promotions\":[{\"offerName\":\"promo1\",\"startDate\":\"date1\",\"endDate\":\"date2\",\"cfDescription1\":\"blah\",\"cfDescription2\":\"blah\"}]}}" +
-                "}");
-        when(priceDAO.getPrice("randomItem")).thenReturn(Optional.fromNullable(price));
-        DBObject store = (DBObject) JSON.parse("{\"storeId\": \"randomStore\",\"zoneId\": \"2\", \"currency\": \"GBP\" }");
-        when(priceDAO.getStore("randomStore")).thenReturn(Optional.fromNullable(store));
+    public DBObject getFixture(String fixtureName) throws IOException {
+        String workingDir = System.getProperty("user.dir");
+        String filePath = String.format("%s/src/test/java/com/tesco/services/resources/fixtures/%s.json", workingDir, fixtureName);
+        return toDBObject(new String(Files.readAllBytes(Paths.get(filePath))));
+    }
 
-        WebResource resource = client().resource("/price/randomItem?store=randomStore");
-        ClientResponse response = resource.get(ClientResponse.class);
-        String stringResponse = resource.get(String.class);
-
-        assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(stringResponse).contains("\"itemNumber\":\"randomItem\"");
-        assertThat(stringResponse).contains("\"price\":\"2.00\"");
-        assertThat(stringResponse).contains("\"promoPrice\":\"1.33\"");
-        assertThat(stringResponse).contains("\"currency\":\"GBP\"");
-        assertThat(stringResponse).contains("\"offerName\":\"promo1\"");
-        assertThat(stringResponse).contains("\"startDate\":\"date1\"");
-        assertThat(stringResponse).contains("\"endDate\":\"date2\"");
-        assertThat(stringResponse).contains("\"cfDescription1\":\"blah\"");
-        assertThat(stringResponse).contains("\"cfDescription2\":\"blah\"");
+    public DBObject toDBObject(String data) {
+        return (DBObject) JSON.parse(data);
     }
 
     @Test
-    public void shouldReturnNationalPricesWhenSearchingForItemAtNoParticularStore() {
-        DBObject price = (DBObject) JSON.parse("{\"itemNumber\": \"randomItem\", \"zones\": {\"5\": {\"price\": \"3.00\", \"promoPrice\" : \"2.33\"}, \"2\": {\"price\": \"2.00\", \"promoPrice\" : \"1.33\"}}}");
-        when(priceDAO.getPrice("randomItem")).thenReturn(Optional.fromNullable(price));
+    public void shouldReturnPricesForZoneCorrespondingToStoreWhenSearchingForItemAtAParticularStore() throws IOException {
+        when(priceDAO.getPrice("randomItem")).thenReturn(Optional.fromNullable(getFixture("price_1")));
+        when(priceDAO.getStore("randomStore")).thenReturn(Optional.fromNullable(getFixture("store_1")));
+
+        WebResource resource = client().resource("/price/randomItem?store=randomStore");
+        ClientResponse response = resource.get(ClientResponse.class);
+        DBObject priceInfo = toDBObject(resource.get(String.class));
+
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(priceInfo.get("itemNumber")).isEqualTo("randomItem");
+        assertThat(priceInfo.get("price")).isEqualTo("2.00");
+        assertThat(priceInfo.get("promoPrice")).isEqualTo("1.33");
+        assertThat(priceInfo.get("currency")).isEqualTo("GBP");
+
+        DBObject promotion = ((List<DBObject>) priceInfo.get("promotions")).get(0);
+        assertThat(promotion.get("offerName")).isEqualTo("promo1");
+        assertThat(promotion.get("startDate")).isEqualTo("date1");
+        assertThat(promotion.get("endDate")).isEqualTo("date2");
+        assertThat(promotion.get("cfDescription1")).isEqualTo("blah");
+        assertThat(promotion.get("cfDescription2")).isEqualTo("blah");
+    }
+
+    @Test
+    public void shouldReturnNationalPricesWhenSearchingForItemAtNoParticularStore() throws IOException {
+        when(priceDAO.getPrice("randomItem")).thenReturn(Optional.fromNullable(getFixture("price_1")));
         when(priceDAO.getStore("some_non_existent_store")).thenReturn(Optional.<DBObject>absent());
 
         WebResource resource = client().resource("/price/randomItem");
         ClientResponse response = resource.get(ClientResponse.class);
-        String stringResponse = resource.get(String.class);
+        DBObject priceInfo = toDBObject(resource.get(String.class));
 
         assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(stringResponse).contains("\"itemNumber\":\"randomItem\"");
-        assertThat(stringResponse).contains("\"price\":\"3.00\"");
-        assertThat(stringResponse).contains("\"promoPrice\":\"2.33\"");
-        assertThat(stringResponse).contains("\"currency\":\"GBP\"");
+        assertThat(priceInfo.get("itemNumber")).isEqualTo("randomItem");
+        assertThat(priceInfo.get("price")).isEqualTo("3.00");
+        assertThat(priceInfo.get("promoPrice")).isEqualTo("2.33");
+        assertThat(priceInfo.get("currency")).isEqualTo("GBP");
     }
 
     @Test
-    public void shouldIgnoreOtherInvalidQueryParamsIfPassedStoreParam() {
-        DBObject price = (DBObject) JSON.parse("{ \"itemNumber\": \"randomItem\", \"zones\": " +
-                    "{\"5\": {\"price\": \"3.00\", \"promoPrice\" : \"2.33\", \"promotions\":[{\"offerName\":\"promo1\",\"startDate\":\"date1\",\"endDate\":\"date2\",\"cfDescription1\":\"blah\",\"cfDescription2\":\"blah\"}]}}}");
-        when(priceDAO.getPrice("randomItem")).thenReturn(Optional.fromNullable(price));
-        DBObject store = (DBObject) JSON.parse("{\"storeId\": \"randomStore\",\"zoneId\": \"5\", \"currency\": \"GBP\" }");
-        when(priceDAO.getStore("randomStore")).thenReturn(Optional.fromNullable(store));
+    public void shouldIgnoreOtherInvalidQueryParamsIfPassedStoreParam() throws IOException {
+        when(priceDAO.getPrice("randomItem")).thenReturn(Optional.fromNullable(getFixture("price_1")));
+        when(priceDAO.getStore("randomStore")).thenReturn(Optional.fromNullable(getFixture("store_1")));
 
         WebResource resource = client().resource("/price/randomItem?store=randomStore&someinvalidparam=blah");
         ClientResponse response = resource.get(ClientResponse.class);
@@ -97,9 +103,8 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     @Test
-    public void shouldReturn404ResponseWhenStoreIsNotFound() {
-        DBObject price = (DBObject) JSON.parse("{\"itemNumber\": \"randomItem\", \"zones\": {\"5\": {\"price\": \"3.00\", \"promoPrice\" : \"2.33\"}, \"2\": {\"price\": \"2.00\", \"promoPrice\" : \"1.33\"}}}");
-        when(priceDAO.getPrice("randomItem")).thenReturn(Optional.fromNullable(price));
+    public void shouldReturn404ResponseWhenStoreIsNotFound() throws IOException {
+        when(priceDAO.getPrice("randomItem")).thenReturn(Optional.fromNullable(getFixture("price_1")));
         when(priceDAO.getStore("some_non_existent_store")).thenReturn(Optional.<DBObject>absent());
 
         WebResource resource = client().resource("/price/randomItem?store=some_non_existent_store");
@@ -128,9 +133,8 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     @Test
-    public void shouldReturn400ResponseWhenPassedInvalidQueryParam() {
-        DBObject price = (DBObject) JSON.parse("{\"itemNumber\": \"randomItem\", \"zones\": {\"5\": {\"price\": \"3.00\", \"promoPrice\" : \"2.33\"}, \"2\": {\"price\": \"2.00\", \"promoPrice\" : \"1.33\"}}}");
-        when(priceDAO.getPrice("randomItem")).thenReturn(Optional.fromNullable(price));
+    public void shouldReturn400ResponseWhenPassedInvalidQueryParam() throws IOException {
+        when(priceDAO.getPrice("randomItem")).thenReturn(Optional.fromNullable(getFixture("price_1")));
 
         WebResource resource = client().resource("/price/randomItem?someInvalidQuery=blah");
         ClientResponse response = resource.get(ClientResponse.class);
