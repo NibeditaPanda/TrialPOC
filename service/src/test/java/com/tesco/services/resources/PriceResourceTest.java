@@ -42,7 +42,7 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     @Test
-    public void shouldReturnPricesForZoneCorrespondingToStoreWhenSearchingForItemAtAParticularStore() throws IOException {
+    public void shouldReturnPricesAndPromotionsForStoreWhenSearchingForItemAtAParticularStore() throws IOException {
         when(priceDAO.getPrice("randomItem")).thenReturn(Optional.fromNullable(getFixture("price_1")));
         when(priceDAO.getStore("randomStore")).thenReturn(Optional.fromNullable(getFixture("store_1")));
 
@@ -57,7 +57,7 @@ public class PriceResourceTest extends ResourceTest {
         assertThat(priceInfo.get("currency")).isEqualTo("GBP");
 
         DBObject promotion = ((List<DBObject>) priceInfo.get("promotions")).get(0);
-        assertThat(promotion.get("offerName")).isEqualTo("promo1");
+        assertThat(promotion.get("offerName")).isEqualTo("zone2 promo");
         assertThat(promotion.get("startDate")).isEqualTo("date1");
         assertThat(promotion.get("endDate")).isEqualTo("date2");
         assertThat(promotion.get("cfDescription1")).isEqualTo("blah");
@@ -65,9 +65,8 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     @Test
-    public void shouldReturnNationalPricesWhenSearchingForItemAtNoParticularStore() throws IOException {
+    public void shouldReturnPricesAndPromotionsFromNationalZoneWhenSearchingForItemAtNoParticularStore() throws IOException {
         when(priceDAO.getPrice("randomItem")).thenReturn(Optional.fromNullable(getFixture("price_1")));
-        when(priceDAO.getStore("some_non_existent_store")).thenReturn(Optional.<DBObject>absent());
 
         WebResource resource = client().resource("/price/randomItem");
         ClientResponse response = resource.get(ClientResponse.class);
@@ -78,6 +77,27 @@ public class PriceResourceTest extends ResourceTest {
         assertThat(priceInfo.get("price")).isEqualTo("3.00");
         assertThat(priceInfo.get("promoPrice")).isEqualTo("2.33");
         assertThat(priceInfo.get("currency")).isEqualTo("GBP");
+
+        DBObject promotion = ((List<DBObject>) priceInfo.get("promotions")).get(0);
+        assertThat(promotion.get("offerName")).isEqualTo("zone5 promo");
+        assertThat(promotion.get("startDate")).isEqualTo("date1");
+        assertThat(promotion.get("endDate")).isEqualTo("date2");
+        assertThat(promotion.get("cfDescription1")).isEqualTo("blah");
+        assertThat(promotion.get("cfDescription2")).isEqualTo("blah");
+    }
+
+    @Test
+    public void shouldReturnPriceWithoutPromotionInformationIfPromotionDoesNotExist() throws IOException {
+        when(priceDAO.getPrice("zone1Item")).thenReturn(Optional.fromNullable(getFixture("price_2")));
+
+        WebResource resource = client().resource("/price/zone1Item");
+        ClientResponse response = resource.get(ClientResponse.class);
+        DBObject priceInfo = toDBObject(resource.get(String.class));
+
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(priceInfo.get("itemNumber")).isEqualTo("zone1Item");
+        assertThat(priceInfo.get("price")).isEqualTo("4.00");
+        assertThat(priceInfo.keySet()).doesNotContain("promotions");
     }
 
     @Test
@@ -89,6 +109,18 @@ public class PriceResourceTest extends ResourceTest {
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(200);
+    }
+
+    @Test
+    public void shouldReturn404IfItemExistsAndStoreExistsButItemIsNotAssociatedWithThatZone() throws IOException {
+        when(priceDAO.getPrice("zone1Item")).thenReturn(Optional.fromNullable(getFixture("price_2")));
+        when(priceDAO.getStore("zone2Store")).thenReturn(Optional.fromNullable(getFixture("store_2")));
+
+        WebResource resource = client().resource("/price/zone1Item?store=zone2Store");
+        ClientResponse response = resource.get(ClientResponse.class);
+
+        assertThat(response.getStatus()).isEqualTo(404);
+        assertThat(response.getEntity(String.class)).isEqualTo("Product not found");
     }
 
     @Test
@@ -115,7 +147,7 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     @Test
-    public void shouldReturn400WhenReachingInvalidResource(){
+    public void shouldReturn400WhenReachingInvalidResource() {
         WebResource resource = client().resource("/non-existant");
         ClientResponse response = resource.get(ClientResponse.class);
 
@@ -133,14 +165,22 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     @Test
-    public void shouldReturn400ResponseWhenPassedInvalidQueryParam() throws IOException {
+    public void shouldReturn400ResponseWhenPassedInvalidQueryParamExcludingCallback() throws IOException {
         when(priceDAO.getPrice("randomItem")).thenReturn(Optional.fromNullable(getFixture("price_1")));
 
         WebResource resource = client().resource("/price/randomItem?someInvalidQuery=blah");
         ClientResponse response = resource.get(ClientResponse.class);
-
         assertThat(response.getStatus()).isEqualTo(400);
         assertThat(response.getEntity(String.class)).isEqualTo("Invalid request");
+
+        resource = client().resource("/price/randomItem?someInvalidQuery=blah&callback=blah");
+        response = resource.get(ClientResponse.class);
+        assertThat(response.getStatus()).isEqualTo(400);
+        assertThat(response.getEntity(String.class)).isEqualTo("Invalid request");
+
+        resource = client().resource("/price/randomItem?callback=blah");
+        response = resource.get(ClientResponse.class);
+        assertThat(response.getStatus()).isEqualTo(200);
     }
 
     @Test

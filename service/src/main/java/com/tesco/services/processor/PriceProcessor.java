@@ -52,17 +52,17 @@ public class PriceProcessor {
         return buildResponse(itemNumber, DEFAULT_CURRENCY, NATIONAL_ZONE, item.get());
     }
 
-    private DBObject buildResponse(String itemNumber, String currency, String zoneId, DBObject priceInfo){
+    private DBObject buildResponse(String itemNumber, String currency, String zoneId, DBObject priceInfo) throws ItemNotFoundException {
+        DBObject zones = (DBObject) priceInfo.get(ZONES);
+        DBObject zone = (DBObject) zones.get(zoneId);
+        if(zone == null) throw new ItemNotFoundException(PRODUCT_NOT_FOUND);
+
         BasicDBObject responseObject = new BasicDBObject();
         responseObject.put(PriceDAO.ITEM_NUMBER, itemNumber);
         responseObject.put(CURRENCY, currency);
-
-        DBObject zones = (DBObject) priceInfo.get(ZONES);
-        DBObject zone = (DBObject) zones.get(zoneId);
-
         responseObject.put(PRICE, zone.get(PRICE).toString());
         responseObject.put(PROMO_PRICE, zone.get(PROMO_PRICE).toString());
-        responseObject.put(PROMOTIONS, zone.get(PROMOTIONS));
+        if(zone.get(PROMOTIONS) != null) responseObject.put(PROMOTIONS, zone.get(PROMOTIONS));
         return responseObject;
     }
 }

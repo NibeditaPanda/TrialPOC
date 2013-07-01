@@ -1,0 +1,13 @@
+{
+    "itemNumber":"zone1Item",
+    "zones":{
+        "1":{
+            "price":"3.00",
+            "promoPrice":"2.33"
+        },
+        "5":{
+            "price":"4.00",
+            "promoPrice":"2.33"
+        }
+    }
+}

@@ -7,10 +7,7 @@ import com.tesco.services.Exceptions.ItemNotFoundException;
 import com.tesco.services.processor.PriceProcessor;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.*;
 
 import static com.tesco.services.HTTPResponses.*;
 
@@ -31,7 +28,9 @@ public class PriceResource {
                         @Context UriInfo uriInfo,
                         @QueryParam("callback") Optional<String> callback) {
 
-        if ((uriInfo.getQueryParameters().size() > 0) && !storeId.isPresent()) return badRequest();
+        MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
+        queryParameters.remove("callback");
+        if ((queryParameters.size() > 0) && !storeId.isPresent()) return badRequest();
 
         DBObject prices;
         try {

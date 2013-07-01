@@ -15,9 +15,9 @@ public class PromotionControllerTest extends ControllerIntegrationTest{
 
     @Test
     public void shouldImportListOfPromotionsPerPriceZone() throws IOException {
-        List<DBObject> priceZones = priceCollection.find((DBObject) JSON.parse(format("{\"%s\": \"070918248\"}", ITEM_NUMBER))).toArray();
-        List<DBObject> zone6Promotions = (List<DBObject>) ((DBObject)((DBObject)priceZones.get(0).get(ZONES)).get("6")).get(PROMOTIONS);
-        List<DBObject> zone7Promotions = (List<DBObject>) ((DBObject)((DBObject)priceZones.get(0).get(ZONES)).get("7")).get(PROMOTIONS);
+        DBObject priceZone = priceCollection.find((DBObject) JSON.parse(format("{\"%s\": \"070918248\"}", ITEM_NUMBER))).toArray().get(0);
+        List<DBObject> zone6Promotions = (List<DBObject>) ((DBObject)((DBObject)priceZone.get(ZONES)).get("6")).get(PROMOTIONS);
+        List<DBObject> zone7Promotions = (List<DBObject>) ((DBObject)((DBObject)priceZone.get(ZONES)).get("7")).get(PROMOTIONS);
 
         assertThat(zone6Promotions.size()).isEqualTo(2);
         assertThat(zone7Promotions.size()).isEqualTo(1);
@@ -32,10 +32,18 @@ public class PromotionControllerTest extends ControllerIntegrationTest{
 
     @Test
     public void shouldNotImportDuplicatePromotions() throws IOException {
-        List<DBObject> priceZones = priceCollection.find((DBObject) JSON.parse(format("{\"%s\": \"066367922\"}", ITEM_NUMBER))).toArray();
-        List<DBObject> zone12Promotions = (List<DBObject>) ((DBObject)((DBObject)priceZones.get(0).get(ZONES)).get("12")).get(PROMOTIONS);
+        DBObject priceZones = priceCollection.find((DBObject) JSON.parse(format("{\"%s\": \"066367922\"}", ITEM_NUMBER))).toArray().get(0);
+        List<DBObject> zone12Promotions = (List<DBObject>) ((DBObject)((DBObject)priceZones.get(ZONES)).get("12")).get(PROMOTIONS);
 
         assertThat(zone12Promotions.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldNotImportPromotionAttributeIfPromotionIsNotInExtract() throws IOException {
+        DBObject priceZones = priceCollection.find((DBObject) JSON.parse(format("{\"%s\": \"050940579\"}", ITEM_NUMBER))).toArray().get(0);
+        DBObject zone = (DBObject)((DBObject)priceZones.get(ZONES)).get("5");
+        System.out.println(zone.keySet());
+        assertThat(zone.keySet()).doesNotContain(PROMOTIONS);
     }
 
 
