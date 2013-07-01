@@ -33,18 +33,19 @@ public class Controller {
     public static void main(String[] args) {
         logger.info("Firing up...");
 
+        DBCollection tempPriceCollection = DBFactory.getCollection(getTempCollectionName(PRICE_COLLECTION));
+        DBCollection tempStoreCollection = DBFactory.getCollection(getTempCollectionName(STORE_COLLECTION));
+
         try {
-            String RPMPriceZoneCsvFilePath = Configuration.get().getString("rpm.price.data.dump");
-            String RPMStoreZoneCSVFilePath = Configuration.get().getString("rpm.store.data.dump");
-            String RPMPromotionCsvFilePath = Configuration.get().getString("rpm.promotion.data.dump");
-
-            DBCollection tempPriceCollection = DBFactory.getCollection(getTempCollectionName(PRICE_COLLECTION));
-            DBCollection tempStoreCollection = DBFactory.getCollection(getTempCollectionName(STORE_COLLECTION));
-
-            Controller controller = new Controller(tempPriceCollection, tempStoreCollection, RPMPriceZoneCsvFilePath, RPMStoreZoneCSVFilePath, RPMPromotionCsvFilePath);
+            Controller controller = new Controller(tempPriceCollection, tempStoreCollection,
+                                            Configuration.getRPMPriceDataPath(), Configuration.getRPMStoreDataPath(),
+                                            Configuration.getRPMPromotionDataPath());
             controller.fetchAndSavePriceDetails();
 
+            logger.info("Renaming Price collection....");
             tempPriceCollection.rename(PRICE_COLLECTION, true);
+
+            logger.info("Renaming Store collection....");
             tempStoreCollection.rename(STORE_COLLECTION, true);
 
             logger.info("Successfully imported data for " + new Date());
@@ -63,10 +64,12 @@ public class Controller {
 
     public void fetchAndSavePriceDetails() throws IOException {
         indexMongo();
+        logger.info("Importing data from RPM....");
         new RPMWriter(priceCollection, storeCollection, RPMPriceZoneCsvFilePath, RPMStoreZoneCsvFilePath, RPMPromotionCsvFilePath).write();
     }
 
     private void indexMongo() {
+        logger.info("Creating indexes....");
         priceCollection.ensureIndex(new BasicDBObject(ITEM_NUMBER, 1));
         storeCollection.ensureIndex(new BasicDBObject(STORE_ID, 1));
     }

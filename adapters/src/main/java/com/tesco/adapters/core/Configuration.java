@@ -21,4 +21,16 @@ public class Configuration {
         }
         return instance;
     }
+
+    public static String getRPMPriceDataPath() throws ConfigurationException {
+        return get().getString("rpm.price.data.dump");
+    }
+
+    public static String getRPMPromotionDataPath() throws ConfigurationException {
+        return get().getString("rpm.promotion.data.dump");
+    }
+
+    public static String getRPMStoreDataPath() throws ConfigurationException {
+        return get().getString("rpm.store.data.dump");
+    }
 }
