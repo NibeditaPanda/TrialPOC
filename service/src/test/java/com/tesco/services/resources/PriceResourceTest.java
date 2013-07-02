@@ -192,4 +192,15 @@ public class PriceResourceTest extends ResourceTest {
         assertThat(response.getEntity(String.class)).isEqualTo("Invalid request");
     }
 
+    @Test
+    public void shouldReturn400ResponseWhenAppendingInvalidPath() throws IOException {
+        when(priceDAO.getPrice("randomItem")).thenReturn(Optional.fromNullable(getFixture("price_1")));
+
+        WebResource resource = client().resource("/price/randomItem/blah");
+        ClientResponse response = resource.get(ClientResponse.class);
+
+        assertThat(response.getStatus()).isEqualTo(400);
+        assertThat(response.getEntity(String.class)).isEqualTo("Invalid request");
+    }
+
 }

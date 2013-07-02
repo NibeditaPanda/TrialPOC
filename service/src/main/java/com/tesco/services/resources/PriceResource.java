@@ -42,8 +42,14 @@ public class PriceResource {
     }
 
     @GET
-    @Path("/")
+    @Path("/{itemNumber}/{path: .*}")
     public Response get() {
+        return badRequest();
+    }
+
+    @GET
+    @Path("/")
+    public Response getRoot() {
         return badRequest();
     }
 

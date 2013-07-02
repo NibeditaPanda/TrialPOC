@@ -94,7 +94,7 @@ begin
     result = :stopped
     5.times do
       response = ssh.exec! "curl #{HEALTHCHECK_URL}"
-      if response.include? "OK"
+      if response.include? "serviceHealthCheck: OK"
         result = :running
         break
       end
