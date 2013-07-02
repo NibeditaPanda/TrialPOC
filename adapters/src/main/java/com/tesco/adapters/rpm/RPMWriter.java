@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 
 import static com.tesco.adapters.core.PriceKeys.*;
 
@@ -57,11 +58,20 @@ public class RPMWriter {
             String itemNumber = nextPromotion.removeField(ITEM_NUMBER).toString();
             String zone = nextPromotion.removeField(ZONE_ID).toString();
 
-            DBObject query = new BasicDBObject(ITEM_NUMBER, itemNumber);
-            String promotionKey = String.format("%s.%s.%s", ZONES, zone, PROMOTIONS);
-            BasicDBObject attributeToAddToSet = new BasicDBObject(promotionKey, nextPromotion);
 
-            upsert(priceCollection, query, new BasicDBObject("$addToSet", attributeToAddToSet));
+            BasicDBObject existingProductQuery = new BasicDBObject(ITEM_NUMBER, itemNumber);
+            existingProductQuery.put(String.format("%s.%s", ZONES, zone), new BasicDBObject("$exists", true));
+            List<DBObject> existingProductResult = priceCollection.find(existingProductQuery).toArray();
+
+            if (existingProductResult.size() > 0) {
+                DBObject query = new BasicDBObject(ITEM_NUMBER, itemNumber);
+                String promotionKey = String.format("%s.%s.%s", ZONES, zone, PROMOTIONS);
+                BasicDBObject attributeToAddToSet = new BasicDBObject(promotionKey, nextPromotion);
+
+                upsert(priceCollection, query, new BasicDBObject("$addToSet", attributeToAddToSet));
+            } else {
+                logger.warn(String.format("Item number %s with zone %s does not exist. Promotion for this product not imported", itemNumber, zone));
+            }
         }
         logUpsertCounts(priceCollection);
     }
@@ -87,7 +97,7 @@ public class RPMWriter {
         }
     }
 
-    private void logUpsertCounts(DBCollection collection){
+    private void logUpsertCounts(DBCollection collection) {
         logger.info(String.format("Inserted %s entries in %s collection", insertCount, collection.getName()));
         logger.info(String.format("Updated %s entries in %s collection", updateCount, collection.getName()));
         insertCount = 0;

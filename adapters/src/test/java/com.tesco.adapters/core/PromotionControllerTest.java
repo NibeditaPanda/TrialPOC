@@ -39,11 +39,25 @@ public class PromotionControllerTest extends ControllerIntegrationTest{
     }
 
     @Test
-    public void shouldNotImportPromotionAttributeIfPromotionIsNotInExtract() throws IOException {
+    public void shouldNotContainPromotionAttributeIfPromotionIsNotInPromotionExtract() throws IOException {
         DBObject priceZones = priceCollection.find((DBObject) JSON.parse(format("{\"%s\": \"050940579\"}", ITEM_NUMBER))).toArray().get(0);
         DBObject zone = (DBObject)((DBObject)priceZones.get(ZONES)).get("5");
         System.out.println(zone.keySet());
         assertThat(zone.keySet()).doesNotContain(PROMOTIONS);
+    }
+
+    @Test
+    public void shouldNotImportPromotionIfUnableToFindProduct() throws IOException {
+        List<DBObject> result = priceCollection.find((DBObject) JSON.parse(format("{\"%s\": \"0123456\"}", ITEM_NUMBER))).toArray();
+        assertThat(result.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void shouldNotImportPromotionIfUnableToFindZoneInProduct() throws IOException {
+        DBObject priceZones = priceCollection.find((DBObject) JSON.parse(format("{\"%s\": \"070918248\"}", ITEM_NUMBER))).toArray().get(0);
+        DBObject zones = (DBObject)priceZones.get(ZONES);
+
+        assertThat(zones.keySet()).doesNotContain("9");
     }
 
 
