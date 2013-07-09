@@ -1,10 +1,9 @@
 require 'net/ssh'
 require "highline/import"
 
-USERNAME = "tescoproductprice"
-SERVER = "productsvc-qa.cloudapp.net"
-#USERNAME = "vagrant"
-#SERVER = "10.0.2.15"
+USERNAME = "root"
+SERVER = "198.211.127.45"
+PASSWORD = "trmvvmjsozln"
 
 def secure_copy_to_qa adapter_filepath, csv_filepath
   `scp #{adapter_filepath} #{USERNAME}@#{SERVER}:/tmp/priceAdapters/ > /dev/tty`
@@ -36,7 +35,8 @@ begin
   csv_match = csv_filepath.match(/.*\/(.*)$/)
   csv_filename = csv_match ? csv_match.captures.first : csv_filepath
 
-  password = ask("SSH password for #{USERNAME}@#{SERVER}: ") { |input| input.echo = false }
+  #password = ask("SSH password for #{USERNAME}@#{SERVER}: ") { |input| input.echo = false }
+  password = PASSWORD
 
   puts "*"*100
   puts "ssh into machine..."
@@ -60,6 +60,7 @@ begin
     puts "*"*100
     puts "unzipping archives..."
 
+    adapter_filename = "price-adapters-developer-build"
     ssh.exec!("cd /tmp/priceAdapters && unzip -o #{csv_filename} -d /tmp/to_process/price && unzip -o #{adapter_filename}.zip") do |channel, stream, line|
       print line
     end

@@ -28,15 +28,15 @@ http://api.example.com/v1/price/...
         #Overview
           End point to retrieve information about price for a product by product item number
         ##Example
-          $ curl -I http://productsvc-qa.cloudapp.net/price/059310015
+          $ curl -I http://<hostname>/price/059310015
             HTTP/1.1 200 OK
             Content-Type: application/json
             
-          $ curl http://productsvc-qa.cloudapp.net/price/059310015
+          $ curl http://<hostname>/price/059310015
             [{\"itemNumber\":\"059310015\",\"price\":\"5\",\"promoPrice\":\"5\",\"currency\":\"GBP\"}]
 
        	  Get price for a product with store id
-          $ curl http://productsvc-qa.cloudapp.net/price/059310015?store=2031
+          $ curl http://<hostname>/price/059310015?store=2031
        "  ;
 
         @parameter itemNumber, "the identifier for the product to fetch price of";

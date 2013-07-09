@@ -1,17 +1,9 @@
 require 'net/ssh'
 require "highline/import"
 
-USERNAME = "tescoproductprice"
-SERVER = "productsvc-qa.cloudapp.net"
+USERNAME = "root"
+SERVER = "198.211.127.45"
 PORT = 22
-
-#USERNAME = "azureuser"
-#SERVER = "productsvc-qa.cloudapp.net"
-#PORT = 63138
-
-#USERNAME = "azureuser"
-#SERVER = "productsvc-qa.cloudapp.net"
-#PORT = 51882
 
 HEALTHCHECK_URL="localhost:9081/healthcheck"
 
