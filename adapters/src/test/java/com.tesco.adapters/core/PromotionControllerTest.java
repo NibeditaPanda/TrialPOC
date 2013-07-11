@@ -42,7 +42,6 @@ public class PromotionControllerTest extends ControllerIntegrationTest{
     public void shouldNotContainPromotionAttributeIfPromotionIsNotInPromotionExtract() throws IOException {
         DBObject priceZones = priceCollection.find((DBObject) JSON.parse(format("{\"%s\": \"050940579\"}", ITEM_NUMBER))).toArray().get(0);
         DBObject zone = (DBObject)((DBObject)priceZones.get(ZONES)).get("5");
-        System.out.println(zone.keySet());
         assertThat(zone.keySet()).doesNotContain(PROMOTIONS);
     }
 

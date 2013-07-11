@@ -32,7 +32,6 @@ public class VersionResource {
             return ok(versionJson);
 
         } catch (IOException e) {
-            System.out.println(e.toString());
             return notFound(e.getMessage());
         }
 
