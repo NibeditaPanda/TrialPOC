@@ -6,6 +6,7 @@
             "promoPrice":"2.33",
             "promotions":[
                 {
+                    "offerId":"offer1",
                     "offerName":"zone5 promo",
                     "startDate":"date1",
                     "endDate":"date2",
@@ -19,6 +20,7 @@
             "promoPrice":"1.33",
             "promotions":[
                 {
+                    "offerId":"offer1",
                     "offerName":"zone2 promo",
                     "startDate":"date1",
                     "endDate":"date2",

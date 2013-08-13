@@ -1,20 +1,22 @@
 package com.tesco.services.DAO;
 
 import com.google.common.base.Optional;
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
-import com.mongodb.QueryBuilder;
 import com.tesco.services.Configuration;
 import com.tesco.services.DBFactory;
+import com.tesco.services.Exceptions.ItemNotFoundException;
+import com.tesco.services.processor.PriceViewBuilder;
 
 import java.net.UnknownHostException;
-import java.util.List;
+
+import static com.tesco.services.DAO.PriceKeys.ITEM_NUMBER;
+import static com.tesco.services.DAO.PriceKeys.STORE_ID;
 
 public class PriceDAO {
 
-    public static final String ITEM_NUMBER = "itemNumber";
-    public static final String STORE_ID = "storeId";
+    private static final String PRODUCT_NOT_FOUND = "Product not found";
+    private static final String STORE_NOT_FOUND = "Store not found";
 
     public final DBCollection priceCollection;
     public final DBCollection storeCollection;
@@ -26,18 +28,42 @@ public class PriceDAO {
         storeCollection = dbFactory.getCollection("stores");
     }
 
-    public Optional<DBObject> getPrice(String itemNumber) {
-        List<DBObject> items = find(priceCollection, ITEM_NUMBER, itemNumber);
-        return Optional.fromNullable(items.isEmpty() ? null : items.get(0));
+    public DBObject getPricesInfo(String itemNumber) throws ItemNotFoundException {
+        return new PriceViewBuilder().withPrice(getPriceBy(itemNumber)).build();
     }
 
-    public Optional<DBObject> getStore(String storeId) {
-        List<DBObject> stores = find(storeCollection, STORE_ID, storeId);
-        return Optional.fromNullable(stores.isEmpty() ? null : stores.get(0));
+    public DBObject getPriceAndStoreInfo(String itemNumber, String storeId) throws ItemNotFoundException {
+        return new PriceViewBuilder().withPrice(getPriceBy(itemNumber))
+                .withStore(getStoreBy(storeId))
+                .build();
     }
 
-    private List<DBObject> find(DBCollection collection, String key, String value) {
-        DBObject query = QueryBuilder.start(key).is(value).get();
-        return collection.find(query, new BasicDBObject("_id", 0)).toArray();
+    public DBObject getPricesForOffer(String offerId) throws ItemNotFoundException {
+        return new PriceViewBuilder().withPrice(getOfferBy(offerId)).build();
+    }
+
+    public DBObject getPricesForOfferAtStore(String offerId, String storeId) throws ItemNotFoundException {
+        return new PriceViewBuilder().withPrice(getOfferBy(offerId)).withStore(getStoreBy(storeId)).build();
+    }
+
+    private DBObject getOfferBy(String offerId) throws ItemNotFoundException {
+        Optional<DBObject> item = Query.on(priceCollection).findOne("", offerId);
+        if (!item.isPresent()) throw new ItemNotFoundException(PRODUCT_NOT_FOUND);
+
+        return item.get();
+    }
+
+    private DBObject getPriceBy(String itemNumber) throws ItemNotFoundException {
+        Optional<DBObject> item = Query.on(priceCollection).findOne(ITEM_NUMBER, itemNumber);
+        if (!item.isPresent()) throw new ItemNotFoundException(PRODUCT_NOT_FOUND);
+
+        return item.get();
+    }
+
+    private DBObject getStoreBy(String storeId) throws ItemNotFoundException {
+        Optional<DBObject> store = Query.on(storeCollection).findOne(STORE_ID, storeId);
+        if (!store.isPresent()) throw new ItemNotFoundException(STORE_NOT_FOUND);
+
+        return store.get();
     }
 }

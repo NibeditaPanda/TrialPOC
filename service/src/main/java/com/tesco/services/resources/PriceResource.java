@@ -4,7 +4,6 @@ import com.google.common.base.Optional;
 import com.mongodb.DBObject;
 import com.tesco.services.DAO.PriceDAO;
 import com.tesco.services.Exceptions.ItemNotFoundException;
-import com.tesco.services.processor.PriceProcessor;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
@@ -15,35 +14,68 @@ import static com.tesco.services.HTTPResponses.*;
 @Produces(MediaType.APPLICATION_JSON)
 public class PriceResource {
 
-    private PriceProcessor priceProcessor;
+    private PriceDAO priceDAO;
 
     public PriceResource(PriceDAO priceDAO) {
-        this.priceProcessor = new PriceProcessor(priceDAO);
+        this.priceDAO = priceDAO;
     }
 
     @GET
-    @Path("/{itemNumber}")
+    @Path("/itemNumber/{itemNumber}")
     public Response get(@PathParam("itemNumber") String itemNumber,
                         @QueryParam("store") Optional<String> storeId,
-                        @Context UriInfo uriInfo,
-                        @QueryParam("callback") Optional<String> callback) {
+                        @Context UriInfo uriInfo) {
 
         MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
-        queryParameters.remove("callback");
         if ((queryParameters.size() > 0) && !storeId.isPresent()) return badRequest();
 
         DBObject prices;
         try {
-            prices = priceProcessor.getPricesFor(itemNumber, storeId);
+            prices = storeId.isPresent()
+                    ? priceDAO.getPriceAndStoreInfo(itemNumber,storeId.get())
+                    : priceDAO.getPricesInfo(itemNumber);
+
         } catch (ItemNotFoundException exception) {
             return notFound(exception.getMessage());
         }
-        return buildResponse(prices, callback);
+        return ok(prices);
+    }
+//
+//    @GET
+//    @Path("/offer/{offerId}")
+//    public Response getOffer(@PathParam("offerId") String offerId,
+//                             @QueryParam("store") Optional<String> storeId,
+//                             @Context UriInfo uriInfo,
+//                             @QueryParam("callback") Optional<String> callback) {
+//        MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
+//        if ((queryParameters.size() > 0) && !storeId.isPresent()) return badRequest();
+//
+//        DBObject prices;
+//        try {
+//            prices = storeId.isPresent()
+//                    ? priceDAO.getPricesForOfferAtStore(offerId, storeId.get())
+//                    : priceDAO.getPricesForOffer(offerId);
+//        } catch (ItemNotFoundException exception) {
+//            return notFound(exception.getMessage());
+//        }
+//        return ok(prices);
+//    }
+
+    @GET
+    @Path("{queryType}")
+    public Response get() {
+        return badRequest();
     }
 
     @GET
-    @Path("/{itemNumber}/{path: .*}")
-    public Response get() {
+    @Path("itemNumber/{typeId}/{path: .*}")
+    public Response getItem() {
+        return badRequest();
+    }
+
+    @GET
+    @Path("offer/{typeId}/{path: .*}")
+    public Response getOffer() {
         return badRequest();
     }
 
@@ -53,9 +85,4 @@ public class PriceResource {
         return badRequest();
     }
 
-    private Response buildResponse(DBObject price, Optional<String> callback) {
-        if (callback.isPresent())
-            return ok(callback.get() + "(" + price + ")");
-        return ok(price);
-    }
 }

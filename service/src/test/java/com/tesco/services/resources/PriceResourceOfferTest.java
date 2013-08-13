@@ -11,6 +11,7 @@ import com.tesco.services.DBFactory;
 import com.tesco.services.Exceptions.ItemNotFoundException;
 import com.yammer.dropwizard.testing.ResourceTest;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -20,7 +21,7 @@ import java.util.List;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class PriceResourceTest extends ResourceTest {
+public class PriceResourceOfferTest extends ResourceTest {
 
     private PriceDAO priceDAO;
     private Configuration testConfiguration = new TestConfiguration();
@@ -60,8 +61,9 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     @Test
-    public void shouldReturnPricesAndPromotionsForStoreWhenSearchingForItemAtAParticularStore() throws IOException, ItemNotFoundException {
-        WebResource resource = client().resource("/price/itemNumber/randomItem?store=randomStore");
+    @Ignore
+    public void shouldReturnPricesAndPromotionsWhenFetchingByOfferIdAtAParticularStore() throws IOException, ItemNotFoundException {
+        WebResource resource = client().resource("/price/offer/offer1?store=randomStore");
         ClientResponse response = resource.get(ClientResponse.class);
         DBObject priceInfo = toDBObject(resource.get(String.class));
 
@@ -72,6 +74,7 @@ public class PriceResourceTest extends ResourceTest {
         assertThat(priceInfo.get("currency")).isEqualTo("GBP");
 
         DBObject promotion = ((List<DBObject>) priceInfo.get("promotions")).get(0);
+        assertThat(promotion.get("offerId")).isEqualTo("123");
         assertThat(promotion.get("offerName")).isEqualTo("zone2 promo");
         assertThat(promotion.get("startDate")).isEqualTo("date1");
         assertThat(promotion.get("endDate")).isEqualTo("date2");
@@ -80,8 +83,9 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     @Test
-    public void shouldReturnPricesAndPromotionsFromNationalZoneWhenSearchingForItemAtNoParticularStore() throws IOException, ItemNotFoundException {
-        WebResource resource = client().resource("/price/itemNumber/randomItem");
+    @Ignore
+    public void shouldReturnPricesAndPromotionsFromNationalZoneWhenFetchingByOfferIdAtNoParticularStore() throws IOException, ItemNotFoundException {
+        WebResource resource = client().resource("/price/offer/offer1");
         ClientResponse response = resource.get(ClientResponse.class);
         DBObject priceInfo = toDBObject(resource.get(String.class));
 
@@ -92,6 +96,7 @@ public class PriceResourceTest extends ResourceTest {
         assertThat(priceInfo.get("currency")).isEqualTo("GBP");
 
         DBObject promotion = ((List<DBObject>) priceInfo.get("promotions")).get(0);
+        assertThat(promotion.get("offerId")).isEqualTo("456");
         assertThat(promotion.get("offerName")).isEqualTo("zone5 promo");
         assertThat(promotion.get("startDate")).isEqualTo("date1");
         assertThat(promotion.get("endDate")).isEqualTo("date2");
@@ -100,28 +105,9 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     @Test
-    public void shouldReturnPriceWithoutPromotionInformationIfPromotionDoesNotExist() throws IOException, ItemNotFoundException {
-        WebResource resource = client().resource("/price/itemNumber/zone1Item");
-        ClientResponse response = resource.get(ClientResponse.class);
-        DBObject priceInfo = toDBObject(resource.get(String.class));
-
-        assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(priceInfo.get("itemNumber")).isEqualTo("zone1Item");
-        assertThat(priceInfo.get("price")).isEqualTo("4.00");
-        assertThat(priceInfo.keySet()).doesNotContain("promotions");
-    }
-
-    @Test
-    public void shouldIgnoreOtherInvalidQueryParamsIfPassedStoreParam() throws IOException, ItemNotFoundException {
-        WebResource resource = client().resource("/price/itemNumber/randomItem?store=randomStore&someinvalidparam=blah");
-        ClientResponse response = resource.get(ClientResponse.class);
-
-        assertThat(response.getStatus()).isEqualTo(200);
-    }
-
-    @Test
-    public void shouldReturn404IfItemExistsAndStoreExistsButItemIsNotAssociatedWithThatZone() throws IOException, ItemNotFoundException {
-        WebResource resource = client().resource("/price/itemNumber/zone1Item?store=zone2Store");
+    @Ignore
+    public void shouldReturn404ResponseWhenOfferIsNotFound() throws ItemNotFoundException {
+        WebResource resource = client().resource("/price/offer/some_non_existent");
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(404);
@@ -129,17 +115,9 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     @Test
-    public void shouldReturn404ResponseWhenItemIsNotFound() throws ItemNotFoundException {
-        WebResource resource = client().resource("/price/itemNumber/some_non_existent");
-        ClientResponse response = resource.get(ClientResponse.class);
-
-        assertThat(response.getStatus()).isEqualTo(404);
-        assertThat(response.getEntity(String.class)).isEqualTo("Product not found");
-    }
-
-    @Test
-    public void shouldReturn404ResponseWhenStoreIsNotFound() throws IOException, ItemNotFoundException {
-        WebResource resource = client().resource("/price/itemNumber/randomItem?store=some_non_existent_store");
+    @Ignore
+    public void shouldReturn404ResponseWhenStoreIsNotFoundForOffer() throws IOException, ItemNotFoundException {
+        WebResource resource = client().resource("/price/offer/randomOffer?store=some_non_existent_store");
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(404);
@@ -147,8 +125,9 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     @Test
-    public void shouldReturn400WhenReachingInvalidResource() {
-        WebResource resource = client().resource("/non-existant");
+    @Ignore
+    public void shouldReturn400WhenNoQueryGivenForOffer() {
+        WebResource resource = client().resource("/price/offer");
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(400);
@@ -156,48 +135,27 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     @Test
-    public void shouldReturn400WhenNoQueryTypeGiven() {
-        WebResource resource = client().resource("/price");
-        ClientResponse response = resource.get(ClientResponse.class);
-
-        assertThat(response.getStatus()).isEqualTo(400);
-        assertThat(response.getEntity(String.class)).isEqualTo("Invalid request");
-    }
-
-    @Test
-    public void shouldReturn400WhenNoQueryGivenForItem() {
-        WebResource resource = client().resource("/price/itemNumber");
-        ClientResponse response = resource.get(ClientResponse.class);
-
-        assertThat(response.getStatus()).isEqualTo(400);
-        assertThat(response.getEntity(String.class)).isEqualTo("Invalid request");
-    }
-
-    @Test
-    public void shouldReturn400ResponseWhenPassedInvalidQueryParam() throws IOException, ItemNotFoundException {
-        WebResource resource = client().resource("/price/itemNumber/randomItem?someInvalidQuery=blah");
+    @Ignore
+    public void shouldReturn400ResponseWhenPassedInvalidQueryParamExcludingCallbackForOffer() throws IOException, ItemNotFoundException {
+        WebResource resource = client().resource("/price/offer/randomOffer?someInvalidQuery=blah");
         ClientResponse response = resource.get(ClientResponse.class);
         assertThat(response.getStatus()).isEqualTo(400);
         assertThat(response.getEntity(String.class)).isEqualTo("Invalid request");
 
-        resource = client().resource("/price/itemNumber/randomItem?someInvalidQuery=blah&callback=blah");
+        resource = client().resource("/price/offer/randomOffer?someInvalidQuery=blah&callback=blah");
         response = resource.get(ClientResponse.class);
         assertThat(response.getStatus()).isEqualTo(400);
         assertThat(response.getEntity(String.class)).isEqualTo("Invalid request");
+
+        resource = client().resource("/price/offer/randomOffer?callback=blah");
+        response = resource.get(ClientResponse.class);
+        assertThat(response.getStatus()).isEqualTo(200);
     }
 
     @Test
-    public void shouldReturn400ResponseWhenTryingToAccessRootURL() {
-        WebResource resource = client().resource("/");
-        ClientResponse response = resource.get(ClientResponse.class);
-
-        assertThat(response.getStatus()).isEqualTo(400);
-        assertThat(response.getEntity(String.class)).isEqualTo("Invalid request");
-    }
-
-    @Test
-    public void shouldReturn400ResponseWhenAppendingInvalidPath() throws IOException, ItemNotFoundException {
-        WebResource resource = client().resource("/price/itemNumber/randomItem/blah");
+    @Ignore
+    public void shouldReturn400ResponseWhenAppendingInvalidPathForOffer() throws IOException, ItemNotFoundException {
+        WebResource resource = client().resource("/price/offer/randomOffer/blah");
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(400);
