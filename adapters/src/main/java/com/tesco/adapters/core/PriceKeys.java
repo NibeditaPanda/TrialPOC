@@ -10,6 +10,7 @@ public class PriceKeys {
     public static final String PROMO_PRICE = "promoPrice";
 
     public static final String PROMOTIONS = "promotions";
+    public static final String PROMOTION_OFFER_ID = "offerId";
     public static final String PROMOTION_OFFER_NAME = "offerName";
     public static final String PROMOTION_START_DATE = "startDate";
     public static final String PROMOTION_END_DATE = "endDate";

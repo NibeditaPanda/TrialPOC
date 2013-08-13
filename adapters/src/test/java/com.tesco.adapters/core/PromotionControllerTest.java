@@ -20,7 +20,11 @@ public class PromotionControllerTest extends ControllerIntegrationTest{
         List<DBObject> zone7Promotions = (List<DBObject>) ((DBObject)((DBObject)priceZone.get(ZONES)).get("7")).get(PROMOTIONS);
 
         assertThat(zone6Promotions.size()).isEqualTo(2);
+        assertThat(zone6Promotions.get(0).get(PROMOTION_OFFER_ID)).isEqualTo("A29721688");
+        assertThat(zone6Promotions.get(1).get(PROMOTION_OFFER_ID)).isEqualTo("A29721689");
+        assertThat(zone6Promotions.size()).isEqualTo(2);
         assertThat(zone7Promotions.size()).isEqualTo(1);
+        assertThat(zone7Promotions.get(0).get(PROMOTION_OFFER_ID)).isEqualTo("A29721690");
         assertThat(zone7Promotions.get(0).get(PROMOTION_OFFER_NAME)).isEqualTo("3 LIONS KICK & TRICK BALL 3.00 SPECIAL PURCHASE");
         assertThat(zone7Promotions.get(0).get(PROMOTION_START_DATE)).isEqualTo("31-Jun-12");
         assertThat(zone7Promotions.get(0).get(PROMOTION_END_DATE)).isEqualTo("04-Jul-13");

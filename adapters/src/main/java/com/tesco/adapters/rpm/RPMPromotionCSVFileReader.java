@@ -20,6 +20,7 @@ public class RPMPromotionCSVFileReader implements RPMCSVFileReader {
     private int endDateIndex;
     private int cfDesc1Index;
     private int cfDesc2Index;
+    private int offerIdIndex;
 
     public RPMPromotionCSVFileReader(String filePath) throws IOException {
         csvReader = new CSVReader(new FileReader(filePath));
@@ -27,6 +28,7 @@ public class RPMPromotionCSVFileReader implements RPMCSVFileReader {
         List<String> headers = Arrays.asList(csvReader.readNext());
         itemNumberIndex = headers.indexOf("TPNB");
         zoneIndex = headers.indexOf("ZONE_ID");
+        offerIdIndex = headers.indexOf("OFFER_ID");
         offerNameIndex = headers.indexOf("OFFER_NAME");
         startDateIndex = headers.indexOf("START_DATE");
         endDateIndex = headers.indexOf("END_DATE");
@@ -44,6 +46,7 @@ public class RPMPromotionCSVFileReader implements RPMCSVFileReader {
         BasicDBObject promotion = new BasicDBObject();
         promotion.put(ITEM_NUMBER, nextline[itemNumberIndex]);
         promotion.put(ZONE_ID, nextline[zoneIndex]);
+        promotion.put(PROMOTION_OFFER_ID, nextline[offerIdIndex]);
         promotion.put(PROMOTION_OFFER_NAME, nextline[offerNameIndex]);
         promotion.put(PROMOTION_START_DATE, nextline[startDateIndex]);
         promotion.put(PROMOTION_END_DATE, nextline[endDateIndex]);
