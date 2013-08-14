@@ -17,6 +17,7 @@ public class PriceDAO {
 
     private static final String PRODUCT_NOT_FOUND = "Product not found";
     private static final String STORE_NOT_FOUND = "Store not found";
+    private static final String PROMOTION_NOT_FOUND = "Promotion not found";
 
     public final DBCollection priceCollection;
     public final DBCollection storeCollection;
@@ -39,16 +40,16 @@ public class PriceDAO {
     }
 
     public DBObject getPricesForOffer(String offerId) throws ItemNotFoundException {
-        return new PriceViewBuilder().withPrice(getOfferBy(offerId)).build();
+        return new PriceViewBuilder().withPrice(getPromotionBy(offerId)).build();
     }
 
     public DBObject getPricesForOfferAtStore(String offerId, String storeId) throws ItemNotFoundException {
-        return new PriceViewBuilder().withPrice(getOfferBy(offerId)).withStore(getStoreBy(storeId)).build();
+        return new PriceViewBuilder().withPrice(getPromotionBy(offerId)).withStore(getStoreBy(storeId)).build();
     }
 
-    private DBObject getOfferBy(String offerId) throws ItemNotFoundException {
-        Optional<DBObject> item = Query.on(priceCollection).findOne("", offerId);
-        if (!item.isPresent()) throw new ItemNotFoundException(PRODUCT_NOT_FOUND);
+    private DBObject getPromotionBy(String promotionId) throws ItemNotFoundException {
+        Optional<DBObject> item = Query.on(priceCollection).findOne("", promotionId);
+        if (!item.isPresent()) throw new ItemNotFoundException(PROMOTION_NOT_FOUND);
 
         return item.get();
     }

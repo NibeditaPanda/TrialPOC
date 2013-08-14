@@ -16,4 +16,6 @@ public class RootResource {
     public Response get(){
         return badRequest();
     }
+
+
 }

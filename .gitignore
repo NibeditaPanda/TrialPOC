@@ -3,7 +3,7 @@
 
 service/output.txt
 service/priceService.pid
-
+out
 adapters/logs/*
 
 # Package Files #

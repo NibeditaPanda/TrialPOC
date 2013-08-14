@@ -40,26 +40,6 @@ public class PriceResource {
         }
         return ok(prices);
     }
-//
-//    @GET
-//    @Path("/offer/{offerId}")
-//    public Response getOffer(@PathParam("offerId") String offerId,
-//                             @QueryParam("store") Optional<String> storeId,
-//                             @Context UriInfo uriInfo,
-//                             @QueryParam("callback") Optional<String> callback) {
-//        MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
-//        if ((queryParameters.size() > 0) && !storeId.isPresent()) return badRequest();
-//
-//        DBObject prices;
-//        try {
-//            prices = storeId.isPresent()
-//                    ? priceDAO.getPricesForOfferAtStore(offerId, storeId.get())
-//                    : priceDAO.getPricesForOffer(offerId);
-//        } catch (ItemNotFoundException exception) {
-//            return notFound(exception.getMessage());
-//        }
-//        return ok(prices);
-//    }
 
     @GET
     @Path("{queryType}")
