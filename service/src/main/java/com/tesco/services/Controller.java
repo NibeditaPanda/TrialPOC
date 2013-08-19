@@ -2,9 +2,7 @@ package com.tesco.services;
 
 import com.tesco.services.DAO.PriceDAO;
 import com.tesco.services.healthChecks.ServiceHealthCheck;
-import com.tesco.services.resources.PriceResource;
-import com.tesco.services.resources.RootResource;
-import com.tesco.services.resources.VersionResource;
+import com.tesco.services.resources.*;
 import com.yammer.dropwizard.Service;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
@@ -25,6 +23,7 @@ public class Controller extends Service<Configuration> {
         environment.addResource(new PriceResource(new PriceDAO(configuration)));
         environment.addResource(new VersionResource());
         environment.addResource(new RootResource());
+        environment.addResource(new ImportResource(configuration, new RuntimeWrapper()));
         environment.addHealthCheck(new ServiceHealthCheck(configuration));
     }
 }
