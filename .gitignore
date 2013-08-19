@@ -15,6 +15,9 @@ adapters/logs/*
 *.ipr
 *.iws
 
+out
+build
+
 .gradle/
 **/.gradle/*
 **/.idea/*

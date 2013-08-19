@@ -14,6 +14,8 @@ public class Configuration extends com.yammer.dropwizard.config.Configuration {
     private String Password;
     @JsonProperty
     private String Username;
+    @JsonProperty
+    private String importScript;
 
     public String getUsername() {
         return Username;
@@ -33,5 +35,9 @@ public class Configuration extends com.yammer.dropwizard.config.Configuration {
 
     public int getDBPort() {
         return Integer.parseInt(DBPort);
+    }
+
+    public String getImportScript() {
+        return importScript;
     }
 }
