@@ -3,6 +3,7 @@ DBName: priceService
 DBPort: 27017
 Username: qa
 Password: Services123
+ImportScript: /root/price/import/import.sh
 http:
   port: 8081
   adminPort: 9081

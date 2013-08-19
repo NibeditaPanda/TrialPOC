@@ -15,7 +15,7 @@ public class Configuration extends com.yammer.dropwizard.config.Configuration {
     @JsonProperty
     private String Username;
     @JsonProperty
-    private String importScript;
+    private String ImportScript;
 
     public String getUsername() {
         return Username;
@@ -38,6 +38,6 @@ public class Configuration extends com.yammer.dropwizard.config.Configuration {
     }
 
     public String getImportScript() {
-        return importScript;
+        return ImportScript;
     }
 }
