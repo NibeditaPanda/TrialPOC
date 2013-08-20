@@ -35,7 +35,9 @@ public class ImportResourceTest extends ResourceTest {
     public void shouldStartImportScript() throws IOException {
         WebResource resource = client().resource("/admin/import");
         ClientResponse response = resource.get(ClientResponse.class);
-        response.getEntity(String.class);
+        String responseText = response.getEntity(String.class);
+
+        assertThat(responseText).isEqualTo("Import Started.");
         assertThat(response.getStatus()).isEqualTo(200);
 
         verify(mockRuntimeWrapper).exec("import.sh");

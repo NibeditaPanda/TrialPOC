@@ -38,6 +38,6 @@ public class ImportResource {
             Response.serverError();
         }
 
-        return Response.ok().build();
+        return Response.ok("Import Started.").build();
     }
 }
