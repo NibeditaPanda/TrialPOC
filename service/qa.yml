@@ -3,7 +3,7 @@ DBName: priceService
 DBPort: 27017
 Username: qa
 Password: Services123
-ImportScript: /root/price/import/import.sh
+ImportScript: /root/price/import/import.sh qa ahampson@thoughtworks.com /root/price/adapters/ /tmp/
 http:
   port: 8081
   adminPort: 9081
