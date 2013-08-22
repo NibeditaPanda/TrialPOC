@@ -17,6 +17,7 @@ adapters/logs/*
 
 out
 build
+log
 
 .gradle/
 **/.gradle/*
