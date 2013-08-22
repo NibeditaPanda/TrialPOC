@@ -8,7 +8,7 @@ http:
   adminPort: 9081
 
 logging:
-  level: DEBUG
+  level: ALL
   file:
     enabled: true
     currentLogFilename: ./logs/price-service.log
