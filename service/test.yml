@@ -6,3 +6,10 @@ Password:
 http:
   port: 8080
   adminPort: 9080
+
+logging:
+  level: DEBUG
+  file:
+    enabled: true
+    currentLogFilename: ./logs/price-service.log
+    archivedLogFilenamePattern: ./logs/price-service-%d.log.gz
