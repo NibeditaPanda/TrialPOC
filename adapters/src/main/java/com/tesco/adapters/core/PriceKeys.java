@@ -2,6 +2,8 @@ package com.tesco.adapters.core;
 
 public class PriceKeys {
     public static final String ITEM_NUMBER = "itemNumber";
+    public static final String PRICE_ZONE_ID = "priceZoneId";
+    public static final String PROMOTION_ZONE_ID = "promotionZoneId";
     public static final String ZONE_ID = "zoneId";
     public static final String CURRENCY = "currency";
     public static final String STORE_ID = "storeId";

@@ -84,7 +84,8 @@ public class ControllerIntegrationTest {
 
         assertThat(stores.size()).isEqualTo(1);
         assertThat(productWithPrice.get(CURRENCY)).isEqualTo("GBP");
-        assertThat(productWithPrice.get(ZONE_ID)).isEqualTo("6");
+        assertThat(productWithPrice.get(PRICE_ZONE_ID)).isEqualTo("1");
+        assertThat(productWithPrice.get(PROMOTION_ZONE_ID)).isEqualTo("5");
         assertThat(productWithPrice.get(STORE_ID)).isEqualTo("2002");
     }
 
@@ -99,7 +100,7 @@ public class ControllerIntegrationTest {
         DBObject productWithPrice = stores.get(0);
 
         assertThat(stores.size()).isEqualTo(1);
-        assertThat(productWithPrice.get(ZONE_ID)).isEqualTo("7");
+        assertThat(productWithPrice.get(PRICE_ZONE_ID)).isEqualTo("1");
         assertThat(productWithPrice.get(STORE_ID)).isEqualTo("2002");
     }
 
