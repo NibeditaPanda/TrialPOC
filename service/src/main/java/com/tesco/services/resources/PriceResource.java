@@ -21,7 +21,7 @@ public class PriceResource {
     }
 
     @GET
-    @Path("/itemNumber/{itemNumber}")
+    @Path("/{itemNumber}")
     public Response get(@PathParam("itemNumber") String itemNumber,
                         @QueryParam("store") Optional<String> storeId,
                         @Context UriInfo uriInfo) {
@@ -40,25 +40,25 @@ public class PriceResource {
         }
         return ok(prices);
     }
+//
+//    @GET
+//    @Path("{queryType}")
+//    public Response get() {
+//        return badRequest();
+//    }
 
     @GET
-    @Path("{queryType}")
-    public Response get() {
-        return badRequest();
-    }
-
-    @GET
-    @Path("itemNumber/{typeId}/{path: .*}")
+    @Path("/{itemNumber}/{path: .*}")
     public Response getItem() {
         return badRequest();
     }
-
-    @GET
-    @Path("offer/{typeId}/{path: .*}")
-    public Response getOffer() {
-        return badRequest();
-    }
-
+//
+//    @GET
+//    @Path("offer/{typeId}/{path: .*}")
+//    public Response getOffer() {
+//        return badRequest();
+//    }
+//
     @GET
     @Path("/")
     public Response getRoot() {

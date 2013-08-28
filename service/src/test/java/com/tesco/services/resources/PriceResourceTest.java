@@ -52,11 +52,12 @@ public class PriceResourceTest extends ResourceTest {
         DBObject dbPromotion = new TestPromotionDBObject("offer1").withStartDate("date1").withEndDate("date2").withName("zone2 promo").withDescription1("blah").withDescription2("blah").build();
         priceCollection.insert(new TestProductPriceDBObject("randomItem").withPrice("2.00").withPromotionPrice("1.33").addPromotion(dbPromotion).inZone("2").build());
 
-        WebResource resource = client().resource("/price/itemNumber/randomItem?store=randomStore");
+        WebResource resource = client().resource("/price/randomItem?store=randomStore");
         ClientResponse response = resource.get(ClientResponse.class);
+        assertThat(response.getStatus()).isEqualTo(200);
         DBObject priceInfo = (DBObject) JSON.parse(resource.get(String.class));
 
-        assertThat(response.getStatus()).isEqualTo(200);
+
         assertThat(priceInfo.get("itemNumber")).isEqualTo("randomItem");
         assertThat(priceInfo.get("price")).isEqualTo("2.00");
         assertThat(priceInfo.get("promoPrice")).isEqualTo("1.33");
@@ -76,7 +77,7 @@ public class PriceResourceTest extends ResourceTest {
         DBObject dbPromotion = new TestPromotionDBObject("offer1").withStartDate("date1").withEndDate("date2").withName("zone5 promo").withDescription1("blah").withDescription2("blah").build();
         priceCollection.insert(new TestProductPriceDBObject("randomItem").withPrice("3.00").withPromotionPrice("2.33").addPromotion(dbPromotion).inZone("5").build());
 
-        WebResource resource = client().resource("/price/itemNumber/randomItem");
+        WebResource resource = client().resource("/price/randomItem");
         ClientResponse response = resource.get(ClientResponse.class);
         DBObject priceInfo = (DBObject) JSON.parse(resource.get(String.class));
 
@@ -98,11 +99,12 @@ public class PriceResourceTest extends ResourceTest {
     public void shouldReturnPriceWithoutPromotionInformationIfPromotionDoesNotExist() throws IOException, ItemNotFoundException {
         priceCollection.insert(new TestProductPriceDBObject("randomItem").withPrice("3.00").withPromotionPrice("2.33").inZone("5").build());
 
-        WebResource resource = client().resource("/price/itemNumber/randomItem");
+        WebResource resource = client().resource("/price/randomItem");
         ClientResponse response = resource.get(ClientResponse.class);
+        assertThat(response.getStatus()).isEqualTo(200);
+
         DBObject priceInfo = (DBObject) JSON.parse(resource.get(String.class));
 
-        assertThat(response.getStatus()).isEqualTo(200);
         assertThat(priceInfo.get("itemNumber")).isEqualTo("randomItem");
         assertThat(priceInfo.get("price")).isEqualTo("3.00");
         assertThat(priceInfo.keySet()).doesNotContain("promotions");
@@ -113,7 +115,7 @@ public class PriceResourceTest extends ResourceTest {
         storeCollection.insert(new TestStoreDBObject("randomStore").withZoneId("5").build());
         priceCollection.insert(new TestProductPriceDBObject("randomItem").withPrice("3.00").withPromotionPrice("2.33").inZone("5").build());
 
-        WebResource resource = client().resource("/price/itemNumber/randomItem?store=randomStore&someinvalidparam=blah");
+        WebResource resource = client().resource("/price/randomItem?store=randomStore&someinvalidparam=blah");
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(200);
@@ -124,7 +126,7 @@ public class PriceResourceTest extends ResourceTest {
         storeCollection.insert(new TestStoreDBObject("zone2Store").withZoneId("2").build());
         priceCollection.insert(new TestProductPriceDBObject("zone1Item").withPrice("3.00").withPromotionPrice("2.33").inZone("5").build());
 
-        WebResource resource = client().resource("/price/itemNumber/zone1Item?store=zone2Store");
+        WebResource resource = client().resource("/price/zone1Item?store=zone2Store");
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(404);
@@ -133,7 +135,7 @@ public class PriceResourceTest extends ResourceTest {
 
     @Test
     public void shouldReturn404ResponseWhenItemIsNotFound() throws ItemNotFoundException {
-        WebResource resource = client().resource("/price/itemNumber/some_non_existent");
+        WebResource resource = client().resource("/price/some_non_existent");
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(404);
@@ -144,7 +146,7 @@ public class PriceResourceTest extends ResourceTest {
     public void shouldReturn404ResponseWhenStoreIsNotFound() throws IOException, ItemNotFoundException {
         priceCollection.insert(new TestProductPriceDBObject("randomItem").withPrice("3.00").withPromotionPrice("2.33").inZone("5").build());
 
-        WebResource resource = client().resource("/price/itemNumber/randomItem?store=some_non_existent_store");
+        WebResource resource = client().resource("/price/randomItem?store=some_non_existent_store");
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(404);
@@ -170,24 +172,15 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     @Test
-    public void shouldReturn400WhenNoQueryGivenForItem() {
-        WebResource resource = client().resource("/price/itemNumber");
-        ClientResponse response = resource.get(ClientResponse.class);
-
-        assertThat(response.getStatus()).isEqualTo(400);
-        assertThat(response.getEntity(String.class)).isEqualTo("Invalid request");
-    }
-
-    @Test
     public void shouldReturn400ResponseWhenPassedInvalidQueryParam() throws IOException, ItemNotFoundException {
         priceCollection.insert(new TestProductPriceDBObject("randomItem").withPrice("3.00").withPromotionPrice("2.33").inZone("5").build());
 
-        WebResource resource = client().resource("/price/itemNumber/randomItem?someInvalidQuery=blah");
+        WebResource resource = client().resource("/price/randomItem?someInvalidQuery=blah");
         ClientResponse response = resource.get(ClientResponse.class);
         assertThat(response.getStatus()).isEqualTo(400);
         assertThat(response.getEntity(String.class)).isEqualTo("Invalid request");
 
-        resource = client().resource("/price/itemNumber/randomItem?someInvalidQuery=blah&callback=blah");
+        resource = client().resource("/price/randomItem?someInvalidQuery=blah&callback=blah");
         response = resource.get(ClientResponse.class);
         assertThat(response.getStatus()).isEqualTo(400);
         assertThat(response.getEntity(String.class)).isEqualTo("Invalid request");
@@ -206,7 +199,7 @@ public class PriceResourceTest extends ResourceTest {
     public void shouldReturn400ResponseWhenAppendingInvalidPath() throws IOException, ItemNotFoundException {
         priceCollection.insert(new TestProductPriceDBObject("randomItem").withPrice("3.00").withPromotionPrice("2.33").inZone("5").build());
 
-        WebResource resource = client().resource("/price/itemNumber/randomItem/blah");
+        WebResource resource = client().resource("/price/randomItem/blah");
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(400);
