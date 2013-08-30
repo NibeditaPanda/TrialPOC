@@ -17,6 +17,7 @@ public class ControllerIntegrationTest {
 
     protected DBCollection priceCollection;
     protected DBCollection storeCollection;
+    protected DBCollection promotionCollection;
 
     @BeforeMethod
     public void setUp() throws IOException {
@@ -26,10 +27,13 @@ public class ControllerIntegrationTest {
         DBFactory.getCollection(STORE_COLLECTION).drop();
         storeCollection = DBFactory.getCollection(STORE_COLLECTION);
 
+        DBFactory.getCollection(PROMOTION_COLLECTION).drop();
+        promotionCollection = DBFactory.getCollection(PROMOTION_COLLECTION);
+
         String rpmPriceZoneCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/price_zone.csv";
         String rpmStoreZoneCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/store_zone.csv";
         String rpmPromotionCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/prom_extract.csv";
-        new Controller(priceCollection, storeCollection, rpmPriceZoneCsvFilePath, rpmStoreZoneCsvFilePath, rpmPromotionCsvFilePath).fetchAndSavePriceDetails();
+        new Controller(priceCollection, storeCollection, promotionCollection, rpmPriceZoneCsvFilePath, rpmStoreZoneCsvFilePath, rpmPromotionCsvFilePath).fetchAndSavePriceDetails();
     }
 
     @Test
@@ -67,7 +71,7 @@ public class ControllerIntegrationTest {
         String rpmPriceZoneCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/price_zone_to_update.csv";
         String rpmStoreZoneUpdateFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/store_zone.csv";
         String rpmPromotionCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/prom_extract.csv";
-        new Controller(priceCollection, storeCollection, rpmPriceZoneCsvFilePath, rpmStoreZoneUpdateFilePath, rpmPromotionCsvFilePath).fetchAndSavePriceDetails();
+        new Controller(priceCollection, storeCollection, promotionCollection, rpmPriceZoneCsvFilePath, rpmStoreZoneUpdateFilePath, rpmPromotionCsvFilePath).fetchAndSavePriceDetails();
 
         DBObject query = QueryBuilder.start(ITEM_NUMBER).is("050925811").get();
         DBObject price = priceCollection.find(query).toArray().get(0);
@@ -94,7 +98,7 @@ public class ControllerIntegrationTest {
         String rpmPriceZoneCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/price_zone.csv";
         String rpmStoreZoneUpdateFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/store_zone_to_update.csv";
         String rpmPromotionCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/prom_extract.csv";
-        new Controller(priceCollection, storeCollection, rpmPriceZoneCsvFilePath, rpmStoreZoneUpdateFilePath, rpmPromotionCsvFilePath).fetchAndSavePriceDetails();
+        new Controller(priceCollection, storeCollection, promotionCollection, rpmPriceZoneCsvFilePath, rpmStoreZoneUpdateFilePath, rpmPromotionCsvFilePath).fetchAndSavePriceDetails();
 
         List<DBObject> stores = storeCollection.find((DBObject) JSON.parse(format("{\"%s\": \"2002\"}", STORE_ID))).toArray();
         DBObject productWithPrice = stores.get(0);
@@ -103,6 +107,5 @@ public class ControllerIntegrationTest {
         assertThat(productWithPrice.get(PRICE_ZONE_ID)).isEqualTo("1");
         assertThat(productWithPrice.get(STORE_ID)).isEqualTo("2002");
     }
-
 
 }

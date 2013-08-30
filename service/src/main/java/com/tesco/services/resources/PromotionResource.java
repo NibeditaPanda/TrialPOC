@@ -2,6 +2,7 @@ package com.tesco.services.resources;
 
 import com.mongodb.DBObject;
 import com.tesco.services.DAO.PriceDAO;
+import com.tesco.services.DAO.PromotionDAO;
 import com.tesco.services.Exceptions.ItemNotFoundException;
 
 import javax.ws.rs.GET;
@@ -19,11 +20,11 @@ import static com.tesco.services.HTTPResponses.ok;
 @Produces(MediaType.APPLICATION_JSON)
 public class PromotionResource {
 
-    private PriceDAO priceDAO;
+    private PromotionDAO promotionDAO;
 
-    public PromotionResource(PriceDAO priceDAO) {
+    public PromotionResource(PromotionDAO promotionDAO) {
 
-        this.priceDAO = priceDAO;
+        this.promotionDAO = promotionDAO;
     }
 
     @GET
@@ -31,7 +32,7 @@ public class PromotionResource {
     public Response getByOfferId(@PathParam("promotionId") String offerId) {
         DBObject promotion;
         try {
-            promotion = priceDAO.getPricesForOffer(offerId);
+            promotion = promotionDAO.getOfferBy(offerId);
         } catch (ItemNotFoundException e) {
             return notFound(e.getMessage());
         }

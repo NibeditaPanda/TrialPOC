@@ -14,17 +14,19 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class Controller {
 
+    private static final Logger logger = getLogger("Price_Controller");
+
     private DBCollection priceCollection;
     private DBCollection storeCollection;
+    private DBCollection promotionCollection;
     private String RPMPriceZoneCsvFilePath;
     private String RPMStoreZoneCsvFilePath;
     private String RPMPromotionCsvFilePath;
-    private static final Logger logger = getLogger("Price_Controller");
 
-
-    public Controller(DBCollection priceCollection, DBCollection storeCollection, String RPMPriceZoneCsvFilePath, String RPMStoreZoneCsvFilePath, String RPMPromotionCsvFilePath) {
+    public Controller(DBCollection priceCollection, DBCollection storeCollection, DBCollection promotionCollection, String RPMPriceZoneCsvFilePath, String RPMStoreZoneCsvFilePath, String RPMPromotionCsvFilePath) {
         this.priceCollection = priceCollection;
         this.storeCollection = storeCollection;
+        this.promotionCollection = promotionCollection;
         this.RPMPriceZoneCsvFilePath = RPMPriceZoneCsvFilePath;
         this.RPMStoreZoneCsvFilePath = RPMStoreZoneCsvFilePath;
         this.RPMPromotionCsvFilePath = RPMPromotionCsvFilePath;
@@ -35,11 +37,13 @@ public class Controller {
 
         DBCollection tempPriceCollection = DBFactory.getCollection(getTempCollectionName(PRICE_COLLECTION));
         DBCollection tempStoreCollection = DBFactory.getCollection(getTempCollectionName(STORE_COLLECTION));
+        DBCollection tempPromotionCollection = DBFactory.getCollection(getTempCollectionName(PROMOTION_COLLECTION));
 
         try {
             Controller controller = new Controller(tempPriceCollection, tempStoreCollection,
-                                            Configuration.getRPMPriceDataPath(), Configuration.getRPMStoreDataPath(),
+                    tempPromotionCollection, Configuration.getRPMPriceDataPath(), Configuration.getRPMStoreDataPath(),
                                             Configuration.getRPMPromotionDataPath());
+
             controller.fetchAndSavePriceDetails();
 
             logger.info("Renaming Price collection....");
@@ -47,6 +51,9 @@ public class Controller {
 
             logger.info("Renaming Store collection....");
             tempStoreCollection.rename(STORE_COLLECTION, true);
+
+            logger.info("Renaming Promotion collection....");
+            tempStoreCollection.rename(PROMOTION_COLLECTION, true);
 
             logger.info("Successfully imported data for " + new Date());
 
@@ -65,7 +72,7 @@ public class Controller {
     public void fetchAndSavePriceDetails() throws IOException {
         indexMongo();
         logger.info("Importing data from RPM....");
-        new RPMWriter(priceCollection, storeCollection, RPMPriceZoneCsvFilePath, RPMStoreZoneCsvFilePath, RPMPromotionCsvFilePath).write();
+        new RPMWriter(priceCollection, storeCollection, promotionCollection, RPMPriceZoneCsvFilePath, RPMStoreZoneCsvFilePath, RPMPromotionCsvFilePath).write();
     }
 
     private void indexMongo() {

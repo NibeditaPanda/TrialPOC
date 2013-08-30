@@ -15,6 +15,7 @@ adapters/logs/*
 *.ipr
 *.iws
 
+**.log.zip
 out
 build
 log

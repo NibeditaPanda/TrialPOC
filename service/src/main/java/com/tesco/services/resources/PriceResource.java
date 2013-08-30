@@ -32,6 +32,7 @@ public class PriceResource {
         DBObject prices;
         try {
             prices = storeId.isPresent()
+
                     ? priceDAO.getPriceAndStoreInfo(itemNumber,storeId.get())
                     : priceDAO.getPricesInfo(itemNumber);
 

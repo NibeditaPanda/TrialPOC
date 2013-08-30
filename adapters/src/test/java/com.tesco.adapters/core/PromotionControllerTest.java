@@ -38,7 +38,6 @@ public class PromotionControllerTest extends ControllerIntegrationTest{
     public void shouldNotImportDuplicatePromotions() throws IOException {
         DBObject priceZones = priceCollection.find((DBObject) JSON.parse(format("{\"%s\": \"066367922\"}", ITEM_NUMBER))).toArray().get(0);
         List<DBObject> zone12Promotions = (List<DBObject>) ((DBObject)((DBObject)priceZones.get(ZONES)).get("12")).get(PROMOTIONS);
-
         assertThat(zone12Promotions.size()).isEqualTo(1);
     }
 
@@ -61,6 +60,20 @@ public class PromotionControllerTest extends ControllerIntegrationTest{
         DBObject zones = (DBObject)priceZones.get(ZONES);
 
         assertThat(zones.keySet()).doesNotContain("9");
+    }
+
+    @Test
+    public void shouldImportPromotionsIntoPromotionTable() throws IOException {
+        DBObject aPromotion = promotionCollection.find((DBObject) JSON.parse(format("{\"%s\": \"A29721690\"}", PROMOTION_OFFER_ID))).toArray().get(0);
+
+
+        assertThat(aPromotion.get(PROMOTION_OFFER_ID)).isEqualTo("A29721690");
+        assertThat(aPromotion.get(ZONE_ID)).isEqualTo("7");
+        assertThat(aPromotion.get(PROMOTION_START_DATE)).isEqualTo("31-Jun-12");
+        assertThat(aPromotion.get(PROMOTION_END_DATE)).isEqualTo("04-Jul-13");
+        assertThat(aPromotion.get(PROMOTION_OFFER_NAME)).isEqualTo("3 LIONS KICK & TRICK BALL 3.00 SPECIAL PURCHASE");
+        assertThat(aPromotion.get(PROMOTION_CF_DESCRIPTION_1)).isEqualTo("SPECIAL PURCHASE 50p");
+        assertThat(aPromotion.get(PROMOTION_CF_DESCRIPTION_2)).isEqualTo("3 LIONS KICK|& TRICK BALL");
     }
 
 
