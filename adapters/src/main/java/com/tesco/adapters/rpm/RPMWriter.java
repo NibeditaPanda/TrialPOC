@@ -36,10 +36,10 @@ public class RPMWriter {
     }
 
     public void write() throws IOException {
-        logger.info("Importing from Store Zone...");
-        writeToCollection(storeCollection, STORE_ID, new RPMStoreCSVFileReader(RPMStoreZoneCsvFilePath));
         logger.info("Importing from Price Zone...");
         writeToCollection(priceCollection, ITEM_NUMBER, new RPMPriceCSVFileReader(RPMPriceZoneCsvFile));
+        logger.info("Importing from Store Zone...");
+        writeToCollection(storeCollection, STORE_ID, new RPMStoreCSVFileReader(RPMStoreZoneCsvFilePath));
         logger.info("Importing Promotions...");
         writePromotionsToPricesCollection();
     }

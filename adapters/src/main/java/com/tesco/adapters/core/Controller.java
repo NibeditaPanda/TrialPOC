@@ -53,7 +53,7 @@ public class Controller {
             tempStoreCollection.rename(STORE_COLLECTION, true);
 
             logger.info("Renaming Promotion collection....");
-            tempStoreCollection.rename(PROMOTION_COLLECTION, true);
+            tempPromotionCollection.rename(PROMOTION_COLLECTION, true);
 
             logger.info("Successfully imported data for " + new Date());
 
