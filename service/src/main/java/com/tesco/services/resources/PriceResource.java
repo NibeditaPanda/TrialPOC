@@ -41,25 +41,13 @@ public class PriceResource {
         }
         return ok(prices);
     }
-//
-//    @GET
-//    @Path("{queryType}")
-//    public Response get() {
-//        return badRequest();
-//    }
 
     @GET
     @Path("/{itemNumber}/{path: .*}")
     public Response getItem() {
         return badRequest();
     }
-//
-//    @GET
-//    @Path("offer/{typeId}/{path: .*}")
-//    public Response getOffer() {
-//        return badRequest();
-//    }
-//
+
     @GET
     @Path("/")
     public Response getRoot() {

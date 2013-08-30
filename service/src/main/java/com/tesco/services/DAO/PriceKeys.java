@@ -22,4 +22,5 @@ public class PriceKeys {
 
     public static final String PRICE_COLLECTION = "prices";
     public static final String STORE_COLLECTION = "stores";
+    public static final String PROMOTION_COLLECTION = "promotions";
 }

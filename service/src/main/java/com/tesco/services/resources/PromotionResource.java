@@ -40,6 +40,7 @@ public class PromotionResource {
     }
 
     @GET
+
     @Path("/{promotionId}/{path: .*}")
     public Response getOffer() {
         return badRequest();
