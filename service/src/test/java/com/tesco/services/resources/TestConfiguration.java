@@ -2,6 +2,7 @@ package com.tesco.services.resources;
 
 import com.fasterxml.jackson.dataformat.yaml.snakeyaml.Yaml;
 import com.tesco.services.Configuration;
+import com.tesco.services.HostedGraphiteConfiguration;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -50,4 +51,10 @@ public class TestConfiguration extends Configuration {
         String password = (String) configuration.get("Password");
         return password == null ? "" : password;
     }
+
+    @Override
+    public HostedGraphiteConfiguration getHostedGraphiteConfig () {
+        return new HostedGraphiteConfiguration("carbon.hostedgraphite.com",2003,5,"");
+    }
+
 }

@@ -1,6 +1,9 @@
 package com.tesco.services.resources;
 
 import com.tesco.services.Configuration;
+import com.yammer.metrics.annotation.ExceptionMetered;
+import com.yammer.metrics.annotation.Metered;
+import com.yammer.metrics.annotation.Timed;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -30,6 +33,9 @@ public class ImportResource {
 
     @GET
     @Path("/import")
+    @Metered(name="postImport-Meter",group="PriceServices")
+    @Timed(name="postImport-Timer",group="PriceServices")
+    @ExceptionMetered(name="postImport-Failures",group="PriceServices")
     public Response getPIMHierarchy() {
 
         try {

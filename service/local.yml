@@ -3,10 +3,14 @@ DBName: priceService
 DBPort: 27017
 Username:
 Password:
+hostedGraphite:
+  hostname: carbon.hostedgraphite.com
+  port: 2003
+  apikey: 1d226f2e-fcd0-4eba-8c63-89e11b1ba2d9
+  period: 5
 http:
   port: 8081
   adminPort: 9081
-
 logging:
   level: ALL
   file:

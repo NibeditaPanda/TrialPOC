@@ -3,10 +3,16 @@ package com.tesco.services;
 import com.tesco.services.DAO.PriceDAO;
 import com.tesco.services.DAO.PromotionDAO;
 import com.tesco.services.healthChecks.ServiceHealthCheck;
+import com.tesco.services.metrics.ResourceMetricsListener;
 import com.tesco.services.resources.*;
 import com.yammer.dropwizard.Service;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
+import com.yammer.metrics.Metrics;
+import com.yammer.metrics.reporting.ConsoleReporter;
+import com.yammer.metrics.reporting.GraphiteReporter;
+
+import java.util.concurrent.TimeUnit;
 
 public class Controller extends Service<Configuration> {
 
@@ -27,5 +33,11 @@ public class Controller extends Service<Configuration> {
         environment.addResource(new RootResource());
         environment.addResource(new ImportResource(configuration, new RuntimeWrapper()));
         environment.addHealthCheck(new ServiceHealthCheck(configuration));
+
+        ResourceMetricsListener metricsListener = new ResourceMetricsListener();
+        Metrics.defaultRegistry().addListener(metricsListener);
+        HostedGraphiteConfiguration hostedGraphiteConfig = configuration.getHostedGraphiteConfig();
+        GraphiteReporter.enable(metricsListener.getRegistry(), hostedGraphiteConfig.getPeriod(), TimeUnit.SECONDS, hostedGraphiteConfig.getHostname(), hostedGraphiteConfig.getPort(), hostedGraphiteConfig.getApikey());
+//        ConsoleReporter.enable(metricsListener.getRegistry(),5,TimeUnit.SECONDS);
     }
 }

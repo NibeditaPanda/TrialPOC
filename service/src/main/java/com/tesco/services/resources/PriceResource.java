@@ -4,6 +4,9 @@ import com.google.common.base.Optional;
 import com.mongodb.DBObject;
 import com.tesco.services.DAO.PriceDAO;
 import com.tesco.services.Exceptions.ItemNotFoundException;
+import com.yammer.metrics.annotation.ExceptionMetered;
+import com.yammer.metrics.annotation.Metered;
+import com.yammer.metrics.annotation.Timed;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
@@ -22,6 +25,9 @@ public class PriceResource {
 
     @GET
     @Path("/{itemNumber}")
+    @Metered(name="getPriceItemNumber-Meter",group="PriceServices")
+    @Timed(name="getPriceItemNumber-Timer",group="PriceServices")
+    @ExceptionMetered(name="getPriceItemNumber-Failures",group="PriceServices")
     public Response get(@PathParam("itemNumber") String itemNumber,
                         @QueryParam("store") Optional<String> storeId,
                         @Context UriInfo uriInfo) {
@@ -44,6 +50,7 @@ public class PriceResource {
 
     @GET
     @Path("/{itemNumber}/{path: .*}")
+    @ExceptionMetered(name="getPriceItemNumber-Failures",group="PriceServices")
     public Response getItem() {
         return badRequest();
     }

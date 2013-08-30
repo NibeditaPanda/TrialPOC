@@ -16,6 +16,8 @@ public class Configuration extends com.yammer.dropwizard.config.Configuration {
     private String Username;
     @JsonProperty
     private String ImportScript;
+    @JsonProperty
+    private HostedGraphiteConfiguration hostedGraphite = new HostedGraphiteConfiguration();
 
     public String getUsername() {
         return Username;
@@ -39,5 +41,8 @@ public class Configuration extends com.yammer.dropwizard.config.Configuration {
 
     public String getImportScript() {
         return ImportScript;
+    }
+    public HostedGraphiteConfiguration getHostedGraphiteConfig() {
+        return hostedGraphite;
     }
 }

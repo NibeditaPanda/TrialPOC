@@ -4,6 +4,9 @@ import com.mongodb.DBObject;
 import com.tesco.services.DAO.PriceDAO;
 import com.tesco.services.DAO.PromotionDAO;
 import com.tesco.services.Exceptions.ItemNotFoundException;
+import com.yammer.metrics.annotation.ExceptionMetered;
+import com.yammer.metrics.annotation.Metered;
+import com.yammer.metrics.annotation.Timed;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -29,6 +32,9 @@ public class PromotionResource {
 
     @GET
     @Path("/{promotionId}")
+    @Metered(name="getByOfferedId-Meter",group="PriceServices")
+    @Timed(name="getByOfferedId-Timer",group="PriceServices")
+    @ExceptionMetered(name="getByOfferedId-Failures",group="PriceServices")
     public Response getByOfferId(@PathParam("promotionId") String offerId) {
         DBObject promotion;
         try {
@@ -42,6 +48,7 @@ public class PromotionResource {
     @GET
 
     @Path("/{promotionId}/{path: .*}")
+    @ExceptionMetered(name="getByOffered-Failures",group="PriceServices")
     public Response getOffer() {
         return badRequest();
     }

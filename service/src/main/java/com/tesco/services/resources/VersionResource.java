@@ -1,6 +1,9 @@
 package com.tesco.services.resources;
 
 import com.google.common.base.Optional;
+import com.yammer.metrics.annotation.ExceptionMetered;
+import com.yammer.metrics.annotation.Metered;
+import com.yammer.metrics.annotation.Timed;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -18,6 +21,9 @@ import static java.nio.charset.Charset.defaultCharset;
 public class VersionResource {
 
     @GET
+    @Metered(name="getVersionNumber-Meter",group="PriceServices")
+    @Timed(name="getVersionNumber-Timer",group="PriceServices")
+    @ExceptionMetered(name="getVersionNumber-Failures",group="PriceServices")
     public Response get(@Context UriInfo uriInfo){
         MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
         Optional<String> callback = Optional.fromNullable(queryParameters.getFirst("callback"));

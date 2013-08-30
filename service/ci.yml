@@ -3,6 +3,11 @@ DBName: productservice
 DBPort: 27668
 Username: ci
 Password: Services123
+hostedGraphite:
+  hostname: carbon.hostedgraphite.com
+  port: 2003
+  apikey: 1d226f2e-fcd0-4eba-8c63-89e11b1ba2d9
+  period: 5
 http:
   port: 8080
   adminPort: 9080
