@@ -61,6 +61,23 @@ public class PromotionResourceTest extends ResourceTest {
     }
 
     @Test
+    public void shouldReturnMultiplePromotionsByMultipleOfferIds() throws IOException, ItemNotFoundException {
+        WebResource resource = client().resource("/promotion/offer1,offer2");
+        ClientResponse response = resource.get(ClientResponse.class);
+
+        assertThat(response.getStatus()).isEqualTo(200);
+        DBObject promotion = (DBObject) JSON.parse(resource.get(String.class));
+
+        assertThat(promotion.get("offerId")).isEqualTo("offer1");
+        assertThat(promotion.get("offerName")).isEqualTo("name of promotion");
+        assertThat(promotion.get("startDate")).isEqualTo("date1");
+        assertThat(promotion.get("endDate")).isEqualTo("date2");
+        assertThat(promotion.get("cfDescription1")).isEqualTo("blah");
+        assertThat(promotion.get("cfDescription2")).isEqualTo("blah");
+    }
+
+
+    @Test
     public void shouldReturn404ResponseWhenOfferIsNotFound() throws ItemNotFoundException {
         WebResource resource = client().resource("/promotion/a_non_existent_offer_id");
         ClientResponse response = resource.get(ClientResponse.class);

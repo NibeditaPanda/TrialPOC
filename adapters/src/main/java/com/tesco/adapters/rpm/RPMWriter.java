@@ -4,9 +4,14 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
+import com.tesco.adapters.sonetto.SonettoPromotionHandler;
+import com.tesco.adapters.sonetto.SonettoPromotionWriter;
+import com.tesco.adapters.sonetto.SonettoPromotionXMLReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.List;
 
@@ -19,29 +24,41 @@ public class RPMWriter {
     private String RPMPriceZoneCsvFile;
     private String RPMStoreZoneCsvFilePath;
     private String RPMPromotionCsvFilePath;
+    private String sonettoPromotionsXMLFilePath;
+    private String sonettoShelfImageUrl;
     private Logger logger;
     private int insertCount;
     private int updateCount;
 
-    public RPMWriter(DBCollection priceCollection, DBCollection storeCollection, DBCollection promotionCollection, String RPMPriceZoneCsvFile, String RPMStoreZoneCsvFilePath, String RPMPromotionCsvFilePath) {
+    public RPMWriter(DBCollection priceCollection, DBCollection storeCollection, DBCollection promotionCollection, String RPMPriceZoneCsvFile, String RPMStoreZoneCsvFilePath, String RPMPromotionCsvFilePath, String sonettoPromotionsXMLFilePath, String sonettoShelfImageUrl) {
         this.priceCollection = priceCollection;
         this.storeCollection = storeCollection;
         this.promotionCollection = promotionCollection;
         this.RPMPriceZoneCsvFile = RPMPriceZoneCsvFile;
         this.RPMStoreZoneCsvFilePath = RPMStoreZoneCsvFilePath;
         this.RPMPromotionCsvFilePath = RPMPromotionCsvFilePath;
+        this.sonettoPromotionsXMLFilePath = sonettoPromotionsXMLFilePath;
+        this.sonettoShelfImageUrl = sonettoShelfImageUrl;
         logger = LoggerFactory.getLogger("RPM Import");
         insertCount = 0;
         updateCount = 0;
     }
 
-    public void write() throws IOException {
+    public void write() throws IOException, ParserConfigurationException, SAXException {
         logger.info("Importing from Price Zone...");
         writeToCollection(priceCollection, ITEM_NUMBER, new RPMPriceCSVFileReader(RPMPriceZoneCsvFile));
         logger.info("Importing from Store Zone...");
         writeToCollection(storeCollection, STORE_ID, new RPMStoreCSVFileReader(RPMStoreZoneCsvFilePath));
         logger.info("Importing Promotions...");
         writePromotionsToPricesCollection();
+        logger.info("Update Promotions with Shelf Talker Image...");
+        updatePromotionsWithShelfTalker();
+    }
+
+    private void updatePromotionsWithShelfTalker() throws ParserConfigurationException, SAXException, IOException {
+        SonettoPromotionXMLReader reader = new SonettoPromotionXMLReader(this.sonettoPromotionsXMLFilePath, new SonettoPromotionHandler(new SonettoPromotionWriter(promotionCollection), sonettoShelfImageUrl));
+
+        reader.read();
     }
 
     private void writeToCollection(DBCollection collection, String identifierKey, RPMCSVFileReader reader) throws IOException {

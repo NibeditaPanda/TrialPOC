@@ -3,8 +3,11 @@ package com.tesco.adapters.core;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.tesco.adapters.rpm.RPMWriter;
+import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,14 +25,16 @@ public class Controller {
     private String RPMPriceZoneCsvFilePath;
     private String RPMStoreZoneCsvFilePath;
     private String RPMPromotionCsvFilePath;
+    private String sonettoPromotionsXMLFilePath;
 
-    public Controller(DBCollection priceCollection, DBCollection storeCollection, DBCollection promotionCollection, String RPMPriceZoneCsvFilePath, String RPMStoreZoneCsvFilePath, String RPMPromotionCsvFilePath) {
+    public Controller(DBCollection priceCollection, DBCollection storeCollection, DBCollection promotionCollection, String RPMPriceZoneCsvFilePath, String RPMStoreZoneCsvFilePath, String RPMPromotionCsvFilePath, String sonettoPromotionsXMLFilePath) {
         this.priceCollection = priceCollection;
         this.storeCollection = storeCollection;
         this.promotionCollection = promotionCollection;
         this.RPMPriceZoneCsvFilePath = RPMPriceZoneCsvFilePath;
         this.RPMStoreZoneCsvFilePath = RPMStoreZoneCsvFilePath;
         this.RPMPromotionCsvFilePath = RPMPromotionCsvFilePath;
+        this.sonettoPromotionsXMLFilePath = sonettoPromotionsXMLFilePath;
     }
 
     public static void main(String[] args) {
@@ -42,7 +47,7 @@ public class Controller {
         try {
             Controller controller = new Controller(tempPriceCollection, tempStoreCollection,
                     tempPromotionCollection, Configuration.getRPMPriceDataPath(), Configuration.getRPMStoreDataPath(),
-                                            Configuration.getRPMPromotionDataPath());
+                                            Configuration.getRPMPromotionDataPath(), Configuration.getSonettoPromotionsXMLDataPath());
 
             controller.fetchAndSavePriceDetails();
 
@@ -69,10 +74,10 @@ public class Controller {
     }
 
 
-    public void fetchAndSavePriceDetails() throws IOException {
+    public void fetchAndSavePriceDetails() throws IOException, ParserConfigurationException, SAXException, ConfigurationException {
         indexMongo();
         logger.info("Importing data from RPM....");
-        new RPMWriter(priceCollection, storeCollection, promotionCollection, RPMPriceZoneCsvFilePath, RPMStoreZoneCsvFilePath, RPMPromotionCsvFilePath).write();
+        new RPMWriter(priceCollection, storeCollection, promotionCollection, RPMPriceZoneCsvFilePath, RPMStoreZoneCsvFilePath, RPMPromotionCsvFilePath, sonettoPromotionsXMLFilePath, Configuration.getSonettoShelfImageUrl()).write();
     }
 
     private void indexMongo() {

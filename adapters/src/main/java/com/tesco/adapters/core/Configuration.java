@@ -33,4 +33,12 @@ public class Configuration {
     public static String getRPMStoreDataPath() throws ConfigurationException {
         return get().getString("rpm.store.data.dump");
     }
+
+    public static String getSonettoPromotionsXMLDataPath() throws ConfigurationException {
+        return get().getString("sonetto.promotions.data.dump");
+    }
+
+    public static String getSonettoShelfImageUrl() throws ConfigurationException {
+        return get().getString("sonetto.shelfUrl");
+    }
 }

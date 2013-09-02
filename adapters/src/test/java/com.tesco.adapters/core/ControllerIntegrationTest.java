@@ -2,9 +2,12 @@ package com.tesco.adapters.core;
 
 import com.mongodb.*;
 import com.mongodb.util.JSON;
+import org.apache.commons.configuration.ConfigurationException;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.List;
 
@@ -18,9 +21,10 @@ public class ControllerIntegrationTest {
     protected DBCollection priceCollection;
     protected DBCollection storeCollection;
     protected DBCollection promotionCollection;
+    private String sonettoPromotionsXMLFilePath = "./src/test/resources/com/tesco/adapters/sonetto/PromotionsDataExport.xml";
 
     @BeforeMethod
-    public void setUp() throws IOException {
+    public void setUp() throws IOException, ParserConfigurationException, SAXException, ConfigurationException {
         DBFactory.getCollection(PRICE_COLLECTION).drop();
         priceCollection = DBFactory.getCollection(PRICE_COLLECTION);
 
@@ -33,7 +37,8 @@ public class ControllerIntegrationTest {
         String rpmPriceZoneCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/price_zone.csv";
         String rpmStoreZoneCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/store_zone.csv";
         String rpmPromotionCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/prom_extract.csv";
-        new Controller(priceCollection, storeCollection, promotionCollection, rpmPriceZoneCsvFilePath, rpmStoreZoneCsvFilePath, rpmPromotionCsvFilePath).fetchAndSavePriceDetails();
+        String sonettoPromotionsXMLFilePath = "./src/test/resources/com/tesco/adapters/sonetto/PromotionsDataExport.xml";
+        new Controller(priceCollection, storeCollection, promotionCollection, rpmPriceZoneCsvFilePath, rpmStoreZoneCsvFilePath, rpmPromotionCsvFilePath, sonettoPromotionsXMLFilePath).fetchAndSavePriceDetails();
     }
 
     @Test
@@ -67,11 +72,11 @@ public class ControllerIntegrationTest {
     }
 
     @Test
-    public void shouldImportZonePriceAndPromoPriceFromRPMPriceDumpsOnRefresh() throws IOException {
+    public void shouldImportZonePriceAndPromoPriceFromRPMPriceDumpsOnRefresh() throws IOException, ParserConfigurationException, SAXException, ConfigurationException {
         String rpmPriceZoneCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/price_zone_to_update.csv";
         String rpmStoreZoneUpdateFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/store_zone.csv";
         String rpmPromotionCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/prom_extract.csv";
-        new Controller(priceCollection, storeCollection, promotionCollection, rpmPriceZoneCsvFilePath, rpmStoreZoneUpdateFilePath, rpmPromotionCsvFilePath).fetchAndSavePriceDetails();
+        new Controller(priceCollection, storeCollection, promotionCollection, rpmPriceZoneCsvFilePath, rpmStoreZoneUpdateFilePath, rpmPromotionCsvFilePath, sonettoPromotionsXMLFilePath).fetchAndSavePriceDetails();
 
         DBObject query = QueryBuilder.start(ITEM_NUMBER).is("050925811").get();
         DBObject price = priceCollection.find(query).toArray().get(0);
@@ -94,11 +99,11 @@ public class ControllerIntegrationTest {
     }
 
     @Test
-    public void shouldImportStoreAndZoneMappingOnRefresh() throws IOException {
+    public void shouldImportStoreAndZoneMappingOnRefresh() throws IOException, ParserConfigurationException, SAXException, ConfigurationException {
         String rpmPriceZoneCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/price_zone.csv";
         String rpmStoreZoneUpdateFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/store_zone_to_update.csv";
         String rpmPromotionCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/prom_extract.csv";
-        new Controller(priceCollection, storeCollection, promotionCollection, rpmPriceZoneCsvFilePath, rpmStoreZoneUpdateFilePath, rpmPromotionCsvFilePath).fetchAndSavePriceDetails();
+        new Controller(priceCollection, storeCollection, promotionCollection, rpmPriceZoneCsvFilePath, rpmStoreZoneUpdateFilePath, rpmPromotionCsvFilePath, sonettoPromotionsXMLFilePath).fetchAndSavePriceDetails();
 
         List<DBObject> stores = storeCollection.find((DBObject) JSON.parse(format("{\"%s\": \"2002\"}", STORE_ID))).toArray();
         DBObject productWithPrice = stores.get(0);
