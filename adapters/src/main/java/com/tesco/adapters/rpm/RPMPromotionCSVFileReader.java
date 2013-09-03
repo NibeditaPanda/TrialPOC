@@ -4,8 +4,10 @@ import au.com.bytecode.opencsv.CSVReader;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,7 +25,7 @@ public class RPMPromotionCSVFileReader implements RPMCSVFileReader {
     private int offerIdIndex;
 
     public RPMPromotionCSVFileReader(String filePath) throws IOException {
-        csvReader = new CSVReader(new FileReader(filePath));
+        csvReader = new CSVReader(new InputStreamReader(new FileInputStream(filePath), "UTF-8"), ',');
 
         List<String> headers = Arrays.asList(csvReader.readNext());
         itemNumberIndex = headers.indexOf("TPNB");

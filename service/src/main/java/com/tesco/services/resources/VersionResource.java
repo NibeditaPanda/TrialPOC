@@ -17,7 +17,7 @@ import static com.tesco.services.HTTPResponses.*;
 import static java.nio.charset.Charset.defaultCharset;
 
 @Path("/price/version")
-@Produces(MediaType.APPLICATION_JSON)
+@Produces(ResourceResponse.RESPONSE_TYPE)
 public class VersionResource {
 
     @GET

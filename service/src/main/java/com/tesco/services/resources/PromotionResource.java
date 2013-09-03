@@ -22,7 +22,7 @@ import static com.tesco.services.HTTPResponses.notFound;
 import static com.tesco.services.HTTPResponses.ok;
 
 @Path("/promotion")
-@Produces(MediaType.APPLICATION_JSON)
+@Produces(ResourceResponse.RESPONSE_TYPE)
 public class PromotionResource {
 
     private PromotionDAO promotionDAO;

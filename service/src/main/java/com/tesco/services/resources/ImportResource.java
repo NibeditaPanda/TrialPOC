@@ -12,15 +12,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 
-/**
- * Created with IntelliJ IDEA.
- * User: ahampson
- * Date: 19/08/2013
- * Time: 16:39
- * To change this template use File | Settings | File Templates.
- */
 @Path("/admin")
-@Produces(MediaType.APPLICATION_JSON)
+@Produces(ResourceResponse.RESPONSE_TYPE)
 public class ImportResource {
     private Configuration configuration;
     private RuntimeWrapper runtimeWrapper;

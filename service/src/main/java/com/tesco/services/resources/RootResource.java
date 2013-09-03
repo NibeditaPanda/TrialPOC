@@ -9,7 +9,7 @@ import javax.ws.rs.core.Response;
 import static com.tesco.services.HTTPResponses.badRequest;
 
 @Path("/{path: .*}")
-@Produces(MediaType.APPLICATION_JSON)
+@Produces(ResourceResponse.RESPONSE_TYPE)
 public class RootResource {
 
     @GET

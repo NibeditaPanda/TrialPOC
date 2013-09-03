@@ -14,7 +14,7 @@ import javax.ws.rs.core.*;
 import static com.tesco.services.HTTPResponses.*;
 
 @Path("/price")
-@Produces(MediaType.APPLICATION_JSON)
+@Produces(ResourceResponse.RESPONSE_TYPE)
 public class PriceResource {
 
     private PriceDAO priceDAO;
