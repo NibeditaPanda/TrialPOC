@@ -21,8 +21,16 @@ public class Query {
     }
 
     public Optional<DBObject> findOne(String key, String value) {
-        DBObject query = QueryBuilder.start(key).is(value).get();
-        List<DBObject> result = collection.find(query, new BasicDBObject("_id", 0)).toArray();
-        return Optional.fromNullable(result.isEmpty() ? null : result.get(0));
+        List<DBObject> results = execute(QueryBuilder.start(key).is(value).get());
+        return Optional.fromNullable(results.isEmpty() ? null : results.get(0));
+    }
+
+    public Optional<List<DBObject>> findMany(String key, List<String> ids) {
+        List<DBObject> results = execute(QueryBuilder.start(key).in(ids).get());
+        return Optional.fromNullable(results.isEmpty() ? null : results);
+    }
+
+    private List<DBObject> execute(DBObject query) {
+        return collection.find(query, new BasicDBObject("_id", 0)).toArray();
     }
 }

@@ -7,6 +7,8 @@ import com.tesco.services.Configuration;
 import com.tesco.services.DBFactory;
 import com.tesco.services.Exceptions.ItemNotFoundException;
 
+import java.util.List;
+
 import static com.tesco.services.DAO.PriceKeys.PROMOTION_COLLECTION;
 import static com.tesco.services.DAO.PriceKeys.PROMOTION_OFFER_ID;
 
@@ -25,5 +27,12 @@ public class PromotionDAO {
         if (!item.isPresent()) throw new ItemNotFoundException(PROMOTION_NOT_FOUND);
 
         return item.get();
+    }
+
+    public List<DBObject> findOffersForTheseIds(List<String> ids) throws ItemNotFoundException {
+        Optional<List<DBObject>> items = Query.on(promotions).findMany(PROMOTION_OFFER_ID, ids);
+        if (!items.isPresent()) throw new ItemNotFoundException(PROMOTION_NOT_FOUND);
+
+        return items.get();
     }
 }

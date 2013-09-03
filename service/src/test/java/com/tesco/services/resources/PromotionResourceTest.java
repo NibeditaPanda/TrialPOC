@@ -18,6 +18,7 @@ import com.yammer.dropwizard.testing.ResourceTest;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import java.util.List;
 
 import java.io.IOException;
 
@@ -40,24 +41,35 @@ public class PromotionResourceTest extends ResourceTest {
         dbFactory.getCollection(PriceKeys.PROMOTION_COLLECTION).drop();
         promotionCollection = dbFactory.getCollection(PriceKeys.PROMOTION_COLLECTION);
 
-        DBObject dbPromotion = new TestPromotionDBObject("offer1").withStartDate("date1").withEndDate("date2").withName("name of promotion").withDescription1("blah").withDescription2("blah").build();
-        promotionCollection.insert(dbPromotion);
+        promotionCollection.insert(new TestPromotionDBObject("123").withStartDate("date1").withEndDate("date2").withName("name of promotion").withDescription1("blah").withDescription2("blah").build());
+        promotionCollection.insert(new TestPromotionDBObject("345").build());
     }
 
     @Test
     public void shouldReturnPromotionByOfferId() throws IOException, ItemNotFoundException {
-        WebResource resource = client().resource("/promotion/offer1");
+        WebResource resource = client().resource("/promotion/123");
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(200);
-        DBObject promotion = (DBObject) JSON.parse(resource.get(String.class));
+        System.out.println(resource.get(String.class));
+        List<DBObject> promotion = (List<DBObject>) JSON.parse(resource.get(String.class));
+        DBObject firstPromotion = promotion.get(0);
+        assertThat(firstPromotion.get("offerId")).isEqualTo("123");
+        assertThat(firstPromotion.get("offerName")).isEqualTo("name of promotion");
+        assertThat(firstPromotion.get("startDate")).isEqualTo("date1");
+        assertThat(firstPromotion.get("endDate")).isEqualTo("date2");
+        assertThat(firstPromotion.get("cfDescription1")).isEqualTo("blah");
+        assertThat(firstPromotion.get("cfDescription2")).isEqualTo("blah");
+    }
 
-        assertThat(promotion.get("offerId")).isEqualTo("offer1");
-        assertThat(promotion.get("offerName")).isEqualTo("name of promotion");
-        assertThat(promotion.get("startDate")).isEqualTo("date1");
-        assertThat(promotion.get("endDate")).isEqualTo("date2");
-        assertThat(promotion.get("cfDescription1")).isEqualTo("blah");
-        assertThat(promotion.get("cfDescription2")).isEqualTo("blah");
+    @Test
+    public void shouldReturnPromotionsByMultipleOfferId() throws IOException, ItemNotFoundException {
+        WebResource resource = client().resource("/promotion/123,345");
+        ClientResponse response = resource.get(ClientResponse.class);
+
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(resource.get(String.class)).contains("\"offerId\":\"123\"");
+        assertThat(resource.get(String.class)).contains("\"offerId\":\"345\"");
     }
 
     @Test

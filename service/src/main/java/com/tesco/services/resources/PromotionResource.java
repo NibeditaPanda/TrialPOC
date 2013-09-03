@@ -1,7 +1,6 @@
 package com.tesco.services.resources;
 
 import com.mongodb.DBObject;
-import com.tesco.services.DAO.PriceDAO;
 import com.tesco.services.DAO.PromotionDAO;
 import com.tesco.services.Exceptions.ItemNotFoundException;
 import com.yammer.metrics.annotation.ExceptionMetered;
@@ -14,6 +13,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static com.tesco.services.HTTPResponses.badRequest;
 import static com.tesco.services.HTTPResponses.notFound;
@@ -31,14 +33,15 @@ public class PromotionResource {
     }
 
     @GET
-    @Path("/{promotionId}")
+    @Path("/{promotionIds}")
     @Metered(name="getByOfferedId-Meter",group="PriceServices")
     @Timed(name="getByOfferedId-Timer",group="PriceServices")
     @ExceptionMetered(name="getByOfferedId-Failures",group="PriceServices")
-    public Response getByOfferId(@PathParam("promotionId") String offerId) {
-        DBObject promotion;
+    public Response getByOfferId(@PathParam("promotionIds") String offerIds) {
+        List<DBObject> promotion;
         try {
-            promotion = promotionDAO.getOfferBy(offerId);
+            List<String> ids = Arrays.asList(offerIds.split(","));
+            promotion = promotionDAO.findOffersForTheseIds(ids);
         } catch (ItemNotFoundException e) {
             return notFound(e.getMessage());
         }
