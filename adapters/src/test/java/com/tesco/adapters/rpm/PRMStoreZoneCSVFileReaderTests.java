@@ -12,7 +12,7 @@ public class PRMStoreZoneCSVFileReaderTests {
 
     @Test
     public void shouldReadInStoreZoneFile() throws IOException {
-        RPMStoreCSVFileReader rpmStoreZoneReader = new RPMStoreCSVFileReader("src/test/java/com/tesco/adapters/rpm/fixtures/store_zone.csv");
+        RPMStoreCSVFileReader rpmStoreZoneReader = new RPMStoreCSVFileReader("src/test/resources/com/tesco/adapters/rpm/fixtures/store_zone.csv");
 
         DBObject aStore = rpmStoreZoneReader.getNext();
 

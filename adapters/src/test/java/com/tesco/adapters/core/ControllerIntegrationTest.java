@@ -34,9 +34,9 @@ public class ControllerIntegrationTest {
         DBFactory.getCollection(PROMOTION_COLLECTION).drop();
         promotionCollection = DBFactory.getCollection(PROMOTION_COLLECTION);
 
-        String rpmPriceZoneCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/price_zone.csv";
-        String rpmStoreZoneCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/store_zone.csv";
-        String rpmPromotionCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/prom_extract.csv";
+        String rpmPriceZoneCsvFilePath = "./src/test/resources/com/tesco/adapters/rpm/fixtures/price_zone.csv";
+        String rpmStoreZoneCsvFilePath = "./src/test/resources/com/tesco/adapters/rpm/fixtures/store_zone.csv";
+        String rpmPromotionCsvFilePath = "./src/test/resources/com/tesco/adapters/rpm/fixtures/prom_extract.csv";
         String sonettoPromotionsXMLFilePath = "./src/test/resources/com/tesco/adapters/sonetto/PromotionsDataExport.xml";
         new Controller(priceCollection, storeCollection, promotionCollection, rpmPriceZoneCsvFilePath, rpmStoreZoneCsvFilePath, rpmPromotionCsvFilePath, sonettoPromotionsXMLFilePath).fetchAndSavePriceDetails();
     }
@@ -73,9 +73,9 @@ public class ControllerIntegrationTest {
 
     @Test
     public void shouldImportZonePriceAndPromoPriceFromRPMPriceDumpsOnRefresh() throws IOException, ParserConfigurationException, SAXException, ConfigurationException {
-        String rpmPriceZoneCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/price_zone_to_update.csv";
-        String rpmStoreZoneUpdateFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/store_zone.csv";
-        String rpmPromotionCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/prom_extract.csv";
+        String rpmPriceZoneCsvFilePath = "./src/test/resources/com/tesco/adapters/rpm/fixtures/price_zone_to_update.csv";
+        String rpmStoreZoneUpdateFilePath = "./src/test/resources/com/tesco/adapters/rpm/fixtures/store_zone.csv";
+        String rpmPromotionCsvFilePath = "./src/test/resources/com/tesco/adapters/rpm/fixtures/prom_extract.csv";
         new Controller(priceCollection, storeCollection, promotionCollection, rpmPriceZoneCsvFilePath, rpmStoreZoneUpdateFilePath, rpmPromotionCsvFilePath, sonettoPromotionsXMLFilePath).fetchAndSavePriceDetails();
 
         DBObject query = QueryBuilder.start(ITEM_NUMBER).is("050925811").get();
@@ -100,9 +100,9 @@ public class ControllerIntegrationTest {
 
     @Test
     public void shouldImportStoreAndZoneMappingOnRefresh() throws IOException, ParserConfigurationException, SAXException, ConfigurationException {
-        String rpmPriceZoneCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/price_zone.csv";
-        String rpmStoreZoneUpdateFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/store_zone_to_update.csv";
-        String rpmPromotionCsvFilePath = "./src/test/java/com/tesco/adapters/rpm/fixtures/prom_extract.csv";
+        String rpmPriceZoneCsvFilePath = "./src/test/resources/com/tesco/adapters/rpm/fixtures/price_zone.csv";
+        String rpmStoreZoneUpdateFilePath = "./src/test/resources/com/tesco/adapters/rpm/fixtures/store_zone_to_update.csv";
+        String rpmPromotionCsvFilePath = "./src/test/resources/com/tesco/adapters/rpm/fixtures/prom_extract.csv";
         new Controller(priceCollection, storeCollection, promotionCollection, rpmPriceZoneCsvFilePath, rpmStoreZoneUpdateFilePath, rpmPromotionCsvFilePath, sonettoPromotionsXMLFilePath).fetchAndSavePriceDetails();
 
         List<DBObject> stores = storeCollection.find((DBObject) JSON.parse(format("{\"%s\": \"2002\"}", STORE_ID))).toArray();

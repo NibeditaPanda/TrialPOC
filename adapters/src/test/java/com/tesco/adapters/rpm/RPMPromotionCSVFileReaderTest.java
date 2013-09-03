@@ -12,7 +12,7 @@ public class RPMPromotionCSVFileReaderTest {
 
     @Test
     public void shouldReadPromotionalAttributesFromCSVFile() throws IOException {
-        RPMPromotionCSVFileReader rpmPromotionCSVFileReader = new RPMPromotionCSVFileReader("src/test/java/com/tesco/adapters/rpm/fixtures/prom_extract.csv");
+        RPMPromotionCSVFileReader rpmPromotionCSVFileReader = new RPMPromotionCSVFileReader("src/test/resources/com/tesco/adapters/rpm/fixtures/prom_extract.csv");
 
         DBObject promotionInfo = rpmPromotionCSVFileReader.getNext();
 
