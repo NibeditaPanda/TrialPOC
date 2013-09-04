@@ -34,8 +34,6 @@ public class RPMPromotionCSVFileReader implements RPMCSVFileReader {
         offerNameIndex = headers.indexOf("OFFER_NAME");
         startDateIndex = headers.indexOf("START_DATE");
         endDateIndex = headers.indexOf("END_DATE");
-        cfDesc1Index = headers.indexOf("CF_DESC1");
-        cfDesc2Index = headers.indexOf("CF_DESC2");
     }
 
     public DBObject getNext() throws IOException {
@@ -52,8 +50,6 @@ public class RPMPromotionCSVFileReader implements RPMCSVFileReader {
         promotion.put(PROMOTION_OFFER_NAME, nextline[offerNameIndex]);
         promotion.put(PROMOTION_START_DATE, nextline[startDateIndex]);
         promotion.put(PROMOTION_END_DATE, nextline[endDateIndex]);
-        promotion.put(PROMOTION_CF_DESCRIPTION_1, nextline[cfDesc1Index]);
-        promotion.put(PROMOTION_CF_DESCRIPTION_2, nextline[cfDesc2Index]);
 
         return promotion;
     }

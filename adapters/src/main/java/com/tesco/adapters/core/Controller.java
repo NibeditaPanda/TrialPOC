@@ -26,8 +26,9 @@ public class Controller {
     private String RPMStoreZoneCsvFilePath;
     private String RPMPromotionCsvFilePath;
     private String sonettoPromotionsXMLFilePath;
+    private String RPMPromotionDescCSVUrl;
 
-    public Controller(DBCollection priceCollection, DBCollection storeCollection, DBCollection promotionCollection, String RPMPriceZoneCsvFilePath, String RPMStoreZoneCsvFilePath, String RPMPromotionCsvFilePath, String sonettoPromotionsXMLFilePath) {
+    public Controller(DBCollection priceCollection, DBCollection storeCollection, DBCollection promotionCollection, String RPMPriceZoneCsvFilePath, String RPMStoreZoneCsvFilePath, String RPMPromotionCsvFilePath, String sonettoPromotionsXMLFilePath, String rpmPromotionDescCSVUrl) {
         this.priceCollection = priceCollection;
         this.storeCollection = storeCollection;
         this.promotionCollection = promotionCollection;
@@ -35,6 +36,7 @@ public class Controller {
         this.RPMStoreZoneCsvFilePath = RPMStoreZoneCsvFilePath;
         this.RPMPromotionCsvFilePath = RPMPromotionCsvFilePath;
         this.sonettoPromotionsXMLFilePath = sonettoPromotionsXMLFilePath;
+        this.RPMPromotionDescCSVUrl = rpmPromotionDescCSVUrl;
     }
 
     public static void main(String[] args) {
@@ -47,7 +49,7 @@ public class Controller {
         try {
             Controller controller = new Controller(tempPriceCollection, tempStoreCollection,
                     tempPromotionCollection, Configuration.getRPMPriceDataPath(), Configuration.getRPMStoreDataPath(),
-                                            Configuration.getRPMPromotionDataPath(), Configuration.getSonettoPromotionsXMLDataPath());
+                                            Configuration.getRPMPromotionDataPath(), Configuration.getSonettoPromotionsXMLDataPath(), Configuration.getRPMPromotionDescCSVUrl());
 
             controller.fetchAndSavePriceDetails();
 
@@ -77,7 +79,7 @@ public class Controller {
     public void fetchAndSavePriceDetails() throws IOException, ParserConfigurationException, SAXException, ConfigurationException {
         indexMongo();
         logger.info("Importing data from RPM....");
-        new RPMWriter(priceCollection, storeCollection, promotionCollection, RPMPriceZoneCsvFilePath, RPMStoreZoneCsvFilePath, RPMPromotionCsvFilePath, sonettoPromotionsXMLFilePath, Configuration.getSonettoShelfImageUrl()).write();
+        new RPMWriter(priceCollection, storeCollection, promotionCollection, RPMPriceZoneCsvFilePath, RPMStoreZoneCsvFilePath, RPMPromotionCsvFilePath, sonettoPromotionsXMLFilePath, Configuration.getSonettoShelfImageUrl(), RPMPromotionDescCSVUrl).write();
     }
 
     private void indexMongo() {

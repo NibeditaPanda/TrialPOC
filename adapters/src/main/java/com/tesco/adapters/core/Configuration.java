@@ -41,4 +41,8 @@ public class Configuration {
     public static String getSonettoShelfImageUrl() throws ConfigurationException {
         return get().getString("sonetto.shelfUrl");
     }
+
+    public static String getRPMPromotionDescCSVUrl() throws ConfigurationException {
+        return get().getString("rpm.promotion_desc.data.dump");
+    }
 }

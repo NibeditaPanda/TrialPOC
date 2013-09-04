@@ -21,7 +21,5 @@ public class RPMPromotionCSVFileReaderTest {
         assertThat(promotionInfo.get(PROMOTION_OFFER_NAME)).isEqualTo("3 LIONS KICK & TRICK BALL 1.00 SPECIAL PURCHASE");
         assertThat(promotionInfo.get(PROMOTION_START_DATE)).isEqualTo("31-Apr-12");
         assertThat(promotionInfo.get(PROMOTION_END_DATE)).isEqualTo("04-May-13");
-        assertThat(promotionInfo.get(PROMOTION_CF_DESCRIPTION_1)).isEqualTo("SPECIAL PURCHASE 50p");
-        assertThat(promotionInfo.get(PROMOTION_CF_DESCRIPTION_2)).isEqualTo("3 LIONS|WATERBOTTLE");
     }
 }

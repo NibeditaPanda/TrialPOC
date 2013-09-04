@@ -13,6 +13,7 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.tesco.adapters.core.PriceKeys.*;
@@ -26,11 +27,12 @@ public class RPMWriter {
     private String RPMPromotionCsvFilePath;
     private String sonettoPromotionsXMLFilePath;
     private String sonettoShelfImageUrl;
+    private String RPMPromotionDescCSVUrl;
     private Logger logger;
     private int insertCount;
     private int updateCount;
 
-    public RPMWriter(DBCollection priceCollection, DBCollection storeCollection, DBCollection promotionCollection, String RPMPriceZoneCsvFile, String RPMStoreZoneCsvFilePath, String RPMPromotionCsvFilePath, String sonettoPromotionsXMLFilePath, String sonettoShelfImageUrl) {
+    public RPMWriter(DBCollection priceCollection, DBCollection storeCollection, DBCollection promotionCollection, String RPMPriceZoneCsvFile, String RPMStoreZoneCsvFilePath, String RPMPromotionCsvFilePath, String sonettoPromotionsXMLFilePath, String sonettoShelfImageUrl, String RPMPromotionDescCSVUrl) {
         this.priceCollection = priceCollection;
         this.storeCollection = storeCollection;
         this.promotionCollection = promotionCollection;
@@ -39,6 +41,7 @@ public class RPMWriter {
         this.RPMPromotionCsvFilePath = RPMPromotionCsvFilePath;
         this.sonettoPromotionsXMLFilePath = sonettoPromotionsXMLFilePath;
         this.sonettoShelfImageUrl = sonettoShelfImageUrl;
+        this.RPMPromotionDescCSVUrl = RPMPromotionDescCSVUrl;
         logger = LoggerFactory.getLogger("RPM Import");
         insertCount = 0;
         updateCount = 0;
@@ -51,8 +54,30 @@ public class RPMWriter {
         writeToCollection(storeCollection, STORE_ID, new RPMStoreCSVFileReader(RPMStoreZoneCsvFilePath));
         logger.info("Importing Promotions...");
         writePromotionsToPricesCollection();
+        logger.info("Update Promotions with CF Descriptions...");
+        writePromotionsDescription();
         logger.info("Update Promotions with Shelf Talker Image...");
         updatePromotionsWithShelfTalker();
+    }
+
+    private void writePromotionsDescription() throws IOException {
+
+
+        RPMPromotionDescReader reader = new RPMPromotionDescReader(RPMPromotionDescCSVUrl);
+        DBObject next;
+        while ((next = reader.getNext()) != null) {
+            BasicDBObject key = new BasicDBObject();
+            key.put(PROMOTION_OFFER_ID, next.get(PROMOTION_OFFER_ID));
+            key.put(ZONE_ID, next.get(ZONE_ID));
+
+            BasicDBObject values = new BasicDBObject();
+            values.put(PROMOTION_CF_DESCRIPTION_1, next.get(PROMOTION_CF_DESCRIPTION_1));
+            values.put(PROMOTION_CF_DESCRIPTION_2, next.get(PROMOTION_CF_DESCRIPTION_2));
+
+            DBObject query = new BasicDBObject(key);
+            upsert(promotionCollection, query, new BasicDBObject("$set", values));
+        }
+        logUpsertCounts(promotionCollection);
     }
 
     private void updatePromotionsWithShelfTalker() throws ParserConfigurationException, SAXException, IOException {

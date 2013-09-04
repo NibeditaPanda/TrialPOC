@@ -28,8 +28,6 @@ public class PromotionControllerTest extends ControllerIntegrationTest{
         assertThat(zone7Promotions.get(0).get(PROMOTION_OFFER_NAME)).isEqualTo("3 LIONS KICK & TRICK BALL 3.00 SPECIAL PURCHASE");
         assertThat(zone7Promotions.get(0).get(PROMOTION_START_DATE)).isEqualTo("31-Jun-12");
         assertThat(zone7Promotions.get(0).get(PROMOTION_END_DATE)).isEqualTo("04-Jul-13");
-        assertThat(zone7Promotions.get(0).get(PROMOTION_CF_DESCRIPTION_1)).isEqualTo("SPECIAL PURCHASE 50p");
-        assertThat(zone7Promotions.get(0).get(PROMOTION_CF_DESCRIPTION_2)).isEqualTo("3 LIONS KICK|& TRICK BALL");
         assertThat(zone7Promotions.get(0).keySet()).doesNotContain(ZONE_ID);
         assertThat(zone7Promotions.get(0).keySet()).doesNotContain(ITEM_NUMBER);
     }
@@ -71,7 +69,5 @@ public class PromotionControllerTest extends ControllerIntegrationTest{
         assertThat(aPromotion.get(PROMOTION_START_DATE)).isEqualTo("31-Jun-12");
         assertThat(aPromotion.get(PROMOTION_END_DATE)).isEqualTo("04-Jul-13");
         assertThat(aPromotion.get(PROMOTION_OFFER_NAME)).isEqualTo("3 LIONS KICK & TRICK BALL 3.00 SPECIAL PURCHASE");
-        assertThat(aPromotion.get(PROMOTION_CF_DESCRIPTION_1)).isEqualTo("SPECIAL PURCHASE 50p");
-        assertThat(aPromotion.get(PROMOTION_CF_DESCRIPTION_2)).isEqualTo("3 LIONS KICK|& TRICK BALL");
     }
 }
