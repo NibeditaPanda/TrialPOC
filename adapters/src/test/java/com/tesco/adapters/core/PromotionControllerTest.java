@@ -62,7 +62,7 @@ public class PromotionControllerTest extends ControllerIntegrationTest{
 
     @Test
     public void shouldImportPromotionsIntoPromotionTable() throws IOException {
-        DBObject aPromotion = promotionCollection.find((DBObject) JSON.parse(format("{\"%s\": \"A29721690\"}", PROMOTION_OFFER_ID))).toArray().get(0);
+        DBObject aPromotion = promotionCollection.find((DBObject) JSON.parse(format("{\"%s\": \"A29721690\", \"%s\": \"7\"}", PROMOTION_OFFER_ID, ZONE_ID))).toArray().get(0);
 
         assertThat(aPromotion.get(PROMOTION_OFFER_ID)).isEqualTo("A29721690");
         assertThat(aPromotion.get(ZONE_ID)).isEqualTo("7");
