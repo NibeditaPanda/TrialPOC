@@ -1,5 +1,6 @@
 package com.tesco.adapters.core;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import org.testng.annotations.Test;
@@ -69,5 +70,21 @@ public class PromotionControllerTest extends ControllerIntegrationTest{
         assertThat(aPromotion.get(PROMOTION_START_DATE)).isEqualTo("31-Jun-12");
         assertThat(aPromotion.get(PROMOTION_END_DATE)).isEqualTo("04-Jul-13");
         assertThat(aPromotion.get(PROMOTION_OFFER_NAME)).isEqualTo("3 LIONS KICK & TRICK BALL 3.00 SPECIAL PURCHASE");
+    }
+
+    @Test
+    public void shouldImportInternetOnlyPromotions() {
+        DBObject promotionA = promotionCollection.find((DBObject) JSON.parse(format("{\"%s\": \"S00001030\"}", PROMOTION_OFFER_ID))).toArray().get(0);
+        DBObject promotionB = promotionCollection.find((DBObject) JSON.parse(format("{\"%s\": \"S00001028\"}", PROMOTION_OFFER_ID))).toArray().get(0);
+
+        assertThat(promotionA.get(PriceKeys.PROMOTION_OFFER_ID)).isEqualTo("S00001030");
+        assertThat(promotionA.get(PriceKeys.PROMOTION_OFFER_TEXT)).isEqualTo("£10 off your first shop");
+        assertThat(promotionA.get(PriceKeys.PROMOTION_START_DATE)).isEqualTo("2009-11-03");
+        assertThat(promotionA.get(PriceKeys.PROMOTION_END_DATE)).isEqualTo("2015-12-31");
+
+        assertThat(promotionB.get(PriceKeys.PROMOTION_OFFER_ID)).isEqualTo("S00001028");
+        assertThat(promotionB.get(PriceKeys.PROMOTION_OFFER_TEXT)).isEqualTo("£10 off your first shop");
+        assertThat(promotionB.get(PriceKeys.PROMOTION_START_DATE)).isEqualTo("2009-11-03");
+        assertThat(promotionB.get(PriceKeys.PROMOTION_END_DATE)).isEqualTo("2015-12-31");
     }
 }

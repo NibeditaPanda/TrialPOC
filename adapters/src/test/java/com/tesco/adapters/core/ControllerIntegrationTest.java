@@ -7,6 +7,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.xml.sax.SAXException;
 
+import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.List;
@@ -24,7 +25,7 @@ public class ControllerIntegrationTest {
     private String sonettoPromotionsXMLFilePath = "./src/test/resources/com/tesco/adapters/sonetto/PromotionsDataExport.xml";
 
     @BeforeMethod
-    public void setUp() throws IOException, ParserConfigurationException, SAXException, ConfigurationException {
+    public void setUp() throws IOException, ParserConfigurationException, SAXException, ConfigurationException, JAXBException {
         DBFactory.getCollection(PRICE_COLLECTION).drop();
         priceCollection = DBFactory.getCollection(PRICE_COLLECTION);
 
@@ -72,7 +73,7 @@ public class ControllerIntegrationTest {
     }
 
     @Test
-    public void shouldImportZonePriceAndPromoPriceFromRPMPriceDumpsOnRefresh() throws IOException, ParserConfigurationException, SAXException, ConfigurationException {
+    public void shouldImportZonePriceAndPromoPriceFromRPMPriceDumpsOnRefresh() throws IOException, ParserConfigurationException, SAXException, ConfigurationException, JAXBException {
         String rpmPriceZoneCsvFilePath = "./src/test/resources/com/tesco/adapters/rpm/fixtures/price_zone_to_update.csv";
         String rpmStoreZoneUpdateFilePath = "./src/test/resources/com/tesco/adapters/rpm/fixtures/store_zone.csv";
         String rpmPromotionCsvFilePath = "./src/test/resources/com/tesco/adapters/rpm/fixtures/prom_extract.csv";
@@ -99,7 +100,7 @@ public class ControllerIntegrationTest {
     }
 
     @Test
-    public void shouldImportStoreAndZoneMappingOnRefresh() throws IOException, ParserConfigurationException, SAXException, ConfigurationException {
+    public void shouldImportStoreAndZoneMappingOnRefresh() throws IOException, ParserConfigurationException, SAXException, ConfigurationException, JAXBException {
         String rpmPriceZoneCsvFilePath = "./src/test/resources/com/tesco/adapters/rpm/fixtures/price_zone.csv";
         String rpmStoreZoneUpdateFilePath = "./src/test/resources/com/tesco/adapters/rpm/fixtures/store_zone_to_update.csv";
         String rpmPromotionCsvFilePath = "./src/test/resources/com/tesco/adapters/rpm/fixtures/prom_extract.csv";

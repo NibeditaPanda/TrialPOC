@@ -4,16 +4,15 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
-import com.tesco.adapters.sonetto.SonettoPromotionHandler;
 import com.tesco.adapters.sonetto.SonettoPromotionWriter;
 import com.tesco.adapters.sonetto.SonettoPromotionXMLReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 
 import static com.tesco.adapters.core.PriceKeys.*;
@@ -47,7 +46,7 @@ public class RPMWriter {
         updateCount = 0;
     }
 
-    public void write() throws IOException, ParserConfigurationException, SAXException {
+    public void write() throws IOException, ParserConfigurationException, SAXException, JAXBException {
         logger.info("Importing from Price Zone...");
         writeToCollection(priceCollection, ITEM_NUMBER, new RPMPriceCSVFileReader(RPMPriceZoneCsvFile));
         logger.info("Importing from Store Zone...");
@@ -80,10 +79,9 @@ public class RPMWriter {
         logUpsertCounts(promotionCollection);
     }
 
-    private void updatePromotionsWithShelfTalker() throws ParserConfigurationException, SAXException, IOException {
-        SonettoPromotionXMLReader reader = new SonettoPromotionXMLReader(this.sonettoPromotionsXMLFilePath, new SonettoPromotionHandler(new SonettoPromotionWriter(promotionCollection), sonettoShelfImageUrl));
-
-        reader.read();
+    private void updatePromotionsWithShelfTalker() throws ParserConfigurationException, SAXException, IOException, JAXBException {
+        SonettoPromotionXMLReader reader = new SonettoPromotionXMLReader(new SonettoPromotionWriter(promotionCollection), sonettoShelfImageUrl);
+        reader.handle(sonettoPromotionsXMLFilePath);
     }
 
     private void writeToCollection(DBCollection collection, String identifierKey, RPMCSVFileReader reader) throws IOException {

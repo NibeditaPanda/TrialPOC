@@ -19,22 +19,45 @@ public class SonettoPromotionWriter {
         this.logger = LoggerFactory.getLogger(getClass().getName());
     }
 
-    public void write(DBObject promotion) {
+    public void updatePromotion(DBObject promotion) {
         String identifierValue = promotion.get(PriceKeys.PROMOTION_OFFER_ID).toString();
 
         DBObject promotionExistsQuery = new BasicDBObject(PriceKeys.PROMOTION_OFFER_ID, identifierValue);
         //It won't create a new document if not found
         WriteResult writeResult = promotionCollection.update(promotionExistsQuery, new BasicDBObject( "$set", promotion), false, true);
 
-        log(promotion, writeResult);
+        logUpdate(promotion, writeResult);
     }
 
-    private void log(DBObject product, WriteResult updateResponse) {
+    public void createPromotion(DBObject promotion){
+        WriteResult writeResult = promotionCollection.insert(promotion);
+        logCreate(promotion, writeResult);
+    }
+
+    private void logCreate(DBObject promotion, WriteResult insertResponse)
+    {
+        if(logError(promotion, insertResponse))
+        {
+            logger.debug("Inserted entry: " + promotion.toString());
+            updateCount++;
+        }
+    }
+
+    private boolean logError(DBObject promotion, WriteResult updateResponse)
+    {
         if (updateResponse.getError() != null) {
-            String errorMessage = String.format("error on upserting entry \"%s\": %s", product.toString(), updateResponse.toString());
+            String errorMessage = String.format("error on upserting entry \"%s\": %s", promotion.toString(), updateResponse.toString());
             logger.error(errorMessage);
-        } else if (Boolean.parseBoolean(updateResponse.getField("updatedExisting").toString())) {
-            logger.debug("Updated entry: " + product.toString());
+            return true;
+        }
+
+        return false;
+    }
+
+    private void logUpdate(DBObject promotion, WriteResult updateResponse) {
+        logError(promotion, updateResponse);
+        if (Boolean.parseBoolean(updateResponse.getField("updatedExisting").toString())) {
+            logger.debug("Updated entry: " + promotion.toString());
             updateCount++;
         }
     }

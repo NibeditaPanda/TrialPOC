@@ -14,6 +14,7 @@ public class PriceKeys {
     public static final String PROMOTIONS = "promotions";
     public static final String PROMOTION_OFFER_ID = "offerId";
     public static final String PROMOTION_OFFER_NAME = "offerName";
+    public static final String PROMOTION_OFFER_TEXT  = "offerText";
     public static final String PROMOTION_START_DATE = "startDate";
     public static final String PROMOTION_END_DATE = "endDate";
     public static final String PROMOTION_CF_DESCRIPTION_1 = "CFDescription1";
@@ -25,4 +26,5 @@ public class PriceKeys {
     public static final String SHELF_TALKER_IMAGE = "shelfTalkerImage";
     public static final String PROMOTION = "promotion";
     public static final String SONETTO = "SonettoID";
+
 }

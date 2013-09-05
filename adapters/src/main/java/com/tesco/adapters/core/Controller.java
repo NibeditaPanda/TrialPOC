@@ -7,6 +7,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 import org.xml.sax.SAXException;
 
+import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -76,7 +77,7 @@ public class Controller {
     }
 
 
-    public void fetchAndSavePriceDetails() throws IOException, ParserConfigurationException, SAXException, ConfigurationException {
+    public void fetchAndSavePriceDetails() throws IOException, ParserConfigurationException, SAXException, ConfigurationException, JAXBException {
         indexMongo();
         logger.info("Importing data from RPM....");
         new RPMWriter(priceCollection, storeCollection, promotionCollection, RPMPriceZoneCsvFilePath, RPMStoreZoneCsvFilePath, RPMPromotionCsvFilePath, sonettoPromotionsXMLFilePath, Configuration.getSonettoShelfImageUrl(), RPMPromotionDescCSVUrl).write();
