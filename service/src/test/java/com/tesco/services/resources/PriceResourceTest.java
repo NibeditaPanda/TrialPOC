@@ -47,6 +47,89 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     @Test
+    public void returnsPricesAndPromotionsForMultipleItems() throws IOException, ItemNotFoundException {
+        DBObject dbPromotion1 = new TestPromotionDBObject("offer1").build();
+        DBObject dbPromotion2 = new TestPromotionDBObject("offer2").build();
+        String item1 = "randomItem1";
+        String item2 = "randomItem2";
+        priceCollection.insert(new TestProductPriceDBObject(item1).withPrice("2.00").withPromotionPrice("1.33").addPromotion(dbPromotion1).inZone("5").build());
+        priceCollection.insert(new TestProductPriceDBObject(item2).withPrice("4.00").withPromotionPrice("2.00").addPromotion(dbPromotion2).inZone("5").build());
+
+        WebResource resource = client().resource("/price/randomItem1,randomItem2");
+        ClientResponse response = resource.get(ClientResponse.class);
+        assertThat(response.getStatus()).isEqualTo(200);
+        List<DBObject> priceInfos = (List<DBObject>) JSON.parse(resource.get(String.class));
+
+
+        DBObject actualPrice1 = priceInfos.get(0);
+        DBObject actualPrice2 = priceInfos.get(1);
+
+        assertThat(actualPrice1.get("itemNumber")).isEqualTo(item1);
+        assertThat(actualPrice1.get("price")).isEqualTo("2.00");
+        assertThat(actualPrice1.get("promoPrice")).isEqualTo("1.33");
+        assertThat(actualPrice1.get("currency")).isEqualTo("GBP");
+        assertThat(((List<DBObject>) actualPrice1.get("promotions")).get(0).get("offerId")).isEqualTo("offer1");
+
+        assertThat(actualPrice2.get("itemNumber")).isEqualTo(item2);
+        assertThat(actualPrice2.get("price")).isEqualTo("4.00");
+        assertThat(actualPrice2.get("promoPrice")).isEqualTo("2.00");
+        assertThat(actualPrice2.get("currency")).isEqualTo("GBP");
+        assertThat(((List<DBObject>) actualPrice2.get("promotions")).get(0).get("offerId")).isEqualTo("offer2");
+    }
+
+    @Test
+    public void returnsPricesAndPromotionsForMultipleItemsInAStore() throws IOException, ItemNotFoundException {
+        DBObject dbPromotion1 = new TestPromotionDBObject("offer1").build();
+        DBObject dbPromotion2 = new TestPromotionDBObject("offer2").build();
+        String item1 = "randomItem1";
+        String item2 = "randomItem2";
+        String item3 = "randomItem3";
+        priceCollection.insert(new TestProductPriceDBObject(item1).withPrice("2.00").withPromotionPrice("1.33").addPromotion(dbPromotion1).inZone("2").build());
+        priceCollection.insert(new TestProductPriceDBObject(item2).withPrice("4.00").withPromotionPrice("2.00").addPromotion(dbPromotion2).inZone("5").build());
+        priceCollection.insert(new TestProductPriceDBObject(item3).withPrice("4.00").withPromotionPrice("2.00").addPromotion(dbPromotion2).inZone("2").build());
+        storeCollection.insert(new TestStoreDBObject("randomStore").withZoneId("2").build());
+
+        WebResource resource = client().resource("/price/randomItem1,randomItem2,randomItem3?store=randomStore");
+        ClientResponse response = resource.get(ClientResponse.class);
+        assertThat(response.getStatus()).isEqualTo(200);
+        List<DBObject> priceInfos = (List<DBObject>) JSON.parse(resource.get(String.class));
+
+        assertThat(priceInfos.size()).isEqualTo(2);
+
+        DBObject actualPrice1 = priceInfos.get(0);
+        DBObject actualPrice2 = priceInfos.get(1);
+
+        assertThat(actualPrice1.get("itemNumber")).isEqualTo(item1);
+        assertThat(actualPrice1.get("price")).isEqualTo("2.00");
+        assertThat(actualPrice1.get("promoPrice")).isEqualTo("1.33");
+        assertThat(actualPrice1.get("currency")).isEqualTo("GBP");
+        assertThat(((List<DBObject>) actualPrice1.get("promotions")).get(0).get("offerId")).isEqualTo("offer1");
+
+        assertThat(actualPrice2.get("itemNumber")).isEqualTo(item3);
+        assertThat(actualPrice2.get("price")).isEqualTo("4.00");
+        assertThat(actualPrice2.get("promoPrice")).isEqualTo("2.00");
+        assertThat(actualPrice2.get("currency")).isEqualTo("GBP");
+        assertThat(((List<DBObject>) actualPrice2.get("promotions")).get(0).get("offerId")).isEqualTo("offer2");
+    }
+
+    @Test
+    public void ignoresPricesAndPromotionsNotForThatZoneWithMultipleItems() throws IOException, ItemNotFoundException {
+        DBObject dbPromotion = new TestPromotionDBObject("offer1").withStartDate("date1").withEndDate("date2").withName("zone2 promo").withDescription1("blah").withDescription2("blah").build();
+        String item1 = "randomItem1";
+        String item2 = "randomItem2";
+        priceCollection.insert(new TestProductPriceDBObject(item1).withPrice("2.00").withPromotionPrice("1.33").addPromotion(dbPromotion).inZone("5").build());
+        priceCollection.insert(new TestProductPriceDBObject(item2).withPrice("4.00").withPromotionPrice("2.00").addPromotion(dbPromotion).inZone("1").build());
+
+        WebResource resource = client().resource("/price/randomItem1,randomItem2");
+        ClientResponse response = resource.get(ClientResponse.class);
+        assertThat(response.getStatus()).isEqualTo(200);
+        List<DBObject> priceInfos = (List<DBObject>) JSON.parse(resource.get(String.class));
+
+        assertThat(priceInfos.size()).isEqualTo(1);
+        assertThat(priceInfos.get(0).get("itemNumber")).isEqualTo(item1);
+    }
+
+    @Test
     public void shouldReturnPricesAndPromotionsForStoreWhenSearchingForItemAtAParticularStore() throws IOException, ItemNotFoundException {
         storeCollection.insert(new TestStoreDBObject("randomStore").withZoneId("2").build());
         DBObject dbPromotion = new TestPromotionDBObject("offer1").withStartDate("date1").withEndDate("date2").withName("zone2 promo").withDescription1("blah").withDescription2("blah").build();
@@ -55,15 +138,15 @@ public class PriceResourceTest extends ResourceTest {
         WebResource resource = client().resource("/price/randomItem?store=randomStore");
         ClientResponse response = resource.get(ClientResponse.class);
         assertThat(response.getStatus()).isEqualTo(200);
-        DBObject priceInfo = (DBObject) JSON.parse(resource.get(String.class));
+        List<DBObject> priceInfo = (List<DBObject>) JSON.parse(resource.get(String.class));
 
 
-        assertThat(priceInfo.get("itemNumber")).isEqualTo("randomItem");
-        assertThat(priceInfo.get("price")).isEqualTo("2.00");
-        assertThat(priceInfo.get("promoPrice")).isEqualTo("1.33");
-        assertThat(priceInfo.get("currency")).isEqualTo("GBP");
+        assertThat(priceInfo.get(0).get("itemNumber")).isEqualTo("randomItem");
+        assertThat(priceInfo.get(0).get("price")).isEqualTo("2.00");
+        assertThat(priceInfo.get(0).get("promoPrice")).isEqualTo("1.33");
+        assertThat(priceInfo.get(0).get("currency")).isEqualTo("GBP");
 
-        DBObject promotion = ((List<DBObject>) priceInfo.get("promotions")).get(0);
+        DBObject promotion = ((List<DBObject>) priceInfo.get(0).get("promotions")).get(0);
         assertThat(promotion.get("offerId")).isEqualTo("offer1");
         assertThat(promotion.get("offerName")).isEqualTo("zone2 promo");
         assertThat(promotion.get("startDate")).isEqualTo("date1");
@@ -79,15 +162,15 @@ public class PriceResourceTest extends ResourceTest {
 
         WebResource resource = client().resource("/price/randomItem");
         ClientResponse response = resource.get(ClientResponse.class);
-        DBObject priceInfo = (DBObject) JSON.parse(resource.get(String.class));
+        List<DBObject> priceInfo = (List<DBObject>) JSON.parse(resource.get(String.class));
 
         assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(priceInfo.get("itemNumber")).isEqualTo("randomItem");
-        assertThat(priceInfo.get("price")).isEqualTo("3.00");
-        assertThat(priceInfo.get("promoPrice")).isEqualTo("2.33");
-        assertThat(priceInfo.get("currency")).isEqualTo("GBP");
+        assertThat(priceInfo.get(0).get("itemNumber")).isEqualTo("randomItem");
+        assertThat(priceInfo.get(0).get("price")).isEqualTo("3.00");
+        assertThat(priceInfo.get(0).get("promoPrice")).isEqualTo("2.33");
+        assertThat(priceInfo.get(0).get("currency")).isEqualTo("GBP");
 
-        DBObject promotion = ((List<DBObject>) priceInfo.get("promotions")).get(0);
+        DBObject promotion = ((List<DBObject>) priceInfo.get(0).get("promotions")).get(0);
         assertThat(promotion.get("offerName")).isEqualTo("zone5 promo");
         assertThat(promotion.get("startDate")).isEqualTo("date1");
         assertThat(promotion.get("endDate")).isEqualTo("date2");
@@ -103,11 +186,11 @@ public class PriceResourceTest extends ResourceTest {
         ClientResponse response = resource.get(ClientResponse.class);
         assertThat(response.getStatus()).isEqualTo(200);
 
-        DBObject priceInfo = (DBObject) JSON.parse(resource.get(String.class));
+        List<DBObject> priceInfo = (List<DBObject>) JSON.parse(resource.get(String.class));
 
-        assertThat(priceInfo.get("itemNumber")).isEqualTo("randomItem");
-        assertThat(priceInfo.get("price")).isEqualTo("3.00");
-        assertThat(priceInfo.keySet()).doesNotContain("promotions");
+        assertThat(priceInfo.get(0).get("itemNumber")).isEqualTo("randomItem");
+        assertThat(priceInfo.get(0).get("price")).isEqualTo("3.00");
+        assertThat(priceInfo.get(0).keySet()).doesNotContain("promotions");
     }
 
     @Test

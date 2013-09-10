@@ -6,21 +6,17 @@ import com.mongodb.util.JSON;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.tesco.services.Configuration;
-import com.tesco.services.DAO.PriceDAO;
 import com.tesco.services.DAO.PriceKeys;
 import com.tesco.services.DAO.PromotionDAO;
 import com.tesco.services.DBFactory;
 import com.tesco.services.Exceptions.ItemNotFoundException;
-import com.tesco.services.resources.fixtures.TestProductPriceDBObject;
 import com.tesco.services.resources.fixtures.TestPromotionDBObject;
-import com.tesco.services.resources.fixtures.TestStoreDBObject;
 import com.yammer.dropwizard.testing.ResourceTest;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import java.util.List;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -70,6 +66,16 @@ public class PromotionResourceTest extends ResourceTest {
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(resource.get(String.class)).contains("\"offerId\":\"123\"");
         assertThat(resource.get(String.class)).contains("\"offerId\":\"345\"");
+    }
+
+    @Test
+    public void shouldIgnoreNonexistentPromotionsByMultipleOfferId() throws IOException, ItemNotFoundException {
+        WebResource resource = client().resource("/promotion/123,non-existent");
+        ClientResponse response = resource.get(ClientResponse.class);
+
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(resource.get(String.class)).contains("\"offerId\":\"123\"");
+        assertThat(resource.get(String.class)).doesNotContain("\"offerId\":\"non-existent\"");
     }
 
     @Test

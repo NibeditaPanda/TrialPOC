@@ -9,6 +9,7 @@ import com.tesco.services.Exceptions.ItemNotFoundException;
 import com.tesco.services.processor.PriceViewBuilder;
 
 import java.net.UnknownHostException;
+import java.util.List;
 
 import static com.tesco.services.DAO.PriceKeys.ITEM_NUMBER;
 import static com.tesco.services.DAO.PriceKeys.STORE_ID;
@@ -28,21 +29,21 @@ public class PriceDAO {
         storeCollection = dbFactory.getCollection("stores");
     }
 
-    public DBObject getPricesInfo(String itemNumber) throws ItemNotFoundException {
-        return new PriceViewBuilder().withPrice(getPriceBy(itemNumber)).build();
+    public List<DBObject> getPricesInfo(List<String> itemNumbers) throws ItemNotFoundException {
+        return new PriceViewBuilder().withPrices(getPricesBy(itemNumbers)).build();
     }
 
-    public DBObject getPriceAndStoreInfo(String itemNumber, String storeId) throws ItemNotFoundException {
-        return new PriceViewBuilder().withPrice(getPriceBy(itemNumber))
+    public List<DBObject> getPriceAndStoreInfo(List<String> itemNumbers, String storeId) throws ItemNotFoundException {
+        return new PriceViewBuilder().withPrices(getPricesBy(itemNumbers))
                 .withStore(getStoreBy(storeId))
                 .build();
     }
 
-    private DBObject getPriceBy(String itemNumber) throws ItemNotFoundException {
-        Optional<DBObject> item = Query.on(priceCollection).findOne(ITEM_NUMBER, itemNumber);
-        if (!item.isPresent()) throw new ItemNotFoundException(PRODUCT_NOT_FOUND);
+    public List<DBObject> getPricesBy(List<String> ids) throws ItemNotFoundException {
+        Optional<List<DBObject>> items = Query.on(priceCollection).findMany(ITEM_NUMBER, ids);
+        if (!items.isPresent()) throw new ItemNotFoundException(PRODUCT_NOT_FOUND);
 
-        return item.get();
+        return items.get();
     }
 
     private DBObject getStoreBy(String storeId) throws ItemNotFoundException {

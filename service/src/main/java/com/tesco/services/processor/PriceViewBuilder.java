@@ -4,15 +4,18 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.tesco.services.Exceptions.ItemNotFoundException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.tesco.services.DAO.PriceKeys.*;
 
 public class PriceViewBuilder {
 
     private DBObject storeInfo = new BasicDBObject();
-    private DBObject priceInfo = new BasicDBObject();
+    private List<DBObject> pricesInfo = new ArrayList<>();
 
-    public PriceViewBuilder withPrice(DBObject priceInfo){
-        this.priceInfo = priceInfo;
+    public PriceViewBuilder withPrices(List<DBObject> pricesInfo){
+        this.pricesInfo = pricesInfo;
         return this;
     }
 
@@ -21,18 +24,41 @@ public class PriceViewBuilder {
         return this;
     }
 
-    public DBObject build() throws ItemNotFoundException {
-        BasicDBObject responseObject = new BasicDBObject();
-        String zoneId = storeInfo.get(ZONE_ID) != null ? storeInfo.get(ZONE_ID).toString() : NATIONAL_ZONE;
-        DBObject zone = (DBObject) ((DBObject) priceInfo.get(ZONES)).get(zoneId);
-        if (zone == null) throw new ItemNotFoundException("Product not found");
-        Object currency = priceInfo.get(CURRENCY) != null ? priceInfo.get(CURRENCY) : DEFAULT_CURRENCY;
+    public List<DBObject> build() throws ItemNotFoundException {
+        ArrayList<DBObject> response = new ArrayList<>();
 
-        responseObject.put(ITEM_NUMBER, priceInfo.get(ITEM_NUMBER));
-        responseObject.put(CURRENCY, currency);
-        responseObject.put(PRICE, zone.get(PRICE).toString());
-        responseObject.put(PROMO_PRICE, zone.get(PROMO_PRICE).toString());
-        if(zone.get(PROMOTIONS) != null) responseObject.put(PROMOTIONS, zone.get(PROMOTIONS));
-        return responseObject;
+        for (DBObject price : pricesInfo) {
+            BasicDBObject mappedPrice = mapPriceToDBObject(price);
+            if(mappedPrice != null){
+                response.add(mappedPrice);
+            }
+        }
+
+        // TODO this isn't an exceptional circumstance we should probably use result objects not exceptions for this.
+        if(response.size() == 0){
+            throw new ItemNotFoundException("Product not found");
+        }
+
+        return response;
+    }
+
+    private BasicDBObject mapPriceToDBObject(DBObject priceInfoObj) {
+        BasicDBObject responseObject = new BasicDBObject();
+
+        String zoneId = storeInfo.get(ZONE_ID) != null ? storeInfo.get(ZONE_ID).toString() : NATIONAL_ZONE;
+        DBObject zone = (DBObject) ((DBObject) priceInfoObj.get(ZONES)).get(zoneId);
+
+        if (zone != null){
+            Object currency = priceInfoObj.get(CURRENCY) != null ? priceInfoObj.get(CURRENCY) : DEFAULT_CURRENCY;
+            responseObject.put(ITEM_NUMBER, priceInfoObj.get(ITEM_NUMBER));
+            responseObject.put(CURRENCY, currency);
+            responseObject.put(PRICE, zone.get(PRICE).toString());
+            responseObject.put(PROMO_PRICE, zone.get(PROMO_PRICE).toString());
+            if(zone.get(PROMOTIONS) != null) responseObject.put(PROMOTIONS, zone.get(PROMOTIONS));
+
+            return responseObject;
+        }
+
+        return null;
     }
 }

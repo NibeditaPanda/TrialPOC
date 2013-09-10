@@ -9,7 +9,12 @@ import com.yammer.metrics.annotation.Metered;
 import com.yammer.metrics.annotation.Timed;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.util.Arrays;
+import java.util.List;
 
 import static com.tesco.services.HTTPResponses.*;
 
@@ -35,17 +40,17 @@ public class PriceResource {
         MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
         if ((queryParameters.size() > 0) && !storeId.isPresent()) return badRequest();
 
-        DBObject prices;
+        List<String> itemIds = Arrays.asList(itemNumber.split(","));
+
         try {
-            prices = storeId.isPresent()
+            List<DBObject> prices = storeId.isPresent()
+                    ? priceDAO.getPriceAndStoreInfo(itemIds,storeId.get())
+                    : priceDAO.getPricesInfo(itemIds);
 
-                    ? priceDAO.getPriceAndStoreInfo(itemNumber,storeId.get())
-                    : priceDAO.getPricesInfo(itemNumber);
-
+            return ok(prices);
         } catch (ItemNotFoundException exception) {
             return notFound(exception.getMessage());
         }
-        return ok(prices);
     }
 
     @GET
