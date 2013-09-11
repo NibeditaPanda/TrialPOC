@@ -11,6 +11,8 @@ public class TestPromotionDBObject {
     private String endDate = "default";
     private String cfDescription1 = "default";
     private String cfDescription2 = "default";
+    private String itemNumber = "default";
+    private String promotionZoneId = "default";
 
     public TestPromotionDBObject(String offerId){
         this.offerId = offerId;
@@ -41,14 +43,26 @@ public class TestPromotionDBObject {
         return this;
     }
 
+    public TestPromotionDBObject withTPNB(String tpnb){
+        this.itemNumber = tpnb;
+        return this;
+    }
+
+    public TestPromotionDBObject withPromotionZone(String promotionZoneId){
+        this.promotionZoneId = promotionZoneId;
+        return this;
+    }
+
     public DBObject build() {
         BasicDBObject promotion = new BasicDBObject();
+        promotion.put("itemNumber", itemNumber);
         promotion.put("offerId", offerId);
         promotion.put("offerName", offerName);
         promotion.put("startDate", startDate);
         promotion.put("endDate", endDate);
         promotion.put("cfDescription1", cfDescription1);
         promotion.put("cfDescription2", cfDescription2);
+        promotion.put("promotionZoneId", promotionZoneId);
         return promotion;
     }
 }

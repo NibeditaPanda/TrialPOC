@@ -1,5 +1,6 @@
 package com.tesco.services.resources;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
@@ -35,9 +36,15 @@ public class PromotionResourceTest extends ResourceTest {
     public void setUp() throws IOException {
         DBFactory dbFactory = new DBFactory(testConfiguration);
         dbFactory.getCollection(PriceKeys.PROMOTION_COLLECTION).drop();
+        dbFactory.getCollection(PriceKeys.STORE_COLLECTION).drop();
+
+        DBCollection storeCollection = dbFactory.getCollection(PriceKeys.STORE_COLLECTION);
+        storeCollection.insert(new TestStoreDBObject("2000").withZoneId("5").build());
+
         promotionCollection = dbFactory.getCollection(PriceKeys.PROMOTION_COLLECTION);
 
-        promotionCollection.insert(new TestPromotionDBObject("123").withStartDate("date1").withEndDate("date2").withName("name of promotion").withDescription1("blah").withDescription2("blah").build());
+        promotionCollection.insert(new TestPromotionDBObject("123").withTPNB("1234").withPromotionZone("5").withStartDate("date1").withEndDate("date2").withName("name of promotion").withDescription1("blah").withDescription2("blah").build());
+        promotionCollection.insert(new TestPromotionDBObject("123").withTPNB("5678").withPromotionZone("4").withStartDate("date1").withEndDate("date2").withName("name of promotion").withDescription1("blah").withDescription2("blah").build());
         promotionCollection.insert(new TestPromotionDBObject("345").build());
     }
 
@@ -84,7 +91,7 @@ public class PromotionResourceTest extends ResourceTest {
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(404);
-        assertThat(response.getEntity(String.class)).isEqualTo("Promotion not found");
+        assertThat(response.getEntity(String.class)).isEqualTo("Promotions Not Found");
     }
 
     @Test
@@ -105,4 +112,23 @@ public class PromotionResourceTest extends ResourceTest {
         assertThat(response.getEntity(String.class)).isEqualTo("Invalid request");
     }
 
+
+    @Test
+    public void shouldReturnPromotionByOfferIdWithTPNBandStoreID() throws IOException, ItemNotFoundException {
+        WebResource resource = client().resource("/promotion/123?tpnb=1234&storeId=2000");
+        ClientResponse response = resource.get(ClientResponse.class);
+
+        assertThat(response.getStatus()).isEqualTo(200);
+        System.out.println(resource.get(String.class));
+        List<DBObject> promotions = (List<DBObject>) JSON.parse(resource.get(String.class));
+        assertThat(promotions.size()).isEqualTo(1);
+
+//        DBObject firstPromotion = promotions.size();
+//        assertThat(firstPromotion.get("offerId")).isEqualTo("123");
+//        assertThat(firstPromotion.get("offerName")).isEqualTo("name of promotion");
+//        assertThat(firstPromotion.get("startDate")).isEqualTo("date1");
+//        assertThat(firstPromotion.get("endDate")).isEqualTo("date2");
+//        assertThat(firstPromotion.get("cfDescription1")).isEqualTo("blah");
+//        assertThat(firstPromotion.get("cfDescription2")).isEqualTo("blah");
+    }
 }

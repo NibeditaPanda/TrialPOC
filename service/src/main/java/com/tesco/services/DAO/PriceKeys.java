@@ -8,6 +8,7 @@ public class PriceKeys {
     public static final String ZONES = "zones";
     public static final String PRICE = "price";
     public static final String PROMO_PRICE = "promoPrice";
+    public static final String PROMOTION_ZONE_ID = "promotionZoneId";
 
     public static final String DEFAULT_CURRENCY = "GBP";
     public static final String NATIONAL_ZONE = "5";

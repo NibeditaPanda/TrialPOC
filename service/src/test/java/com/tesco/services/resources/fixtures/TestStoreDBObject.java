@@ -6,7 +6,7 @@ import com.mongodb.DBObject;
 public class TestStoreDBObject {
 
     private String storeId;
-    private String zoneId = "5";
+    private String promotionZoneId = "5";
     private String currency = "GBP";
 
     public TestStoreDBObject(String storeId) {
@@ -14,7 +14,7 @@ public class TestStoreDBObject {
     }
 
     public TestStoreDBObject withZoneId(String zoneId){
-        this.zoneId = zoneId;
+        this.promotionZoneId = zoneId;
         return this;
     }
 
@@ -26,7 +26,7 @@ public class TestStoreDBObject {
     public DBObject build(){
         DBObject store = new BasicDBObject();
         store.put("storeId", storeId);
-        store.put("zoneId", zoneId);
+        store.put("promotionZoneId", promotionZoneId);
         store.put("currency", currency);
         return store;
     }

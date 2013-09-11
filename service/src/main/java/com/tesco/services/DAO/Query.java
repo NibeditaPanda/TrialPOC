@@ -30,7 +30,7 @@ public class Query {
         return Optional.fromNullable(results.isEmpty() ? null : results);
     }
 
-    private List<DBObject> execute(DBObject query) {
+    public List<DBObject> execute(DBObject query) {
         return collection.find(query, new BasicDBObject("_id", 0)).toArray();
     }
 }

@@ -1,16 +1,15 @@
 package com.tesco.services.resources;
 
+import com.google.common.base.Optional;
 import com.mongodb.DBObject;
 import com.tesco.services.DAO.PromotionDAO;
+import com.tesco.services.DAO.Result;
 import com.tesco.services.Exceptions.ItemNotFoundException;
 import com.yammer.metrics.annotation.ExceptionMetered;
 import com.yammer.metrics.annotation.Metered;
 import com.yammer.metrics.annotation.Timed;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -37,19 +36,24 @@ public class PromotionResource {
     @Metered(name="getByOfferedId-Meter",group="PriceServices")
     @Timed(name="getByOfferedId-Timer",group="PriceServices")
     @ExceptionMetered(name="getByOfferedId-Failures",group="PriceServices")
-    public Response getByOfferId(@PathParam("promotionIds") String offerIds) {
-        List<DBObject> promotion;
-        try {
-            List<String> ids = Arrays.asList(offerIds.split(","));
-            promotion = promotionDAO.findOffersForTheseIds(ids);
-        } catch (ItemNotFoundException e) {
-            return notFound(e.getMessage());
+    public Response getByOfferId(@PathParam("promotionIds") String offerIds,
+                                 @QueryParam("tpnb") Optional<String> tpnb,
+                                 @QueryParam("storeId") Optional<String> storeId) {
+        Result<DBObject> promotions;
+        List<String> ids = Arrays.asList(offerIds.split(","));
+        if(tpnb.isPresent() && storeId.isPresent()){
+            promotions = promotionDAO.findTheseOffersAndFilterBy(ids, tpnb.get(), storeId.get());
+        } else {
+            promotions = promotionDAO.findOffersForTheseIds(ids);
         }
-        return ok(promotion);
+
+        if(promotions.isEmpty()) {
+            return notFound("Promotions Not Found");
+        }
+        return ok(promotions);
     }
 
     @GET
-
     @Path("/{promotionId}/{path: .*}")
     @ExceptionMetered(name="getByOffered-Failures",group="PriceServices")
     public Response getOffer() {
