@@ -45,7 +45,7 @@ public class PriceViewBuilder {
     private BasicDBObject mapPriceToDBObject(DBObject priceInfoObj) {
         BasicDBObject responseObject = new BasicDBObject();
 
-        String zoneId = storeInfo.get(ZONE_ID) != null ? storeInfo.get(ZONE_ID).toString() : NATIONAL_ZONE;
+        String zoneId = storeInfo.get(PROMOTION_ZONE_ID) != null ? storeInfo.get(PROMOTION_ZONE_ID).toString() : NATIONAL_ZONE;
         DBObject zone = (DBObject) ((DBObject) priceInfoObj.get(ZONES)).get(zoneId);
 
         if (zone != null){

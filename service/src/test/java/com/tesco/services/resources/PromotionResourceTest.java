@@ -12,6 +12,7 @@ import com.tesco.services.DAO.PromotionDAO;
 import com.tesco.services.DBFactory;
 import com.tesco.services.Exceptions.ItemNotFoundException;
 import com.tesco.services.resources.fixtures.TestPromotionDBObject;
+import com.tesco.services.resources.fixtures.TestStoreDBObject;
 import com.yammer.dropwizard.testing.ResourceTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -123,12 +124,12 @@ public class PromotionResourceTest extends ResourceTest {
         List<DBObject> promotions = (List<DBObject>) JSON.parse(resource.get(String.class));
         assertThat(promotions.size()).isEqualTo(1);
 
-//        DBObject firstPromotion = promotions.size();
-//        assertThat(firstPromotion.get("offerId")).isEqualTo("123");
-//        assertThat(firstPromotion.get("offerName")).isEqualTo("name of promotion");
-//        assertThat(firstPromotion.get("startDate")).isEqualTo("date1");
-//        assertThat(firstPromotion.get("endDate")).isEqualTo("date2");
-//        assertThat(firstPromotion.get("cfDescription1")).isEqualTo("blah");
-//        assertThat(firstPromotion.get("cfDescription2")).isEqualTo("blah");
+        DBObject firstPromotion = promotions.get(0);
+        assertThat(firstPromotion.get("offerId")).isEqualTo("123");
+        assertThat(firstPromotion.get("offerName")).isEqualTo("name of promotion");
+        assertThat(firstPromotion.get("startDate")).isEqualTo("date1");
+        assertThat(firstPromotion.get("endDate")).isEqualTo("date2");
+        assertThat(firstPromotion.get("cfDescription1")).isEqualTo("blah");
+        assertThat(firstPromotion.get("cfDescription2")).isEqualTo("blah");
     }
 }
