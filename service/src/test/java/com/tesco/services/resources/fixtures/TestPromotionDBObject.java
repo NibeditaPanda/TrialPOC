@@ -62,7 +62,7 @@ public class TestPromotionDBObject {
         promotion.put("endDate", endDate);
         promotion.put("cfDescription1", cfDescription1);
         promotion.put("cfDescription2", cfDescription2);
-        promotion.put("promotionZoneId", promotionZoneId);
+        promotion.put("zoneId", promotionZoneId);
         return promotion;
     }
 }

@@ -38,7 +38,7 @@ public class PromotionDAO {
             List<DBObject> promotionThatMatch = new ArrayList<>();
             for(int i = 0; i < promotions.size(); i++) {
                 DBObject promotion = promotions.get(i);
-                if(promotion.get(ITEM_NUMBER).equals(tpnb) && promotion.get(PROMOTION_ZONE_ID).equals(promotionZone)){
+                if(promotion.get(ITEM_NUMBER).equals(tpnb) && promotion.get(ZONE_ID).equals(promotionZone)){
                     promotionThatMatch.add(promotion);
                 }
             }
