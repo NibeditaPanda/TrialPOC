@@ -21,7 +21,7 @@ import java.util.List;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class PriceResourceTest extends ResourceTest {
+public class    PriceResourceTest extends ResourceTest {
 
     private PriceDAO priceDAO;
     private Configuration testConfiguration = new TestConfiguration();

@@ -46,6 +46,8 @@ public class PromotionResourceTest extends ResourceTest {
 
         promotionCollection.insert(new TestPromotionDBObject("123").withTPNB("1234").withPromotionZone("5").withStartDate("date1").withEndDate("date2").withName("name of promotion").withDescription1("blah").withDescription2("blah").build());
         promotionCollection.insert(new TestPromotionDBObject("123").withTPNB("5678").withPromotionZone("4").withStartDate("date1").withEndDate("date2").withName("name of promotion").withDescription1("blah").withDescription2("blah").build());
+        promotionCollection.insert(new TestPromotionDBObject("567").withTPNB("5678").withPromotionZone("4").withStartDate("date1").withEndDate("date2").withName("name of promotion").withDescription1("blah").withDescription2("blah").build());
+
         promotionCollection.insert(new TestPromotionDBObject("345").build());
     }
 
@@ -57,6 +59,7 @@ public class PromotionResourceTest extends ResourceTest {
         assertThat(response.getStatus()).isEqualTo(200);
         System.out.println(resource.get(String.class));
         List<DBObject> promotion = (List<DBObject>) JSON.parse(resource.get(String.class));
+        assertThat(promotion.size()).isEqualTo(2);
         DBObject firstPromotion = promotion.get(0);
         assertThat(firstPromotion.get("offerId")).isEqualTo("123");
         assertThat(firstPromotion.get("offerName")).isEqualTo("name of promotion");
@@ -116,7 +119,7 @@ public class PromotionResourceTest extends ResourceTest {
 
     @Test
     public void shouldReturnPromotionByOfferIdWithTPNBandStoreID() throws IOException, ItemNotFoundException {
-        WebResource resource = client().resource("/promotion/123?tpnb=1234&storeId=2000");
+        WebResource resource = client().resource("/promotion/123?tpnb=1234&store=2000");
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(200);

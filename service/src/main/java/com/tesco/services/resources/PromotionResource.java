@@ -38,7 +38,7 @@ public class PromotionResource {
     @ExceptionMetered(name="getByOfferedId-Failures",group="PriceServices")
     public Response getByOfferId(@PathParam("promotionIds") String offerIds,
                                  @QueryParam("tpnb") Optional<String> tpnb,
-                                 @QueryParam("storeId") Optional<String> storeId) {
+                                 @QueryParam("store") Optional<String> storeId) {
         Result<DBObject> promotions;
         List<String> ids = Arrays.asList(offerIds.split(","));
         if(tpnb.isPresent() && storeId.isPresent()){
