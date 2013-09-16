@@ -87,5 +87,6 @@ public class Controller {
         logger.info("Creating indexes....");
         priceCollection.ensureIndex(new BasicDBObject(ITEM_NUMBER, 1));
         storeCollection.ensureIndex(new BasicDBObject(STORE_ID, 1));
+        promotionCollection.ensureIndex(new BasicDBObject(PROMOTION_OFFER_ID, 1));
     }
 }
