@@ -39,6 +39,7 @@ repositories {
     mavenCentral()
 }
 
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 dependencies {
     compile group: 'com.yammer.dropwizard', name: 'dropwizard-core', version: '0.6.2'
