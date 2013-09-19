@@ -59,7 +59,7 @@ public class PromotionResource {
     @Metered(name="getByOfferedId-Meter",group="PriceServices")
     @Timed(name="getByOfferedId-Timer",group="PriceServices")
     @ExceptionMetered(name="getByOfferedId-Failures",group="PriceServices")
-    public Response getByOfferId(@FormParam("promotionIds") String offerIds) {
+    public Response getByOfferId(String offerIds) {
         Result<DBObject> promotions;
         List<String> ids = Arrays.asList(offerIds.split("\n"));
         promotions = promotionDAO.findOffersForTheseIds(ids);
