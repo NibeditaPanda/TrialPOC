@@ -55,7 +55,7 @@ public class PromotionResource {
     }
 
     @POST
-    @Path("/{promotionIds}")
+    @Path("/bulk")
     @Metered(name="getByOfferedId-Meter",group="PriceServices")
     @Timed(name="getByOfferedId-Timer",group="PriceServices")
     @ExceptionMetered(name="getByOfferedId-Failures",group="PriceServices")
