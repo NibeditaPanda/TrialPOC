@@ -8,6 +8,7 @@ import com.tesco.services.Exceptions.ItemNotFoundException;
 import com.yammer.metrics.annotation.ExceptionMetered;
 import com.yammer.metrics.annotation.Metered;
 import com.yammer.metrics.annotation.Timed;
+import org.omg.CORBA.Environment;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -50,6 +51,19 @@ public class PromotionResource {
         if(promotions.isEmpty()) {
             return notFound("Promotions Not Found");
         }
+        return ok(promotions);
+    }
+
+    @POST
+    @Path("/{promotionIds}")
+    @Metered(name="getByOfferedId-Meter",group="PriceServices")
+    @Timed(name="getByOfferedId-Timer",group="PriceServices")
+    @ExceptionMetered(name="getByOfferedId-Failures",group="PriceServices")
+    public Response getByOfferId(@FormParam("promotionIds") String offerIds) {
+        Result<DBObject> promotions;
+        List<String> ids = Arrays.asList(offerIds.split("\n"));
+        promotions = promotionDAO.findOffersForTheseIds(ids);
+
         return ok(promotions);
     }
 
