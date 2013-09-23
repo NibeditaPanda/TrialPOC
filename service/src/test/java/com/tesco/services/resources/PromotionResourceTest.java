@@ -178,4 +178,71 @@ public class PromotionResourceTest extends ResourceTest {
         assertThat(secondPromotion.get("shelfTalkerImage")).isEqualTo("OnSale.png");
 
     }
+
+    @Test
+    public void shouldReturnEmptyList() throws Exception {
+        String jsonRequest = "{\n" +
+                "    \"promotions\":\n" +
+                "        [\n" +
+                "            { \"offerId\": \"something wrong\", \"itemNumber\": \"something wrong\", \"zoneId\": \"5\"}" +
+                "        ]\n" +
+                "}";
+
+        WebResource resource = client().resource("/promotion/find");
+        ClientResponse response = resource.type("application/json").post(ClientResponse.class, jsonRequest);
+        assertThat(response.getStatus()).isEqualTo(200);
+
+        List<DBObject> promotions = (List<DBObject>) JSON.parse(resource.type("application/json").post(String.class, jsonRequest));
+
+        assertThat(promotions).isEmpty();
+    }
+
+    @Test
+    public void shouldReturnEmptyListGivenMissingAttribute() throws Exception {
+        String jsonRequest = "{\n" +
+                "    \"promotions\":\n" +
+                "        [\n" +
+                "            { \"offerId\": \"123\" }" +
+                "        ]\n" +
+                "}";
+
+        WebResource resource = client().resource("/promotion/find");
+        ClientResponse response = resource.type("application/json").post(ClientResponse.class, jsonRequest);
+        assertThat(response.getStatus()).isEqualTo(200);
+
+        List<DBObject> promotions = (List<DBObject>) JSON.parse(resource.type("application/json").post(String.class, jsonRequest));
+
+        assertThat(promotions).isEmpty();
+    }
+
+    @Test
+    public void shouldReturnValueForCorrectRequestItemOnly() throws Exception {
+        String jsonRequest = "{\n" +
+                "    \"promotions\":\n" +
+                "        [\n" +
+                "            { \"offerId\": \"123\", \"itemNumber\": \"1234\", \"zoneId\": \"5\"},\n" +
+                "            { \"offerId\": \"567\"}\n" +
+                "        ]\n" +
+                "}";
+
+        WebResource resource = client().resource("/promotion/find");
+        ClientResponse response = resource.type("application/json").post(ClientResponse.class, jsonRequest);
+        assertThat(response.getStatus()).isEqualTo(200);
+
+        List<DBObject> promotions = (List<DBObject>) JSON.parse(resource.type("application/json").post(String.class, jsonRequest));
+
+        assertThat(promotions.size()).isEqualTo(1);
+
+        DBObject firstPromotion = promotions.get(0);
+        assertThat(firstPromotion.get("offerId")).isEqualTo("123");
+        assertThat(firstPromotion.get("itemNumber")).isEqualTo("1234");
+        assertThat(firstPromotion.get("zoneId")).isEqualTo("5");
+        assertThat(firstPromotion.get("offerName")).isEqualTo("name of promotion");
+        assertThat(firstPromotion.get("startDate")).isEqualTo("date1");
+        assertThat(firstPromotion.get("endDate")).isEqualTo("date2");
+        assertThat(firstPromotion.get("CFDescription1")).isEqualTo("blah");
+        assertThat(firstPromotion.get("CFDescription2")).isEqualTo("blah");
+        assertThat(firstPromotion.get("shelfTalkerImage")).isEqualTo("OnSale.png");
+
+    }
 }
