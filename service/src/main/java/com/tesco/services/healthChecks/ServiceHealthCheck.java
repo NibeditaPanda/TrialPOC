@@ -16,7 +16,7 @@ public class ServiceHealthCheck extends HealthCheck {
     @Override
     protected Result check() throws Exception {
         try{
-            db.getCollection("products");
+            db.getCollection("prices");
             return Result.healthy();
         } catch (RuntimeException ex) {
             return Result.unhealthy(ex.getMessage());

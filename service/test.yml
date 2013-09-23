@@ -1,5 +1,5 @@
 DBHost: localhost
-DBName: testProductService
+DBName: testPriceService
 DBPort: 27017
 Username:
 Password:

@@ -12,11 +12,11 @@ appender("stdout", ConsoleAppender) {
     }
 }
 
-appender("product_service", RollingFileAppender) {
-    file = "logs/product_service.log"
+appender("price_service", RollingFileAppender) {
+    file = "logs/price_service.log"
     append = true
     rollingPolicy(FixedWindowRollingPolicy) {
-        fileNamePattern = "product_service.%i.log.zip"
+        fileNamePattern = "price_service.%i.log.zip"
         minIndex = 1
         maxIndex = 3
     }
@@ -29,4 +29,4 @@ appender("product_service", RollingFileAppender) {
 }
 
 def logLevel = Configuration.get().getString("log.level")
-root(Level.toLevel(logLevel), ["stdout", "product_service"])
+root(Level.toLevel(logLevel), ["stdout", "price_service"])

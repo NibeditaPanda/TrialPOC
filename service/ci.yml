@@ -1,5 +1,5 @@
 DBHost: ds027668.mongolab.com
-DBName: productservice
+DBName: priceService
 DBPort: 27668
 Username: ci
 Password: Services123
