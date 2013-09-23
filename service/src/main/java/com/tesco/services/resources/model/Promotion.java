@@ -11,7 +11,7 @@ public class Promotion {
     private String itemNumber;
 
     @JsonProperty
-    private String zoneID;
+    private String zoneId;
 
     @JsonProperty
     private String CFDescription1;
@@ -36,8 +36,8 @@ public class Promotion {
         return itemNumber;
     }
 
-    public String getZoneID() {
-        return zoneID;
+    public String getZoneId() {
+        return zoneId;
     }
 
     public String getCFDescription1() {
@@ -60,10 +60,13 @@ public class Promotion {
         return endDate;
     }
 
-    public Promotion(String offerId, String itemNumber, String zoneID) {
+    public Promotion() {
+    }
+
+    public Promotion(String offerId, String itemNumber, String zoneId) {
         this.offerId = offerId;
         this.itemNumber = itemNumber;
-        this.zoneID = zoneID;
+        this.zoneId = zoneId;
     }
 
     @Override
@@ -75,7 +78,7 @@ public class Promotion {
 
         if (itemNumber != null ? !itemNumber.equals(promotion.itemNumber) : promotion.itemNumber != null) return false;
         if (offerId != null ? !offerId.equals(promotion.offerId) : promotion.offerId != null) return false;
-        if (zoneID != null ? !zoneID.equals(promotion.zoneID) : promotion.zoneID != null) return false;
+        if (zoneId != null ? !zoneId.equals(promotion.zoneId) : promotion.zoneId != null) return false;
 
         return true;
     }
@@ -84,7 +87,7 @@ public class Promotion {
     public int hashCode() {
         int result = offerId != null ? offerId.hashCode() : 0;
         result = 31 * result + (itemNumber != null ? itemNumber.hashCode() : 0);
-        result = 31 * result + (zoneID != null ? zoneID.hashCode() : 0);
+        result = 31 * result + (zoneId != null ? zoneId.hashCode() : 0);
         return result;
     }
 

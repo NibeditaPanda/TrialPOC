@@ -1,11 +1,14 @@
 package com.tesco.services.DAO;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
+import com.mongodb.*;
 import com.tesco.services.Configuration;
 import com.tesco.services.DBFactory;
 import com.tesco.services.Exceptions.ItemNotFoundException;
+import com.tesco.services.resources.model.Promotion;
+import org.mongojack.*;
+import org.mongojack.DBCursor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +29,16 @@ public class PromotionDAO {
 
     public Result<DBObject> findOffersForTheseIds(List<String> ids) {
         return new Result<>(Query.on(promotions).findMany(PROMOTION_OFFER_ID, ids));
+    }
+
+    public List<Promotion> findOffers(List<String> ids)
+    {
+        DBObject query = QueryBuilder.start(PROMOTION_OFFER_ID).in(ids).get();
+
+        JacksonDBCollection<Promotion, String> promotionCollections = JacksonDBCollection.wrap(promotions, Promotion.class,
+                String.class);
+
+        return promotionCollections.find(query, new BasicDBObject("_id", 0)).toArray();
     }
 
     public Result<DBObject> findTheseOffersAndFilterBy(List<String> ids, String tpnb, String storeId) {

@@ -1,5 +1,7 @@
 package com.tesco.services.resources;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
@@ -12,14 +14,12 @@ import com.tesco.services.DBFactory;
 import com.tesco.services.Exceptions.ItemNotFoundException;
 import com.tesco.services.resources.fixtures.TestPromotionDBObject;
 import com.tesco.services.resources.fixtures.TestStoreDBObject;
-import com.tesco.services.resources.model.PromotionRequest;
 import com.yammer.dropwizard.testing.ResourceTest;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.net.URL;
 import java.util.List;
 
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -67,8 +67,8 @@ public class PromotionResourceTest extends ResourceTest {
         assertThat(firstPromotion.get("offerName")).isEqualTo("name of promotion");
         assertThat(firstPromotion.get("startDate")).isEqualTo("date1");
         assertThat(firstPromotion.get("endDate")).isEqualTo("date2");
-        assertThat(firstPromotion.get("cfDescription1")).isEqualTo("blah");
-        assertThat(firstPromotion.get("cfDescription2")).isEqualTo("blah");
+        assertThat(firstPromotion.get("CFDescription1")).isEqualTo("blah");
+        assertThat(firstPromotion.get("CFDescription2")).isEqualTo("blah");
     }
 
     @Test
@@ -134,8 +134,8 @@ public class PromotionResourceTest extends ResourceTest {
         assertThat(firstPromotion.get("offerName")).isEqualTo("name of promotion");
         assertThat(firstPromotion.get("startDate")).isEqualTo("date1");
         assertThat(firstPromotion.get("endDate")).isEqualTo("date2");
-        assertThat(firstPromotion.get("cfDescription1")).isEqualTo("blah");
-        assertThat(firstPromotion.get("cfDescription2")).isEqualTo("blah");
+        assertThat(firstPromotion.get("CFDescription1")).isEqualTo("blah");
+        assertThat(firstPromotion.get("CFDescription2")).isEqualTo("blah");
     }
 
     @Test
@@ -152,25 +152,25 @@ public class PromotionResourceTest extends ResourceTest {
         ClientResponse response = resource.type("application/json").post(ClientResponse.class, jsonRequest);
         assertThat(response.getStatus()).isEqualTo(200);
 
-        List<DBObject> dbObjects = (List<DBObject>) JSON.parse(resource.type("application/json").post(String.class, jsonRequest));
+        List<DBObject> promotions = (List<DBObject>) JSON.parse(resource.type("application/json").post(String.class, jsonRequest));
 
-        assertThat(dbObjects.size()).isEqualTo(2);
+        assertThat(promotions.size()).isEqualTo(2);
 
-//        DBObject firstPromotion = promotions.get(0);
-//        assertThat(firstPromotion.get("offerId")).isEqualTo("123");
-//        assertThat(firstPromotion.get("offerName")).isEqualTo("name of promotion");
-//        assertThat(firstPromotion.get("startDate")).isEqualTo("date1");
-//        assertThat(firstPromotion.get("endDate")).isEqualTo("date2");
-//        assertThat(firstPromotion.get("cfDescription1")).isEqualTo("blah");
-//        assertThat(firstPromotion.get("cfDescription2")).isEqualTo("blah");
-//
-//        DBObject secondPromotion = promotions.get(1);
-//        assertThat(secondPromotion.get("offerId")).isEqualTo("567");
-//        assertThat(secondPromotion.get("offerName")).isEqualTo("name of promotion");
-//        assertThat(secondPromotion.get("startDate")).isEqualTo("date1");
-//        assertThat(secondPromotion.get("endDate")).isEqualTo("date2");
-//        assertThat(secondPromotion.get("cfDescription1")).isEqualTo("blah");
-//        assertThat(secondPromotion.get("cfDescription2")).isEqualTo("blah");
+        DBObject firstPromotion = promotions.get(0);
+        assertThat(firstPromotion.get("offerId")).isEqualTo("567");
+        assertThat(firstPromotion.get("offerName")).isEqualTo("name of promotion");
+        assertThat(firstPromotion.get("startDate")).isEqualTo("date1");
+        assertThat(firstPromotion.get("endDate")).isEqualTo("date2");
+        assertThat(firstPromotion.get("CFDescription1")).isEqualTo("blah");
+        assertThat(firstPromotion.get("CFDescription2")).isEqualTo("blah");
+
+        DBObject secondPromotion = promotions.get(1);
+        assertThat(secondPromotion.get("offerId")).isEqualTo("123");
+        assertThat(secondPromotion.get("offerName")).isEqualTo("name of promotion");
+        assertThat(secondPromotion.get("startDate")).isEqualTo("date1");
+        assertThat(secondPromotion.get("endDate")).isEqualTo("date2");
+        assertThat(secondPromotion.get("CFDescription1")).isEqualTo("blah");
+        assertThat(secondPromotion.get("CFDescription2")).isEqualTo("blah");
 
     }
 }

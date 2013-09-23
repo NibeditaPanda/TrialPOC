@@ -10,6 +10,7 @@ import com.tesco.services.resources.model.PromotionRequestList;
 import com.yammer.metrics.annotation.ExceptionMetered;
 import com.yammer.metrics.annotation.Metered;
 import com.yammer.metrics.annotation.Timed;
+import org.apache.commons.collections.CollectionUtils;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -18,6 +19,7 @@ import javax.ws.rs.core.Response;
 import java.util.*;
 
 import static ch.lambdaj.Lambda.*;
+import static ch.lambdaj.collection.LambdaCollections.with;
 import static com.tesco.services.HTTPResponses.*;
 
 @Path("/promotion")
@@ -61,25 +63,18 @@ public class PromotionResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getByOfferId(@Valid PromotionRequestList promotionRequestList) {
 
-        List<String> ids = extract(promotionRequestList.getPromotions(), on(PromotionRequest.class).getOfferId());
-        Result<DBObject> promotions = promotionDAO.findOffersForTheseIds(ids);
+        Set<PromotionRequest> uniqueRequests = new HashSet<>(promotionRequestList.getPromotions());
+        List<String> ids = extract(uniqueRequests, on(PromotionRequest.class).getOfferId());
+        List<Promotion> promotions = promotionDAO.findOffers(ids);
 
-        Set<PromotionRequest> uniqueRequests = new HashSet<PromotionRequest>(promotionRequestList.getPromotions());
+        Map<Integer, Promotion> promotionsMap = index(promotions, on(Promotion.class).hash());
+        List<Promotion> results = new LinkedList<>();
 
-        List<Promotion> mongoResults = new LinkedList<Promotion>();
-        for(DBObject obj : promotions.items())
+        for(PromotionRequest promotionRequest: uniqueRequests)
         {
-            mongoResults.add(new Promotion(obj.get("offerId").toString(), obj.get("itemNumber").toString(), obj.get("zoneId").toString()));
-        }
-
-        Map<Integer, Promotion> promotionsMap = index(mongoResults, on(Promotion.class).hash());
-        List<Promotion> results = new LinkedList<Promotion>();
-
-        for(PromotionRequest promRequest : uniqueRequests)
-        {
-            if(promotionsMap.containsKey(promRequest.hashCode()))
+            if(promotionsMap.containsKey(promotionRequest.hashCode()))
             {
-                results.add(promotionsMap.get(promRequest));
+                results.add(promotionsMap.get(promotionRequest.hashCode()));
             }
         }
 

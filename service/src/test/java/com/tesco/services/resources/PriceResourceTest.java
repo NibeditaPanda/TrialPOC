@@ -151,8 +151,8 @@ public class    PriceResourceTest extends ResourceTest {
         assertThat(promotion.get("offerName")).isEqualTo("zone2 promo");
         assertThat(promotion.get("startDate")).isEqualTo("date1");
         assertThat(promotion.get("endDate")).isEqualTo("date2");
-        assertThat(promotion.get("cfDescription1")).isEqualTo("blah");
-        assertThat(promotion.get("cfDescription2")).isEqualTo("blah");
+        assertThat(promotion.get("CFDescription1")).isEqualTo("blah");
+        assertThat(promotion.get("CFDescription2")).isEqualTo("blah");
     }
 
     @Test
@@ -174,8 +174,8 @@ public class    PriceResourceTest extends ResourceTest {
         assertThat(promotion.get("offerName")).isEqualTo("zone5 promo");
         assertThat(promotion.get("startDate")).isEqualTo("date1");
         assertThat(promotion.get("endDate")).isEqualTo("date2");
-        assertThat(promotion.get("cfDescription1")).isEqualTo("blah");
-        assertThat(promotion.get("cfDescription2")).isEqualTo("blah");
+        assertThat(promotion.get("CFDescription1")).isEqualTo("blah");
+        assertThat(promotion.get("CFDescription2")).isEqualTo("blah");
     }
 
     @Test

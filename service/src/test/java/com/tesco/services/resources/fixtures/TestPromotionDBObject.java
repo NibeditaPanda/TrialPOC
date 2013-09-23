@@ -60,8 +60,8 @@ public class TestPromotionDBObject {
         promotion.put("offerName", offerName);
         promotion.put("startDate", startDate);
         promotion.put("endDate", endDate);
-        promotion.put("cfDescription1", cfDescription1);
-        promotion.put("cfDescription2", cfDescription2);
+        promotion.put("CFDescription1", cfDescription1);
+        promotion.put("CFDescription2", cfDescription2);
         promotion.put("zoneId", promotionZoneId);
         return promotion;
     }
