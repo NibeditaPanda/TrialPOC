@@ -46,7 +46,7 @@ public class PromotionResourceTest extends ResourceTest {
 
         promotionCollection = dbFactory.getCollection(PriceKeys.PROMOTION_COLLECTION);
 
-        promotionCollection.insert(new TestPromotionDBObject("123").withTPNB("1234").withPromotionZone("5").withStartDate("date1").withEndDate("date2").withName("name of promotion").withDescription1("blah").withDescription2("blah").build());
+        promotionCollection.insert(new TestPromotionDBObject("123").withTPNB("1234").withPromotionZone("5").withStartDate("date1").withEndDate("date2").withName("name of promotion").withDescription1("blah").withDescription2("blah").withShelfTalker("OnSale.png").build());
         promotionCollection.insert(new TestPromotionDBObject("123").withTPNB("5678").withPromotionZone("4").withStartDate("date1").withEndDate("date2").withName("name of promotion").withDescription1("blah").withDescription2("blah").build());
         promotionCollection.insert(new TestPromotionDBObject("567").withTPNB("5678").withPromotionZone("4").withStartDate("date1").withEndDate("date2").withName("name of promotion").withDescription1("blah").withDescription2("blah").build());
 
@@ -171,6 +171,7 @@ public class PromotionResourceTest extends ResourceTest {
         assertThat(secondPromotion.get("endDate")).isEqualTo("date2");
         assertThat(secondPromotion.get("CFDescription1")).isEqualTo("blah");
         assertThat(secondPromotion.get("CFDescription2")).isEqualTo("blah");
+        assertThat(secondPromotion.get("shelfTalkerImage")).isEqualTo("OnSale.png");
 
     }
 }

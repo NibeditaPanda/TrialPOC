@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Promotion {
 
+    @JsonProperty(required = false)
+    private String shelfTalkerImage;
+
     @JsonProperty
     private String offerId;
 
@@ -93,5 +96,9 @@ public class Promotion {
 
     public Integer hash(){
         return hashCode();
+    }
+
+    public String getShelfTalkerImage() {
+        return shelfTalkerImage;
     }
 }
