@@ -158,6 +158,8 @@ public class PromotionResourceTest extends ResourceTest {
 
         DBObject firstPromotion = promotions.get(0);
         assertThat(firstPromotion.get("offerId")).isEqualTo("567");
+        assertThat(firstPromotion.get("itemNumber")).isEqualTo("5678");
+        assertThat(firstPromotion.get("zoneId")).isEqualTo("4");
         assertThat(firstPromotion.get("offerName")).isEqualTo("name of promotion");
         assertThat(firstPromotion.get("startDate")).isEqualTo("date1");
         assertThat(firstPromotion.get("endDate")).isEqualTo("date2");
@@ -166,6 +168,8 @@ public class PromotionResourceTest extends ResourceTest {
 
         DBObject secondPromotion = promotions.get(1);
         assertThat(secondPromotion.get("offerId")).isEqualTo("123");
+        assertThat(secondPromotion.get("itemNumber")).isEqualTo("1234");
+        assertThat(secondPromotion.get("zoneId")).isEqualTo("5");
         assertThat(secondPromotion.get("offerName")).isEqualTo("name of promotion");
         assertThat(secondPromotion.get("startDate")).isEqualTo("date1");
         assertThat(secondPromotion.get("endDate")).isEqualTo("date2");
