@@ -33,28 +33,6 @@ public class PromotionResource {
         this.promotionDAO = promotionDAO;
     }
 
-    @GET
-    @Path("/{promotionIds}")
-    @Metered(name = "getByOfferedId-Meter", group = "PriceServices")
-    @Timed(name = "getByOfferedId-Timer", group = "PriceServices")
-    @ExceptionMetered(name = "getByOfferedId-Failures", group = "PriceServices")
-    public Response getByOfferId(@PathParam("promotionIds") String offerIds,
-                                 @QueryParam("tpnb") Optional<String> tpnb,
-                                 @QueryParam("store") Optional<String> storeId) {
-        Result<DBObject> promotions;
-        List<String> ids = Arrays.asList(offerIds.split(","));
-        if (tpnb.isPresent() && storeId.isPresent()) {
-            promotions = promotionDAO.findTheseOffersAndFilterBy(ids, tpnb.get(), storeId.get());
-        } else {
-            promotions = promotionDAO.findOffersForTheseIds(ids);
-        }
-
-        if (promotions.isEmpty()) {
-            return notFound("Promotions Not Found");
-        }
-        return ok(promotions);
-    }
-
     @POST
     @Path("/find")
     @Metered(name = "getByOfferedId-Meter", group = "PriceServices")
@@ -79,13 +57,6 @@ public class PromotionResource {
         }
 
         return ok(results);
-    }
-
-    @GET
-    @Path("/{promotionId}/{path: .*}")
-    @ExceptionMetered(name = "getByOffered-Failures", group = "PriceServices")
-    public Response getOffer() {
-        return badRequest();
     }
 
     @GET
