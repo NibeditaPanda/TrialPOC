@@ -2,11 +2,12 @@ package com.tesco.adapters.core;
 
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 import java.io.IOException;
 
-import static com.tesco.adapters.core.PriceKeys.*;
+import static com.tesco.adapters.core.PriceKeys.PROMOTION_OFFER_ID;
+import static com.tesco.adapters.core.PriceKeys.SHELF_TALKER_IMAGE;
 import static java.lang.String.format;
 import static org.fest.assertions.api.Assertions.assertThat;
 

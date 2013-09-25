@@ -3,18 +3,15 @@ package com.tesco.adapters.sonetto;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.tesco.adapters.core.PriceKeys;
-import org.junit.Ignore;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class SonettoPromotionXMLReaderTest {
 
@@ -22,7 +19,7 @@ public class SonettoPromotionXMLReaderTest {
     private SonettoPromotionXMLReader sonettoPromotionXMLHandler;
     private final String shelfURL = "http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/Superstore/Online/Product/pos/%s.png";
 
-    @BeforeMethod
+    @Before
     public void setup(){
         mockWriter = mock(SonettoPromotionWriter.class);
         sonettoPromotionXMLHandler = new SonettoPromotionXMLReader(mockWriter, shelfURL);

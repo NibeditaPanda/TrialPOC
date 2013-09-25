@@ -24,21 +24,21 @@ public class Controller {
     private DBCollection priceCollection;
     private DBCollection storeCollection;
     private DBCollection promotionCollection;
-    private String RPMPriceZoneCsvFilePath;
-    private String RPMStoreZoneCsvFilePath;
-    private String RPMPromotionCsvFilePath;
+    private String rpmPriceZoneCsvFilePath;
+    private String rpmStoreZoneCsvFilePath;
+    private String rpmPromotionCsvFilePath;
+    private String rpmPromotionDescCSVUrl;
     private String sonettoPromotionsXMLFilePath;
-    private String RPMPromotionDescCSVUrl;
 
-    public Controller(DBCollection priceCollection, DBCollection storeCollection, DBCollection promotionCollection, String RPMPriceZoneCsvFilePath, String RPMStoreZoneCsvFilePath, String RPMPromotionCsvFilePath, String sonettoPromotionsXMLFilePath, String rpmPromotionDescCSVUrl) {
+    public Controller(DBCollection priceCollection, DBCollection storeCollection, DBCollection promotionCollection, String rpmPriceZoneCsvFilePath, String rpmStoreZoneCsvFilePath, String rpmPromotionCsvFilePath, String sonettoPromotionsXMLFilePath, String rpmPromotionDescCSVUrl) {
         this.priceCollection = priceCollection;
         this.storeCollection = storeCollection;
         this.promotionCollection = promotionCollection;
-        this.RPMPriceZoneCsvFilePath = RPMPriceZoneCsvFilePath;
-        this.RPMStoreZoneCsvFilePath = RPMStoreZoneCsvFilePath;
-        this.RPMPromotionCsvFilePath = RPMPromotionCsvFilePath;
+        this.rpmPriceZoneCsvFilePath = rpmPriceZoneCsvFilePath;
+        this.rpmStoreZoneCsvFilePath = rpmStoreZoneCsvFilePath;
+        this.rpmPromotionCsvFilePath = rpmPromotionCsvFilePath;
         this.sonettoPromotionsXMLFilePath = sonettoPromotionsXMLFilePath;
-        this.RPMPromotionDescCSVUrl = rpmPromotionDescCSVUrl;
+        this.rpmPromotionDescCSVUrl = rpmPromotionDescCSVUrl;
     }
 
     public static void main(String[] args) {
@@ -81,7 +81,15 @@ public class Controller {
     public void fetchAndSavePriceDetails() throws IOException, ParserConfigurationException, SAXException, ConfigurationException, JAXBException, ColumnNotFoundException {
         indexMongo();
         logger.info("Importing data from RPM....");
-        new RPMWriter(priceCollection, storeCollection, promotionCollection, RPMPriceZoneCsvFilePath, RPMStoreZoneCsvFilePath, RPMPromotionCsvFilePath, sonettoPromotionsXMLFilePath, Configuration.getSonettoShelfImageUrl(), RPMPromotionDescCSVUrl).write();
+        new RPMWriter(priceCollection,
+                storeCollection,
+                promotionCollection,
+                rpmPriceZoneCsvFilePath,
+                rpmStoreZoneCsvFilePath,
+                rpmPromotionCsvFilePath,
+                sonettoPromotionsXMLFilePath,
+                Configuration.getSonettoShelfImageUrl(),
+                rpmPromotionDescCSVUrl).write();
     }
 
     private void indexMongo() {

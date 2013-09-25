@@ -2,14 +2,13 @@ package com.tesco.adapters.core;
 
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 import static com.tesco.adapters.core.PriceKeys.*;
 import static java.lang.String.format;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class PromotionDescriptionControllerTest extends ControllerIntegrationTest {
-
 
     @Test
     public void shouldWriteCFDescriptionsFromRPMDescCSVToMongo() {

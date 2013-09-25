@@ -2,7 +2,7 @@ package com.tesco.adapters.sonetto.Elements;
 
 import com.mongodb.DBObject;
 import com.tesco.adapters.core.PriceKeys;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 import static java.lang.String.format;
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -11,7 +11,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 public class PromotionTest {
 
     @Test
-    public void createsDBOjectForStorePromotions(){
+    public void createsDBObjectForStorePromotions(){
         String sonettoId = "A123456789";
         String image = "IMAGE";
         Promotion promotion = new PromotionBuilder().withSonettoId(sonettoId).withShelfTalkerImage(image).buildStorePromotion();
