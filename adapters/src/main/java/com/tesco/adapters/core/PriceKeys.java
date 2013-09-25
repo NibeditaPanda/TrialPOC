@@ -24,7 +24,5 @@ public class PriceKeys {
     public static final String STORE_COLLECTION = "stores";
     public static final String PROMOTION_COLLECTION = "promotions";
     public static final String SHELF_TALKER_IMAGE = "shelfTalkerImage";
-    public static final String PROMOTION = "promotion";
-    public static final String SONETTO = "SonettoID";
 
 }

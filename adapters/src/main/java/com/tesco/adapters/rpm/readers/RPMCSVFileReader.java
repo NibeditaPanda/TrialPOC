@@ -1,4 +1,4 @@
-package com.tesco.adapters.rpm;
+package com.tesco.adapters.rpm.readers;
 
 import com.mongodb.DBObject;
 

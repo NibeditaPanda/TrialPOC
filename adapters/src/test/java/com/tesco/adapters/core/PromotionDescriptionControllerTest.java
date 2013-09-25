@@ -12,7 +12,7 @@ public class PromotionDescriptionControllerTest extends ControllerIntegrationTes
 
 
     @Test
-    public void shouldWriteCFDescrptionsFromRPMDescCSVToMongo() {
+    public void shouldWriteCFDescriptionsFromRPMDescCSVToMongo() {
         DBObject zone5Promotion = promotionCollection.find((DBObject) JSON.parse(format("{\"%s\": \"A29721647\", \"%s\": \"5\"}", PROMOTION_OFFER_ID, ZONE_ID))).toArray().get(0);
         DBObject zone6Promotion = promotionCollection.find((DBObject) JSON.parse(format("{\"%s\": \"A29721647\", \"%s\": \"6\"}", PROMOTION_OFFER_ID, ZONE_ID))).toArray().get(0);
 

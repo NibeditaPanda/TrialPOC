@@ -2,7 +2,8 @@ package com.tesco.adapters.core;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
-import com.tesco.adapters.rpm.RPMWriter;
+import com.tesco.adapters.core.exceptions.ColumnNotFoundException;
+import com.tesco.adapters.rpm.writers.RPMWriter;
 import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 import org.xml.sax.SAXException;
@@ -77,7 +78,7 @@ public class Controller {
     }
 
 
-    public void fetchAndSavePriceDetails() throws IOException, ParserConfigurationException, SAXException, ConfigurationException, JAXBException {
+    public void fetchAndSavePriceDetails() throws IOException, ParserConfigurationException, SAXException, ConfigurationException, JAXBException, ColumnNotFoundException {
         indexMongo();
         logger.info("Importing data from RPM....");
         new RPMWriter(priceCollection, storeCollection, promotionCollection, RPMPriceZoneCsvFilePath, RPMStoreZoneCsvFilePath, RPMPromotionCsvFilePath, sonettoPromotionsXMLFilePath, Configuration.getSonettoShelfImageUrl(), RPMPromotionDescCSVUrl).write();

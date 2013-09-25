@@ -1,9 +1,11 @@
-package com.tesco.adapters.rpm;
+package com.tesco.adapters.rpm.writers;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
+import com.tesco.adapters.core.exceptions.ColumnNotFoundException;
+import com.tesco.adapters.rpm.readers.*;
 import com.tesco.adapters.sonetto.SonettoPromotionWriter;
 import com.tesco.adapters.sonetto.SonettoPromotionXMLReader;
 import org.slf4j.Logger;
@@ -46,11 +48,11 @@ public class RPMWriter {
         updateCount = 0;
     }
 
-    public void write() throws IOException, ParserConfigurationException, SAXException, JAXBException {
+    public void write() throws IOException, ParserConfigurationException, SAXException, JAXBException, ColumnNotFoundException {
         logger.info("Importing from Price Zone...");
-        writeToCollection(priceCollection, ITEM_NUMBER, new RPMPriceCSVFileReader(RPMPriceZoneCsvFile));
+        writeToCollection(priceCollection, ITEM_NUMBER, new RPMPriceZoneCSVFileReader(RPMPriceZoneCsvFile));
         logger.info("Importing from Store Zone...");
-        writeToCollection(storeCollection, STORE_ID, new RPMStoreCSVFileReader(RPMStoreZoneCsvFilePath));
+        writeToCollection(storeCollection, STORE_ID, new RPMStoreZoneCSVFileReader(RPMStoreZoneCsvFilePath));
         logger.info("Importing Promotions...");
         writePromotionsToPricesCollection();
         logger.info("Update Promotions with CF Descriptions...");
@@ -59,10 +61,8 @@ public class RPMWriter {
         updatePromotionsWithShelfTalker();
     }
 
-    private void writePromotionsDescription() throws IOException {
-
-
-        RPMPromotionDescReader reader = new RPMPromotionDescReader(RPMPromotionDescCSVUrl);
+    private void writePromotionsDescription() throws IOException, ColumnNotFoundException {
+        RPMPromotionDescriptionCSVFileReader reader = new RPMPromotionDescriptionCSVFileReader(RPMPromotionDescCSVUrl);
         DBObject next;
         while ((next = reader.getNext()) != null) {
             BasicDBObject key = new BasicDBObject();
@@ -93,7 +93,7 @@ public class RPMWriter {
         logUpsertCounts(collection);
     }
 
-    private void writePromotionsToPricesCollection() throws IOException {
+    private void writePromotionsToPricesCollection() throws IOException, ColumnNotFoundException {
         DBObject nextPromotion;
         RPMPromotionCSVFileReader rpmPromotionCSVFileReader = new RPMPromotionCSVFileReader(RPMPromotionCsvFilePath);
         while ((nextPromotion = rpmPromotionCSVFileReader.getNext()) != null) {

@@ -2,6 +2,7 @@ package com.tesco.adapters.core;
 
 import com.mongodb.*;
 import com.mongodb.util.JSON;
+import com.tesco.adapters.core.exceptions.ColumnNotFoundException;
 import org.apache.commons.configuration.ConfigurationException;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -25,7 +26,7 @@ public class ControllerIntegrationTest {
     private String sonettoPromotionsXMLFilePath = "./src/test/resources/com/tesco/adapters/sonetto/PromotionsDataExport.xml";
 
     @BeforeMethod
-    public void setUp() throws IOException, ParserConfigurationException, SAXException, ConfigurationException, JAXBException {
+    public void setUp() throws IOException, ParserConfigurationException, SAXException, ConfigurationException, JAXBException, ColumnNotFoundException {
         DBFactory.getCollection(PRICE_COLLECTION).drop();
         priceCollection = DBFactory.getCollection(PRICE_COLLECTION);
 
@@ -73,7 +74,7 @@ public class ControllerIntegrationTest {
     }
 
     @Test
-    public void shouldImportZonePriceAndPromoPriceFromRPMPriceDumpsOnRefresh() throws IOException, ParserConfigurationException, SAXException, ConfigurationException, JAXBException {
+    public void shouldImportZonePriceAndPromoPriceFromRPMPriceDumpsOnRefresh() throws Exception {
         String rpmPriceZoneCsvFilePath = "./src/test/resources/com/tesco/adapters/rpm/fixtures/price_zone_to_update.csv";
         String rpmStoreZoneUpdateFilePath = "./src/test/resources/com/tesco/adapters/rpm/fixtures/store_zone.csv";
         String rpmPromotionCsvFilePath = "./src/test/resources/com/tesco/adapters/rpm/fixtures/prom_extract.csv";
@@ -88,7 +89,7 @@ public class ControllerIntegrationTest {
     }
 
     @Test
-    public void shouldImportStoreAndZoneMapping() {
+    public void shouldImportStoreAndZoneMapping() throws Exception {
         List<DBObject> stores = storeCollection.find((DBObject) JSON.parse(format("{\"%s\": \"2002\"}", STORE_ID))).toArray();
         DBObject productWithPrice = stores.get(0);
 
@@ -100,7 +101,7 @@ public class ControllerIntegrationTest {
     }
 
     @Test
-    public void shouldImportStoreAndZoneMappingOnRefresh() throws IOException, ParserConfigurationException, SAXException, ConfigurationException, JAXBException {
+    public void shouldImportStoreAndZoneMappingOnRefresh() throws Exception {
         String rpmPriceZoneCsvFilePath = "./src/test/resources/com/tesco/adapters/rpm/fixtures/price_zone.csv";
         String rpmStoreZoneUpdateFilePath = "./src/test/resources/com/tesco/adapters/rpm/fixtures/store_zone_to_update.csv";
         String rpmPromotionCsvFilePath = "./src/test/resources/com/tesco/adapters/rpm/fixtures/prom_extract.csv";
