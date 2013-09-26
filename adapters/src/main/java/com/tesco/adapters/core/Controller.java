@@ -12,14 +12,15 @@ import com.tesco.adapters.sonetto.SonettoPromotionWriter;
 import com.tesco.adapters.sonetto.SonettoPromotionXMLReader;
 import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
-import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static com.tesco.adapters.core.DBFactory.getCollection;
 import static com.tesco.adapters.core.PriceKeys.*;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -50,9 +51,9 @@ public class Controller {
     public static void main(String[] args) throws ConfigurationException {
         logger.info("Firing up...");
 
-        DBCollection tempPriceCollection = DBFactory.getCollection(getTempCollectionName(PRICE_COLLECTION));
-        DBCollection tempStoreCollection = DBFactory.getCollection(getTempCollectionName(STORE_COLLECTION));
-        DBCollection tempPromotionCollection = DBFactory.getCollection(getTempCollectionName(PROMOTION_COLLECTION));
+        DBCollection tempPriceCollection = getCollection(getTempCollectionName(PRICE_COLLECTION));
+        DBCollection tempStoreCollection = getCollection(getTempCollectionName(STORE_COLLECTION));
+        DBCollection tempPromotionCollection = getCollection(getTempCollectionName(PROMOTION_COLLECTION));
 
         Controller controller = new Controller(tempPriceCollection, tempStoreCollection,
                 tempPromotionCollection, Configuration.getRPMPriceDataPath(), Configuration.getRPMStoreDataPath(),
@@ -63,7 +64,7 @@ public class Controller {
 
     }
 
-    public void fetchAndSavePriceDetails() throws IOException, ParserConfigurationException, SAXException, ConfigurationException, JAXBException, ColumnNotFoundException {
+    public void fetchAndSavePriceDetails() throws IOException, ParserConfigurationException, ConfigurationException, JAXBException, ColumnNotFoundException {
         indexMongo();
         logger.info("Importing data from RPM....");
         RPMPriceZoneCSVFileReader rpmPriceZoneCSVFileReader = new RPMPriceZoneCSVFileReader(rpmPriceZoneCsvFilePath);
@@ -77,7 +78,11 @@ public class Controller {
                 storeCollection,
                 promotionCollection,
                 sonettoPromotionsXMLFilePath,
-                rpmPriceZoneCSVFileReader, rpmStoreZoneCSVFileReader, rpmPromotionCSVFileReader, rpmPromotionDescriptionCSVFileReader, sonettoPromotionXMLReader).write();
+                rpmPriceZoneCSVFileReader,
+                rpmStoreZoneCSVFileReader,
+                rpmPromotionCSVFileReader,
+                rpmPromotionDescriptionCSVFileReader,
+                sonettoPromotionXMLReader).write();
     }
 
 
@@ -90,5 +95,29 @@ public class Controller {
         priceCollection.ensureIndex(new BasicDBObject(ITEM_NUMBER, 1));
         storeCollection.ensureIndex(new BasicDBObject(STORE_ID, 1));
         promotionCollection.ensureIndex(new BasicDBObject(PROMOTION_OFFER_ID, 1));
+    }
+
+    public void deleteRpmPriceZoneCsvFilePath() {
+        deleteFile(rpmPriceZoneCsvFilePath);
+    }
+
+    public void deleteRpmStoreZoneCsvFilePath() {
+        deleteFile(rpmStoreZoneCsvFilePath);
+    }
+
+    public void deleteRpmPromotionCsvFilePath() {
+        deleteFile(rpmPromotionCsvFilePath);
+    }
+
+    public void deleteRpmPromotionDescCSVUrl() {
+        deleteFile(rpmPromotionDescCSVUrl);
+    }
+
+    public void deleteSonettoPromotionsXMLFilePath() {
+        deleteFile(sonettoPromotionsXMLFilePath);
+    }
+
+    private boolean deleteFile(String file) {
+        return new File(file).delete();
     }
 }

@@ -2,7 +2,6 @@ package com.tesco.adapters.sonetto.Elements;
 
 
 import com.googlecode.totallylazy.Predicate;
-import com.googlecode.totallylazy.Sequence;
 
 
 import javax.xml.bind.annotation.*;
@@ -16,19 +15,19 @@ import static org.hamcrest.CoreMatchers.is;
 public class Promotions {
 
     @XmlElement(name = "Promotion")
-    private List<Promotion> foo;
+    private List<Promotion> promotionList;
 
     public List<Promotion> getPromotions(){
-        return foo;
+        return promotionList;
     }
 
     public List<Promotion> getInternetPromotions()
     {
-        return filter(having(on(Promotion.class).isInternetExclusive(), is(true)), foo);
+        return filter(having(on(Promotion.class).isInternetExclusive(), is(true)), promotionList);
     }
 
     public List<Promotion> getStorePromotions() {
-        return sequence(foo).filter(new Predicate<Promotion>() {
+        return sequence(promotionList).filter(new Predicate<Promotion>() {
             @Override
             public boolean matches(Promotion promotion) {
                 return !promotion.isInternetExclusive();

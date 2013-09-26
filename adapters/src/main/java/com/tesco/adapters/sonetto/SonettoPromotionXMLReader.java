@@ -1,13 +1,10 @@
 package com.tesco.adapters.sonetto;
 
 import com.mongodb.DBObject;
-import com.tesco.adapters.core.PriceKeys;
 import com.tesco.adapters.sonetto.Elements.Promotion;
 import com.tesco.adapters.sonetto.Elements.Promotions;
-import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
@@ -21,12 +18,11 @@ public class SonettoPromotionXMLReader {
         this.shelfURL = shelfURL;
     }
 
-    public void handle(String xmlPath) throws JAXBException, SAXException {
+    public void handle(String xmlPath) throws JAXBException {
         StreamSource source = new StreamSource(xmlPath);
 
         Unmarshaller u = JAXBContext.newInstance(Promotions.class).createUnmarshaller();
-        JAXBElement<Promotions> jaxbObject = u.unmarshal(source, Promotions.class);
-        Promotions promotions = jaxbObject.getValue();
+        Promotions promotions = u.unmarshal(source, Promotions.class).getValue();
 
         for (Promotion promotion : promotions.getStorePromotions()) {
             DBObject promotionDBObject = promotion.buildStoreDBObject(shelfURL);

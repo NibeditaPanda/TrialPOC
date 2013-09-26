@@ -5,6 +5,9 @@ import com.mongodb.DBObject;
 import com.tesco.adapters.core.PriceKeys;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
@@ -13,15 +16,18 @@ import java.io.IOException;
 
 import static org.mockito.Mockito.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class SonettoPromotionXMLReaderTest {
 
+    private static final String PROMOTIONS_DATA_EXPORT = "src/test/resources/com/tesco/adapters/sonetto/PromotionsDataExport.xml";
+    private static final String shelfURL = "http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/Superstore/Online/Product/pos/%s.png";
+
+    @Mock
     private SonettoPromotionWriter mockWriter;
     private SonettoPromotionXMLReader sonettoPromotionXMLHandler;
-    private final String shelfURL = "http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/Superstore/Online/Product/pos/%s.png";
 
     @Before
     public void setup(){
-        mockWriter = mock(SonettoPromotionWriter.class);
         sonettoPromotionXMLHandler = new SonettoPromotionXMLReader(mockWriter, shelfURL);
     }
 
@@ -29,7 +35,7 @@ public class SonettoPromotionXMLReaderTest {
     public void shouldReadShelfTalkerIDFromSonetto() throws IOException, SAXException, ParserConfigurationException, JAXBException {
         String image = String.format(shelfURL, "specialpurchase");
 
-        sonettoPromotionXMLHandler.handle("src/test/resources/com/tesco/adapters/sonetto/PromotionsDataExport.xml");
+        sonettoPromotionXMLHandler.handle(PROMOTIONS_DATA_EXPORT);
 
         DBObject promotions = new BasicDBObject();
         promotions.put(PriceKeys.PROMOTION_OFFER_ID, "A29721690");
@@ -42,19 +48,18 @@ public class SonettoPromotionXMLReaderTest {
     public void handlesStorePromotionsAndUpdates() throws IOException, SAXException, ParserConfigurationException, JAXBException {
         String image = String.format(shelfURL, "specialpurchase");
 
-        sonettoPromotionXMLHandler.handle("src/test/resources/com/tesco/adapters/sonetto/PromotionsDataExport.xml");
+        sonettoPromotionXMLHandler.handle(PROMOTIONS_DATA_EXPORT);
 
         DBObject storePromotion = new BasicDBObject();
         storePromotion.put(PriceKeys.PROMOTION_OFFER_ID, "A29721690");
         storePromotion.put(PriceKeys.SHELF_TALKER_IMAGE, image);
-
 
         verify(mockWriter, times(1)).updatePromotion(storePromotion);
     }
 
     @Test
     public void handlesInternetExclusivePromotionsAndInserts() throws IOException, SAXException, ParserConfigurationException, JAXBException {
-        sonettoPromotionXMLHandler.handle("src/test/resources/com/tesco/adapters/sonetto/PromotionsDataExport.xml");
+        sonettoPromotionXMLHandler.handle(PROMOTIONS_DATA_EXPORT);
 
         DBObject internetPromotionA = new BasicDBObject();
         internetPromotionA.put(PriceKeys.PROMOTION_OFFER_ID, "S00001030");

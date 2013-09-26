@@ -2,11 +2,10 @@ package com.tesco.adapters.sonetto.Elements;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.tesco.adapters.core.PriceKeys;
 
 import javax.xml.bind.annotation.*;
-import java.util.List;
 
+import static com.tesco.adapters.core.PriceKeys.*;
 import static java.lang.String.format;
 
 @XmlRootElement(name = "Promotion")
@@ -43,34 +42,25 @@ public class Promotion {
         this.availability = new Availability(startDate, endDate);
     }
 
-    public String getSonettoID() {
-        return sonettoID;
-    }
-
-    public String getShelfTalkerImage() {
-        return shelfTalkerImage;
-    }
-
     public boolean isInternetExclusive() {
         return internetExclusive;
     }
 
-    public DBObject buildInternetDBObject()
-    {
+    public DBObject buildInternetDBObject() {
         BasicDBObject promotionDBObject = new BasicDBObject();
-        promotionDBObject.put(PriceKeys.PROMOTION_OFFER_ID, sonettoID);
-        promotionDBObject.put(PriceKeys.PROMOTION_OFFER_TEXT, offetText);
-        promotionDBObject.put(PriceKeys.PROMOTION_START_DATE, availability.getStartDate());
-        promotionDBObject.put(PriceKeys.PROMOTION_END_DATE, availability.getEndDate());
+        promotionDBObject.put(PROMOTION_OFFER_ID, sonettoID);
+        promotionDBObject.put(PROMOTION_OFFER_TEXT, offetText);
+        promotionDBObject.put(PROMOTION_START_DATE, availability.getStartDate());
+        promotionDBObject.put(PROMOTION_END_DATE, availability.getEndDate());
 
         return promotionDBObject;
     }
 
     public DBObject buildStoreDBObject(String shelfTalkerImagePath) {
         BasicDBObject promotionDBObject = new BasicDBObject();
-        promotionDBObject.put(PriceKeys.PROMOTION_OFFER_ID,sonettoID);
-        promotionDBObject.put(PriceKeys.SHELF_TALKER_IMAGE, format(shelfTalkerImagePath, shelfTalkerImage));
-        return  promotionDBObject;
+        promotionDBObject.put(PROMOTION_OFFER_ID, sonettoID);
+        promotionDBObject.put(SHELF_TALKER_IMAGE, format(shelfTalkerImagePath, shelfTalkerImage));
+        return promotionDBObject;
     }
 
 }

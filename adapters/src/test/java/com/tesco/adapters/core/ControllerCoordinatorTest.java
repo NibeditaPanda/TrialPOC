@@ -8,9 +8,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import javax.xml.bind.JAXBException;
+
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ControllerCoordinatorTest {
@@ -44,6 +44,29 @@ public class ControllerCoordinatorTest {
         verify(tempPriceDbCollection, never()).rename("prices");
         verify(tempStoreDbCollection, never()).rename("stores");
         verify(tempPromotionDbCollection, never()).rename("promotions");
+        verify(controller).deleteRpmPriceZoneCsvFilePath();
+        verify(controller).deleteRpmStoreZoneCsvFilePath();
+        verify(controller).deleteRpmPromotionCsvFilePath();
+        verify(controller).deleteRpmPromotionDescCSVUrl();
+        verify(controller).deleteSonettoPromotionsXMLFilePath();
+
+    }
+
+    @Test
+    public void shouldNotRenameCollectionGivenSonettoIsCorrupted() throws Exception {
+
+        doThrow(new JAXBException("Error")).when(controller).fetchAndSavePriceDetails();
+
+        controllerCoordinator.processData(controller, tempPriceDbCollection, tempStoreDbCollection, tempPromotionDbCollection);
+
+        verify(tempPriceDbCollection, never()).rename("prices");
+        verify(tempStoreDbCollection, never()).rename("stores");
+        verify(tempPromotionDbCollection, never()).rename("promotions");
+        verify(controller).deleteRpmPriceZoneCsvFilePath();
+        verify(controller).deleteRpmStoreZoneCsvFilePath();
+        verify(controller).deleteRpmPromotionCsvFilePath();
+        verify(controller).deleteRpmPromotionDescCSVUrl();
+        verify(controller).deleteSonettoPromotionsXMLFilePath();
 
     }
 }

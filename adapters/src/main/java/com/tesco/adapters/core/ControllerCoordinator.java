@@ -31,6 +31,12 @@ public class ControllerCoordinator {
 
         } catch (Exception exception) {
             logger.error("Error importing data", exception);
+
+            controller.deleteRpmPriceZoneCsvFilePath();
+            controller.deleteRpmStoreZoneCsvFilePath();
+            controller.deleteRpmPromotionDescCSVUrl();
+            controller.deleteRpmPromotionCsvFilePath();
+            controller.deleteSonettoPromotionsXMLFilePath();
         }
     }
 }
