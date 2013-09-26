@@ -21,7 +21,7 @@ appender("price_service", RollingFileAppender) {
         maxIndex = 3
     }
     triggeringPolicy(SizeBasedTriggeringPolicy) {
-        maxFileSize = "5MB"
+        maxFileSize = "20MB"
     }
     encoder(PatternLayoutEncoder) {
         pattern = "%d %p [%c] - <%m>%n"
