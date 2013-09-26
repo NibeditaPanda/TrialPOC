@@ -6,7 +6,6 @@ import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
 import com.tesco.adapters.core.exceptions.ColumnNotFoundException;
 import com.tesco.adapters.rpm.readers.*;
-import com.tesco.adapters.sonetto.SonettoPromotionWriter;
 import com.tesco.adapters.sonetto.SonettoPromotionXMLReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,41 +17,57 @@ import java.io.IOException;
 import java.util.List;
 
 import static com.tesco.adapters.core.PriceKeys.*;
+import static com.tesco.adapters.rpm.readers.RPMPriceZoneCSVFileReader.PRICE_ZONE_FORMAT;
+import static java.lang.Boolean.parseBoolean;
+import static java.lang.String.format;
 
 public class RPMWriter {
+    private Logger logger = LoggerFactory.getLogger("RPM Import");
+
     private DBCollection promotionCollection;
     private DBCollection priceCollection;
     private DBCollection storeCollection;
-    private String RPMPriceZoneCsvFile;
-    private String RPMStoreZoneCsvFilePath;
-    private String RPMPromotionCsvFilePath;
     private String sonettoPromotionsXMLFilePath;
-    private String sonettoShelfImageUrl;
-    private String RPMPromotionDescCSVUrl;
-    private Logger logger;
+
+    private RPMPriceZoneCSVFileReader rpmPriceZoneCSVFileReader;
+    private RPMPromotionCSVFileReader rpmPromotionCSVFileReader;
+    private RPMPromotionDescriptionCSVFileReader rpmPromotionDescriptionCSVFileReader;
+    private RPMStoreZoneCSVFileReader rpmStoreZoneCSVFileReader;
+
+    private SonettoPromotionXMLReader sonettoPromotionXMLReader;
+
     private int insertCount;
     private int updateCount;
 
-    public RPMWriter(DBCollection priceCollection, DBCollection storeCollection, DBCollection promotionCollection, String RPMPriceZoneCsvFile, String RPMStoreZoneCsvFilePath, String RPMPromotionCsvFilePath, String sonettoPromotionsXMLFilePath, String sonettoShelfImageUrl, String RPMPromotionDescCSVUrl) {
+    public RPMWriter(DBCollection priceCollection,
+                     DBCollection storeCollection,
+                     DBCollection promotionCollection,
+                     String sonettoPromotionsXMLFilePath,
+                     RPMPriceZoneCSVFileReader rpmPriceZoneCSVFileReader,
+                     RPMStoreZoneCSVFileReader rpmStoreZoneCSVFileReader,
+                     RPMPromotionCSVFileReader rpmPromotionCSVFileReader,
+                     RPMPromotionDescriptionCSVFileReader rpmPromotionDescriptionCSVFileReader,
+                     SonettoPromotionXMLReader sonettoPromotionXMLReader) throws IOException, ColumnNotFoundException {
+
         this.priceCollection = priceCollection;
         this.storeCollection = storeCollection;
         this.promotionCollection = promotionCollection;
-        this.RPMPriceZoneCsvFile = RPMPriceZoneCsvFile;
-        this.RPMStoreZoneCsvFilePath = RPMStoreZoneCsvFilePath;
-        this.RPMPromotionCsvFilePath = RPMPromotionCsvFilePath;
         this.sonettoPromotionsXMLFilePath = sonettoPromotionsXMLFilePath;
-        this.sonettoShelfImageUrl = sonettoShelfImageUrl;
-        this.RPMPromotionDescCSVUrl = RPMPromotionDescCSVUrl;
-        logger = LoggerFactory.getLogger("RPM Import");
+        this.rpmPriceZoneCSVFileReader = rpmPriceZoneCSVFileReader;
+        this.rpmStoreZoneCSVFileReader = rpmStoreZoneCSVFileReader;
+        this.rpmPromotionCSVFileReader = rpmPromotionCSVFileReader;
+        this.rpmPromotionDescriptionCSVFileReader = rpmPromotionDescriptionCSVFileReader;
+        this.sonettoPromotionXMLReader = sonettoPromotionXMLReader;
+
         insertCount = 0;
         updateCount = 0;
     }
 
     public void write() throws IOException, ParserConfigurationException, SAXException, JAXBException, ColumnNotFoundException {
         logger.info("Importing from Price Zone...");
-        writeToCollection(priceCollection, ITEM_NUMBER, new RPMPriceZoneCSVFileReader(RPMPriceZoneCsvFile));
+        writeToCollection(priceCollection, ITEM_NUMBER, rpmPriceZoneCSVFileReader);
         logger.info("Importing from Store Zone...");
-        writeToCollection(storeCollection, STORE_ID, new RPMStoreZoneCSVFileReader(RPMStoreZoneCsvFilePath));
+        writeToCollection(storeCollection, STORE_ID, rpmStoreZoneCSVFileReader);
         logger.info("Importing Promotions...");
         writePromotionsToPricesCollection();
         logger.info("Update Promotions with CF Descriptions...");
@@ -61,10 +76,27 @@ public class RPMWriter {
         updatePromotionsWithShelfTalker();
     }
 
-    private void writePromotionsDescription() throws IOException, ColumnNotFoundException {
-        RPMPromotionDescriptionCSVFileReader reader = new RPMPromotionDescriptionCSVFileReader(RPMPromotionDescCSVUrl);
+    private void writeToCollection(DBCollection collection, String identifierKey, RPMCSVFileReader reader) throws IOException {
         DBObject next;
         while ((next = reader.getNext()) != null) {
+            DBObject existedDbObject = new BasicDBObject(identifierKey, next.get(identifierKey));
+            upsert(collection, existedDbObject, new BasicDBObject("$set", next));
+        }
+        logUpsertCounts(collection);
+    }
+
+    private void upsert(DBCollection collection, DBObject existedDbObject, DBObject dbObjectToUpdate) {
+        WriteResult updateResponse = collection.update(existedDbObject, dbObjectToUpdate, true, true);
+        if (updateResponse.getN() > 1) {
+            logger.error("Multiple documents affected by update: " + existedDbObject.toString());
+        }
+        logUpsert(existedDbObject, updateResponse);
+    }
+
+    private void writePromotionsDescription() throws IOException, ColumnNotFoundException {
+
+        DBObject next;
+        while ((next = rpmPromotionDescriptionCSVFileReader.getNext()) != null) {
             BasicDBObject key = new BasicDBObject();
             key.put(PROMOTION_OFFER_ID, next.get(PROMOTION_OFFER_ID));
             key.put(ZONE_ID, next.get(ZONE_ID));
@@ -80,66 +112,49 @@ public class RPMWriter {
     }
 
     private void updatePromotionsWithShelfTalker() throws ParserConfigurationException, SAXException, IOException, JAXBException {
-        SonettoPromotionXMLReader reader = new SonettoPromotionXMLReader(new SonettoPromotionWriter(promotionCollection), sonettoShelfImageUrl);
-        reader.handle(sonettoPromotionsXMLFilePath);
-    }
 
-    private void writeToCollection(DBCollection collection, String identifierKey, RPMCSVFileReader reader) throws IOException {
-        DBObject next;
-        while ((next = reader.getNext()) != null) {
-            DBObject query = new BasicDBObject(identifierKey, next.get(identifierKey));
-            upsert(collection, query, new BasicDBObject("$set", next));
-        }
-        logUpsertCounts(collection);
+        sonettoPromotionXMLReader.handle(sonettoPromotionsXMLFilePath);
     }
 
     private void writePromotionsToPricesCollection() throws IOException, ColumnNotFoundException {
         DBObject nextPromotion;
-        RPMPromotionCSVFileReader rpmPromotionCSVFileReader = new RPMPromotionCSVFileReader(RPMPromotionCsvFilePath);
+
         while ((nextPromotion = rpmPromotionCSVFileReader.getNext()) != null) {
-            AddPromotion(nextPromotion);
-            AppendPromotionToPrice(nextPromotion);
+            addPromotion(nextPromotion);
+            appendPromotionToPrice(nextPromotion);
         }
         logUpsertCounts(priceCollection);
     }
 
-    private void AddPromotion(DBObject nextPromotion) {
+    private void addPromotion(DBObject nextPromotion) {
         promotionCollection.insert(nextPromotion);
     }
 
-    private void AppendPromotionToPrice(DBObject nextPromotion) {
+    private void appendPromotionToPrice(DBObject nextPromotion) {
         String itemNumber = nextPromotion.removeField(ITEM_NUMBER).toString();
         String zone = nextPromotion.removeField(ZONE_ID).toString();
         nextPromotion.removeField("_id");
 
         BasicDBObject existingProductQuery = new BasicDBObject(ITEM_NUMBER, itemNumber);
-        existingProductQuery.put(String.format("%s.%s", ZONES, zone), new BasicDBObject("$exists", true));
+        existingProductQuery.put(format("%s.%s", ZONES, zone), new BasicDBObject("$exists", true));
         List<DBObject> existingProductResult = priceCollection.find(existingProductQuery).toArray();
 
         if (existingProductResult.size() > 0) {
             DBObject query = new BasicDBObject(ITEM_NUMBER, itemNumber);
-            String promotionKey = String.format("%s.%s.%s", ZONES, zone, PROMOTIONS);
+            String promotionKey = format(PRICE_ZONE_FORMAT, ZONES, zone, PROMOTIONS);
             BasicDBObject attributeToAddToSet = new BasicDBObject(promotionKey, nextPromotion);
 
             upsert(priceCollection, query, new BasicDBObject("$addToSet", attributeToAddToSet));
         } else {
-            logger.warn(String.format("Item number %s with zone %s does not exist. Promotion for this product not imported", itemNumber, zone));
+            logger.warn(format("Item number %s with zone %s does not exist. Promotion for this product not imported", itemNumber, zone));
         }
-    }
-
-    private void upsert(DBCollection collection, DBObject existQuery, DBObject attributesToUpdate) {
-        WriteResult updateResponse = collection.update(existQuery, attributesToUpdate, true, true);
-        if (updateResponse.getN() > 1) {
-            logger.error("Multiple documents affected by update: " + existQuery.toString());
-        }
-        logUpsert(existQuery, updateResponse);
     }
 
     private void logUpsert(DBObject product, WriteResult updateResponse) {
         if (updateResponse.getError() != null) {
-            String errorMessage = String.format("error on upserting entry \"%s\": %s", product.toString(), updateResponse.toString());
+            String errorMessage = format("error on upserting entry \"%s\": %s", product.toString(), updateResponse.toString());
             logger.error(errorMessage);
-        } else if (Boolean.parseBoolean(updateResponse.getField("updatedExisting").toString())) {
+        } else if (parseBoolean(updateResponse.getField("updatedExisting").toString())) {
             logger.debug("Updated entry: " + product.toString());
             updateCount++;
         } else {
@@ -149,8 +164,8 @@ public class RPMWriter {
     }
 
     private void logUpsertCounts(DBCollection collection) {
-        logger.info(String.format("Inserted %s entries in %s collection", insertCount, collection.getName()));
-        logger.info(String.format("Updated %s entries in %s collection", updateCount, collection.getName()));
+        logger.info(format("Inserted %s entries in %s collection", insertCount, collection.getName()));
+        logger.info(format("Updated %s entries in %s collection", updateCount, collection.getName()));
         insertCount = 0;
         updateCount = 0;
     }

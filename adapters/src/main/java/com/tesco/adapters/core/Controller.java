@@ -3,7 +3,13 @@ package com.tesco.adapters.core;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.tesco.adapters.core.exceptions.ColumnNotFoundException;
+import com.tesco.adapters.rpm.readers.RPMPriceZoneCSVFileReader;
+import com.tesco.adapters.rpm.readers.RPMPromotionCSVFileReader;
+import com.tesco.adapters.rpm.readers.RPMPromotionDescriptionCSVFileReader;
+import com.tesco.adapters.rpm.readers.RPMStoreZoneCSVFileReader;
 import com.tesco.adapters.rpm.writers.RPMWriter;
+import com.tesco.adapters.sonetto.SonettoPromotionWriter;
+import com.tesco.adapters.sonetto.SonettoPromotionXMLReader;
 import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 import org.xml.sax.SAXException;
@@ -60,15 +66,18 @@ public class Controller {
     public void fetchAndSavePriceDetails() throws IOException, ParserConfigurationException, SAXException, ConfigurationException, JAXBException, ColumnNotFoundException {
         indexMongo();
         logger.info("Importing data from RPM....");
+        RPMPriceZoneCSVFileReader rpmPriceZoneCSVFileReader = new RPMPriceZoneCSVFileReader(rpmPriceZoneCsvFilePath);
+        RPMStoreZoneCSVFileReader rpmStoreZoneCSVFileReader = new RPMStoreZoneCSVFileReader(rpmStoreZoneCsvFilePath);
+        RPMPromotionCSVFileReader rpmPromotionCSVFileReader = new RPMPromotionCSVFileReader(rpmPromotionCsvFilePath);
+        RPMPromotionDescriptionCSVFileReader rpmPromotionDescriptionCSVFileReader = new RPMPromotionDescriptionCSVFileReader(rpmPromotionDescCSVUrl);
+
+        SonettoPromotionXMLReader sonettoPromotionXMLReader = new SonettoPromotionXMLReader(new SonettoPromotionWriter(promotionCollection), Configuration.getSonettoShelfImageUrl());
+
         new RPMWriter(priceCollection,
                 storeCollection,
                 promotionCollection,
-                rpmPriceZoneCsvFilePath,
-                rpmStoreZoneCsvFilePath,
-                rpmPromotionCsvFilePath,
                 sonettoPromotionsXMLFilePath,
-                Configuration.getSonettoShelfImageUrl(),
-                rpmPromotionDescCSVUrl).write();
+                rpmPriceZoneCSVFileReader, rpmStoreZoneCSVFileReader, rpmPromotionCSVFileReader, rpmPromotionDescriptionCSVFileReader, sonettoPromotionXMLReader).write();
     }
 
 

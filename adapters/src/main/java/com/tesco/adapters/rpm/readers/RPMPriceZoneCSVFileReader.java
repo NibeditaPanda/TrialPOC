@@ -16,7 +16,7 @@ import static java.util.Arrays.asList;
 
 public class RPMPriceZoneCSVFileReader implements RPMCSVFileReader {
 
-    private static final String COLUMN_FORMAT = "%s.%s.%s";
+    public static final String PRICE_ZONE_FORMAT = "%s.%s.%s";
 
     private final CSVReader csvReader;
     private final int itemNumberIndex;
@@ -49,8 +49,8 @@ public class RPMPriceZoneCSVFileReader implements RPMCSVFileReader {
 
         DBObject priceObject = new BasicDBObject();
         priceObject.put(ITEM_NUMBER, itemNumber);
-        priceObject.put(String.format(COLUMN_FORMAT, ZONES, zoneId, PRICE), price);
-        priceObject.put(String.format(COLUMN_FORMAT, ZONES, zoneId, PROMO_PRICE), promotionalPrice);
+        priceObject.put(String.format(PRICE_ZONE_FORMAT, ZONES, zoneId, PRICE), price);
+        priceObject.put(String.format(PRICE_ZONE_FORMAT, ZONES, zoneId, PROMO_PRICE), promotionalPrice);
 
         return priceObject;
     }
