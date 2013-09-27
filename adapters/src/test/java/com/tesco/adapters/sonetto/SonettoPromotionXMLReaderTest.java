@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 public class SonettoPromotionXMLReaderTest {
 
     private static final String PROMOTIONS_DATA_EXPORT = "src/test/resources/com/tesco/adapters/sonetto/PromotionsDataExport.xml";
-    private static final String shelfURL = "http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/Superstore/Online/Product/pos/%s.png";
+    private static final String SHELF_URL = "http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/Superstore/Online/Product/pos/%s.png";
 
     @Mock
     private SonettoPromotionWriter mockWriter;
@@ -28,12 +28,12 @@ public class SonettoPromotionXMLReaderTest {
 
     @Before
     public void setup(){
-        sonettoPromotionXMLHandler = new SonettoPromotionXMLReader(mockWriter, shelfURL);
+        sonettoPromotionXMLHandler = new SonettoPromotionXMLReader(mockWriter, SHELF_URL);
     }
 
     @Test
     public void shouldReadShelfTalkerIDFromSonetto() throws IOException, SAXException, ParserConfigurationException, JAXBException {
-        String image = String.format(shelfURL, "specialpurchase");
+        String image = String.format(SHELF_URL, "specialpurchase");
 
         sonettoPromotionXMLHandler.handle(PROMOTIONS_DATA_EXPORT);
 
@@ -46,7 +46,7 @@ public class SonettoPromotionXMLReaderTest {
 
     @Test
     public void handlesStorePromotionsAndUpdates() throws IOException, SAXException, ParserConfigurationException, JAXBException {
-        String image = String.format(shelfURL, "specialpurchase");
+        String image = String.format(SHELF_URL, "specialpurchase");
 
         sonettoPromotionXMLHandler.handle(PROMOTIONS_DATA_EXPORT);
 
