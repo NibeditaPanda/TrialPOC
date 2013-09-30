@@ -1,6 +1,10 @@
 package com.tesco.services.resources;
 
 import com.google.common.base.Optional;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 import com.yammer.metrics.annotation.ExceptionMetered;
 import com.yammer.metrics.annotation.Metered;
 import com.yammer.metrics.annotation.Timed;
@@ -17,10 +21,13 @@ import static com.tesco.services.HTTPResponses.*;
 import static java.nio.charset.Charset.defaultCharset;
 
 @Path("/price/version")
+@Api(value = "/price/version", description = "Price API Version")
 @Produces(ResourceResponse.RESPONSE_TYPE)
 public class VersionResource {
 
     @GET
+    @ApiOperation(value = "Find version of Price API")
+    @ApiResponses(value = {@ApiResponse(code = 404, message = "Version JSON not found")})
     @Metered(name="getVersionNumber-Meter",group="PriceServices")
     @Timed(name="getVersionNumber-Timer",group="PriceServices")
     @ExceptionMetered(name="getVersionNumber-Failures",group="PriceServices")

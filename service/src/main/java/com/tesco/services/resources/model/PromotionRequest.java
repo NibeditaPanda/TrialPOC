@@ -1,7 +1,9 @@
 package com.tesco.services.resources.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.wordnik.swagger.annotations.ApiModel;
 
+@ApiModel
 public class PromotionRequest {
 
     @JsonProperty

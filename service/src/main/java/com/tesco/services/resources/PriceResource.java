@@ -1,9 +1,9 @@
 package com.tesco.services.resources;
 
-import com.google.common.base.Optional;
 import com.mongodb.DBObject;
 import com.tesco.services.DAO.PriceDAO;
 import com.tesco.services.Exceptions.ItemNotFoundException;
+import com.wordnik.swagger.annotations.*;
 import com.yammer.metrics.annotation.ExceptionMetered;
 import com.yammer.metrics.annotation.Metered;
 import com.yammer.metrics.annotation.Timed;
@@ -17,8 +17,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.tesco.services.HTTPResponses.*;
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 @Path("/price")
+@Api(value = "/price", description = "Price API")
 @Produces(ResourceResponse.RESPONSE_TYPE)
 public class PriceResource {
 
@@ -30,21 +33,24 @@ public class PriceResource {
 
     @GET
     @Path("/{itemNumber}")
-    @Metered(name="getPriceItemNumber-Meter",group="PriceServices")
+    @ApiOperation(value = "Find price by product's base tPNB")
+    @ApiResponses(value = {@ApiResponse(code = 404, message = "Product not found")})
     @Timed(name="getPriceItemNumber-Timer",group="PriceServices")
+    @Metered(name="getPriceItemNumber-Meter",group="PriceServices")
     @ExceptionMetered(name="getPriceItemNumber-Failures",group="PriceServices")
-    public Response get(@PathParam("itemNumber") String itemNumber,
-                        @QueryParam("store") Optional<String> storeId,
-                        @Context UriInfo uriInfo) {
+    public Response get(
+      @ApiParam(value = "ItemNumber (Base tPNB) of product whose price needs to be fetched", required = true) @PathParam("itemNumber") String itemNumber,
+      @ApiParam(value = "ID of Store if a store-specific price is desired", required = false) @QueryParam("store") String storeId,
+      @Context UriInfo uriInfo) {
 
         MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
-        if ((queryParameters.size() > 0) && !storeId.isPresent()) return badRequest();
+        if (storeQueryParamWasSentWithoutAStoreID(storeId, queryParameters)) return badRequest();
 
         List<String> itemIds = Arrays.asList(itemNumber.split(","));
 
         try {
-            List<DBObject> prices = storeId.isPresent()
-                    ? priceDAO.getPriceAndStoreInfo(itemIds,storeId.get())
+            List<DBObject> prices = isNotBlank(storeId)
+                    ? priceDAO.getPriceAndStoreInfo(itemIds,storeId)
                     : priceDAO.getPricesInfo(itemIds);
 
             return ok(prices);
@@ -53,7 +59,11 @@ public class PriceResource {
         }
     }
 
-    @GET
+  private boolean storeQueryParamWasSentWithoutAStoreID(String storeId, MultivaluedMap<String, String> queryParameters) {
+    return (queryParameters.size() > 0) && isBlank(storeId);
+  }
+
+  @GET
     @Path("/{itemNumber}/{path: .*}")
     @ExceptionMetered(name="getPriceItemNumber-Failures",group="PriceServices")
     public Response getItem() {
@@ -65,5 +75,4 @@ public class PriceResource {
     public Response getRoot() {
         return badRequest();
     }
-
 }
