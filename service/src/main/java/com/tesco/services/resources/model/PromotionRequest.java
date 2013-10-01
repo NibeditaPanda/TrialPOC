@@ -2,17 +2,21 @@ package com.tesco.services.resources.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 @ApiModel
 public class PromotionRequest {
 
     @JsonProperty
+    @ApiModelProperty(required = true)
     private String offerId;
 
     @JsonProperty
+    @ApiModelProperty(required = true)
     private String itemNumber;
 
     @JsonProperty
+    @ApiModelProperty(required = true)
     private String zoneId;
 
     public String getOfferId() {
