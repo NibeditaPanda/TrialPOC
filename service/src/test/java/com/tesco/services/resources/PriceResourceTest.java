@@ -21,7 +21,7 @@ import java.util.List;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class    PriceResourceTest extends ResourceTest {
+public class PriceResourceTest extends ResourceTest {
 
     private PriceDAO priceDAO;
     private Configuration testConfiguration = new TestConfiguration();
@@ -32,9 +32,7 @@ public class    PriceResourceTest extends ResourceTest {
     protected void setUpResources() throws Exception {
         priceDAO = new PriceDAO(testConfiguration);
         PriceResource priceResource = new PriceResource(priceDAO);
-        RootResource rootResource = new RootResource();
         addResource(priceResource);
-        addResource(rootResource);
     }
 
     @Before
@@ -238,11 +236,10 @@ public class    PriceResourceTest extends ResourceTest {
 
     @Test
     public void shouldReturn400WhenReachingInvalidResource() {
-        WebResource resource = client().resource("/non-existant");
+        WebResource resource = client().resource("/non-existent");
         ClientResponse response = resource.get(ClientResponse.class);
 
-        assertThat(response.getStatus()).isEqualTo(400);
-        assertThat(response.getEntity(String.class)).isEqualTo("Invalid request");
+        assertThat(response.getStatus()).isEqualTo(404);
     }
 
     @Test
@@ -274,8 +271,7 @@ public class    PriceResourceTest extends ResourceTest {
         WebResource resource = client().resource("/");
         ClientResponse response = resource.get(ClientResponse.class);
 
-        assertThat(response.getStatus()).isEqualTo(400);
-        assertThat(response.getEntity(String.class)).isEqualTo("Invalid request");
+        assertThat(response.getStatus()).isEqualTo(404);
     }
 
     @Test

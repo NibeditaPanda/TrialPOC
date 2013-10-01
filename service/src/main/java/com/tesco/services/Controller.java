@@ -6,6 +6,7 @@ import com.tesco.services.healthChecks.ServiceHealthCheck;
 import com.tesco.services.metrics.ResourceMetricsListener;
 import com.tesco.services.resources.*;
 import com.yammer.dropwizard.Service;
+import com.yammer.dropwizard.assets.AssetsBundle;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
 import com.yammer.dropwizard.config.HttpConfiguration;
@@ -32,6 +33,7 @@ public class Controller extends Service<Configuration> {
     @Override
     public void initialize(Bootstrap<Configuration> bootstrap) {
         bootstrap.setName("Price Service");
+        bootstrap.addBundle(new AssetsBundle("/assets/", "/docs", "index.htm"));
     }
 
     @Override
@@ -39,7 +41,6 @@ public class Controller extends Service<Configuration> {
       environment.addResource(new PriceResource(new PriceDAO(configuration)));
       environment.addResource(new PromotionResource(new PromotionDAO(configuration)));
       environment.addResource(new VersionResource());
-      environment.addResource(new RootResource());
       environment.addResource(new ImportResource(configuration, new RuntimeWrapper()));
 
       configureMetrics(configuration, environment);
