@@ -59,11 +59,7 @@ public class PriceResource {
         }
     }
 
-  private boolean storeQueryParamWasSentWithoutAStoreID(String storeId, MultivaluedMap<String, String> queryParameters) {
-    return (queryParameters.size() > 0) && isBlank(storeId);
-  }
-
-  @GET
+    @GET
     @Path("/{itemNumber}/{path: .*}")
     @ExceptionMetered(name="getPriceItemNumber-Failures",group="PriceServices")
     public Response getItem() {
@@ -74,5 +70,9 @@ public class PriceResource {
     @Path("/")
     public Response getRoot() {
         return badRequest();
+    }
+
+    private boolean storeQueryParamWasSentWithoutAStoreID(String storeId, MultivaluedMap<String, String> queryParameters) {
+      return (queryParameters.size() > 0) && isBlank(storeId);
     }
 }
