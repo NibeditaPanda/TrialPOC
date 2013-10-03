@@ -7,7 +7,6 @@ out
 adapters/logs/*
 
 # Package Files #
-*.jar
 *.war
 *.ear
 

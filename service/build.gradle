@@ -13,14 +13,17 @@ idea{
 }
 
 buildscript {
-    repositories {
-        mavenCentral()
-    }
     dependencies {
-        classpath 'com.mapvine:gradle-cobertura-plugin:1.0'
-        classpath 'eu.appsatori:gradle-fatjar-plugin:0.2-rc1'
+        classpath fileTree(dir: 'lib',
+                includes: [
+                        'gradle-cobertura-plugin-1.0.jar',
+                        'gradle-fatjar-plugin-0.2-rc1.jar'
+                ]
+        )
     }
 }
+
+
 
 sourceCompatibility = VERSION_1_7
 targetCompatibility = VERSION_1_7
@@ -42,27 +45,9 @@ repositories {
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 dependencies {
-    compile group: 'com.yammer.dropwizard', name: 'dropwizard-core', version: '0.6.2'
-    compile group: 'org.mongodb', name: 'mongo-java-driver', version: '2.11.1'
-    compile group: 'com.yammer.metrics', name: 'metrics-core',version: '2.0.0'
-    compile group: 'com.yammer.metrics', name: 'metrics-graphite',version: '2.2.0'
-    compile group: 'com.yammer.metrics', name: 'metrics-servlet',version: '2.2.0'
-    compile group: 'com.googlecode.lambdaj', name: 'lambdaj', version: '2.3.3'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.2.0'
-    compile group: 'org.mongojack', name: 'mongojack', version: '2.0.0-RC5'
-    compile group: 'commons-collections', name: 'commons-collections', version:'3.2.1'
-    compile group: 'com.wordnik',      name: 'swagger-core_2.10',   version: '1.3.0'
-    compile group: 'com.wordnik',      name: 'swagger-jaxrs_2.10',  version: '1.3.0'
-    compile group: 'org.scala-lang',   name: 'scala-library',       version: '2.10.0'
-    compile group: 'org.reflections',  name: 'reflections',         version: '0.9.8'
-    compile group: 'javax.ws.rs',      name: 'jsr311-api',          version: '1.1.1'
-    compile group: 'org.eclipse.jetty',name: 'jetty-servlets',      version: '8.1.10.v20130312'
 
-    testCompile group: "junit", name: "junit", version: "4.11"
-    testCompile group: 'org.easytesting', name: 'fest-assert-core', version: '2.0M8'
-    testCompile group: 'com.yammer.dropwizard', name: 'dropwizard-testing', version: '0.6.2'
-    testCompile group: 'com.yammer.dropwizard', name: 'dropwizard-client', version: '0.6.2'
-    testCompile group: 'org.mongodb', name: 'mongo-java-driver', version: '2.11.1'
+    compile fileTree(dir: 'lib', include: '*.jar')
+    testCompile fileTree(dir: 'lib', include: '*.jar')
 }
 
 
