@@ -2,27 +2,22 @@ package com.tesco.services;
 
 import com.tesco.services.DAO.PriceDAO;
 import com.tesco.services.DAO.PromotionDAO;
-import com.tesco.services.healthChecks.ServiceHealthCheck;
-import com.tesco.services.metrics.ResourceMetricsListener;
 import com.tesco.services.resources.*;
+import com.wordnik.swagger.config.ConfigFactory;
+import com.wordnik.swagger.config.ScannerFactory;
+import com.wordnik.swagger.config.SwaggerConfig;
+import com.wordnik.swagger.jaxrs.config.DefaultJaxrsScanner;
+import com.wordnik.swagger.jaxrs.listing.ApiDeclarationProvider;
+import com.wordnik.swagger.jaxrs.listing.ApiListingResourceJSON;
+import com.wordnik.swagger.jaxrs.listing.ResourceListingProvider;
+import com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader;
+import com.wordnik.swagger.reader.ClassReaders;
 import com.yammer.dropwizard.Service;
 import com.yammer.dropwizard.assets.AssetsBundle;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
 import com.yammer.dropwizard.config.HttpConfiguration;
-import com.yammer.metrics.Metrics;
-import com.yammer.metrics.reporting.GraphiteReporter;
-
-import com.wordnik.swagger.jaxrs.config.*;
-import com.wordnik.swagger.jaxrs.listing.ApiListingResourceJSON;
-import com.wordnik.swagger.jaxrs.listing.ApiDeclarationProvider;
-import com.wordnik.swagger.jaxrs.listing.ResourceListingProvider;
-import com.wordnik.swagger.config.*;
-import com.wordnik.swagger.reader.*;
-import com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
-
-import java.util.concurrent.TimeUnit;
 
 public class Controller extends Service<Configuration> {
 
@@ -43,17 +38,17 @@ public class Controller extends Service<Configuration> {
       environment.addResource(new VersionResource());
       environment.addResource(new ImportResource(configuration, new RuntimeWrapper()));
 
-      configureMetrics(configuration, environment);
+//      configureMetrics(configuration, environment);
       configureSwagger(environment, configuration);
     }
 
-  private void configureMetrics(Configuration configuration, Environment environment) {
-    environment.addHealthCheck(new ServiceHealthCheck(configuration));
-    ResourceMetricsListener metricsListener = new ResourceMetricsListener();
-    Metrics.defaultRegistry().addListener(metricsListener);
-    HostedGraphiteConfiguration hostedGraphiteConfig = configuration.getHostedGraphiteConfig();
-    GraphiteReporter.enable(metricsListener.getRegistry(), hostedGraphiteConfig.getPeriod(), TimeUnit.SECONDS, hostedGraphiteConfig.getHostname(), hostedGraphiteConfig.getPort(), hostedGraphiteConfig.getApikey());
-  }
+//  private void configureMetrics(Configuration configuration, Environment environment) {
+//    environment.addHealthCheck(new ServiceHealthCheck(configuration));
+//    ResourceMetricsListener metricsListener = new ResourceMetricsListener();
+//    Metrics.defaultRegistry().addListener(metricsListener);
+//    HostedGraphiteConfiguration hostedGraphiteConfig = configuration.getHostedGraphiteConfig();
+//    GraphiteReporter.enable(metricsListener.getRegistry(), hostedGraphiteConfig.getPeriod(), TimeUnit.SECONDS, hostedGraphiteConfig.getHostname(), hostedGraphiteConfig.getPort(), hostedGraphiteConfig.getApikey());
+//  }
 
   private void configureSwagger(Environment environment, Configuration configuration) {
     // Swagger Resource
