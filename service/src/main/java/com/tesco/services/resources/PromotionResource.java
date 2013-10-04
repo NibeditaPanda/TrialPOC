@@ -11,27 +11,20 @@ import com.wordnik.swagger.annotations.ApiResponses;
 import com.yammer.metrics.annotation.ExceptionMetered;
 import com.yammer.metrics.annotation.Metered;
 import com.yammer.metrics.annotation.Timed;
-import org.slf4j.Logger;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.*;
 
 import static ch.lambdaj.Lambda.*;
-import static com.tesco.services.HTTPResponses.badRequest;
-import static com.tesco.services.HTTPResponses.ok;
-import static org.slf4j.LoggerFactory.getLogger;
+import static com.tesco.services.HTTPResponses.*;
 
 @Path("/promotion")
 @Api(value = "/promotion", description = "Promotion API")
 @Produces(ResourceResponse.RESPONSE_TYPE)
 public class PromotionResource {
-
-    private static final Logger logger = getLogger(PromotionResource.class);
 
     private PromotionDAO promotionDAO;
 
@@ -47,12 +40,7 @@ public class PromotionResource {
     @Timed(name = "getByOfferedId-Timer", group = "PriceServices")
     @ExceptionMetered(name = "getByOfferedId-Failures", group = "PriceServices")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response getByOfferId(@Valid PromotionRequestList promotionRequestList, @Context HttpServletRequest request) {
-
-        logger.debug("Path: " + request.getPathInfo());
-        logger.debug("Method: " + request.getMethod());
-        logger.debug("ContentType: " + request.getContentType());
-        logger.debug("Accept : " + request.getHeader("accept"));
+    public Response getByOfferId(@Valid PromotionRequestList promotionRequestList) {
 
         Set<PromotionRequest> uniqueRequests = new HashSet<>(promotionRequestList.getPromotions());
         List<String> ids = extract(uniqueRequests, on(PromotionRequest.class).getOfferId());

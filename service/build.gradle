@@ -1,7 +1,7 @@
 import static org.gradle.api.JavaVersion.VERSION_1_7
 
 apply plugin: 'java'
-//apply plugin: 'cobertura'
+apply plugin: 'cobertura'
 apply plugin: 'idea'
 apply plugin: 'fatjar'
 apply plugin: 'application'
@@ -35,6 +35,11 @@ allprojects {
     } else {
         project.version = 'developer-build'
     }
+}
+
+
+repositories {
+    mavenCentral()
 }
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
@@ -94,7 +99,7 @@ run {
 
 
 // see https://github.com/Mapvine/gradle-cobertura-plugin
-//cobertura {
-//    format = 'xml'
-//    includes = ['**/*.java']
-//}
+cobertura {
+    format = 'xml'
+    includes = ['**/*.java']
+}
