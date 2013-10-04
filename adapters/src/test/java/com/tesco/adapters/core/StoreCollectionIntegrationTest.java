@@ -29,7 +29,7 @@ public class StoreCollectionIntegrationTest extends ControllerIntegrationTest {
                 RPM_STORE_ZONE_TO_UPDATE_CSV_FILE_PATH,
                 RPM_PROMOTION_CSV_FILE_PATH,
                 SONETTO_PROMOTIONS_XML_FILE_PATH,
-                RPM_PROMOTION_DESC_CSV_FILE_PATH).fetchAndSavePriceDetails();
+                RPM_PROMOTION_DESC_CSV_FILE_PATH, SONETTO_PROMOTIONS_XSD_FILE_PATH).fetchAndSavePriceDetails();
 
         DBObject store = getStore("2002");
 

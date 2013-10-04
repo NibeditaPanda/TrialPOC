@@ -12,6 +12,7 @@ import com.tesco.adapters.sonetto.SonettoPromotionWriter;
 import com.tesco.adapters.sonetto.SonettoPromotionXMLReader;
 import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
+import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
@@ -35,9 +36,18 @@ public class Controller {
     private String rpmStoreZoneCsvFilePath;
     private String rpmPromotionCsvFilePath;
     private String rpmPromotionDescCSVUrl;
+    private String sonettoPromotionXSDDataPath;
     private String sonettoPromotionsXMLFilePath;
 
-    public Controller(DBCollection priceCollection, DBCollection storeCollection, DBCollection promotionCollection, String rpmPriceZoneCsvFilePath, String rpmStoreZoneCsvFilePath, String rpmPromotionCsvFilePath, String sonettoPromotionsXMLFilePath, String rpmPromotionDescCSVUrl) {
+    public Controller(DBCollection priceCollection,
+                      DBCollection storeCollection,
+                      DBCollection promotionCollection,
+                      String rpmPriceZoneCsvFilePath,
+                      String rpmStoreZoneCsvFilePath,
+                      String rpmPromotionCsvFilePath,
+                      String sonettoPromotionsXMLFilePath,
+                      String rpmPromotionDescCSVUrl,
+                      String sonettoPromotionXSDDataPath) {
         this.priceCollection = priceCollection;
         this.storeCollection = storeCollection;
         this.promotionCollection = promotionCollection;
@@ -46,6 +56,7 @@ public class Controller {
         this.rpmPromotionCsvFilePath = rpmPromotionCsvFilePath;
         this.sonettoPromotionsXMLFilePath = sonettoPromotionsXMLFilePath;
         this.rpmPromotionDescCSVUrl = rpmPromotionDescCSVUrl;
+        this.sonettoPromotionXSDDataPath = sonettoPromotionXSDDataPath;
     }
 
     public static void main(String[] args) throws ConfigurationException {
@@ -57,14 +68,14 @@ public class Controller {
 
         Controller controller = new Controller(tempPriceCollection, tempStoreCollection,
                 tempPromotionCollection, Configuration.getRPMPriceDataPath(), Configuration.getRPMStoreDataPath(),
-                Configuration.getRPMPromotionDataPath(), Configuration.getSonettoPromotionsXMLDataPath(), Configuration.getRPMPromotionDescCSVUrl());
+                Configuration.getRPMPromotionDataPath(), Configuration.getSonettoPromotionsXMLDataPath(), Configuration.getRPMPromotionDescCSVUrl(), Configuration.getSonettoPromotionXSDDataPath());
 
 
         new ControllerCoordinator().processData(controller, tempPriceCollection, tempStoreCollection, tempPromotionCollection);
 
     }
 
-    public void fetchAndSavePriceDetails() throws IOException, ParserConfigurationException, ConfigurationException, JAXBException, ColumnNotFoundException {
+    public void fetchAndSavePriceDetails() throws IOException, ParserConfigurationException, ConfigurationException, JAXBException, ColumnNotFoundException, SAXException {
         indexMongo();
         logger.info("Importing data from RPM....");
         RPMPriceZoneCSVFileReader rpmPriceZoneCSVFileReader = new RPMPriceZoneCSVFileReader(rpmPriceZoneCsvFilePath);
@@ -72,7 +83,7 @@ public class Controller {
         RPMPromotionCSVFileReader rpmPromotionCSVFileReader = new RPMPromotionCSVFileReader(rpmPromotionCsvFilePath);
         RPMPromotionDescriptionCSVFileReader rpmPromotionDescriptionCSVFileReader = new RPMPromotionDescriptionCSVFileReader(rpmPromotionDescCSVUrl);
 
-        SonettoPromotionXMLReader sonettoPromotionXMLReader = new SonettoPromotionXMLReader(new SonettoPromotionWriter(promotionCollection), Configuration.getSonettoShelfImageUrl());
+        SonettoPromotionXMLReader sonettoPromotionXMLReader = new SonettoPromotionXMLReader(new SonettoPromotionWriter(promotionCollection), Configuration.getSonettoShelfImageUrl(), sonettoPromotionXSDDataPath);
 
         new RPMWriter(priceCollection,
                 storeCollection,

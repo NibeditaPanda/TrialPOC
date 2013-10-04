@@ -20,6 +20,8 @@ import static org.mockito.Mockito.*;
 public class SonettoPromotionXMLReaderTest {
 
     private static final String PROMOTIONS_DATA_EXPORT = "src/test/resources/com/tesco/adapters/sonetto/PromotionsDataExport.xml";
+    private static final String MALFORMED_PROMOTIONS_DATA_EXPORT = "src/test/resources/com/tesco/adapters/sonetto/MalformedPromotionsDataExport.xml";
+    private static final String PROMOTIONS_DATA_EXPORT_XSD = "templates/Promotions.xsd.xml";
     private static final String SHELF_URL = "http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/Superstore/Online/Product/pos/%s.png";
 
     @Mock
@@ -28,7 +30,7 @@ public class SonettoPromotionXMLReaderTest {
 
     @Before
     public void setup(){
-        sonettoPromotionXMLHandler = new SonettoPromotionXMLReader(mockWriter, SHELF_URL);
+        sonettoPromotionXMLHandler = new SonettoPromotionXMLReader(mockWriter, SHELF_URL, PROMOTIONS_DATA_EXPORT_XSD);
     }
 
     @Test
@@ -75,5 +77,11 @@ public class SonettoPromotionXMLReaderTest {
 
         verify(mockWriter, times(1)).createPromotion(internetPromotionA);
         verify(mockWriter, times(1)).createPromotion(internetPromotionB);
+    }
+
+    @Test(expected = SAXException.class)
+    public void shouldFailIfXMLDoesNotPassXSDCheck() throws Exception {
+        sonettoPromotionXMLHandler.handle(MALFORMED_PROMOTIONS_DATA_EXPORT);
+
     }
 }

@@ -38,6 +38,10 @@ public class Configuration {
         return get().getString("sonetto.promotions.data.dump");
     }
 
+    public static String getSonettoPromotionXSDDataPath() throws ConfigurationException {
+        return get().getString("sonetto.promotions.xsd");
+    }
+
     public static String getSonettoShelfImageUrl() throws ConfigurationException {
         return get().getString("sonetto.shelfUrl");
     }

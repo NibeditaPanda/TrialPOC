@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
 
@@ -67,6 +68,22 @@ public class ControllerCoordinatorTest {
         verify(controller).deleteRpmPromotionCsvFilePath();
         verify(controller).deleteRpmPromotionDescCSVUrl();
         verify(controller).deleteSonettoPromotionsXMLFilePath();
+    }
 
+    @Test
+    public void shouldNotRenameCollectionGivenSonettoMalformedXml() throws Exception {
+
+        doThrow(new SAXException("Error")).when(controller).fetchAndSavePriceDetails();
+
+        controllerCoordinator.processData(controller, tempPriceDbCollection, tempStoreDbCollection, tempPromotionDbCollection);
+
+        verify(tempPriceDbCollection, never()).rename("prices");
+        verify(tempStoreDbCollection, never()).rename("stores");
+        verify(tempPromotionDbCollection, never()).rename("promotions");
+        verify(controller).deleteRpmPriceZoneCsvFilePath();
+        verify(controller).deleteRpmStoreZoneCsvFilePath();
+        verify(controller).deleteRpmPromotionCsvFilePath();
+        verify(controller).deleteRpmPromotionDescCSVUrl();
+        verify(controller).deleteSonettoPromotionsXMLFilePath();
     }
 }

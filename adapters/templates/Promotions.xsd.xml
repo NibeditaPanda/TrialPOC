@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="urn:tesco.com:schemas:grocery:2.0" xmlns:tns="urn:tesco.com:schemas:grocery:2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:tesco.com:schemas:grocery:2.0" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<!-- Change Log
+13-03-2009	Will Stewart
+	1)	Change the default namespace from http://www.ivisgroup.com to urn:tesco.com:schemas:grocery:2.0
+	2)	Change the targetNamespace namespace from http://www.ivisgroup.com to urn:tesco.com:schemas:grocery:2.0
+	3) Explicitly set the attributeFormDefault="unqualified"
+	4) Added an optional version attribute to the root element (Promotions)
+	5) Added an optional creationDate  attribute to the root element (Promotions)
+11-05-2009	Will Stewart
+	1) Added constraints for:
+		a) Each Promotion must have a unique SonettoID
+03-06-2009 Dave Parr
+	1) Added minOccurs="0" to Promotion element to allow empty file.
+22-06-2009 Priyanka Peddanagari
+  1) Added new enums for LinkSave promotions
+        <xs:enumeration value="LSSA"/>
+				<xs:enumeration value="LSM2"/>
+				<xs:enumeration value="LSSA2"/>
+        <xs:enumeration value="CMSM"/>
+		
+03-06-2011 Low Chuan Hoe
+	1) 	Added new enums for 
+			Promotion Type
+				<xs:enumeration value="CMSMC"/>
+			Reward Type
+				<xs:enumeration value="SavingFixedCompounded"/>
+29-06-2011 Derek Ng
+	1)	Added new enums for
+			Promotion Type
+				<xs:enumeration value="BFCC"/>
+			Reward Type
+				<xs:enumeration value="CollectFree"/>
+07-07-2011	Derek Ng
+	1)	Added new enums for
+			Promotion Type
+				<xs:enumeration value="BFCCA"/>
+				<xs:enumeration value="BFDA"/>
+			Reward Type
+				<xs:enumeration value="CollectFixed"/>
+				<xs:enumeration value="DeliveryFixed"/>
+-->
+	<xs:element name="Promotions">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Promotion" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="version" type="xs:float"/>
+			<xs:attribute name="creationDate" type="xs:dateTime"/>
+		</xs:complexType>
+		<xs:unique name="UniquePromotionSonettoId">
+			<xs:selector xpath="tns:Promotion"/>
+			<xs:field xpath="@SonettoID"/>
+		</xs:unique>
+	</xs:element>
+	<xs:element name="Promotion">
+		<xs:complexType>
+			<xs:sequence minOccurs="0">
+				<xs:element ref="SonettoName" minOccurs="0"/>
+				<xs:element ref="OfferText"/>
+				<xs:element ref="EAN" minOccurs="0"/>
+				<xs:element ref="ShelfTalkerImage" minOccurs="0"/>
+				<xs:element ref="Availability"/>
+				<xs:element ref="Coupon" minOccurs="0"/>
+				<xs:element ref="Bucket" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="StorePromotions"/>
+				<xs:element ref="Trigger" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="Reward" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="SonettoID" type="xs:string" use="required"/>
+			<xs:attribute name="TescoID" type="xs:string" use="optional"/>
+			<xs:attribute name="Type" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:NMTOKEN">
+						<xs:enumeration value="ACP"/>
+						<xs:enumeration value="AOB"/>
+						<xs:enumeration value="BFD"/>
+						<xs:enumeration value="CCPA"/>
+						<xs:enumeration value="FAO"/>
+						<xs:enumeration value="IFC"/>
+						<xs:enumeration value="LSF"/>
+						<xs:enumeration value="LSM"/>
+						<xs:enumeration value="LSS"/>
+						<xs:enumeration value="LSSA"/>
+						<xs:enumeration value="LSM2"/>
+						<xs:enumeration value="LSSA2"/>
+						<xs:enumeration value="MDP"/>
+						<xs:enumeration value="MDZ"/>
+						<xs:enumeration value="MKD"/>
+						<xs:enumeration value="MPP"/>
+						<xs:enumeration value="MPV"/>
+						<xs:enumeration value="MSC"/>
+						<xs:enumeration value="MSCA"/>
+						<xs:enumeration value="MSE"/>
+						<xs:enumeration value="MSM"/>
+						<xs:enumeration value="MSP"/>
+						<xs:enumeration value="MSS"/>
+						<xs:enumeration value="MSSA"/>
+						<xs:enumeration value="MST"/>
+						<xs:enumeration value="MSZ"/>
+						<xs:enumeration value="NEW"/>
+						<xs:enumeration value="NIO"/>
+						<xs:enumeration value="NIP"/>
+						<xs:enumeration value="PCP"/>
+						<xs:enumeration value="PFD"/>
+						<xs:enumeration value="POB"/>
+						<xs:enumeration value="SMP"/>
+						<xs:enumeration value="SMZ"/>
+						<xs:enumeration value="SMZA"/>
+						<xs:enumeration value="SOC"/>
+						<xs:enumeration value="SOE"/>
+						<xs:enumeration value="SOM"/>
+						<xs:enumeration value="SPP"/>
+						<xs:enumeration value="CMSM"/>
+						<xs:enumeration value="CMSMC"/>
+						<xs:enumeration value="BFCC"/>
+						<xs:enumeration value="BFCCA"/>
+						<xs:enumeration value="BFDA"/>
+						<xs:enumeration value="SOM2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="GreenClubCardPromotion" type="xs:boolean" use="optional"/>
+			<xs:attribute name="MaximumPurchaseAmount" type="xs:int" use="optional"/>
+			<xs:attribute name="InternetExclusive" type="xs:boolean" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Alias" type="xs:string"/>
+	<xs:element name="Availability">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="StartDate"/>
+				<xs:element ref="EndDate" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Bucket">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="BucketProduct" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="BucketProduct">
+		<xs:complexType>
+			<xs:attribute name="id" type="ProductIDType" use="required"/>
+			<xs:attribute name="tpnc" type="tpncType" use="optional"/>
+			<xs:attribute name="LeadProduct" type="xs:boolean" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Coupon">
+		<xs:complexType>
+			<xs:attribute name="MutuallyExclusive" type="xs:boolean" use="optional"/>
+			<xs:attribute name="Alias" type="xs:string" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="EAN">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:pattern value="[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="EndDate" type="xs:date"/>
+	<xs:element name="OfferText">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="IsManuallyModified" type="xs:boolean" use="optional"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="ProductIDType">
+		<xs:restriction base="xs:long"/>
+	</xs:simpleType>
+	<xs:element name="PromotionAtStore">
+		<xs:complexType>
+			<xs:attribute name="id" type="StoreIDType" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Reward">
+		<xs:complexType>
+			<xs:attribute name="BucketID" type="xs:string" use="optional"/>
+			<xs:attribute name="BandNumber" type="xs:int" use="optional"/>
+			<xs:attribute name="Type" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:NMTOKEN">
+						<xs:enumeration value="SavingFixed"/>
+						<xs:enumeration value="SavingFixedCompounded"/>
+						<xs:enumeration value="SavingFixedPriceMostExpensive"/>
+						<xs:enumeration value="SavingFixedPriceCheapestAbsolute"/>
+						<xs:enumeration value="SavingFreeMostExpensive"/>
+						<xs:enumeration value="SavingFreeCheapestBestDeal"/>
+						<xs:enumeration value="SavingFreeCheapestAbsolute"/>
+						<xs:enumeration value="SavingPercentageAllBucket"/>
+						<xs:enumeration value="SavingPercentage"/>
+						<xs:enumeration value="PointsFixed"/>
+						<xs:enumeration value="PointsPercentageAllBucket"/>
+						<xs:enumeration value="PointsPercentage"/>
+						<xs:enumeration value="Information"/>
+						<xs:enumeration value="CollectFree"/>
+						<xs:enumeration value="CollectFixed"/>
+						<xs:enumeration value="DeliveryFree"/>
+						<xs:enumeration value="DeliveryFixed"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="Value" type="xs:decimal" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ShelfTalkerImage" type="xs:string"/>
+	<xs:element name="SonettoName" type="xs:string"/>
+	<xs:element name="StartDate" type="xs:date"/>
+	<xs:simpleType name="StoreIDType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9][0-9][0-9][0-9]"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="StorePromotions">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="PromotionAtStore" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="AllStores" type="xs:boolean" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="tpncType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="Trigger">
+		<xs:complexType>
+			<xs:attribute name="BucketID" type="xs:string" use="optional"/>
+			<xs:attribute name="BandNumber" type="xs:int" use="optional"/>
+			<xs:attribute name="Type" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:NMTOKEN">
+						<xs:enumeration value="product"/>
+						<xs:enumeration value="spend"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="Value" type="xs:decimal" use="required"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

@@ -9,6 +9,7 @@ import com.tesco.adapters.rpm.readers.*;
 import com.tesco.adapters.sonetto.SonettoPromotionXMLReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
@@ -62,7 +63,7 @@ public class RPMWriter {
         updateCount = 0;
     }
 
-    public void write() throws IOException, ParserConfigurationException, JAXBException, ColumnNotFoundException {
+    public void write() throws IOException, ParserConfigurationException, JAXBException, ColumnNotFoundException, SAXException {
         logger.info("Importing from Price Zone...");
         writeToCollection(priceCollection, ITEM_NUMBER, rpmPriceZoneCSVFileReader);
         logger.info("Importing from Store Zone...");
@@ -110,8 +111,7 @@ public class RPMWriter {
         logUpsertCounts(promotionCollection);
     }
 
-    private void updatePromotionsWithShelfTalker() throws ParserConfigurationException, IOException, JAXBException {
-
+    private void updatePromotionsWithShelfTalker() throws ParserConfigurationException, IOException, JAXBException, SAXException {
         sonettoPromotionXMLReader.handle(sonettoPromotionsXMLFilePath);
     }
 

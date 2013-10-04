@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Promotions xmlns="urn:tesco.com:schemas:grocery:2.0" xmlns:grocery="http://www.tesco.com/grocery"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.ivisgroup.com Promotions.xsd">
+    <Promotion SonettoID="S00001030" Type="AOB" InternetExclusive="true">
+        <SonettoName>GROT40 - £10 off your first shop long term online affiliate code</SonettoName>
+        <EAN>9915994989990</EAN>
+        <Availability>
+            <StartDate>2009-11-03</StartDate>
+            <EndDate>2015-12-31</EndDate>
+        </Availability>
+        <Coupon MutuallyExclusive="false" Alias="10191"/>
+        <StorePromotions>
+            <PromotionAtStore id="2007"/>
+            <PromotionAtStore id="2008"/>
+        </StorePromotions>
+        <Trigger Type="spend" Value="50"/>
+        <Reward Type="SavingFixed" Value="10"/>
+    </Promotion>
+</Promotions>
