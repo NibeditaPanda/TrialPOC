@@ -78,10 +78,4 @@ public class SonettoPromotionXMLReaderTest {
         verify(mockWriter, times(1)).createPromotion(internetPromotionA);
         verify(mockWriter, times(1)).createPromotion(internetPromotionB);
     }
-
-    @Test(expected = SAXException.class)
-    public void shouldFailIfXMLDoesNotPassXSDCheck() throws Exception {
-        sonettoPromotionXMLHandler.handle(MALFORMED_PROMOTIONS_DATA_EXPORT);
-
-    }
 }

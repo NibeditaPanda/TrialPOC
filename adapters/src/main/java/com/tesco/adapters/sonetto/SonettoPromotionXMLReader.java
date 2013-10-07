@@ -33,12 +33,6 @@ public class SonettoPromotionXMLReader {
         Unmarshaller u = JAXBContext.newInstance(Promotions.class).createUnmarshaller();
         Promotions promotions = u.unmarshal(source, Promotions.class).getValue();
 
-        SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema schema = sf.newSchema(new File(this.promotionsDataExportXsd));
-
-        Validator validator = schema.newValidator();
-        validator.validate(source);
-
         for (Promotion promotion : promotions.getStorePromotions()) {
             DBObject promotionDBObject = promotion.buildStoreDBObject(shelfURL);
             writer.updatePromotion(promotionDBObject);
