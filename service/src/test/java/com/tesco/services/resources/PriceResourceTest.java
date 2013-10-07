@@ -211,7 +211,7 @@ public class PriceResourceTest extends ResourceTest {
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(404);
-        assertThat(response.getEntity(String.class)).isEqualTo("Product not found");
+        assertThat(response.getEntity(String.class)).contains("Product not found");
     }
 
     @Test
@@ -220,7 +220,7 @@ public class PriceResourceTest extends ResourceTest {
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(404);
-        assertThat(response.getEntity(String.class)).isEqualTo("Product not found");
+        assertThat(response.getEntity(String.class)).contains("Price cannot be retrieved because product not found");
     }
 
     @Test
@@ -231,7 +231,7 @@ public class PriceResourceTest extends ResourceTest {
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(404);
-        assertThat(response.getEntity(String.class)).isEqualTo("Store not found");
+        assertThat(response.getEntity(String.class)).contains("Store not found");
     }
 
     @Test
@@ -248,7 +248,7 @@ public class PriceResourceTest extends ResourceTest {
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(400);
-        assertThat(response.getEntity(String.class)).isEqualTo("Invalid request");
+        assertThat(response.getEntity(String.class)).contains("Invalid request");
     }
 
     @Test
@@ -258,12 +258,12 @@ public class PriceResourceTest extends ResourceTest {
         WebResource resource = client().resource("/price/randomItem?someInvalidQuery=blah");
         ClientResponse response = resource.get(ClientResponse.class);
         assertThat(response.getStatus()).isEqualTo(400);
-        assertThat(response.getEntity(String.class)).isEqualTo("Invalid request");
+        assertThat(response.getEntity(String.class)).contains("Invalid request");
 
         resource = client().resource("/price/randomItem?someInvalidQuery=blah&callback=blah");
         response = resource.get(ClientResponse.class);
         assertThat(response.getStatus()).isEqualTo(400);
-        assertThat(response.getEntity(String.class)).isEqualTo("Invalid request");
+        assertThat(response.getEntity(String.class)).contains("Invalid request");
     }
 
     @Test
@@ -282,7 +282,7 @@ public class PriceResourceTest extends ResourceTest {
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(400);
-        assertThat(response.getEntity(String.class)).isEqualTo("Invalid request");
+        assertThat(response.getEntity(String.class)).contains("Invalid request");
     }
 
 }
