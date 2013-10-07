@@ -1,5 +1,5 @@
 *.class
-.idea/*
+.idea
 
 service/output.txt
 service/priceService.pid

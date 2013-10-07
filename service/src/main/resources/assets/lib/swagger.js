@@ -997,8 +997,13 @@
       } else {
         responseContentType = null;
       }
-      if (responseContentType && this.operation.produces) {
-        if (this.operation.produces.indexOf(responseContentType) === -1) {
+
+        this.serverCannotProduceTheRequestedProductType = function (formatsServerProduces, responseContentType) {
+            return _.all(formatsServerProduces, function(acceptableResponseFormat){return acceptableResponseFormat.indexOf(responseContentType) === -1});
+        };
+
+        if (responseContentType && this.operation.produces) {
+        if (this.serverCannotProduceTheRequestedProductType(this.operation.produces, responseContentType)) {
           console.log("server can't produce " + responseContentType);
         }
       }

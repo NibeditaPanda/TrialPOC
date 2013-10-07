@@ -16,7 +16,7 @@ import static com.tesco.services.DAO.PriceKeys.STORE_ID;
 
 public class PriceDAO {
 
-    private static final String PRODUCT_NOT_FOUND = "Product not found";
+    private static final String PRODUCT_NOT_FOUND = "Price cannot be retrieved because product not found";
     private static final String STORE_NOT_FOUND = "Store not found";
 
     public final DBCollection priceCollection;

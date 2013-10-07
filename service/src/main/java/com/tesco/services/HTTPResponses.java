@@ -16,10 +16,10 @@ public class HTTPResponses {
     }
 
     public static Response notFound(String message) {
-        return Response.status(HttpServletResponse.SC_NOT_FOUND).entity(message).build();
+        return Response.status(HttpServletResponse.SC_NOT_FOUND).entity("{\"message\":\""+message+"\"}").build();
     }
 
     public static Response badRequest() {
-        return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity("Invalid request").build();
+        return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity("{\"error\":\"Invalid request\"}").build();
     }
 }

@@ -22,7 +22,7 @@ import static ch.lambdaj.Lambda.*;
 import static com.tesco.services.HTTPResponses.*;
 
 @Path("/promotion")
-@Api(value = "/promotion", description = "Promotion API")
+@Api(value = "/promotion", description = "Promotional Price Endpoints")
 @Produces(ResourceResponse.RESPONSE_TYPE)
 public class PromotionResource {
 

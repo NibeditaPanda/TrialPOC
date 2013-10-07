@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Swagger UI</title>
+  <title>Price Service</title>
   <link href='//fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'/>
   <link href='docs/css/highlight.default.css' media='screen' rel='stylesheet' type='text/css'/>
   <link href='docs/css/screen.css' media='screen' rel='stylesheet' type='text/css'/>
@@ -19,7 +19,7 @@
   <script type="text/javascript">
     $(function () {
       window.swaggerUi = new SwaggerUi({
-      url: "http://localhost:8081/api-docs",
+      url: "http://"+this.location.hostname+":"+this.location.port+"/api-docs",
       dom_id: "swagger-ui-container",
       supportedSubmitMethods: ['get', 'post', 'put', 'delete'],
       onComplete: function(swaggerApi, swaggerUi){
@@ -54,7 +54,7 @@
 <body>
 <div id='header'>
   <div class="swagger-ui-wrap">
-    <a id="logo" href="http://swagger.wordnik.com">swagger</a>
+    <a id="logo" href="">Price Service</a>
 
     <form id='api_selector'>
       <div class='input'><input placeholder="http://example.com/api-docs" id="input_baseUrl" name="baseUrl" type="text"/></div>

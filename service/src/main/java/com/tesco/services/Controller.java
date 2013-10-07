@@ -22,6 +22,8 @@ import com.wordnik.swagger.reader.*;
 import com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 
+import java.net.*;
+import java.util.Enumeration;
 import java.util.concurrent.TimeUnit;
 
 public class Controller extends Service<Configuration> {
@@ -55,7 +57,7 @@ public class Controller extends Service<Configuration> {
     GraphiteReporter.enable(metricsListener.getRegistry(), hostedGraphiteConfig.getPeriod(), TimeUnit.SECONDS, hostedGraphiteConfig.getHostname(), hostedGraphiteConfig.getPort(), hostedGraphiteConfig.getApikey());
   }
 
-  private void configureSwagger(Environment environment, Configuration configuration) {
+  private void configureSwagger(Environment environment, Configuration configuration) throws UnknownHostException, SocketException {
     // Swagger Resource
     environment.addResource(new ApiListingResourceJSON());
 
@@ -74,8 +76,30 @@ public class Controller extends Service<Configuration> {
     config.setApiVersion("1.0.1");
 
     HttpConfiguration httpConfiguration = configuration.getHttpConfiguration();
-    config.setBasePath("http://localhost:"+httpConfiguration.getPort());
+    config.setBasePath("http://"+ getNonLoopbackIPv4AddressForThisHost() +":"+httpConfiguration.getPort());
 
     environment.addFilter(CrossOriginFilter.class, "/*");
+  }
+
+  private String getNonLoopbackIPv4AddressForThisHost() throws SocketException {
+    Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+    while(networkInterfaces.hasMoreElements()){
+      NetworkInterface networkInterface = networkInterfaces.nextElement();
+      if(!networkInterface.isLoopback()){
+        return getIPv4InetAddressFrom(networkInterface);
+      }
+    }
+    throw new RuntimeException("Can't find a non-loopback IP address");
+  }
+
+  private String getIPv4InetAddressFrom(NetworkInterface networkInterface) {
+    Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
+    while(inetAddresses.hasMoreElements()){
+      String hostAddress = inetAddresses.nextElement().getHostAddress();
+      if(hostAddress.matches("\\d+\\.\\d+\\.\\d+\\.\\d+")){
+        return hostAddress;
+      }
+    }
+    throw new RuntimeException("No IPv4 Address");
   }
 }
