@@ -3,7 +3,7 @@ DBName: priceService
 DBPort: 27017
 Username: qa
 Password: Services123
-ImportScript: /root/price/import/import.sh qa ahampson@thoughtworks.com /root/price/adapters/ /tmp/
+ImportScript: /u01/app/price/import/import.sh qa ahampson@thoughtworks.com /u01/app/price/adapters/ /tmp/
 hostedGraphite:
   hostname: carbon.hostedgraphite.com
   port: 2003
