@@ -44,6 +44,6 @@ public class ImportResource {
             Response.serverError();
         }
 
-        return Response.ok("Import Started.").build();
+        return Response.ok("{\"message\":\"Import Started.\"}").build();
     }
 }

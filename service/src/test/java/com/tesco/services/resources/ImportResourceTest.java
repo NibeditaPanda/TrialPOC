@@ -37,7 +37,7 @@ public class ImportResourceTest extends ResourceTest {
         ClientResponse response = resource.get(ClientResponse.class);
         String responseText = response.getEntity(String.class);
 
-        assertThat(responseText).isEqualTo("Import Started.");
+        assertThat(responseText).isEqualTo("{\"message\":\"Import Started.\"}");
         assertThat(response.getStatus()).isEqualTo(200);
 
         verify(mockRuntimeWrapper).exec("import.sh");
