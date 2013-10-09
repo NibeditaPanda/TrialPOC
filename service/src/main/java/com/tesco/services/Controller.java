@@ -45,6 +45,8 @@ public class Controller extends Service<Configuration> {
       environment.addResource(new VersionResource());
       environment.addResource(new ImportResource(configuration, new RuntimeWrapper()));
 
+      environment.addProvider(new MongoUnavailableProvider());
+
       configureMetrics(configuration, environment);
       configureSwagger(environment, configuration);
     }
