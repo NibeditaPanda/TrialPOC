@@ -1,6 +1,7 @@
 package com.tesco.services.resources;
 
 import com.mongodb.MongoException;
+import com.tesco.services.HTTPResponses;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -11,10 +12,6 @@ public class MongoUnavailableProvider implements ExceptionMapper<MongoException>
 
     @Override
     public Response toResponse(MongoException runtimeException) {
-        Response defaultResponse = Response
-                .serverError()
-                .entity("{\"message\":\"Internal Server Error.\"}")
-                .build();
-        return defaultResponse;
+        return HTTPResponses.serverError();
     }
 }
