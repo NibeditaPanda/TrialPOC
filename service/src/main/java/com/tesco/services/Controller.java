@@ -47,7 +47,10 @@ public class Controller extends Service<Configuration> {
 
       environment.addProvider(new MongoUnavailableProvider());
 
-      configureMetrics(configuration, environment);
+        /**
+         *   @Toy commented out Graphite because tesco boxes don't have access to the Internet at the moment
+         */
+//      configureMetrics(configuration, environment);
       configureSwagger(environment, configuration);
     }
 
