@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Promotions xmlns="urn:tesco.com:schemas:grocery:2.0" xmlns:grocery="http://www.tesco.com/grocery"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.ivisgroup.com Promotions.xsd">
+    <Promotion SonettoID="S00001028" Type="AOB" InternetExclusive="true">
+        <SonettoName>GROT40 - £10 off your first shop long term instore code to replace XXPD96</SonettoName>
+        <OfferText>£10 off your first shop</OfferText>
+        <EAN>9915994979991</EAN>
+        <Availability>
+            <StartDate>2009-11-03</StartDate>
+            <EndDate>2015-12-31</EndDate>
+        </Availability>
+        <Coupon MutuallyExclusive="false" Alias="10189"/>
+        <StorePromotions>
+            <PromotionAtStore id="2007"/>
+            <PromotionAtStore id="2008"/>
+        </StorePromotions>
+        <Trigger Type="spend" Value="50"/>
+        <Reward Type="SavingFixed" Value="10"/>
+    </Promotion>
+    <Promotion SonettoID="S00001030" Type="AOB" InternetExclusive="true">
+        <SonettoName>GROT40 - £10 off your first shop long term online affiliate code</SonettoName>
+        <OfferText>£10 off your first shop</OfferText>
+        <EAN>9915994989990</EAN>
+        <Availability>
+            <StartDate>2009-11-03</StartDate>
+            <EndDate>2015-12-31</EndDate>
+        </Availability>
+        <Coupon MutuallyExclusive="false" Alias="10191"/>
+        <StorePromotions>
+            <PromotionAtStore id="2007"/>
+            <PromotionAtStore id="2008"/>
+        </StorePromotions>
+        <Trigger Type="spend" Value="50"/>
+        <Reward Type="SavingFixed" Value="10"/>
+    </Promotion>
+    <Promotion SonettoID="A29721690" Type="SPP">
+        <SonettoName>3 LIONS FLAG</SonettoName>
+        <OfferText>SPECIAL PURCHASE 50p</OfferText>
+        <ShelfTalkerImage>specialpurchase</ShelfTalkerImage>
+        <Availability>
+            <StartDate>2012-05-31</StartDate>
+            <EndDate>2013-07-04</EndDate>
+        </Availability>
+        <Bucket id="A29721647/1">
+            <BucketProduct id="271845720" tpnc="271845720"/>
+        </Bucket>
+        <StorePromotions>
+            <PromotionAtStore id="2007"/>
+            <PromotionAtStore id="2008"/>
+        </StorePromotions>
+        <Trigger BucketID="A29721647/1" Type="product" Value="1"/>
+        <Reward Type="Information" Value="1"/>
+    </Promotion>
+    <Promotion SonettoID="R29029470" Type="SPP">
+        <SonettoName>3 LIONS KICK &amp; TRICK BALL</SonettoName>
+        <OfferText>SPECIAL PURCHASE 50p</OfferText>
+        <ShelfTalkerImage>specialpurchase</ShelfTalkerImage>
+        <Availability>
+            <StartDate>2012-05-31</StartDate>
+            <EndDate>2013-07-04</EndDate>
+        </Availability>
+        <Bucket id="A29721688/1">
+            <BucketProduct id="271845737" tpnc="271845737"/>
+        </Bucket>
+        <StorePromotions>
+            <PromotionAtStore id="2007"/>
+            <PromotionAtStore id="2008"/>
+            <PromotionAtStore id="2019"/>
+        </StorePromotions>
+        <Trigger BucketID="A29721688/1" Type="product" Value="1"/>
+        <Reward Type="Information" Value="1"/>
+    </Promotion>
+</Promotions>
