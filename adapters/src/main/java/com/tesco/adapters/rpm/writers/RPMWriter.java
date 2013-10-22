@@ -87,9 +87,6 @@ public class RPMWriter {
 
     private void upsert(DBCollection collection, DBObject existedDbObject, DBObject dbObjectToUpdate) {
         WriteResult updateResponse = collection.update(existedDbObject, dbObjectToUpdate, true, true);
-        if (updateResponse.getN() > 1) {
-            logger.error("Multiple documents affected by update: " + existedDbObject.toString());
-        }
         logUpsert(existedDbObject, updateResponse);
     }
 
