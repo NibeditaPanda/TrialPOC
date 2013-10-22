@@ -35,13 +35,13 @@ public class PriceResource {
     @Path("/{itemNumber}")
     @ApiOperation(value = "Find price by product's base tPNB")
     @ApiResponses(value = {@ApiResponse(code = 404, message = "Product not found")})
-    @Timed(name="getPriceItemNumber-Timer",group="PriceServices")
-    @Metered(name="getPriceItemNumber-Meter",group="PriceServices")
-    @ExceptionMetered(name="getPriceItemNumber-Failures",group="PriceServices")
+    @Timed(name = "getPriceItemNumber-Timer", group = "PriceServices")
+    @Metered(name = "getPriceItemNumber-Meter", group = "PriceServices")
+    @ExceptionMetered(name = "getPriceItemNumber-Failures", group = "PriceServices")
     public Response get(
-      @ApiParam(value = "ItemNumber (Base tPNB) of product whose price needs to be fetched", required = true) @PathParam("itemNumber") String itemNumber,
-      @ApiParam(value = "ID of Store if a store-specific price is desired", required = false) @QueryParam("store") String storeId,
-      @Context UriInfo uriInfo) {
+            @ApiParam(value = "ItemNumber (Base tPNB) of product whose price needs to be fetched", required = true) @PathParam("itemNumber") String itemNumber,
+            @ApiParam(value = "ID of Store if a store-specific price is desired", required = false) @QueryParam("store") String storeId,
+            @Context UriInfo uriInfo) {
 
         MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
         if (storeQueryParamWasSentWithoutAStoreID(storeId, queryParameters)) return badRequest();
@@ -50,7 +50,7 @@ public class PriceResource {
 
         try {
             List<DBObject> prices = isNotBlank(storeId)
-                    ? priceDAO.getPriceAndStoreInfo(itemIds,storeId)
+                    ? priceDAO.getPriceAndStoreInfo(itemIds, storeId)
                     : priceDAO.getPricesInfo(itemIds);
 
             return ok(prices);
@@ -61,7 +61,7 @@ public class PriceResource {
 
     @GET
     @Path("/{itemNumber}/{path: .*}")
-    @ExceptionMetered(name="getPriceItemNumber-Failures",group="PriceServices")
+    @ExceptionMetered(name = "getPriceItemNumber-Failures", group = "PriceServices")
     public Response getItem() {
         return badRequest();
     }
@@ -73,6 +73,6 @@ public class PriceResource {
     }
 
     private boolean storeQueryParamWasSentWithoutAStoreID(String storeId, MultivaluedMap<String, String> queryParameters) {
-      return (queryParameters.size() > 0) && isBlank(storeId);
+        return (queryParameters.size() > 0) && isBlank(storeId);
     }
 }

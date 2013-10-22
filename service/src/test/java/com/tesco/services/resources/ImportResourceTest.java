@@ -34,7 +34,7 @@ public class ImportResourceTest extends ResourceTest {
     @Test
     public void shouldStartImportScript() throws IOException {
         WebResource resource = client().resource("/admin/import");
-        ClientResponse response = resource.get(ClientResponse.class);
+        ClientResponse response = resource.post(ClientResponse.class);
         String responseText = response.getEntity(String.class);
 
         assertThat(responseText).isEqualTo("{\"message\":\"Import Started.\"}");

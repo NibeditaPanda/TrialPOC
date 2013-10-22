@@ -28,10 +28,10 @@ public class VersionResource {
     @GET
     @ApiOperation(value = "Find version of Price API")
     @ApiResponses(value = {@ApiResponse(code = 404, message = "Version JSON not found")})
-    @Metered(name="getVersionNumber-Meter",group="PriceServices")
-    @Timed(name="getVersionNumber-Timer",group="PriceServices")
-    @ExceptionMetered(name="getVersionNumber-Failures",group="PriceServices")
-    public Response get(@Context UriInfo uriInfo){
+    @Metered(name = "getVersionNumber-Meter", group = "PriceServices")
+    @Timed(name = "getVersionNumber-Timer", group = "PriceServices")
+    @ExceptionMetered(name = "getVersionNumber-Failures", group = "PriceServices")
+    public Response get(@Context UriInfo uriInfo) {
         MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
         Optional<String> callback = Optional.fromNullable(queryParameters.getFirst("callback"));
 

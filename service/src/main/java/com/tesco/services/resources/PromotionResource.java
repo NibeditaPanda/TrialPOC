@@ -49,10 +49,8 @@ public class PromotionResource {
         Map<Integer, Promotion> promotionsMap = index(promotions, on(Promotion.class).hash());
         List<Promotion> results = new LinkedList<>();
 
-        for(PromotionRequest promotionRequest: uniqueRequests)
-        {
-            if(promotionsMap.containsKey(promotionRequest.hashCode()))
-            {
+        for (PromotionRequest promotionRequest : uniqueRequests) {
+            if (promotionsMap.containsKey(promotionRequest.hashCode())) {
                 results.add(promotionsMap.get(promotionRequest.hashCode()));
             }
         }
