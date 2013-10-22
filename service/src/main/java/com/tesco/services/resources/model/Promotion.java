@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wordnik.swagger.annotations.ApiModel;
 
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
+
+@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 @ApiModel(value = "A promotion is special pricing for a product")
 public class Promotion {
 
@@ -34,6 +37,18 @@ public class Promotion {
 
     @JsonProperty
     private String endDate;
+
+    @JsonProperty(required = false)
+    private String offerText;
+
+    public Promotion() {
+    }
+
+    public Promotion(String offerId, String itemNumber, String zoneId) {
+        this.offerId = offerId;
+        this.itemNumber = itemNumber;
+        this.zoneId = zoneId;
+    }
 
     public String getOfferId() {
         return offerId;
@@ -67,13 +82,8 @@ public class Promotion {
         return endDate;
     }
 
-    public Promotion() {
-    }
-
-    public Promotion(String offerId, String itemNumber, String zoneId) {
-        this.offerId = offerId;
-        this.itemNumber = itemNumber;
-        this.zoneId = zoneId;
+    public String getShelfTalkerImage() {
+        return shelfTalkerImage;
     }
 
     @Override
@@ -100,9 +110,5 @@ public class Promotion {
 
     public Integer hash(){
         return hashCode();
-    }
-
-    public String getShelfTalkerImage() {
-        return shelfTalkerImage;
     }
 }

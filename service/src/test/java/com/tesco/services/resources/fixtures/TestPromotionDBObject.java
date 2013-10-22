@@ -14,6 +14,7 @@ public class TestPromotionDBObject {
     private String itemNumber = "default";
     private String promotionZoneId = "default";
     private String shelfTalkerImage = "default";
+    private String offerText = "default";
 
     public TestPromotionDBObject(String offerId){
         this.offerId = offerId;
@@ -54,9 +55,13 @@ public class TestPromotionDBObject {
         return this;
     }
 
-    public TestPromotionDBObject withShelfTalker(String shelfTalkerImage)
-    {
+    public TestPromotionDBObject withShelfTalker(String shelfTalkerImage) {
         this.shelfTalkerImage = shelfTalkerImage;
+        return this;
+    }
+
+    public TestPromotionDBObject withOfferText(String offerText) {
+        this.offerText = offerText;
         return this;
     }
 
@@ -71,6 +76,7 @@ public class TestPromotionDBObject {
         promotion.put("CFDescription2", cfDescription2);
         promotion.put("zoneId", promotionZoneId);
         promotion.put("shelfTalkerImage", shelfTalkerImage);
+        promotion.put("offerText", offerText);
         return promotion;
     }
 }

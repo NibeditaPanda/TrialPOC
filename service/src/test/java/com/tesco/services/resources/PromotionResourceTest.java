@@ -1,28 +1,24 @@
 package com.tesco.services.resources;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.tesco.services.Configuration;
-import com.tesco.services.DAO.PriceKeys;
 import com.tesco.services.DAO.PromotionDAO;
 import com.tesco.services.DBFactory;
-import com.tesco.services.Exceptions.ItemNotFoundException;
 import com.tesco.services.resources.fixtures.TestPromotionDBObject;
 import com.tesco.services.resources.fixtures.TestStoreDBObject;
 import com.yammer.dropwizard.testing.ResourceTest;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 
+import static com.tesco.services.DAO.PriceKeys.PROMOTION_COLLECTION;
+import static com.tesco.services.DAO.PriceKeys.STORE_COLLECTION;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class PromotionResourceTest extends ResourceTest {
@@ -39,13 +35,13 @@ public class PromotionResourceTest extends ResourceTest {
     @Before
     public void setUp() throws IOException {
         DBFactory dbFactory = new DBFactory(testConfiguration);
-        dbFactory.getCollection(PriceKeys.PROMOTION_COLLECTION).drop();
-        dbFactory.getCollection(PriceKeys.STORE_COLLECTION).drop();
+        dbFactory.getCollection(PROMOTION_COLLECTION).drop();
+        dbFactory.getCollection(STORE_COLLECTION).drop();
 
-        DBCollection storeCollection = dbFactory.getCollection(PriceKeys.STORE_COLLECTION);
+        DBCollection storeCollection = dbFactory.getCollection(STORE_COLLECTION);
         storeCollection.insert(new TestStoreDBObject("2000").withZoneId("5").build());
 
-        promotionCollection = dbFactory.getCollection(PriceKeys.PROMOTION_COLLECTION);
+        promotionCollection = dbFactory.getCollection(PROMOTION_COLLECTION);
 
         promotionCollection.insert(new TestPromotionDBObject("123").withTPNB("1234").withPromotionZone("5").withStartDate("date1").withEndDate("date2").withName("name of promotion").withDescription1("blah").withDescription2("blah").withShelfTalker("OnSale.png").build());
         promotionCollection.insert(new TestPromotionDBObject("123").withTPNB("5678").withPromotionZone("4").withStartDate("date1").withEndDate("date2").withName("name of promotion").withDescription1("blah").withDescription2("blah").build());
@@ -81,6 +77,7 @@ public class PromotionResourceTest extends ResourceTest {
         assertThat(firstPromotion.get("endDate")).isEqualTo("date2");
         assertThat(firstPromotion.get("CFDescription1")).isEqualTo("blah");
         assertThat(firstPromotion.get("CFDescription2")).isEqualTo("blah");
+        assertThat(firstPromotion.get("offerText")).isEqualTo("default");
 
         DBObject secondPromotion = promotions.get(1);
         assertThat(secondPromotion.get("offerId")).isEqualTo("123");
@@ -92,6 +89,7 @@ public class PromotionResourceTest extends ResourceTest {
         assertThat(secondPromotion.get("CFDescription1")).isEqualTo("blah");
         assertThat(secondPromotion.get("CFDescription2")).isEqualTo("blah");
         assertThat(secondPromotion.get("shelfTalkerImage")).isEqualTo("OnSale.png");
+        assertThat(secondPromotion.get("offerText")).isEqualTo("default");
 
     }
 
@@ -159,6 +157,7 @@ public class PromotionResourceTest extends ResourceTest {
         assertThat(firstPromotion.get("CFDescription1")).isEqualTo("blah");
         assertThat(firstPromotion.get("CFDescription2")).isEqualTo("blah");
         assertThat(firstPromotion.get("shelfTalkerImage")).isEqualTo("OnSale.png");
+        assertThat(firstPromotion.get("offerText")).isEqualTo("default");
 
     }
 }
