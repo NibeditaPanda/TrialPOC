@@ -18,11 +18,12 @@ import java.io.IOException;
 
 import static com.google.common.io.Files.readLines;
 import static com.tesco.services.HTTPResponses.*;
+import static com.tesco.services.resources.ResourceResponse.RESPONSE_TYPE;
 import static java.nio.charset.Charset.defaultCharset;
 
 @Path("/price/version")
 @Api(value = "/price/version", description = "Price API Version")
-@Produces(ResourceResponse.RESPONSE_TYPE)
+@Produces(RESPONSE_TYPE)
 public class VersionResource {
 
     @GET
