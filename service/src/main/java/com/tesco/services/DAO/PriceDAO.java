@@ -39,7 +39,7 @@ public class PriceDAO {
                 .build();
     }
 
-    public List<DBObject> getPricesBy(List<String> ids) throws ItemNotFoundException {
+    private List<DBObject> getPricesBy(List<String> ids) throws ItemNotFoundException {
         Optional<List<DBObject>> items = Query.on(priceCollection).findMany(ITEM_NUMBER, ids);
         if (!items.isPresent()) throw new ItemNotFoundException(PRODUCT_NOT_FOUND);
 
