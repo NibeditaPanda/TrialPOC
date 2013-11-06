@@ -1,3 +1,0 @@
-#!/bin/bash
-gradle -Denvironment=test clean build test --info
-

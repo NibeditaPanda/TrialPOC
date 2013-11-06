@@ -2,7 +2,7 @@ package com.tesco.services.resources;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import com.tesco.services.Configuration;
+import com.tesco.core.Configuration;
 import com.yammer.dropwizard.testing.ResourceTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,18 +19,16 @@ import static org.mockito.Mockito.when;
 public class ImportResourceTest extends ResourceTest {
 
     @Mock
-    RuntimeWrapper mockRuntimeWrapper;
-
-    @Mock
     Configuration mockConfiguration;
 
     @Override
     protected void setUpResources() throws Exception {
         when(mockConfiguration.getImportScript()).thenReturn("import.sh");
 
-        addResource(new ImportResource(mockConfiguration, mockRuntimeWrapper));
+        addResource(new ImportResource(mockConfiguration));
     }
 
+    // TODO : Vyv this needs to actually verify that the import completed successfully (maybe async Servlet?)
     @Test
     public void shouldStartImportScript() throws IOException {
         WebResource resource = client().resource("/admin/import");
@@ -39,8 +37,6 @@ public class ImportResourceTest extends ResourceTest {
 
         assertThat(responseText).isEqualTo("{\"message\":\"Import Started.\"}");
         assertThat(response.getStatus()).isEqualTo(200);
-
-        verify(mockRuntimeWrapper).exec("import.sh");
     }
 }
 

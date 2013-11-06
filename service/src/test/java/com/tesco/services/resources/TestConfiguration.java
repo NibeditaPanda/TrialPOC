@@ -1,7 +1,7 @@
 package com.tesco.services.resources;
 
 import com.fasterxml.jackson.dataformat.yaml.snakeyaml.Yaml;
-import com.tesco.services.Configuration;
+import com.tesco.core.Configuration;
 import com.tesco.services.HostedGraphiteConfiguration;
 import org.slf4j.LoggerFactory;
 
@@ -57,4 +57,7 @@ public class TestConfiguration extends Configuration {
         return new HostedGraphiteConfiguration("carbon.hostedgraphite.com",2003,5,"");
     }
 
+    public String getSonettoShelfImageUrl(){
+        return "http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/Superstore/Online/Product/pos/%s.png";
+    }
 }

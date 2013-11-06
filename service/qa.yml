@@ -3,7 +3,15 @@ DBName: priceService
 DBPort: 27017
 Username: qa
 Password: Services123
-ImportScript: /u01/app/price/import/import.sh qa ahampson@thoughtworks.com /u01/app/price/adapters/ /tmp/
+
+rpm.price.data.dump : /tmp/to_process/price/PRICE_ZONE.csv
+rpm.store.data.dump : /tmp/to_process/price/STORE_ZONE.csv
+rpm.promotion.data.dump : /tmp/to_process/price/PROM_EXTRACT.csv
+rpm.promotion_desc.data.dump : /tmp/to_process/price/PROM_DESC_EXTRACT.csv
+sonetto.shelfUrl : http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/Superstore/Online/Product/pos/%s.png
+sonetto.promotions.data.dump : /tmp/to_process/price/PromotionsDataExport.xml
+sonetto.promotions.xsd : /tmp/to_process/price/Promotions.xsd.xml
+
 hostedGraphite:
   hostname: carbon.hostedgraphite.com
   port: 2003

@@ -1,1 +1,1 @@
-include 'adapters', 'service'
+include 'service'

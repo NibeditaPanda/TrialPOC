@@ -2,29 +2,32 @@ package com.tesco.services.resources;
 
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import com.mongodb.MongoException;
 import com.mongodb.util.JSON;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import com.tesco.services.Configuration;
+import com.tesco.core.Configuration;
 import com.tesco.services.DAO.PromotionDAO;
-import com.tesco.services.DBFactory;
+import com.tesco.core.DBFactory;
 import com.tesco.services.resources.fixtures.TestPromotionDBObject;
 import com.tesco.services.resources.fixtures.TestStoreDBObject;
 import com.yammer.dropwizard.testing.ResourceTest;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
 
-import static com.tesco.services.DAO.PriceKeys.PROMOTION_COLLECTION;
-import static com.tesco.services.DAO.PriceKeys.STORE_COLLECTION;
+import static com.tesco.core.PriceKeys.PROMOTION_COLLECTION;
+import static com.tesco.core.PriceKeys.STORE_COLLECTION;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class PromotionResourceTest extends ResourceTest {
 
-    private Configuration testConfiguration = new TestConfiguration();
-    private DBCollection promotionCollection;
+    private static Configuration testConfiguration = new TestConfiguration();
+    private static DBCollection promotionCollection;
 
     @Override
     protected void setUpResources() throws Exception {
@@ -32,8 +35,8 @@ public class PromotionResourceTest extends ResourceTest {
         addResource(offerResource);
     }
 
-    @Before
-    public void setUp() throws IOException {
+    @BeforeClass
+    public static void setUp() throws IOException {
         DBFactory dbFactory = new DBFactory(testConfiguration);
         dbFactory.getCollection(PROMOTION_COLLECTION).drop();
         dbFactory.getCollection(STORE_COLLECTION).drop();

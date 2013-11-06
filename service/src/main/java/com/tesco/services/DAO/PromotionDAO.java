@@ -4,14 +4,14 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
-import com.tesco.services.Configuration;
-import com.tesco.services.DBFactory;
+import com.tesco.core.Configuration;
+import com.tesco.core.DBFactory;
 import com.tesco.services.resources.model.Promotion;
 import org.mongojack.JacksonDBCollection;
 
 import java.util.List;
 
-import static com.tesco.services.DAO.PriceKeys.*;
+import static com.tesco.core.PriceKeys.*;
 
 public class PromotionDAO {
 

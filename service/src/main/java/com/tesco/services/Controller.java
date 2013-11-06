@@ -1,5 +1,6 @@
 package com.tesco.services;
 
+import com.tesco.core.Configuration;
 import com.tesco.services.DAO.PriceDAO;
 import com.tesco.services.DAO.PromotionDAO;
 import com.tesco.services.healthChecks.ServiceHealthCheck;
@@ -43,7 +44,7 @@ public class Controller extends Service<Configuration> {
       environment.addResource(new PriceResource(new PriceDAO(configuration)));
       environment.addResource(new PromotionResource(new PromotionDAO(configuration)));
       environment.addResource(new VersionResource());
-      environment.addResource(new ImportResource(configuration, new RuntimeWrapper()));
+      environment.addResource(new ImportResource(configuration));
 
       environment.addProvider(new MongoUnavailableProvider());
 

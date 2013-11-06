@@ -7,7 +7,7 @@ import com.tesco.services.Exceptions.ItemNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.tesco.services.DAO.PriceKeys.*;
+import static com.tesco.core.PriceKeys.*;
 
 public class PriceViewBuilder {
 

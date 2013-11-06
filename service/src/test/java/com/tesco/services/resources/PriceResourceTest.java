@@ -5,15 +5,16 @@ import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import com.tesco.services.Configuration;
+import com.tesco.core.Configuration;
 import com.tesco.services.DAO.PriceDAO;
-import com.tesco.services.DBFactory;
+import com.tesco.core.DBFactory;
 import com.tesco.services.Exceptions.ItemNotFoundException;
 import com.tesco.services.resources.fixtures.TestProductPriceDBObject;
 import com.tesco.services.resources.fixtures.TestPromotionDBObject;
 import com.tesco.services.resources.fixtures.TestStoreDBObject;
 import com.yammer.dropwizard.testing.ResourceTest;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -23,10 +24,10 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 public class PriceResourceTest extends ResourceTest {
 
-    private Configuration testConfiguration = new TestConfiguration();
+    private static Configuration testConfiguration = new TestConfiguration();
     private PriceDAO priceDAO;
-    private DBCollection priceCollection;
-    private DBCollection storeCollection;
+    private static DBCollection priceCollection;
+    private static DBCollection storeCollection;
 
     @Override
     protected void setUpResources() throws Exception {
@@ -35,13 +36,17 @@ public class PriceResourceTest extends ResourceTest {
         addResource(priceResource);
     }
 
-    @Before
-    public void setUp() throws IOException {
+    @BeforeClass
+    public static void setUp() throws IOException {
         DBFactory dbFactory = new DBFactory(testConfiguration);
-        dbFactory.getCollection("prices").drop();
-        dbFactory.getCollection("stores").drop();
         priceCollection = dbFactory.getCollection("prices");
         storeCollection = dbFactory.getCollection("stores");
+    }
+
+    @Before
+    public void beforeEachTest(){
+        priceCollection.drop();
+        storeCollection.drop();
     }
 
     @Test
