@@ -23,7 +23,7 @@ public class PromotionRepositoryTest {
     public void setUp() throws Exception {
         dataGridResource = new DataGridResource();
         promotionCache = dataGridResource.getPromotionCache();
-        promotionCache.clear();
+
         promotionRepository = new PromotionRepository(promotionCache);
 
         Promotion promotion = aPromotion().offerId("offerId").build();
@@ -34,7 +34,6 @@ public class PromotionRepositoryTest {
     @After
     public void tearDown() throws Exception {
         dataGridResource.stop();
-
     }
 
     @Test

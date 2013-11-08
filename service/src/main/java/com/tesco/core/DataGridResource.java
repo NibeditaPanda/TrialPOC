@@ -11,12 +11,7 @@ public class DataGridResource {
     private DefaultCacheManager dgClient;
 
     public DataGridResource() {
-        if(dgClient != null && dgClient.isDefaultRunning()) {
-            dgClient.stop();
-        }
-
         dgClient  = new DefaultCacheManager(getConfiguration());
-
     }
 
     public Cache<String, Object> getPromotionCache() {
@@ -33,7 +28,6 @@ public class DataGridResource {
         properties.put("hibernate.search.default.lucene_version", "3.2.6");
 
         return new ConfigurationBuilder()
-                .jmxStatistics().enabled(true)
                 .indexing()
                 .enable()
                 .indexLocalOnly(true)

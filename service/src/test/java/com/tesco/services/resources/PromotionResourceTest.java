@@ -14,6 +14,7 @@ import com.tesco.services.repositories.PromotionRepository;
 import com.tesco.services.resources.fixtures.TestPromotionDBObject;
 import com.tesco.services.resources.fixtures.TestStoreDBObject;
 import com.yammer.dropwizard.testing.ResourceTest;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -66,6 +67,11 @@ public class PromotionResourceTest extends ResourceTest {
         dataGridResource.getPromotionCache().put(UUID.randomUUID().toString(), testPromotionDBObject1.buildJDG());
         dataGridResource.getPromotionCache().put(UUID.randomUUID().toString(), testPromotionDBObject2.buildJDG());
         dataGridResource.getPromotionCache().put(UUID.randomUUID().toString(), testPromotionDBObject3.buildJDG());
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        dataGridResource.stop();
     }
 
     @Test
