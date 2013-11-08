@@ -2,6 +2,7 @@ package com.tesco.services.resources;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.tesco.services.Promotion;
 import com.tesco.services.repositories.PromotionRepository;
 import com.tesco.services.resources.model.PromotionRequest;
 import com.tesco.services.resources.model.PromotionRequestList;
@@ -22,6 +23,7 @@ import java.util.*;
 
 import static ch.lambdaj.Lambda.*;
 import static com.google.common.collect.Iterables.getFirst;
+import static com.google.common.collect.Lists.newArrayList;
 import static com.tesco.services.HTTPResponses.badRequest;
 import static com.tesco.services.HTTPResponses.ok;
 
@@ -47,23 +49,20 @@ public class PromotionResource {
     public Response getByOfferId(@Valid PromotionRequestList promotionRequestList) {
 
         Set<PromotionRequest> uniqueRequests = new HashSet<>(promotionRequestList.getPromotions());
-        List<String> ids = extract(uniqueRequests, on(PromotionRequest.class).getOfferId());
+        List<PromotionRequest> uniquePromotionRequest = newArrayList(uniqueRequests);
 
-        List<com.tesco.services.Promotion> promotions = Lists.transform(ids, new Function<String, com.tesco.services.Promotion>() {
+        List<Promotion> promotions = Lists.transform(uniquePromotionRequest, new Function<PromotionRequest, Promotion>() {
             @Nullable
             @Override
-            public com.tesco.services.Promotion apply(@Nullable String id) {
-                List<com.tesco.services.Promotion> promotions = promotionRepository.getPromotionsByOfferId(id);
+            public Promotion apply(@Nullable PromotionRequest o) {
+                List<com.tesco.services.Promotion> promotions = promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber(o.getOfferId(), o.getItemNumber(), o.getZoneId());
                 return getFirst(promotions, null);
 
             }
-
-
         });
 
-
-        Map<Integer, com.tesco.services.Promotion> promotionsMap = index(promotions, on(com.tesco.services.Promotion.class).hash());
-        List<com.tesco.services.Promotion> results = new LinkedList<>();
+        Map<Integer, Promotion> promotionsMap = index(promotions, on(Promotion.class).hash());
+        List<Promotion> results = new LinkedList<>();
 
         for (PromotionRequest promotionRequest : uniqueRequests) {
             if (promotionsMap.containsKey(promotionRequest.hashCode())) {

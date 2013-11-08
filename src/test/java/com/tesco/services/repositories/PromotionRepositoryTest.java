@@ -26,28 +26,51 @@ public class PromotionRepositoryTest {
 
         promotionRepository = new PromotionRepository(promotionCache);
 
-        Promotion promotion = aPromotion().offerId("offerId").build();
+        Promotion promotion = aPromotion()
+                .offerId("offerId")
+                .itemNumber("itemNumber")
+                .zoneId("zoneId")
+                .build();
 
         promotionCache.put(randomUUID().toString(), promotion);
+    }
+
+    @Test
+    public void getPromotionsByOfferIdZoneIdAndItemNumber() throws Exception {
+        List<Promotion> promotions = promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber("offerId", "itemNumber", "zoneId");
+
+        assertThat(promotions).hasSize(1);
+
+        Promotion promotion = promotions.get(0);
+
+        assertThat(promotion.getOfferId()).isEqualTo("offerId");
+        assertThat(promotion.getZoneId()).isEqualTo("zoneId");
+        assertThat(promotion.getItemNumber()).isEqualTo("itemNumber");
+    }
+
+    @Test
+    public void getPromotionsByOfferIdNotFound() throws Exception {
+        List<Promotion> promotions = promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber("something wrong", "itemNumber", "zoneId");
+
+        assertThat(promotions).hasSize(0);
+    }
+
+    @Test
+    public void getPromotionsByItemNumberNotFound() throws Exception {
+        List<Promotion> promotions = promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber("offerId", "something wrong", "zoneId");
+
+        assertThat(promotions).hasSize(0);
+    }
+
+    @Test
+    public void getPromotionsByZoneIdNotFound() throws Exception {
+        List<Promotion> promotions = promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber("offerId", "itemNumber", "something wrong");
+
+        assertThat(promotions).hasSize(0);
     }
 
     @After
     public void tearDown() throws Exception {
         dataGridResource.stop();
-    }
-
-    @Test
-    public void getPromotionsByOfferId() throws Exception {
-        List<Promotion> promotions = promotionRepository.getPromotionsByOfferId("offerId");
-
-        assertThat(promotions).hasSize(1);
-        assertThat(promotions.get(0).getOfferId()).isEqualTo("offerId");
-    }
-
-    @Test
-    public void promotionsByOfferIdNotFound() throws Exception {
-        List<Promotion> promotions = promotionRepository.getPromotionsByOfferId("something wrong");
-
-        assertThat(promotions).hasSize(0);
     }
 }
