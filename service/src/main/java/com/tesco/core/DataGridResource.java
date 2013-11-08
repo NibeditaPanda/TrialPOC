@@ -11,7 +11,7 @@ public class DataGridResource {
     private DefaultCacheManager dgClient;
 
     public DataGridResource() {
-        if(dgClient != null && !dgClient.isDefaultRunning()) {
+        if(dgClient != null && dgClient.isDefaultRunning()) {
             dgClient.stop();
         }
 
