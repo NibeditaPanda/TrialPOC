@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import static com.tesco.adapters.core.TestFiles.*;
 import static com.tesco.core.PriceKeys.PRICE;
 import static com.tesco.core.PriceKeys.PROMO_PRICE;
 import static org.fest.assertions.api.Assertions.assertThat;

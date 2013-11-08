@@ -16,6 +16,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 
 import static com.mongodb.QueryBuilder.start;
+import static com.tesco.adapters.core.TestFiles.*;
 import static com.tesco.core.PriceKeys.*;
 
 public class ControllerIntegrationTest {
@@ -28,18 +29,9 @@ public class ControllerIntegrationTest {
 
     protected DataGridResource dataGridResource;
 
-    protected static final String RPM_PRICE_ZONE_CSV_FILE_PATH = "./src/test/resources/com/tesco/adapters/rpm/fixtures/price_zone.csv";
-    protected static final String RPM_STORE_ZONE_CSV_FILE_PATH = "./src/test/resources/com/tesco/adapters/rpm/fixtures/store_zone.csv";
-    protected static final String RPM_PROMOTION_CSV_FILE_PATH = "./src/test/resources/com/tesco/adapters/rpm/fixtures/prom_extract.csv";
-    protected static final String RPM_PROMOTION_DESC_CSV_FILE_PATH = "src/test/resources/com/tesco/adapters/rpm/fixtures/PROM_DESC_EXTRACT.csv";
-    protected static final String RPM_PRICE_ZONE_TO_UPDATE_CSV_FILE_PATH = "./src/test/resources/com/tesco/adapters/rpm/fixtures/price_zone_to_update.csv";
-    protected static final String RPM_STORE_ZONE_TO_UPDATE_CSV_FILE_PATH = "./src/test/resources/com/tesco/adapters/rpm/fixtures/store_zone_to_update.csv";
-
-    protected static final String SONETTO_PROMOTIONS_XML_FILE_PATH = "./src/test/resources/com/tesco/adapters/sonetto/PromotionsDataExport.xml";
-    protected static final String SONETTO_PROMOTIONS_XSD_FILE_PATH = "./templates/Promotions.xsd.xml";
-
     @Before
     public void setUp() throws IOException, ParserConfigurationException, SAXException, ConfigurationException, JAXBException, ColumnNotFoundException {
+        System.out.println("ControllerIntegrationTest setup");
         TestConfiguration configuration = new TestConfiguration();
         dataGridResource = new DataGridResource();
 

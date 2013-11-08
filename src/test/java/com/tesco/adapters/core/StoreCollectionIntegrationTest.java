@@ -5,6 +5,7 @@ import com.tesco.services.resources.TestConfiguration;
 import org.junit.Test;
 
 import static com.mongodb.QueryBuilder.start;
+import static com.tesco.adapters.core.TestFiles.*;
 import static com.tesco.core.PriceKeys.*;
 import static org.fest.assertions.api.Assertions.assertThat;
 
