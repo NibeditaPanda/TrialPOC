@@ -2,6 +2,7 @@ package com.tesco.services.resources.fixtures;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.tesco.services.Promotion;
 
 public class TestPromotionDBObject {
 
@@ -77,6 +78,21 @@ public class TestPromotionDBObject {
         promotion.put("zoneId", promotionZoneId);
         promotion.put("shelfTalkerImage", shelfTalkerImage);
         promotion.put("offerText", offerText);
+        return promotion;
+    }
+
+    public Promotion buildJDG() {
+        Promotion promotion = new Promotion();
+        promotion.setItemNumber(itemNumber);
+        promotion.setOfferId(offerId);
+        promotion.setOfferName(offerName);
+        promotion.setStartDate(startDate);
+        promotion.setEndDate(endDate);
+        promotion.setCFDescription1(cfDescription1);
+        promotion.setCFDescription2(cfDescription2);
+        promotion.setZoneId(promotionZoneId);
+        promotion.setShelfTalkerImage(shelfTalkerImage);
+        promotion.setOfferText(offerText);
         return promotion;
     }
 }

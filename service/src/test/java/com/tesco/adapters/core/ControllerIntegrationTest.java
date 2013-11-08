@@ -4,8 +4,10 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.tesco.adapters.core.exceptions.ColumnNotFoundException;
 import com.tesco.core.DBFactory;
+import com.tesco.core.DataGridResource;
 import com.tesco.services.resources.TestConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
+import org.junit.After;
 import org.junit.Before;
 import org.xml.sax.SAXException;
 
@@ -24,6 +26,8 @@ public class ControllerIntegrationTest {
     protected DBCollection tempStoreCollection;
     protected DBCollection tempPromotionCollection;
 
+    protected DataGridResource dataGridResource;
+
     protected static final String RPM_PRICE_ZONE_CSV_FILE_PATH = "./src/test/resources/com/tesco/adapters/rpm/fixtures/price_zone.csv";
     protected static final String RPM_STORE_ZONE_CSV_FILE_PATH = "./src/test/resources/com/tesco/adapters/rpm/fixtures/store_zone.csv";
     protected static final String RPM_PROMOTION_CSV_FILE_PATH = "./src/test/resources/com/tesco/adapters/rpm/fixtures/prom_extract.csv";
@@ -37,6 +41,7 @@ public class ControllerIntegrationTest {
     @Before
     public void setUp() throws IOException, ParserConfigurationException, SAXException, ConfigurationException, JAXBException, ColumnNotFoundException {
         TestConfiguration configuration = new TestConfiguration();
+        dataGridResource = new DataGridResource();
 
         DBFactory dbFactory = new DBFactory(configuration);
 
@@ -63,9 +68,15 @@ public class ControllerIntegrationTest {
                 RPM_PROMOTION_CSV_FILE_PATH,
                 SONETTO_PROMOTIONS_XML_FILE_PATH,
                 RPM_PROMOTION_DESC_CSV_FILE_PATH, SONETTO_PROMOTIONS_XSD_FILE_PATH,
-                "http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/Superstore/Online/Product/pos/%s.png");
+                "http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/Superstore/Online/Product/pos/%s.png", dataGridResource.getPromotionCache());
 
         controller.processData(tempPriceCollection, tempStoreCollection, tempPromotionCollection, false);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        dataGridResource.stop();
+
     }
 
     protected DBObject findPricesFromZone(String itemNumber, String zoneId) {

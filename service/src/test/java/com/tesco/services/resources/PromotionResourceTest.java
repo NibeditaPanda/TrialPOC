@@ -1,37 +1,40 @@
 package com.tesco.services.resources;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
-import com.mongodb.MongoException;
 import com.mongodb.util.JSON;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.tesco.core.Configuration;
-import com.tesco.services.DAO.PromotionDAO;
 import com.tesco.core.DBFactory;
+import com.tesco.core.DataGridResource;
+import com.tesco.services.Promotion;
+import com.tesco.services.repositories.PromotionRepository;
 import com.tesco.services.resources.fixtures.TestPromotionDBObject;
 import com.tesco.services.resources.fixtures.TestStoreDBObject;
 import com.yammer.dropwizard.testing.ResourceTest;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import static com.tesco.core.PriceKeys.PROMOTION_COLLECTION;
 import static com.tesco.core.PriceKeys.STORE_COLLECTION;
+import static com.yammer.dropwizard.testing.JsonHelpers.fromJson;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class PromotionResourceTest extends ResourceTest {
 
     private static Configuration testConfiguration = new TestConfiguration();
     private static DBCollection promotionCollection;
+    private static DataGridResource dataGridResource;
 
     @Override
     protected void setUpResources() throws Exception {
-        PromotionResource offerResource = new PromotionResource(new PromotionDAO(testConfiguration));
+        PromotionResource offerResource = new PromotionResource(new PromotionRepository(dataGridResource.getPromotionCache()));
         addResource(offerResource);
     }
 
@@ -46,11 +49,23 @@ public class PromotionResourceTest extends ResourceTest {
 
         promotionCollection = dbFactory.getCollection(PROMOTION_COLLECTION);
 
-        promotionCollection.insert(new TestPromotionDBObject("123").withTPNB("1234").withPromotionZone("5").withStartDate("date1").withEndDate("date2").withName("name of promotion").withDescription1("blah").withDescription2("blah").withShelfTalker("OnSale.png").build());
-        promotionCollection.insert(new TestPromotionDBObject("123").withTPNB("5678").withPromotionZone("4").withStartDate("date1").withEndDate("date2").withName("name of promotion").withDescription1("blah").withDescription2("blah").build());
-        promotionCollection.insert(new TestPromotionDBObject("567").withTPNB("5678").withPromotionZone("4").withStartDate("date1").withEndDate("date2").withName("name of promotion").withDescription1("blah").withDescription2("blah").build());
+        TestPromotionDBObject testPromotionDBObject = new TestPromotionDBObject("123").withTPNB("1234").withPromotionZone("5").withStartDate("date1").withEndDate("date2").withName("name of promotion").withDescription1("blah").withDescription2("blah").withShelfTalker("OnSale.png");
+        promotionCollection.insert(testPromotionDBObject.build());
 
-        promotionCollection.insert(new TestPromotionDBObject("345").build());
+        TestPromotionDBObject testPromotionDBObject1 = new TestPromotionDBObject("123").withTPNB("5678").withPromotionZone("4").withStartDate("date1").withEndDate("date2").withName("name of promotion").withDescription1("blah").withDescription2("blah");
+        promotionCollection.insert(testPromotionDBObject1.build());
+
+        TestPromotionDBObject testPromotionDBObject2 = new TestPromotionDBObject("567").withTPNB("5678").withPromotionZone("4").withStartDate("date1").withEndDate("date2").withName("name of promotion").withDescription1("blah").withDescription2("blah");
+        promotionCollection.insert(testPromotionDBObject2.build());
+
+        TestPromotionDBObject testPromotionDBObject3 = new TestPromotionDBObject("345");
+        promotionCollection.insert(testPromotionDBObject3.build());
+
+        dataGridResource = new DataGridResource();
+        dataGridResource.getPromotionCache().put(UUID.randomUUID().toString(), testPromotionDBObject.buildJDG());
+        dataGridResource.getPromotionCache().put(UUID.randomUUID().toString(), testPromotionDBObject1.buildJDG());
+        dataGridResource.getPromotionCache().put(UUID.randomUUID().toString(), testPromotionDBObject2.buildJDG());
+        dataGridResource.getPromotionCache().put(UUID.randomUUID().toString(), testPromotionDBObject3.buildJDG());
     }
 
     @Test
@@ -67,32 +82,31 @@ public class PromotionResourceTest extends ResourceTest {
         ClientResponse response = resource.type("application/json").post(ClientResponse.class, jsonRequest);
         assertThat(response.getStatus()).isEqualTo(200);
 
-        List<DBObject> promotions = (List<DBObject>) JSON.parse(resource.type("application/json").post(String.class, jsonRequest));
+        List<Promotion> promotions = fromJson(resource.type("application/json").post(String.class, jsonRequest), new TypeReference<List<Promotion>>() {});
+        assertThat(promotions).hasSize(2);
 
-        assertThat(promotions.size()).isEqualTo(2);
+        com.tesco.services.Promotion firstPromotion = promotions.get(0);
+        assertThat(firstPromotion.getOfferId()).isEqualTo("567");
+        assertThat(firstPromotion.getItemNumber()).isEqualTo("5678");
+        assertThat(firstPromotion.getZoneId()).isEqualTo("4");
+        assertThat(firstPromotion.getOfferName()).isEqualTo("name of promotion");
+        assertThat(firstPromotion.getStartDate()).isEqualTo("date1");
+        assertThat(firstPromotion.getEndDate()).isEqualTo("date2");
+        assertThat(firstPromotion.getCFDescription1()).isEqualTo("blah");
+        assertThat(firstPromotion.getCFDescription2()).isEqualTo("blah");
+        assertThat(firstPromotion.getOfferText()).isEqualTo("default");
 
-        DBObject firstPromotion = promotions.get(0);
-        assertThat(firstPromotion.get("offerId")).isEqualTo("567");
-        assertThat(firstPromotion.get("itemNumber")).isEqualTo("5678");
-        assertThat(firstPromotion.get("zoneId")).isEqualTo("4");
-        assertThat(firstPromotion.get("offerName")).isEqualTo("name of promotion");
-        assertThat(firstPromotion.get("startDate")).isEqualTo("date1");
-        assertThat(firstPromotion.get("endDate")).isEqualTo("date2");
-        assertThat(firstPromotion.get("CFDescription1")).isEqualTo("blah");
-        assertThat(firstPromotion.get("CFDescription2")).isEqualTo("blah");
-        assertThat(firstPromotion.get("offerText")).isEqualTo("default");
-
-        DBObject secondPromotion = promotions.get(1);
-        assertThat(secondPromotion.get("offerId")).isEqualTo("123");
-        assertThat(secondPromotion.get("itemNumber")).isEqualTo("1234");
-        assertThat(secondPromotion.get("zoneId")).isEqualTo("5");
-        assertThat(secondPromotion.get("offerName")).isEqualTo("name of promotion");
-        assertThat(secondPromotion.get("startDate")).isEqualTo("date1");
-        assertThat(secondPromotion.get("endDate")).isEqualTo("date2");
-        assertThat(secondPromotion.get("CFDescription1")).isEqualTo("blah");
-        assertThat(secondPromotion.get("CFDescription2")).isEqualTo("blah");
-        assertThat(secondPromotion.get("shelfTalkerImage")).isEqualTo("OnSale.png");
-        assertThat(secondPromotion.get("offerText")).isEqualTo("default");
+        com.tesco.services.Promotion secondPromotion = promotions.get(1);
+        assertThat(secondPromotion.getOfferId()).isEqualTo("123");
+        assertThat(secondPromotion.getItemNumber()).isEqualTo("1234");
+        assertThat(secondPromotion.getZoneId()).isEqualTo("5");
+        assertThat(secondPromotion.getOfferName()).isEqualTo("name of promotion");
+        assertThat(secondPromotion.getStartDate()).isEqualTo("date1");
+        assertThat(secondPromotion.getEndDate()).isEqualTo("date2");
+        assertThat(secondPromotion.getCFDescription1()).isEqualTo("blah");
+        assertThat(secondPromotion.getCFDescription2()).isEqualTo("blah");
+        assertThat(secondPromotion.getShelfTalkerImage()).isEqualTo("OnSale.png");
+        assertThat(secondPromotion.getOfferText()).isEqualTo("default");
 
     }
 
@@ -109,7 +123,7 @@ public class PromotionResourceTest extends ResourceTest {
         ClientResponse response = resource.type("application/json").post(ClientResponse.class, jsonRequest);
         assertThat(response.getStatus()).isEqualTo(200);
 
-        List<DBObject> promotions = (List<DBObject>) JSON.parse(resource.type("application/json").post(String.class, jsonRequest));
+        List<Promotion> promotions = fromJson(resource.type("application/json").post(String.class, jsonRequest), new TypeReference<List<Promotion>>() {});
 
         assertThat(promotions).isEmpty();
     }
@@ -146,21 +160,21 @@ public class PromotionResourceTest extends ResourceTest {
         ClientResponse response = resource.type("application/json").post(ClientResponse.class, jsonRequest);
         assertThat(response.getStatus()).isEqualTo(200);
 
-        List<DBObject> promotions = (List<DBObject>) JSON.parse(resource.type("application/json").post(String.class, jsonRequest));
+        List<Promotion> promotions = fromJson(resource.type("application/json").post(String.class, jsonRequest), new TypeReference<List<Promotion>>() {});
 
         assertThat(promotions.size()).isEqualTo(1);
 
-        DBObject firstPromotion = promotions.get(0);
-        assertThat(firstPromotion.get("offerId")).isEqualTo("123");
-        assertThat(firstPromotion.get("itemNumber")).isEqualTo("1234");
-        assertThat(firstPromotion.get("zoneId")).isEqualTo("5");
-        assertThat(firstPromotion.get("offerName")).isEqualTo("name of promotion");
-        assertThat(firstPromotion.get("startDate")).isEqualTo("date1");
-        assertThat(firstPromotion.get("endDate")).isEqualTo("date2");
-        assertThat(firstPromotion.get("CFDescription1")).isEqualTo("blah");
-        assertThat(firstPromotion.get("CFDescription2")).isEqualTo("blah");
-        assertThat(firstPromotion.get("shelfTalkerImage")).isEqualTo("OnSale.png");
-        assertThat(firstPromotion.get("offerText")).isEqualTo("default");
+        Promotion firstPromotion = promotions.get(0);
+        assertThat(firstPromotion.getOfferId()).isEqualTo("123");
+        assertThat(firstPromotion.getItemNumber()).isEqualTo("1234");
+        assertThat(firstPromotion.getZoneId()).isEqualTo("5");
+        assertThat(firstPromotion.getOfferName()).isEqualTo("name of promotion");
+        assertThat(firstPromotion.getStartDate()).isEqualTo("date1");
+        assertThat(firstPromotion.getEndDate()).isEqualTo("date2");
+        assertThat(firstPromotion.getCFDescription1()).isEqualTo("blah");
+        assertThat(firstPromotion.getCFDescription2()).isEqualTo("blah");
+        assertThat(firstPromotion.getShelfTalkerImage()).isEqualTo("OnSale.png");
+        assertThat(firstPromotion.getOfferText()).isEqualTo("default");
 
     }
 }

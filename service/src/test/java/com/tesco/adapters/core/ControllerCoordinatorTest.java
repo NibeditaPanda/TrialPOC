@@ -1,13 +1,15 @@
 package com.tesco.adapters.core;
 
 import com.mongodb.DBCollection;
+import com.tesco.core.DataGridResource;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ControllerCoordinatorTest {
@@ -33,13 +35,16 @@ public class ControllerCoordinatorTest {
     @Mock
     private DBCollection tempPromotionDbCollection;
 
+    @Mock
+    private DataGridResource dataGridResource;
+
     @Ignore("need to fix") // TODO Vyv need to create files and check they werent deleted
     @Test
     public void shouldNotRenameCollectionGivenFileIsCorrupted() throws Exception {
 
 //        doThrow(new ColumnNotFoundException("Error")).when(controller).fetchAndSavePriceDetails();
 
-        Controller importController = new Controller("", "", "", "", "", "", "");
+        Controller importController = new Controller("", "", "", "", "", "", "", dataGridResource.getPromotionCache());
 
         importController.processData(tempPriceDbCollection, tempStoreDbCollection, tempPromotionDbCollection, false);
 
@@ -59,7 +64,7 @@ public class ControllerCoordinatorTest {
     public void shouldNotRenameCollectionGivenSonettoIsCorrupted() throws Exception {
 
 //        doThrow(new JAXBException("Error")).when(controller).fetchAndSavePriceDetails();
-        Controller importController = new Controller("", "", "", "", "", "", "");
+        Controller importController = new Controller("", "", "", "", "", "", "", dataGridResource.getPromotionCache());
 
         controller.processData(tempPriceDbCollection, tempStoreDbCollection, tempPromotionDbCollection, false);
 
@@ -78,7 +83,7 @@ public class ControllerCoordinatorTest {
     public void shouldNotRenameCollectionGivenSonettoMalformedXml() throws Exception {
 
 //        doThrow(new SAXException("Error")).when(controller).fetchAndSavePriceDetails();
-        Controller importController = new Controller("", "", "", "", "", "", "");
+        Controller importController = new Controller("", "", "", "", "", "", "", dataGridResource.getPromotionCache());
 
         controller.processData(tempPriceDbCollection, tempStoreDbCollection, tempPromotionDbCollection, false);
 

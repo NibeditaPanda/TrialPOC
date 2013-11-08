@@ -11,6 +11,7 @@ import com.tesco.adapters.rpm.writers.RPMWriter;
 import com.tesco.adapters.sonetto.SonettoPromotionWriter;
 import com.tesco.adapters.sonetto.SonettoPromotionXMLReader;
 import org.apache.commons.configuration.ConfigurationException;
+import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.xml.sax.SAXException;
 
@@ -32,6 +33,7 @@ public class Controller {
     private String rpmPromotionCsvFilePath;
     private String rpmPromotionDescCSVUrl;
     private String sonettoPromotionXSDDataPath;
+    private Cache<String, Object> promotionCache;
     private String sonettoPromotionsXMLFilePath;
     private String sonettoShelfImageUrl;
 
@@ -41,7 +43,8 @@ public class Controller {
                       String sonettoPromotionsXMLFilePath,
                       String rpmPromotionDescCSVUrl,
                       String sonettoPromotionXSDDataPath,
-                      String sonettoShelfImageUrl) {
+                      String sonettoShelfImageUrl,
+                      Cache<String, Object> promotionCache) {
         this.rpmPriceZoneCsvFilePath = rpmPriceZoneCsvFilePath;
         this.rpmStoreZoneCsvFilePath = rpmStoreZoneCsvFilePath;
         this.rpmPromotionCsvFilePath = rpmPromotionCsvFilePath;
@@ -49,6 +52,7 @@ public class Controller {
         this.rpmPromotionDescCSVUrl = rpmPromotionDescCSVUrl;
         this.sonettoPromotionXSDDataPath = sonettoPromotionXSDDataPath;
         this.sonettoShelfImageUrl = sonettoShelfImageUrl;
+        this.promotionCache = promotionCache;
     }
 
     public void processData(DBCollection tempPriceCollection, DBCollection tempStoreCollection, DBCollection tempPromotionCollection, boolean deleteFilesOnFailure) {
@@ -87,6 +91,7 @@ public class Controller {
         RPMPriceZoneCSVFileReader rpmPriceZoneCSVFileReader = new RPMPriceZoneCSVFileReader(rpmPriceZoneCsvFilePath);
         RPMStoreZoneCSVFileReader rpmStoreZoneCSVFileReader = new RPMStoreZoneCSVFileReader(rpmStoreZoneCsvFilePath);
         RPMPromotionCSVFileReader rpmPromotionCSVFileReader = new RPMPromotionCSVFileReader(rpmPromotionCsvFilePath);
+        RPMPromotionCSVFileReader rpmPromotionCSVFileReaderDG = new RPMPromotionCSVFileReader(rpmPromotionCsvFilePath);
         RPMPromotionDescriptionCSVFileReader rpmPromotionDescriptionCSVFileReader = new RPMPromotionDescriptionCSVFileReader(rpmPromotionDescCSVUrl);
 
         SonettoPromotionXMLReader sonettoPromotionXMLReader = new SonettoPromotionXMLReader(new SonettoPromotionWriter(promotionCollection), sonettoShelfImageUrl, sonettoPromotionXSDDataPath);
@@ -99,7 +104,9 @@ public class Controller {
                 rpmStoreZoneCSVFileReader,
                 rpmPromotionCSVFileReader,
                 rpmPromotionDescriptionCSVFileReader,
-                sonettoPromotionXMLReader).write();
+                sonettoPromotionXMLReader,
+                promotionCache,
+                rpmPromotionCSVFileReaderDG).write();
     }
 
     private void indexMongo(DBCollection priceCollection, DBCollection storeCollection, DBCollection promotionCollection) {

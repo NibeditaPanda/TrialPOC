@@ -2,13 +2,10 @@ package com.tesco.adapters.core;
 
 import com.mongodb.DBObject;
 import com.tesco.services.resources.TestConfiguration;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static com.mongodb.QueryBuilder.start;
 import static com.tesco.core.PriceKeys.*;
-import static com.tesco.core.PriceKeys.PRICE_ZONE_ID;
-import static com.tesco.core.PriceKeys.STORE_ID;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class StoreCollectionIntegrationTest extends ControllerIntegrationTest {
@@ -37,7 +34,8 @@ public class StoreCollectionIntegrationTest extends ControllerIntegrationTest {
                 RPM_PROMOTION_CSV_FILE_PATH,
                 SONETTO_PROMOTIONS_XML_FILE_PATH,
                 RPM_PROMOTION_DESC_CSV_FILE_PATH, SONETTO_PROMOTIONS_XSD_FILE_PATH,
-                testConfiguration.getSonettoShelfImageUrl());
+                testConfiguration.getSonettoShelfImageUrl(),
+                dataGridResource.getPromotionCache());
         controller.processData(priceCollection, storeCollection, promotionCollection, false);
 
         DBObject store = getStore("2002");

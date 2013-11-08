@@ -4,6 +4,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.WriteResult;
+import com.tesco.core.DataGridResource;
 import com.tesco.core.PriceKeys;
 import com.tesco.adapters.rpm.readers.RPMPriceZoneCSVFileReader;
 import com.tesco.adapters.rpm.readers.RPMPromotionCSVFileReader;
@@ -59,6 +60,9 @@ public class RPMWriterTest {
     @Mock
     private DBCursor dbCursor;
 
+    @Mock
+    private DataGridResource dataGridResource;
+
     @Before
     public void setUp() throws Exception {
         rpmWriter = new RPMWriter(priceCollection,
@@ -69,7 +73,7 @@ public class RPMWriterTest {
                 rpmStoreZoneCSVFileReader,
                 rpmPromotionCSVFileReader,
                 rpmPromotionDescriptionCSVFileReader,
-                sonettoPromotionXMLReader);
+                sonettoPromotionXMLReader, dataGridResource.getPromotionCache(), rpmPromotionCSVFileReader);
     }
 
     @Test

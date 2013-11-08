@@ -7,6 +7,8 @@ import com.mongodb.WriteResult;
 import com.tesco.adapters.core.exceptions.ColumnNotFoundException;
 import com.tesco.adapters.rpm.readers.*;
 import com.tesco.adapters.sonetto.SonettoPromotionXMLReader;
+import com.tesco.services.Promotion;
+import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -16,10 +18,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.List;
 
-import static com.tesco.core.PriceKeys.*;
 import static com.tesco.adapters.rpm.readers.RPMPriceZoneCSVFileReader.PRICE_ZONE_FORMAT;
+import static com.tesco.core.PriceKeys.*;
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.String.format;
+import static java.util.UUID.randomUUID;
 
 public class RPMWriter {
     private Logger logger = LoggerFactory.getLogger("RPM Import");
@@ -35,6 +38,8 @@ public class RPMWriter {
     private RPMStoreZoneCSVFileReader rpmStoreZoneCSVFileReader;
 
     private SonettoPromotionXMLReader sonettoPromotionXMLReader;
+    private Cache<String, Object> promotion;
+    private RPMPromotionCSVFileReader rpmPromotionCSVFileReaderDG;
 
     private int insertCount;
     private int updateCount;
@@ -47,7 +52,9 @@ public class RPMWriter {
                      RPMStoreZoneCSVFileReader rpmStoreZoneCSVFileReader,
                      RPMPromotionCSVFileReader rpmPromotionCSVFileReader,
                      RPMPromotionDescriptionCSVFileReader rpmPromotionDescriptionCSVFileReader,
-                     SonettoPromotionXMLReader sonettoPromotionXMLReader) throws IOException, ColumnNotFoundException {
+                     SonettoPromotionXMLReader sonettoPromotionXMLReader,
+                     Cache<String, Object> promotion,
+                     RPMPromotionCSVFileReader rpmPromotionCSVFileReaderDG) throws IOException, ColumnNotFoundException {
 
         this.priceCollection = priceCollection;
         this.storeCollection = storeCollection;
@@ -58,6 +65,8 @@ public class RPMWriter {
         this.rpmPromotionCSVFileReader = rpmPromotionCSVFileReader;
         this.rpmPromotionDescriptionCSVFileReader = rpmPromotionDescriptionCSVFileReader;
         this.sonettoPromotionXMLReader = sonettoPromotionXMLReader;
+        this.promotion = promotion;
+        this.rpmPromotionCSVFileReaderDG = rpmPromotionCSVFileReaderDG;
 
         insertCount = 0;
         updateCount = 0;
@@ -119,11 +128,23 @@ public class RPMWriter {
             addPromotion(nextPromotion);
             appendPromotionToPrice(nextPromotion);
         }
+
+        Promotion nextPromotionDG;
+
+        while ((nextPromotionDG = rpmPromotionCSVFileReaderDG.getNextDG()) != null) {
+            addPromotionJDG(nextPromotionDG);
+//            appendPromotionToPrice(nextPromotion);
+        }
+
         logUpsertCounts(priceCollection);
     }
 
     private void addPromotion(DBObject nextPromotion) {
         promotionCollection.insert(nextPromotion);
+    }
+
+    private void addPromotionJDG(Promotion nextPromotion) {
+        this.promotion.put(randomUUID().toString(), nextPromotion);
     }
 
     private void appendPromotionToPrice(DBObject nextPromotion) {

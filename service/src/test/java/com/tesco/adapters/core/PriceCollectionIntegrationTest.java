@@ -41,7 +41,7 @@ public class PriceCollectionIntegrationTest extends ControllerIntegrationTest {
                 RPM_PROMOTION_CSV_FILE_PATH,
                 SONETTO_PROMOTIONS_XML_FILE_PATH,
                 RPM_PROMOTION_DESC_CSV_FILE_PATH,
-                SONETTO_PROMOTIONS_XSD_FILE_PATH, testConfiguration.getSonettoShelfImageUrl());
+                SONETTO_PROMOTIONS_XSD_FILE_PATH, testConfiguration.getSonettoShelfImageUrl(), dataGridResource.getPromotionCache());
         controller.processData(tempPriceCollection, tempStoreCollection, tempPromotionCollection, false);
 
         DBObject prices = findPricesFromZone("050925811", "5");
