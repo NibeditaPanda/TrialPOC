@@ -1,10 +1,11 @@
-*.class
+
+.DS_Store
+.class
 .idea
 
-service/output.txt
-service/priceService.pid
+output.txt
+priceService.pid
 out
-adapters/logs/*
 
 # Package Files #
 *.war
@@ -18,11 +19,12 @@ adapters/logs/*
 out
 build
 log
+logs/
 
 .gradle/
 **/.gradle/*
 **/.idea/*
 **/build/*
 
-logs/
-.DS_Store
+
+

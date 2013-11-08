@@ -1,4 +1,2 @@
-price
+Price Service (JBoss DataGrid)
 =====
-
-price adapters and service, grouped together.
