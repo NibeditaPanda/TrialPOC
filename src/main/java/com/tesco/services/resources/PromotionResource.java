@@ -1,7 +1,6 @@
 package com.tesco.services.resources;
 
 import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import com.tesco.services.Promotion;
 import com.tesco.services.repositories.PromotionRepository;
 import com.tesco.services.resources.model.PromotionRequest;
@@ -19,11 +18,15 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import static ch.lambdaj.Lambda.*;
+import static com.google.common.base.Predicates.notNull;
+import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Iterables.getFirst;
 import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Lists.transform;
 import static com.tesco.services.HTTPResponses.badRequest;
 import static com.tesco.services.HTTPResponses.ok;
 
@@ -51,26 +54,20 @@ public class PromotionResource {
         Set<PromotionRequest> uniqueRequests = new HashSet<>(promotionRequestList.getPromotions());
         List<PromotionRequest> uniquePromotionRequest = newArrayList(uniqueRequests);
 
-        List<Promotion> promotions = Lists.transform(uniquePromotionRequest, new Function<PromotionRequest, Promotion>() {
+        List<Promotion> promotions = transform(uniquePromotionRequest, new Function<PromotionRequest, Promotion>() {
             @Nullable
             @Override
-            public Promotion apply(@Nullable PromotionRequest o) {
-                List<com.tesco.services.Promotion> promotions = promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber(o.getOfferId(), o.getItemNumber(), o.getZoneId());
+            public Promotion apply(@Nullable PromotionRequest promotionRequest) {
+                List<com.tesco.services.Promotion> promotions = promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber(promotionRequest.getOfferId(),
+                        promotionRequest.getItemNumber(),
+                        promotionRequest.getZoneId());
                 return getFirst(promotions, null);
-
             }
         });
 
-        Map<Integer, Promotion> promotionsMap = index(promotions, on(Promotion.class).hash());
-        List<Promotion> results = new LinkedList<>();
+        List<Promotion> nonNullPromotions = newArrayList(filter(promotions, notNull()));
 
-        for (PromotionRequest promotionRequest : uniqueRequests) {
-            if (promotionsMap.containsKey(promotionRequest.hashCode())) {
-                results.add(promotionsMap.get(promotionRequest.hashCode()));
-            }
-        }
-
-        return ok(results);
+        return ok(nonNullPromotions);
     }
 
     @GET

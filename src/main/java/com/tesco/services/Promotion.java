@@ -153,9 +153,5 @@ public class Promotion implements Serializable {
         result = 31 * result + (zoneId != null ? zoneId.hashCode() : 0);
         return result;
     }
-
-    public Integer hash(){
-        return hashCode();
-    }
 }
 
