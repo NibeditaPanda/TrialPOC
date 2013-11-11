@@ -75,6 +75,22 @@ public class PromotionRepositoryTest {
         assertThat(promotions).hasSize(0);
     }
 
+    @Test
+    public void getEmptyPromotionsGivenOneOfArgsEmpty() throws Exception {
+        List<Promotion> promotions = promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber("offerId", "itemNumber", "");
+
+        assertThat(promotions).hasSize(0);
+
+    }
+
+    @Test
+    public void getEmptyPromotionsGivenOneOfArgsNull() throws Exception {
+        List<Promotion> promotions = promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber("offerId", "itemNumber", null);
+
+        assertThat(promotions).hasSize(0);
+
+    }
+
     @After
     public void tearDown() throws Exception {
         dataGridResource.stop();

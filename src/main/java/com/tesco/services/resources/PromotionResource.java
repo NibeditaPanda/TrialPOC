@@ -16,7 +16,6 @@ import com.yammer.metrics.annotation.Timed;
 import javax.annotation.Nullable;
 import javax.validation.Valid;
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.HashSet;
 import java.util.List;
@@ -29,6 +28,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.transform;
 import static com.tesco.services.HTTPResponses.badRequest;
 import static com.tesco.services.HTTPResponses.ok;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/promotion")
 @Api(value = "/promotion", description = "Promotional Price Endpoints")
@@ -48,7 +48,7 @@ public class PromotionResource {
     @Metered(name = "getByOfferedId-Meter", group = "PriceServices")
     @Timed(name = "getByOfferedId-Timer", group = "PriceServices")
     @ExceptionMetered(name = "getByOfferedId-Failures", group = "PriceServices")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes(APPLICATION_JSON)
     public Response getByOfferId(@Valid PromotionRequestList promotionRequestList) {
 
         Set<PromotionRequest> uniqueRequests = new HashSet<>(promotionRequestList.getPromotions());
@@ -58,9 +58,10 @@ public class PromotionResource {
             @Nullable
             @Override
             public Promotion apply(@Nullable PromotionRequest promotionRequest) {
-                List<com.tesco.services.Promotion> promotions = promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber(promotionRequest.getOfferId(),
+                List<Promotion> promotions = promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber(promotionRequest.getOfferId(),
                         promotionRequest.getItemNumber(),
                         promotionRequest.getZoneId());
+
                 return getFirst(promotions, null);
             }
         });

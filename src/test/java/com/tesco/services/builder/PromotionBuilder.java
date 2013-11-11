@@ -35,4 +35,5 @@ public class PromotionBuilder {
 
         return promotion;
     }
+
 }

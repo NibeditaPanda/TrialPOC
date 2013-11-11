@@ -13,6 +13,8 @@ import com.tesco.services.Promotion;
 import com.tesco.services.repositories.PromotionRepository;
 import com.tesco.services.resources.fixtures.TestPromotionDBObject;
 import com.tesco.services.resources.fixtures.TestStoreDBObject;
+import com.tesco.services.resources.model.PromotionRequest;
+import com.tesco.services.resources.model.PromotionRequestList;
 import com.yammer.dropwizard.testing.ResourceTest;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -24,11 +26,16 @@ import java.util.UUID;
 
 import static com.tesco.core.PriceKeys.PROMOTION_COLLECTION;
 import static com.tesco.core.PriceKeys.STORE_COLLECTION;
+import static com.tesco.services.builder.PromotionRequestBuilder.aPromotionRequest;
+import static com.yammer.dropwizard.testing.JsonHelpers.asJson;
 import static com.yammer.dropwizard.testing.JsonHelpers.fromJson;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.util.Lists.newArrayList;
 
 public class PromotionResourceTest extends ResourceTest {
 
+    private static final String PROMOTION_FIND_ENDPOINT = "/promotion/find";
     private static Configuration testConfiguration = new TestConfiguration();
     private static DBCollection promotionCollection;
     private static DataGridResource dataGridResource;
@@ -76,22 +83,30 @@ public class PromotionResourceTest extends ResourceTest {
 
     @Test
     public void shouldReturnMultiplePromotions() throws Exception {
-        String jsonRequest = "{\n" +
-                "    \"promotions\":\n" +
-                "        [\n" +
-                "            { \"offerId\": \"123\", \"itemNumber\": \"1234\", \"zoneId\": \"5\"},\n" +
-                "            { \"offerId\": \"567\", \"itemNumber\": \"5678\", \"zoneId\": \"4\"}\n" +
-                "        ]\n" +
-                "}";
+        PromotionRequest promotionRequest = aPromotionRequest()
+                .offerId("123")
+                .itemNumber("1234")
+                .zoneId("5")
+                .build();
 
-        WebResource resource = client().resource("/promotion/find");
-        ClientResponse response = resource.type("application/json").post(ClientResponse.class, jsonRequest);
+        PromotionRequest promotionRequest1 = aPromotionRequest()
+                .offerId("567")
+                .itemNumber("5678")
+                .zoneId("4")
+                .build();
+
+
+        PromotionRequestList promotionRequestList = new PromotionRequestList();
+        promotionRequestList.setPromotions(newArrayList(promotionRequest, promotionRequest1));
+
+        WebResource resource = client().resource(PROMOTION_FIND_ENDPOINT);
+        ClientResponse response = resource.type(APPLICATION_JSON).post(ClientResponse.class, asJson(promotionRequestList));
         assertThat(response.getStatus()).isEqualTo(200);
 
-        List<Promotion> promotions = fromJson(resource.type("application/json").post(String.class, jsonRequest), new TypeReference<List<Promotion>>() {});
+        List<Promotion> promotions = fromJson(resource.type(APPLICATION_JSON).post(String.class, asJson(promotionRequestList)), new TypeReference<List<Promotion>>() {});
         assertThat(promotions).hasSize(2);
 
-        com.tesco.services.Promotion firstPromotion = promotions.get(0);
+        Promotion firstPromotion = promotions.get(0);
         assertThat(firstPromotion.getOfferId()).isEqualTo("567");
         assertThat(firstPromotion.getItemNumber()).isEqualTo("5678");
         assertThat(firstPromotion.getZoneId()).isEqualTo("4");
@@ -102,7 +117,7 @@ public class PromotionResourceTest extends ResourceTest {
         assertThat(firstPromotion.getCFDescription2()).isEqualTo("blah");
         assertThat(firstPromotion.getOfferText()).isEqualTo("default");
 
-        com.tesco.services.Promotion secondPromotion = promotions.get(1);
+        Promotion secondPromotion = promotions.get(1);
         assertThat(secondPromotion.getOfferId()).isEqualTo("123");
         assertThat(secondPromotion.getItemNumber()).isEqualTo("1234");
         assertThat(secondPromotion.getZoneId()).isEqualTo("5");
@@ -118,55 +133,102 @@ public class PromotionResourceTest extends ResourceTest {
 
     @Test
     public void shouldReturnEmptyList() throws Exception {
-        String jsonRequest = "{\n" +
-                "    \"promotions\":\n" +
-                "        [\n" +
-                "            { \"offerId\": \"something wrong\", \"itemNumber\": \"something wrong\", \"zoneId\": \"5\"}" +
-                "        ]\n" +
-                "}";
+        PromotionRequest promotionRequest = aPromotionRequest()
+                .zoneId("5")
+                .itemNumber("something wrong")
+                .offerId("something wrong")
+                .build();
 
-        WebResource resource = client().resource("/promotion/find");
-        ClientResponse response = resource.type("application/json").post(ClientResponse.class, jsonRequest);
+        PromotionRequestList promotionRequestList = new PromotionRequestList();
+        promotionRequestList.setPromotions(newArrayList(promotionRequest));
+
+        WebResource resource = client().resource(PROMOTION_FIND_ENDPOINT);
+        ClientResponse response = resource.type(APPLICATION_JSON).post(ClientResponse.class, asJson(promotionRequestList));
         assertThat(response.getStatus()).isEqualTo(200);
 
-        List<Promotion> promotions = fromJson(resource.type("application/json").post(String.class, jsonRequest), new TypeReference<List<Promotion>>() {});
+        List<Promotion> promotions = fromJson(resource.type(APPLICATION_JSON).post(String.class, asJson(promotionRequestList)), new TypeReference<List<Promotion>>() {});
 
         assertThat(promotions).isEmpty();
     }
 
     @Test
     public void shouldReturnEmptyListGivenMissingAttribute() throws Exception {
-        String jsonRequest = "{\n" +
-                "    \"promotions\":\n" +
-                "        [\n" +
-                "            { \"offerId\": \"123\" }" +
-                "        ]\n" +
-                "}";
+        PromotionRequest promotionRequest = aPromotionRequest()
+                .offerId("123")
+                .build();
 
-        WebResource resource = client().resource("/promotion/find");
-        ClientResponse response = resource.type("application/json").post(ClientResponse.class, jsonRequest);
+        PromotionRequestList promotionRequestList = new PromotionRequestList();
+        promotionRequestList.setPromotions(newArrayList(promotionRequest));
+
+        WebResource resource = client().resource(PROMOTION_FIND_ENDPOINT);
+        ClientResponse response = resource.type(APPLICATION_JSON).post(ClientResponse.class, asJson(promotionRequestList));
         assertThat(response.getStatus()).isEqualTo(200);
 
-        List<DBObject> promotions = (List<DBObject>) JSON.parse(resource.type("application/json").post(String.class, jsonRequest));
+        List<DBObject> promotions = (List<DBObject>) JSON.parse(resource.type(APPLICATION_JSON).post(String.class, asJson(promotionRequestList)));
 
         assertThat(promotions).isEmpty();
     }
 
     @Test
-    public void shouldReturnValueForCorrectRequestItemOnly() throws Exception {
-        String jsonRequest = "{\n" +
-                "    \"promotions\":\n" +
-                "        [\n" +
-                "            { \"offerId\": \"123\", \"itemNumber\": \"1234\", \"zoneId\": \"5\"},\n" +
-                "            { \"offerId\": \"567\"}\n" +
-                "        ]\n" +
-                "}";
+         public void shouldReturnValueForCorrectRequestItemOnly() throws Exception {
+        PromotionRequest promotionRequest = aPromotionRequest()
+                .zoneId("5")
+                .itemNumber("1234")
+                .offerId("123")
+                .build();
 
-        WebResource resource = client().resource("/promotion/find");
-        ClientResponse response = resource.type("application/json").post(ClientResponse.class, jsonRequest);
+        PromotionRequest promotionRequest1 = aPromotionRequest()
+                .offerId("567")
+                .build();
+
+
+        PromotionRequestList promotionRequestList = new PromotionRequestList();
+        promotionRequestList.setPromotions(newArrayList(promotionRequest, promotionRequest1));
+
+        WebResource resource = client().resource(PROMOTION_FIND_ENDPOINT);
+        ClientResponse response = resource.type(APPLICATION_JSON).post(ClientResponse.class, asJson(promotionRequestList));
         assertThat(response.getStatus()).isEqualTo(200);
 
-        List<Promotion> promotions = fromJson(resource.type("application/json").post(String.class, jsonRequest), new TypeReference<List<Promotion>>() {});
+        List<Promotion> promotions = fromJson(resource.type(APPLICATION_JSON).post(String.class, asJson(promotionRequestList)), new TypeReference<List<Promotion>>() {});
+
+        assertThat(promotions.size()).isEqualTo(1);
+
+        Promotion firstPromotion = promotions.get(0);
+        assertThat(firstPromotion.getOfferId()).isEqualTo("123");
+        assertThat(firstPromotion.getItemNumber()).isEqualTo("1234");
+        assertThat(firstPromotion.getZoneId()).isEqualTo("5");
+        assertThat(firstPromotion.getOfferName()).isEqualTo("name of promotion");
+        assertThat(firstPromotion.getStartDate()).isEqualTo("date1");
+        assertThat(firstPromotion.getEndDate()).isEqualTo("date2");
+        assertThat(firstPromotion.getCFDescription1()).isEqualTo("blah");
+        assertThat(firstPromotion.getCFDescription2()).isEqualTo("blah");
+        assertThat(firstPromotion.getShelfTalkerImage()).isEqualTo("OnSale.png");
+        assertThat(firstPromotion.getOfferText()).isEqualTo("default");
+
+    }
+
+    @Test
+    public void shouldReturnOnlyOneResultGivenDuplicateRequests() throws Exception {
+        PromotionRequest promotionRequest = aPromotionRequest()
+                .zoneId("5")
+                .itemNumber("1234")
+                .offerId("123")
+                .build();
+
+        PromotionRequest promotionRequest1 = aPromotionRequest()
+                .zoneId("5")
+                .itemNumber("1234")
+                .offerId("123")
+                .build();
+
+        PromotionRequestList promotionRequestList = new PromotionRequestList();
+        promotionRequestList.setPromotions(newArrayList(promotionRequest, promotionRequest1));
+
+        WebResource resource = client().resource(PROMOTION_FIND_ENDPOINT);
+        ClientResponse response = resource.type(APPLICATION_JSON).post(ClientResponse.class, asJson(promotionRequestList));
+        assertThat(response.getStatus()).isEqualTo(200);
+
+        List<Promotion> promotions = fromJson(resource.type(APPLICATION_JSON).post(String.class, asJson(promotionRequestList)), new TypeReference<List<Promotion>>() {});
 
         assertThat(promotions.size()).isEqualTo(1);
 

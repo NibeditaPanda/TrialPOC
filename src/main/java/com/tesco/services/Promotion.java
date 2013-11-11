@@ -47,8 +47,6 @@ public class Promotion implements Serializable {
     @JsonProperty
     private String offerText;
 
-    private String json;
-
     public Promotion() {
     }
 
@@ -130,28 +128,6 @@ public class Promotion implements Serializable {
 
     public void setOfferText(String offerText) {
         this.offerText = offerText;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Promotion promotion = (Promotion) o;
-
-        if (itemNumber != null ? !itemNumber.equals(promotion.itemNumber) : promotion.itemNumber != null) return false;
-        if (offerId != null ? !offerId.equals(promotion.offerId) : promotion.offerId != null) return false;
-        if (zoneId != null ? !zoneId.equals(promotion.zoneId) : promotion.zoneId != null) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = offerId != null ? offerId.hashCode() : 0;
-        result = 31 * result + (itemNumber != null ? itemNumber.hashCode() : 0);
-        result = 31 * result + (zoneId != null ? zoneId.hashCode() : 0);
-        return result;
     }
 }
 

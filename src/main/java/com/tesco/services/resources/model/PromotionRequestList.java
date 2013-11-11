@@ -16,4 +16,8 @@ public class PromotionRequestList {
     public List<PromotionRequest> getPromotions() {
         return promotions;
     }
+
+    public void setPromotions(List<PromotionRequest> promotions) {
+        this.promotions = promotions;
+    }
 }
