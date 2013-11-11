@@ -26,45 +26,51 @@ public class PromotionRepositoryTest {
 
         promotionRepository = new PromotionRepository(promotionCache);
 
-        Promotion promotion = aPromotion()
-                .offerId("offerId")
-                .itemNumber("itemNumber")
-                .zoneId("zoneId")
+        Promotion promotion1 = aPromotion()
+                .offerId("9999999")
+                .itemNumber("111111111")
+                .zoneId("20")
+                .build();
+        Promotion promotion2 = aPromotion()
+                .offerId("8888888")
+                .itemNumber("10000000")
+                .zoneId("80")
                 .build();
 
-        promotionCache.put(randomUUID().toString(), promotion);
+        promotionCache.put(randomUUID().toString(), promotion1);
+        promotionCache.put(randomUUID().toString(), promotion2);
     }
 
     @Test
     public void getPromotionsByOfferIdZoneIdAndItemNumber() throws Exception {
-        List<Promotion> promotions = promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber("offerId", "itemNumber", "zoneId");
+        List<Promotion> promotions = promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber("9999999", "111111111", "20");
 
         assertThat(promotions).hasSize(1);
 
         Promotion promotion = promotions.get(0);
 
-        assertThat(promotion.getOfferId()).isEqualTo("offerId");
-        assertThat(promotion.getZoneId()).isEqualTo("zoneId");
-        assertThat(promotion.getItemNumber()).isEqualTo("itemNumber");
+        assertThat(promotion.getOfferId()).isEqualTo("9999999");
+        assertThat(promotion.getZoneId()).isEqualTo("20");
+        assertThat(promotion.getItemNumber()).isEqualTo("111111111");
     }
 
     @Test
     public void getPromotionsByOfferIdNotFound() throws Exception {
-        List<Promotion> promotions = promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber("something wrong", "itemNumber", "zoneId");
+        List<Promotion> promotions = promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber("something wrong", "111111111", "20");
 
         assertThat(promotions).hasSize(0);
     }
 
     @Test
     public void getPromotionsByItemNumberNotFound() throws Exception {
-        List<Promotion> promotions = promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber("offerId", "something wrong", "zoneId");
+        List<Promotion> promotions = promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber("9999999", "something wrong", "20");
 
         assertThat(promotions).hasSize(0);
     }
 
     @Test
     public void getPromotionsByZoneIdNotFound() throws Exception {
-        List<Promotion> promotions = promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber("offerId", "itemNumber", "something wrong");
+        List<Promotion> promotions = promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber("9999999", "111111111", "something wrong");
 
         assertThat(promotions).hasSize(0);
     }
