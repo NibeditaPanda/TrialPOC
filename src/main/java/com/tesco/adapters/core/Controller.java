@@ -10,6 +10,9 @@ import com.tesco.adapters.rpm.readers.RPMStoreZoneCSVFileReader;
 import com.tesco.adapters.rpm.writers.RPMWriter;
 import com.tesco.adapters.sonetto.SonettoPromotionWriter;
 import com.tesco.adapters.sonetto.SonettoPromotionXMLReader;
+import com.tesco.core.UUIDGenerator;
+import com.tesco.services.Promotion;
+import com.tesco.services.repositories.PromotionRepository;
 import org.apache.commons.configuration.ConfigurationException;
 import org.infinispan.Cache;
 import org.slf4j.Logger;
@@ -33,7 +36,7 @@ public class Controller {
     private String rpmPromotionCsvFilePath;
     private String rpmPromotionDescCSVUrl;
     private String sonettoPromotionXSDDataPath;
-    private Cache<String, Object> promotionCache;
+    private Cache<String, Promotion> promotionCache;
     private String sonettoPromotionsXMLFilePath;
     private String sonettoShelfImageUrl;
 
@@ -44,7 +47,7 @@ public class Controller {
                       String rpmPromotionDescCSVUrl,
                       String sonettoPromotionXSDDataPath,
                       String sonettoShelfImageUrl,
-                      Cache<String, Object> promotionCache) {
+                      Cache<String, Promotion> promotionCache) {
         this.rpmPriceZoneCsvFilePath = rpmPriceZoneCsvFilePath;
         this.rpmStoreZoneCsvFilePath = rpmStoreZoneCsvFilePath;
         this.rpmPromotionCsvFilePath = rpmPromotionCsvFilePath;
@@ -91,22 +94,24 @@ public class Controller {
         RPMPriceZoneCSVFileReader rpmPriceZoneCSVFileReader = new RPMPriceZoneCSVFileReader(rpmPriceZoneCsvFilePath);
         RPMStoreZoneCSVFileReader rpmStoreZoneCSVFileReader = new RPMStoreZoneCSVFileReader(rpmStoreZoneCsvFilePath);
         RPMPromotionCSVFileReader rpmPromotionCSVFileReader = new RPMPromotionCSVFileReader(rpmPromotionCsvFilePath);
-        RPMPromotionCSVFileReader rpmPromotionCSVFileReaderDG = new RPMPromotionCSVFileReader(rpmPromotionCsvFilePath);
         RPMPromotionDescriptionCSVFileReader rpmPromotionDescriptionCSVFileReader = new RPMPromotionDescriptionCSVFileReader(rpmPromotionDescCSVUrl);
 
         SonettoPromotionXMLReader sonettoPromotionXMLReader = new SonettoPromotionXMLReader(new SonettoPromotionWriter(promotionCollection), sonettoShelfImageUrl, sonettoPromotionXSDDataPath);
 
+        UUIDGenerator uuidGenerator = new UUIDGenerator();
+        PromotionRepository promotionRepository = new PromotionRepository(uuidGenerator, promotionCache);
+
         new RPMWriter(priceCollection,
                 storeCollection,
-                promotionCollection,
                 sonettoPromotionsXMLFilePath,
                 rpmPriceZoneCSVFileReader,
                 rpmStoreZoneCSVFileReader,
-                rpmPromotionCSVFileReader,
-                rpmPromotionDescriptionCSVFileReader,
                 sonettoPromotionXMLReader,
-                promotionCache,
-                rpmPromotionCSVFileReaderDG).write();
+                promotionRepository,
+                rpmPromotionCSVFileReader,
+                rpmPromotionDescriptionCSVFileReader
+        )
+                .write();
     }
 
     private void indexMongo(DBCollection priceCollection, DBCollection storeCollection, DBCollection promotionCollection) {

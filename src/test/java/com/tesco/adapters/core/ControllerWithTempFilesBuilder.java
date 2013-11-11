@@ -1,7 +1,7 @@
 package com.tesco.adapters.core;
 
 
-import com.tesco.core.DataGridResource;
+import com.tesco.services.Promotion;
 import org.infinispan.Cache;
 import org.mockito.Mock;
 
@@ -20,7 +20,7 @@ public class ControllerWithTempFilesBuilder {
     private String rpmPromotionDescCSVPath = TestFiles.RPM_PROMOTION_DESC_CSV_FILE_PATH;
 
     @Mock
-    private Cache<String, Object> promotionCache;
+    private Cache<String, Promotion> promotionCache;
 
     private File rpmPriceZoneCsvFile;
     private File rpmStoreZoneCsvFile;

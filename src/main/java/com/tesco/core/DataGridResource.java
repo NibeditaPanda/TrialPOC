@@ -1,5 +1,6 @@
 package com.tesco.core;
 
+import com.tesco.services.Promotion;
 import org.infinispan.Cache;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.configuration.global.GlobalConfiguration;
@@ -18,7 +19,7 @@ public class DataGridResource {
         dgClient = new DefaultCacheManager(getGlobalConfiguration(), getConfiguration());
     }
 
-    public Cache<String, Object> getPromotionCache() {
+    public Cache<String, Promotion> getPromotionCache() {
         return dgClient.getCache(PROMOTIONS_CACHE, true);
     }
 

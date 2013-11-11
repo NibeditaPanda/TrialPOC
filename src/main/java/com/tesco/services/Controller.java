@@ -2,6 +2,7 @@ package com.tesco.services;
 
 import com.tesco.core.Configuration;
 import com.tesco.core.DataGridResource;
+import com.tesco.core.UUIDGenerator;
 import com.tesco.services.DAO.PriceDAO;
 import com.tesco.services.healthChecks.ServiceHealthCheck;
 import com.tesco.services.metrics.ResourceMetricsListener;
@@ -63,7 +64,9 @@ public class Controller extends Service<Configuration> {
     private MutablePicoContainer configureDependencies() {
         MutablePicoContainer container = new DefaultPicoContainer();
         container.addComponent(new DataGridResource());
-        container.addComponent(new PromotionRepository(container.getComponent(DataGridResource.class).getPromotionCache()));
+        container.addComponent(new UUIDGenerator());
+        container.addComponent(new PromotionRepository(container.getComponent(UUIDGenerator.class),
+                container.getComponent(DataGridResource.class).getPromotionCache()));
         return container;
     }
 

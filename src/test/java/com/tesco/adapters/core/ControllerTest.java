@@ -2,7 +2,6 @@ package com.tesco.adapters.core;
 
 import com.mongodb.DBCollection;
 import com.tesco.core.DataGridResource;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;

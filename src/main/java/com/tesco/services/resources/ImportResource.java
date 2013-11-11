@@ -5,6 +5,7 @@ import com.tesco.adapters.core.Controller;
 import com.tesco.core.Configuration;
 import com.tesco.core.DBFactory;
 import com.tesco.core.DataGridResource;
+import com.tesco.services.Promotion;
 import com.yammer.metrics.annotation.ExceptionMetered;
 import com.yammer.metrics.annotation.Metered;
 import com.yammer.metrics.annotation.Timed;
@@ -42,7 +43,8 @@ public class ImportResource {
             DBFactory dbFactory = new DBFactory(configuration);
 
             //TODO Vyv is this a memory leak?
-            Cache<String,Object> promotionCache = dataGridResource.getPromotionCache();
+            Cache<String,Promotion> promotionCache = dataGridResource.getPromotionCache();
+
             Controller controller = new Controller(
                     configuration.getRPMPriceDataPath(), configuration.getRPMStoreDataPath(),
                     configuration.getRPMPromotionDataPath(),

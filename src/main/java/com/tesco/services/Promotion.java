@@ -1,6 +1,7 @@
 package com.tesco.services;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wordnik.swagger.annotations.ApiModel;
 import org.hibernate.search.annotations.*;
@@ -19,6 +20,9 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 public class Promotion implements Serializable {
 
+    @JsonIgnore
+    private String uniqueKey;
+
     @JsonProperty
     private String shelfTalkerImage;
 
@@ -33,7 +37,6 @@ public class Promotion implements Serializable {
     @JsonProperty
     @Field(index = Index.YES, analyze = Analyze.NO, store = Store.YES)
     private String zoneId;
-
     @JsonProperty
     private String CFDescription1;
     @JsonProperty
@@ -44,10 +47,19 @@ public class Promotion implements Serializable {
     private String startDate;
     @JsonProperty
     private String endDate;
+
     @JsonProperty
     private String offerText;
 
     public Promotion() {
+    }
+
+    public String getUniqueKey() {
+        return uniqueKey;
+    }
+
+    public void setUniqueKey(String uniqueKey) {
+        this.uniqueKey = uniqueKey;
     }
 
     public String getOfferId() {
@@ -128,6 +140,23 @@ public class Promotion implements Serializable {
 
     public void setOfferText(String offerText) {
         this.offerText = offerText;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Promotion promotion = (Promotion) o;
+
+        if (uniqueKey != null ? !uniqueKey.equals(promotion.uniqueKey) : promotion.uniqueKey != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return uniqueKey != null ? uniqueKey.hashCode() : 0;
     }
 }
 

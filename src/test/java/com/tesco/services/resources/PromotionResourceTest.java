@@ -9,6 +9,7 @@ import com.sun.jersey.api.client.WebResource;
 import com.tesco.core.Configuration;
 import com.tesco.core.DBFactory;
 import com.tesco.core.DataGridResource;
+import com.tesco.core.UUIDGenerator;
 import com.tesco.services.Promotion;
 import com.tesco.services.repositories.PromotionRepository;
 import com.tesco.services.resources.fixtures.TestPromotionDBObject;
@@ -42,7 +43,7 @@ public class PromotionResourceTest extends ResourceTest {
 
     @Override
     protected void setUpResources() throws Exception {
-        PromotionResource offerResource = new PromotionResource(new PromotionRepository(dataGridResource.getPromotionCache()));
+        PromotionResource offerResource = new PromotionResource(new PromotionRepository(new UUIDGenerator(), dataGridResource.getPromotionCache()));
         addResource(offerResource);
     }
 
@@ -103,7 +104,10 @@ public class PromotionResourceTest extends ResourceTest {
         ClientResponse response = resource.type(APPLICATION_JSON).post(ClientResponse.class, asJson(promotionRequestList));
         assertThat(response.getStatus()).isEqualTo(200);
 
-        List<Promotion> promotions = fromJson(resource.type(APPLICATION_JSON).post(String.class, asJson(promotionRequestList)), new TypeReference<List<Promotion>>() {});
+        String jsonResponse = resource.type(APPLICATION_JSON).post(String.class, asJson(promotionRequestList));
+        assertThat(jsonResponse).doesNotContain("uniqueKey");
+
+        List<Promotion> promotions = fromJson(jsonResponse, new TypeReference<List<Promotion>>() {});
         assertThat(promotions).hasSize(2);
 
         Promotion firstPromotion = promotions.get(0);

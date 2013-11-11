@@ -1,6 +1,7 @@
 package com.tesco.services.repositories;
 
 import com.google.common.base.Function;
+import com.tesco.core.UUIDGenerator;
 import com.tesco.services.Promotion;
 import org.apache.lucene.search.Query;
 import org.hibernate.search.query.dsl.QueryBuilder;
@@ -17,9 +18,11 @@ import static java.util.Collections.EMPTY_LIST;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 public class PromotionRepository {
-    private Cache<String, Object> promotionCache;
+    private UUIDGenerator uuidGenerator;
+    private Cache<String, Promotion> promotionCache;
 
-    public PromotionRepository(Cache<String, Object> promotionCache) {
+    public PromotionRepository(UUIDGenerator uuidGenerator, Cache<String, Promotion> promotionCache) {
+        this.uuidGenerator = uuidGenerator;
         this.promotionCache = promotionCache;
     }
 
@@ -60,5 +63,16 @@ public class PromotionRepository {
             }
         });
 
+    }
+
+    public void addPromotion(Promotion promotion) {
+        String uniqueKey = uuidGenerator.getUUID();
+        promotion.setUniqueKey(uniqueKey);
+
+        this.promotionCache.put(uniqueKey, promotion);
+    }
+
+    public void updatePromotion(String uniqueKey, Promotion promotion) {
+        this.promotionCache.put(uniqueKey, promotion);
     }
 }

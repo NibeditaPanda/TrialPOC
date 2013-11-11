@@ -8,7 +8,7 @@ import com.tesco.adapters.core.exceptions.ColumnNotFoundException;
 import com.tesco.adapters.rpm.readers.*;
 import com.tesco.adapters.sonetto.SonettoPromotionXMLReader;
 import com.tesco.services.Promotion;
-import org.infinispan.Cache;
+import com.tesco.services.repositories.PromotionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -18,55 +18,51 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.List;
 
+import static com.google.common.collect.Iterables.getFirst;
 import static com.tesco.adapters.rpm.readers.RPMPriceZoneCSVFileReader.PRICE_ZONE_FORMAT;
 import static com.tesco.core.PriceKeys.*;
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.String.format;
-import static java.util.UUID.randomUUID;
 
 public class RPMWriter {
     private Logger logger = LoggerFactory.getLogger("RPM Import");
 
-    private DBCollection promotionCollection;
     private DBCollection priceCollection;
     private DBCollection storeCollection;
     private String sonettoPromotionsXMLFilePath;
 
     private RPMPriceZoneCSVFileReader rpmPriceZoneCSVFileReader;
-    private RPMPromotionCSVFileReader rpmPromotionCSVFileReader;
-    private RPMPromotionDescriptionCSVFileReader rpmPromotionDescriptionCSVFileReader;
     private RPMStoreZoneCSVFileReader rpmStoreZoneCSVFileReader;
 
+    private RPMPromotionCSVFileReader rpmPromotionCSVFileReader;
+
+    private RPMPromotionDescriptionCSVFileReader rpmPromotionDescriptionCSVFileReader;
     private SonettoPromotionXMLReader sonettoPromotionXMLReader;
-    private Cache<String, Object> promotion;
-    private RPMPromotionCSVFileReader rpmPromotionCSVFileReaderDG;
+
+    private PromotionRepository promotionRepository;
 
     private int insertCount;
     private int updateCount;
 
     public RPMWriter(DBCollection priceCollection,
                      DBCollection storeCollection,
-                     DBCollection promotionCollection,
                      String sonettoPromotionsXMLFilePath,
                      RPMPriceZoneCSVFileReader rpmPriceZoneCSVFileReader,
                      RPMStoreZoneCSVFileReader rpmStoreZoneCSVFileReader,
-                     RPMPromotionCSVFileReader rpmPromotionCSVFileReader,
-                     RPMPromotionDescriptionCSVFileReader rpmPromotionDescriptionCSVFileReader,
                      SonettoPromotionXMLReader sonettoPromotionXMLReader,
-                     Cache<String, Object> promotion,
-                     RPMPromotionCSVFileReader rpmPromotionCSVFileReaderDG) throws IOException, ColumnNotFoundException {
+                     PromotionRepository promotionRepository,
+                     RPMPromotionCSVFileReader rpmPromotionCSVFileReader,
+                     RPMPromotionDescriptionCSVFileReader rpmPromotionDescriptionCSVFileReader) throws IOException, ColumnNotFoundException {
 
         this.priceCollection = priceCollection;
         this.storeCollection = storeCollection;
-        this.promotionCollection = promotionCollection;
         this.sonettoPromotionsXMLFilePath = sonettoPromotionsXMLFilePath;
         this.rpmPriceZoneCSVFileReader = rpmPriceZoneCSVFileReader;
         this.rpmStoreZoneCSVFileReader = rpmStoreZoneCSVFileReader;
+        this.sonettoPromotionXMLReader = sonettoPromotionXMLReader;
+        this.promotionRepository = promotionRepository;
         this.rpmPromotionCSVFileReader = rpmPromotionCSVFileReader;
         this.rpmPromotionDescriptionCSVFileReader = rpmPromotionDescriptionCSVFileReader;
-        this.sonettoPromotionXMLReader = sonettoPromotionXMLReader;
-        this.promotion = promotion;
-        this.rpmPromotionCSVFileReaderDG = rpmPromotionCSVFileReaderDG;
 
         insertCount = 0;
         updateCount = 0;
@@ -99,22 +95,18 @@ public class RPMWriter {
         logUpsert(existedDbObject, updateResponse);
     }
 
-    private void writePromotionsDescription() throws IOException, ColumnNotFoundException {
+    private void writePromotionsDescription() throws IOException {
+        Promotion next;
 
-        DBObject next;
-        while ((next = rpmPromotionDescriptionCSVFileReader.getNext()) != null) {
-            BasicDBObject key = new BasicDBObject();
-            key.put(PROMOTION_OFFER_ID, next.get(PROMOTION_OFFER_ID));
-            key.put(ZONE_ID, next.get(ZONE_ID));
-
-            BasicDBObject values = new BasicDBObject();
-            values.put(PROMOTION_CF_DESCRIPTION_1, next.get(PROMOTION_CF_DESCRIPTION_1));
-            values.put(PROMOTION_CF_DESCRIPTION_2, next.get(PROMOTION_CF_DESCRIPTION_2));
-
-            DBObject query = new BasicDBObject(key);
-            upsert(promotionCollection, query, new BasicDBObject("$set", values));
+        while ((next = rpmPromotionDescriptionCSVFileReader.getNextDG()) != null) {
+            List<Promotion> promotions = this.promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber(next.getOfferId(), next.getItemNumber(), next.getZoneId());
+            Promotion promotion = getFirst(promotions, null);
+            if (promotion != null) {
+                promotion.setCFDescription1(next.getCFDescription1());
+                promotion.setCFDescription2(next.getCFDescription2());
+                this.promotionRepository.updatePromotion(promotion.getUniqueKey(), promotion);
+            }
         }
-        logUpsertCounts(promotionCollection);
     }
 
     private void updatePromotionsWithShelfTalker() throws ParserConfigurationException, IOException, JAXBException, SAXException {
@@ -122,29 +114,30 @@ public class RPMWriter {
     }
 
     private void writePromotionsToPricesCollection() throws IOException, ColumnNotFoundException {
-        DBObject nextPromotion;
-
-        while ((nextPromotion = rpmPromotionCSVFileReader.getNext()) != null) {
-            addPromotion(nextPromotion);
-            appendPromotionToPrice(nextPromotion);
-        }
-
         Promotion nextPromotionDG;
 
-        while ((nextPromotionDG = rpmPromotionCSVFileReaderDG.getNextDG()) != null) {
-            addPromotionJDG(nextPromotionDG);
-//            appendPromotionToPrice(nextPromotion);
+        while ((nextPromotionDG = rpmPromotionCSVFileReader.getNextDG()) != null) {
+            addPromotion(nextPromotionDG);
+
+            /**
+             * this is just to satisfy MongoDB. It will be deleted once JDG is in place.
+             */
+            BasicDBObject promotion = new BasicDBObject();
+            promotion.put(ITEM_NUMBER, nextPromotionDG.getItemNumber());
+            promotion.put(ZONE_ID, nextPromotionDG.getZoneId());
+            promotion.put(PROMOTION_OFFER_ID, nextPromotionDG.getOfferId());
+            promotion.put(PROMOTION_OFFER_NAME, nextPromotionDG.getOfferName());
+            promotion.put(PROMOTION_START_DATE, nextPromotionDG.getStartDate());
+            promotion.put(PROMOTION_END_DATE, nextPromotionDG.getEndDate());
+
+            appendPromotionToPrice(promotion);
         }
 
         logUpsertCounts(priceCollection);
     }
 
-    private void addPromotion(DBObject nextPromotion) {
-        promotionCollection.insert(nextPromotion);
-    }
-
-    private void addPromotionJDG(Promotion nextPromotion) {
-        this.promotion.put(randomUUID().toString(), nextPromotion);
+    private void addPromotion(Promotion nextPromotion) {
+        this.promotionRepository.addPromotion(nextPromotion);
     }
 
     private void appendPromotionToPrice(DBObject nextPromotion) {
