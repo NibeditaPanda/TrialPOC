@@ -1,6 +1,5 @@
 package com.tesco.services.resources;
 
-import com.google.common.base.Function;
 import com.tesco.services.Promotion;
 import com.tesco.services.repositories.PromotionRepository;
 import com.tesco.services.resources.model.PromotionRequest;
@@ -13,7 +12,6 @@ import com.yammer.metrics.annotation.ExceptionMetered;
 import com.yammer.metrics.annotation.Metered;
 import com.yammer.metrics.annotation.Timed;
 
-import javax.annotation.Nullable;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
@@ -23,9 +21,7 @@ import java.util.Set;
 
 import static com.google.common.base.Predicates.notNull;
 import static com.google.common.collect.Iterables.filter;
-import static com.google.common.collect.Iterables.getFirst;
 import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Lists.transform;
 import static com.tesco.services.HTTPResponses.badRequest;
 import static com.tesco.services.HTTPResponses.ok;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -54,21 +50,18 @@ public class PromotionResource {
         Set<PromotionRequest> uniqueRequests = new HashSet<>(promotionRequestList.getPromotions());
         List<PromotionRequest> uniquePromotionRequest = newArrayList(uniqueRequests);
 
-        List<Promotion> promotions = transform(uniquePromotionRequest, new Function<PromotionRequest, Promotion>() {
-            @Nullable
-            @Override
-            public Promotion apply(@Nullable PromotionRequest promotionRequest) {
-                List<Promotion> promotions = promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber(promotionRequest.getOfferId(),
-                        promotionRequest.getItemNumber(),
-                        promotionRequest.getZoneId());
+        Set<Promotion> results = new HashSet<>();
 
-                return getFirst(promotions, null);
-            }
-        });
+        for( PromotionRequest promotionRequest : uniquePromotionRequest) {
+            List<Promotion> promotions = promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber(promotionRequest.getOfferId(),
+                    promotionRequest.getItemNumber(),
+                    promotionRequest.getZoneId());
 
-        List<Promotion> nonNullPromotions = newArrayList(filter(promotions, notNull()));
+            List<Promotion> nonNullPromotions = newArrayList(filter(promotions, notNull()));
+            results.addAll(nonNullPromotions);
+        }
 
-        return ok(nonNullPromotions);
+        return ok(results);
     }
 
     @GET

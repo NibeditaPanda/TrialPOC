@@ -65,6 +65,7 @@ public class PromotionResourceTest extends ResourceTest {
                 .description1("blah")
                 .description2("blah")
                 .shelfTalker("OnSale.png")
+                .uniqueKey("uuid1")
                 .build();
 
         Promotion promotion1 = aPromotion()
@@ -76,6 +77,7 @@ public class PromotionResourceTest extends ResourceTest {
                 .offerName("name of promotion")
                 .description1("blah")
                 .description2("blah")
+                .uniqueKey("uuid2")
                 .build();
 
         Promotion promotion2 = aPromotion()
@@ -87,6 +89,7 @@ public class PromotionResourceTest extends ResourceTest {
                 .offerName("name of promotion")
                 .description1("blah")
                 .description2("blah")
+                .uniqueKey("uuid3")
                 .build();
 
         Promotion promotion3 = aPromotion().offerId("345").build();
