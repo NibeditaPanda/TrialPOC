@@ -10,6 +10,11 @@ public class PromotionBuilder {
     private String zoneId = "zoneId";
     private String description1 = "description";
     private String description2 = "description";
+    private String startDate = "startDate";
+    private String endDate = "endDate";
+    private String offerName = "offerName";
+    private String shelfTalker = "shelfTalker";
+    private String offerText = "default";
 
     public static PromotionBuilder aPromotion() {
         return new PromotionBuilder();
@@ -45,6 +50,26 @@ public class PromotionBuilder {
         return this;
     }
 
+    public PromotionBuilder startDate(String startDate) {
+        this.startDate = startDate;
+        return this;
+    }
+
+    public PromotionBuilder endDate(String endDate) {
+        this.endDate = endDate;
+        return this;
+    }
+
+    public PromotionBuilder offerName(String offerName) {
+        this.offerName = offerName;
+        return this;
+    }
+
+    public PromotionBuilder shelfTalker(String shelfTalker) {
+        this.shelfTalker = shelfTalker;
+        return this;
+    }
+
     public Promotion build() {
         Promotion promotion = new Promotion();
         promotion.setUniqueKey(this.uniqueKey);
@@ -53,6 +78,11 @@ public class PromotionBuilder {
         promotion.setZoneId(this.zoneId);
         promotion.setCFDescription1(this.description1);
         promotion.setCFDescription2(this.description2);
+        promotion.setStartDate(this.startDate);
+        promotion.setEndDate(this.endDate);
+        promotion.setOfferName(this.offerName);
+        promotion.setShelfTalkerImage(this.shelfTalker);
+        promotion.setOfferText(this.offerText);
 
         return promotion;
     }

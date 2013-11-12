@@ -1,14 +1,13 @@
 package com.tesco.adapters.rpm.readers;
 
-import com.mongodb.DBObject;
 import com.tesco.adapters.core.exceptions.ColumnNotFoundException;
+import com.tesco.services.Promotion;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.io.IOException;
 
-import static com.tesco.core.PriceKeys.*;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class RPMPromotionDescriptionCSVFileReaderTests {
@@ -22,12 +21,13 @@ public class RPMPromotionDescriptionCSVFileReaderTests {
     public void shouldReadDescriptionsFromCSV() throws IOException, ColumnNotFoundException {
         rpmPromotionDescriptionCSVFileReader = new RPMPromotionDescriptionCSVFileReader("src/test/resources/com/tesco/adapters/rpm/fixtures/PROM_DESC_EXTRACT.csv");
 
-        DBObject promotionInfo = rpmPromotionDescriptionCSVFileReader.getNext();
+        Promotion promotionInfo = rpmPromotionDescriptionCSVFileReader.getNextDG();
 
-        assertThat(promotionInfo.get(PROMOTION_OFFER_ID)).isEqualTo("A29721647");
-        assertThat(promotionInfo.get(ZONE_ID)).isEqualTo("5");
-        assertThat(promotionInfo.get(PROMOTION_CF_DESCRIPTION_1)).isEqualTo("SPECIAL PURCHASE 50p");
-        assertThat(promotionInfo.get(PROMOTION_CF_DESCRIPTION_2)).isEqualTo("3 LIONS FLAG");
+        assertThat(promotionInfo.getOfferId()).isEqualTo("A29721647");
+        assertThat(promotionInfo.getItemNumber()).isEqualTo("70918231");
+        assertThat(promotionInfo.getZoneId()).isEqualTo("5");
+        assertThat(promotionInfo.getCFDescription1()).isEqualTo("SPECIAL PURCHASE 50p");
+        assertThat(promotionInfo.getCFDescription2()).isEqualTo("3 LIONS FLAG");
     }
 
     @Test

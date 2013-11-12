@@ -1,14 +1,13 @@
 package com.tesco.adapters.rpm.readers;
 
-import com.mongodb.DBObject;
 import com.tesco.adapters.core.exceptions.ColumnNotFoundException;
+import com.tesco.services.Promotion;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.io.IOException;
 
-import static com.tesco.core.PriceKeys.*;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class RPMPromotionCSVFileReaderTest {
@@ -22,13 +21,13 @@ public class RPMPromotionCSVFileReaderTest {
     public void shouldReadPromotionalAttributesFromCSVFile() throws Exception {
         this.rpmPromotionCSVFileReader = new RPMPromotionCSVFileReader("src/test/resources/com/tesco/adapters/rpm/fixtures/prom_extract.csv");
 
-        DBObject promotionInfo = this.rpmPromotionCSVFileReader.getNext();
+        Promotion promotionInfo = this.rpmPromotionCSVFileReader.getNextDG();
 
-        assertThat(promotionInfo.get(ITEM_NUMBER)).isEqualTo("070918248");
-        assertThat(promotionInfo.get(PROMOTION_OFFER_ID)).isEqualTo("A29721688");
-        assertThat(promotionInfo.get(PROMOTION_OFFER_NAME)).isEqualTo("3 LIONS KICK & TRICK BALL 1.00 SPECIAL PURCHASE");
-        assertThat(promotionInfo.get(PROMOTION_START_DATE)).isEqualTo("31-Apr-12");
-        assertThat(promotionInfo.get(PROMOTION_END_DATE)).isEqualTo("04-May-13");
+        assertThat(promotionInfo.getItemNumber()).isEqualTo("070918248");
+        assertThat(promotionInfo.getOfferId()).isEqualTo("A29721688");
+        assertThat(promotionInfo.getOfferName()).isEqualTo("3 LIONS KICK & TRICK BALL 1.00 SPECIAL PURCHASE");
+        assertThat(promotionInfo.getStartDate()).isEqualTo("31-Apr-12");
+        assertThat(promotionInfo.getEndDate()).isEqualTo("04-May-13");
     }
 
     @Test

@@ -12,7 +12,6 @@ import com.tesco.core.DataGridResource;
 import com.tesco.core.UUIDGenerator;
 import com.tesco.services.Promotion;
 import com.tesco.services.repositories.PromotionRepository;
-import com.tesco.services.resources.fixtures.TestPromotionDBObject;
 import com.tesco.services.resources.fixtures.TestStoreDBObject;
 import com.tesco.services.resources.model.PromotionRequest;
 import com.tesco.services.resources.model.PromotionRequestList;
@@ -27,6 +26,7 @@ import java.util.UUID;
 
 import static com.tesco.core.PriceKeys.PROMOTION_COLLECTION;
 import static com.tesco.core.PriceKeys.STORE_COLLECTION;
+import static com.tesco.services.builder.PromotionBuilder.aPromotion;
 import static com.tesco.services.builder.PromotionRequestBuilder.aPromotionRequest;
 import static com.yammer.dropwizard.testing.JsonHelpers.asJson;
 import static com.yammer.dropwizard.testing.JsonHelpers.fromJson;
@@ -38,7 +38,6 @@ public class PromotionResourceTest extends ResourceTest {
 
     private static final String PROMOTION_FIND_ENDPOINT = "/promotion/find";
     private static Configuration testConfiguration = new TestConfiguration();
-    private static DBCollection promotionCollection;
     private static DataGridResource dataGridResource;
 
     @Override
@@ -56,25 +55,47 @@ public class PromotionResourceTest extends ResourceTest {
         DBCollection storeCollection = dbFactory.getCollection(STORE_COLLECTION);
         storeCollection.insert(new TestStoreDBObject("2000").withZoneId("5").build());
 
-        promotionCollection = dbFactory.getCollection(PROMOTION_COLLECTION);
+        Promotion promotion = aPromotion()
+                .offerId("123")
+                .itemNumber("1234")
+                .zoneId("5")
+                .startDate("date1")
+                .endDate("date2")
+                .offerName("name of promotion")
+                .description1("blah")
+                .description2("blah")
+                .shelfTalker("OnSale.png")
+                .build();
 
-        TestPromotionDBObject testPromotionDBObject = new TestPromotionDBObject("123").withTPNB("1234").withPromotionZone("5").withStartDate("date1").withEndDate("date2").withName("name of promotion").withDescription1("blah").withDescription2("blah").withShelfTalker("OnSale.png");
-        promotionCollection.insert(testPromotionDBObject.build());
+        Promotion promotion1 = aPromotion()
+                .offerId("123")
+                .itemNumber("5678")
+                .zoneId("4")
+                .startDate("date1")
+                .endDate("date2")
+                .offerName("name of promotion")
+                .description1("blah")
+                .description2("blah")
+                .build();
 
-        TestPromotionDBObject testPromotionDBObject1 = new TestPromotionDBObject("123").withTPNB("5678").withPromotionZone("4").withStartDate("date1").withEndDate("date2").withName("name of promotion").withDescription1("blah").withDescription2("blah");
-        promotionCollection.insert(testPromotionDBObject1.build());
+        Promotion promotion2 = aPromotion()
+                .offerId("567")
+                .itemNumber("5678")
+                .zoneId("4")
+                .startDate("date1")
+                .endDate("date2")
+                .offerName("name of promotion")
+                .description1("blah")
+                .description2("blah")
+                .build();
 
-        TestPromotionDBObject testPromotionDBObject2 = new TestPromotionDBObject("567").withTPNB("5678").withPromotionZone("4").withStartDate("date1").withEndDate("date2").withName("name of promotion").withDescription1("blah").withDescription2("blah");
-        promotionCollection.insert(testPromotionDBObject2.build());
-
-        TestPromotionDBObject testPromotionDBObject3 = new TestPromotionDBObject("345");
-        promotionCollection.insert(testPromotionDBObject3.build());
+        Promotion promotion3 = aPromotion().offerId("345").build();
 
         dataGridResource = new DataGridResource();
-        dataGridResource.getPromotionCache().put(UUID.randomUUID().toString(), testPromotionDBObject.buildJDG());
-        dataGridResource.getPromotionCache().put(UUID.randomUUID().toString(), testPromotionDBObject1.buildJDG());
-        dataGridResource.getPromotionCache().put(UUID.randomUUID().toString(), testPromotionDBObject2.buildJDG());
-        dataGridResource.getPromotionCache().put(UUID.randomUUID().toString(), testPromotionDBObject3.buildJDG());
+        dataGridResource.getPromotionCache().put(UUID.randomUUID().toString(), promotion);
+        dataGridResource.getPromotionCache().put(UUID.randomUUID().toString(), promotion1);
+        dataGridResource.getPromotionCache().put(UUID.randomUUID().toString(), promotion2);
+        dataGridResource.getPromotionCache().put(UUID.randomUUID().toString(), promotion3);
     }
 
     @AfterClass
@@ -107,7 +128,8 @@ public class PromotionResourceTest extends ResourceTest {
         String jsonResponse = resource.type(APPLICATION_JSON).post(String.class, asJson(promotionRequestList));
         assertThat(jsonResponse).doesNotContain("uniqueKey");
 
-        List<Promotion> promotions = fromJson(jsonResponse, new TypeReference<List<Promotion>>() {});
+        List<Promotion> promotions = fromJson(jsonResponse, new TypeReference<List<Promotion>>() {
+        });
         assertThat(promotions).hasSize(2);
 
         Promotion firstPromotion = promotions.get(0);
@@ -150,7 +172,8 @@ public class PromotionResourceTest extends ResourceTest {
         ClientResponse response = resource.type(APPLICATION_JSON).post(ClientResponse.class, asJson(promotionRequestList));
         assertThat(response.getStatus()).isEqualTo(200);
 
-        List<Promotion> promotions = fromJson(resource.type(APPLICATION_JSON).post(String.class, asJson(promotionRequestList)), new TypeReference<List<Promotion>>() {});
+        List<Promotion> promotions = fromJson(resource.type(APPLICATION_JSON).post(String.class, asJson(promotionRequestList)), new TypeReference<List<Promotion>>() {
+        });
 
         assertThat(promotions).isEmpty();
     }
@@ -174,7 +197,7 @@ public class PromotionResourceTest extends ResourceTest {
     }
 
     @Test
-         public void shouldReturnValueForCorrectRequestItemOnly() throws Exception {
+    public void shouldReturnValueForCorrectRequestItemOnly() throws Exception {
         PromotionRequest promotionRequest = aPromotionRequest()
                 .zoneId("5")
                 .itemNumber("1234")
@@ -193,7 +216,8 @@ public class PromotionResourceTest extends ResourceTest {
         ClientResponse response = resource.type(APPLICATION_JSON).post(ClientResponse.class, asJson(promotionRequestList));
         assertThat(response.getStatus()).isEqualTo(200);
 
-        List<Promotion> promotions = fromJson(resource.type(APPLICATION_JSON).post(String.class, asJson(promotionRequestList)), new TypeReference<List<Promotion>>() {});
+        List<Promotion> promotions = fromJson(resource.type(APPLICATION_JSON).post(String.class, asJson(promotionRequestList)), new TypeReference<List<Promotion>>() {
+        });
 
         assertThat(promotions.size()).isEqualTo(1);
 
@@ -232,7 +256,8 @@ public class PromotionResourceTest extends ResourceTest {
         ClientResponse response = resource.type(APPLICATION_JSON).post(ClientResponse.class, asJson(promotionRequestList));
         assertThat(response.getStatus()).isEqualTo(200);
 
-        List<Promotion> promotions = fromJson(resource.type(APPLICATION_JSON).post(String.class, asJson(promotionRequestList)), new TypeReference<List<Promotion>>() {});
+        List<Promotion> promotions = fromJson(resource.type(APPLICATION_JSON).post(String.class, asJson(promotionRequestList)), new TypeReference<List<Promotion>>() {
+        });
 
         assertThat(promotions.size()).isEqualTo(1);
 

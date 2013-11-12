@@ -38,7 +38,6 @@ public class ControllerTest {
         verify(tempStoreDbCollection, never()).rename(anyString());
         verify(tempPromotionDbCollection, never()).rename(anyString());
 
-
     }
 
     @Test
