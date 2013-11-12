@@ -1,6 +1,6 @@
 package com.tesco.services;
 
-import com.tesco.services.DAO.Result;
+import com.tesco.services.dao.Result;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;

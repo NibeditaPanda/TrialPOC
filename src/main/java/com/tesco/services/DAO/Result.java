@@ -1,4 +1,4 @@
-package com.tesco.services.DAO;
+package com.tesco.services.dao;
 
 import com.google.common.base.Optional;
 

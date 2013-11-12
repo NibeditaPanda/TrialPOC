@@ -1,4 +1,4 @@
-package com.tesco.services.Exceptions;
+package com.tesco.services.exceptions;
 
 public class ItemNotFoundException extends Exception {
     public ItemNotFoundException(String message){

@@ -2,7 +2,7 @@ package com.tesco.services.processor;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.tesco.services.Exceptions.ItemNotFoundException;
+import com.tesco.services.exceptions.ItemNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,11 +1,11 @@
-package com.tesco.services.DAO;
+package com.tesco.services.dao;
 
 import com.google.common.base.Optional;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.tesco.core.Configuration;
 import com.tesco.core.DBFactory;
-import com.tesco.services.Exceptions.ItemNotFoundException;
+import com.tesco.services.exceptions.ItemNotFoundException;
 import com.tesco.services.processor.PriceViewBuilder;
 
 import java.net.UnknownHostException;

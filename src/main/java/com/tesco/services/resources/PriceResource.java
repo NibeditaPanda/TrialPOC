@@ -1,8 +1,8 @@
 package com.tesco.services.resources;
 
 import com.mongodb.DBObject;
-import com.tesco.services.DAO.PriceDAO;
-import com.tesco.services.Exceptions.ItemNotFoundException;
+import com.tesco.services.dao.PriceDAO;
+import com.tesco.services.exceptions.ItemNotFoundException;
 import com.wordnik.swagger.annotations.*;
 import com.yammer.metrics.annotation.ExceptionMetered;
 import com.yammer.metrics.annotation.Metered;
