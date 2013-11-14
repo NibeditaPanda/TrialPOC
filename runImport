@@ -1,24 +1,3 @@
 #!/bin/bash
-EXPECTED_ARGS=2
-if [ $# -ne $EXPECTED_ARGS ]
-then
-  echo "Usage: sh runImport <environment> <jar file>"
-  echo "Make sure:"
-  echo "    - environment passed in has an existing property file"
-  echo "    - property file points to existing data dump filepaths"
-  exit 1
-fi
-
-TO_PROCESS_PATH=/tmp/to_process/price
-LOG_PATH=/tmp/logs/price
-
-rm -rf $LOG_PATH/*
-
-java -jar -Denvironment=$1 $2
-echo $? > result.txt
-
-if [ ! -d $LOG_PATH ]; then
-  mkdir -p $LOG_PATH
-fi
-
-cp logs/* $LOG_PATH
+echo "Start Import"
+curl -X POST 'http://localhost:8081/admin/import'

@@ -100,6 +100,8 @@ public class RPMWriter {
 
         while ((next = rpmPromotionDescriptionCSVFileReader.getNextDG()) != null) {
             List<Promotion> promotions = this.promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber(next.getOfferId(), next.getItemNumber(), next.getZoneId());
+            // TODO: Need to talk to Shiraz if this is ok.
+
             Promotion promotion = getFirst(promotions, null);
             if (promotion != null) {
                 promotion.setCFDescription1(next.getCFDescription1());
