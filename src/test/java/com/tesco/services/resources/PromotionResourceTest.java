@@ -56,39 +56,39 @@ public class PromotionResourceTest extends ResourceTest {
         storeCollection.insert(new TestStoreDBObject("2000").withZoneId("5").build());
 
         Promotion promotion = aPromotion()
-                .offerId("123")
-                .itemNumber("1234")
+                .offerId("A29721688")
+                .itemNumber("070918248")
                 .zoneId("5")
-                .startDate("date1")
-                .endDate("date2")
-                .offerName("name of promotion")
-                .description1("blah")
-                .description2("blah")
+                .startDate("31-Apr-12")
+                .endDate("04-May-13")
+                .offerName("3 LIONS KICK & TRICK BALL 1.00 SPECIAL PURCHASE")
+                .description1("SPECIAL PURCHASE 50p")
+                .description2("3 LIONS|WATERBOTTLE")
                 .shelfTalker("OnSale.png")
                 .uniqueKey("uuid1")
                 .build();
 
         Promotion promotion1 = aPromotion()
-                .offerId("123")
-                .itemNumber("5678")
-                .zoneId("4")
-                .startDate("date1")
-                .endDate("date2")
-                .offerName("name of promotion")
-                .description1("blah")
-                .description2("blah")
+                .offerId("R29029470")
+                .itemNumber("66367922")
+                .zoneId("12")
+                .startDate("25-Sep-10")
+                .endDate("22/09/35")
+                .offerName("ROI HARDWARE")
+                .description1("SPECIAL PURCHASE 50p")
+                .description2("3 LIONS|WATERBOTTLE")
                 .uniqueKey("uuid2")
                 .build();
 
         Promotion promotion2 = aPromotion()
-                .offerId("567")
-                .itemNumber("5678")
+                .offerId("A29721690")
+                .itemNumber("70918248")
                 .zoneId("4")
-                .startDate("date1")
-                .endDate("date2")
-                .offerName("name of promotion")
-                .description1("blah")
-                .description2("blah")
+                .startDate("31-Jun-12")
+                .endDate("04-Jul-13")
+                .offerName("3 LIONS KICK & TRICK BALL 3.00 SPECIAL PURCHASE")
+                .description1("SPECIAL PURCHASE 50p")
+                .description2("3 LIONS|CAR FLAG")
                 .uniqueKey("uuid3")
                 .build();
 
@@ -109,14 +109,14 @@ public class PromotionResourceTest extends ResourceTest {
     @Test
     public void shouldReturnMultiplePromotions() throws Exception {
         PromotionRequest promotionRequest = aPromotionRequest()
-                .offerId("123")
-                .itemNumber("1234")
+                .offerId("A29721688")
+                .itemNumber("070918248")
                 .zoneId("5")
                 .build();
 
         PromotionRequest promotionRequest1 = aPromotionRequest()
-                .offerId("567")
-                .itemNumber("5678")
+                .offerId("A29721690")
+                .itemNumber("70918248")
                 .zoneId("4")
                 .build();
 
@@ -136,25 +136,25 @@ public class PromotionResourceTest extends ResourceTest {
         assertThat(promotions).hasSize(2);
 
         Promotion firstPromotion = promotions.get(0);
-        assertThat(firstPromotion.getOfferId()).isEqualTo("567");
-        assertThat(firstPromotion.getItemNumber()).isEqualTo("5678");
+        assertThat(firstPromotion.getOfferId()).isEqualTo("A29721690");
+        assertThat(firstPromotion.getItemNumber()).isEqualTo("70918248");
         assertThat(firstPromotion.getZoneId()).isEqualTo("4");
-        assertThat(firstPromotion.getOfferName()).isEqualTo("name of promotion");
-        assertThat(firstPromotion.getStartDate()).isEqualTo("date1");
-        assertThat(firstPromotion.getEndDate()).isEqualTo("date2");
-        assertThat(firstPromotion.getCFDescription1()).isEqualTo("blah");
-        assertThat(firstPromotion.getCFDescription2()).isEqualTo("blah");
+        assertThat(firstPromotion.getOfferName()).isEqualTo("3 LIONS KICK & TRICK BALL 3.00 SPECIAL PURCHASE");
+        assertThat(firstPromotion.getStartDate()).isEqualTo("31-Jun-12");
+        assertThat(firstPromotion.getEndDate()).isEqualTo("04-Jul-13");
+        assertThat(firstPromotion.getCFDescription1()).isEqualTo("SPECIAL PURCHASE 50p");
+        assertThat(firstPromotion.getCFDescription2()).isEqualTo("3 LIONS|CAR FLAG");
         assertThat(firstPromotion.getOfferText()).isEqualTo("default");
 
         Promotion secondPromotion = promotions.get(1);
-        assertThat(secondPromotion.getOfferId()).isEqualTo("123");
-        assertThat(secondPromotion.getItemNumber()).isEqualTo("1234");
+        assertThat(secondPromotion.getOfferId()).isEqualTo("A29721688");
+        assertThat(secondPromotion.getItemNumber()).isEqualTo("070918248");
         assertThat(secondPromotion.getZoneId()).isEqualTo("5");
-        assertThat(secondPromotion.getOfferName()).isEqualTo("name of promotion");
-        assertThat(secondPromotion.getStartDate()).isEqualTo("date1");
-        assertThat(secondPromotion.getEndDate()).isEqualTo("date2");
-        assertThat(secondPromotion.getCFDescription1()).isEqualTo("blah");
-        assertThat(secondPromotion.getCFDescription2()).isEqualTo("blah");
+        assertThat(secondPromotion.getOfferName()).isEqualTo("3 LIONS KICK & TRICK BALL 1.00 SPECIAL PURCHASE");
+        assertThat(secondPromotion.getStartDate()).isEqualTo("31-Apr-12");
+        assertThat(secondPromotion.getEndDate()).isEqualTo("04-May-13");
+        assertThat(secondPromotion.getCFDescription1()).isEqualTo("SPECIAL PURCHASE 50p");
+        assertThat(secondPromotion.getCFDescription2()).isEqualTo("3 LIONS|WATERBOTTLE");
         assertThat(secondPromotion.getShelfTalkerImage()).isEqualTo("OnSale.png");
         assertThat(secondPromotion.getOfferText()).isEqualTo("default");
 
@@ -184,7 +184,7 @@ public class PromotionResourceTest extends ResourceTest {
     @Test
     public void shouldReturnEmptyListGivenMissingAttribute() throws Exception {
         PromotionRequest promotionRequest = aPromotionRequest()
-                .offerId("123")
+                .offerId("A29721688")
                 .build();
 
         PromotionRequestList promotionRequestList = new PromotionRequestList();
@@ -203,12 +203,12 @@ public class PromotionResourceTest extends ResourceTest {
     public void shouldReturnValueForCorrectRequestItemOnly() throws Exception {
         PromotionRequest promotionRequest = aPromotionRequest()
                 .zoneId("5")
-                .itemNumber("1234")
-                .offerId("123")
+                .itemNumber("070918248")
+                .offerId("A29721688")
                 .build();
 
         PromotionRequest promotionRequest1 = aPromotionRequest()
-                .offerId("567")
+                .offerId("A29721690")
                 .build();
 
 
@@ -223,16 +223,15 @@ public class PromotionResourceTest extends ResourceTest {
         });
 
         assertThat(promotions.size()).isEqualTo(1);
-
         Promotion firstPromotion = promotions.get(0);
-        assertThat(firstPromotion.getOfferId()).isEqualTo("123");
-        assertThat(firstPromotion.getItemNumber()).isEqualTo("1234");
+        assertThat(firstPromotion.getOfferId()).isEqualTo("A29721688");
+        assertThat(firstPromotion.getItemNumber()).isEqualTo("070918248");
         assertThat(firstPromotion.getZoneId()).isEqualTo("5");
-        assertThat(firstPromotion.getOfferName()).isEqualTo("name of promotion");
-        assertThat(firstPromotion.getStartDate()).isEqualTo("date1");
-        assertThat(firstPromotion.getEndDate()).isEqualTo("date2");
-        assertThat(firstPromotion.getCFDescription1()).isEqualTo("blah");
-        assertThat(firstPromotion.getCFDescription2()).isEqualTo("blah");
+        assertThat(firstPromotion.getOfferName()).isEqualTo("3 LIONS KICK & TRICK BALL 1.00 SPECIAL PURCHASE");
+        assertThat(firstPromotion.getStartDate()).isEqualTo("31-Apr-12");
+        assertThat(firstPromotion.getEndDate()).isEqualTo("04-May-13");
+        assertThat(firstPromotion.getCFDescription1()).isEqualTo("SPECIAL PURCHASE 50p");
+        assertThat(firstPromotion.getCFDescription2()).isEqualTo("3 LIONS|WATERBOTTLE");
         assertThat(firstPromotion.getShelfTalkerImage()).isEqualTo("OnSale.png");
         assertThat(firstPromotion.getOfferText()).isEqualTo("default");
 
@@ -242,14 +241,14 @@ public class PromotionResourceTest extends ResourceTest {
     public void shouldReturnOnlyOneResultGivenDuplicateRequests() throws Exception {
         PromotionRequest promotionRequest = aPromotionRequest()
                 .zoneId("5")
-                .itemNumber("1234")
-                .offerId("123")
+                .itemNumber("070918248")
+                .offerId("A29721688")
                 .build();
 
         PromotionRequest promotionRequest1 = aPromotionRequest()
                 .zoneId("5")
-                .itemNumber("1234")
-                .offerId("123")
+                .itemNumber("070918248")
+                .offerId("A29721688")
                 .build();
 
         PromotionRequestList promotionRequestList = new PromotionRequestList();
@@ -262,17 +261,15 @@ public class PromotionResourceTest extends ResourceTest {
         List<Promotion> promotions = fromJson(resource.type(APPLICATION_JSON).post(String.class, asJson(promotionRequestList)), new TypeReference<List<Promotion>>() {
         });
 
-        assertThat(promotions.size()).isEqualTo(1);
-
         Promotion firstPromotion = promotions.get(0);
-        assertThat(firstPromotion.getOfferId()).isEqualTo("123");
-        assertThat(firstPromotion.getItemNumber()).isEqualTo("1234");
+        assertThat(firstPromotion.getOfferId()).isEqualTo("A29721688");
+        assertThat(firstPromotion.getItemNumber()).isEqualTo("070918248");
         assertThat(firstPromotion.getZoneId()).isEqualTo("5");
-        assertThat(firstPromotion.getOfferName()).isEqualTo("name of promotion");
-        assertThat(firstPromotion.getStartDate()).isEqualTo("date1");
-        assertThat(firstPromotion.getEndDate()).isEqualTo("date2");
-        assertThat(firstPromotion.getCFDescription1()).isEqualTo("blah");
-        assertThat(firstPromotion.getCFDescription2()).isEqualTo("blah");
+        assertThat(firstPromotion.getOfferName()).isEqualTo("3 LIONS KICK & TRICK BALL 1.00 SPECIAL PURCHASE");
+        assertThat(firstPromotion.getStartDate()).isEqualTo("31-Apr-12");
+        assertThat(firstPromotion.getEndDate()).isEqualTo("04-May-13");
+        assertThat(firstPromotion.getCFDescription1()).isEqualTo("SPECIAL PURCHASE 50p");
+        assertThat(firstPromotion.getCFDescription2()).isEqualTo("3 LIONS|WATERBOTTLE");
         assertThat(firstPromotion.getShelfTalkerImage()).isEqualTo("OnSale.png");
         assertThat(firstPromotion.getOfferText()).isEqualTo("default");
 
