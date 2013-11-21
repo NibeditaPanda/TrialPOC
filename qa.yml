@@ -32,7 +32,7 @@ logging:
     enabled: true
 
     # Do not write log statements below this threshold to syslog.
-    threshold: DEBUG
+    threshold: ALL
 
     # The hostname of the syslog server to which statements will be sent.
     # N.B.: If this is the local host, the local syslog instance will need to be configured to
