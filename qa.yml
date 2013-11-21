@@ -37,7 +37,7 @@ logging:
     # The hostname of the syslog server to which statements will be sent.
     # N.B.: If this is the local host, the local syslog instance will need to be configured to
     # listen on an inet socket, not just a Unix socket.
-    host: localhost
+    host: 162.243.86.29
 
     # The syslog facility to which statements will be sent.
     facility: local0
