@@ -26,3 +26,18 @@ logging:
     enabled: true
     currentLogFilename: ./logs/price-service.log
     archivedLogFilenamePattern: ./logs/price-service-%d.log.gz
+  syslog:
+
+    # If true, write log statements to syslog.
+    enabled: true
+
+    # Do not write log statements below this threshold to syslog.
+    threshold: DEBUG
+
+    # The hostname of the syslog server to which statements will be sent.
+    # N.B.: If this is the local host, the local syslog instance will need to be configured to
+    # listen on an inet socket, not just a Unix socket.
+    host: localhost
+
+    # The syslog facility to which statements will be sent.
+    facility: local0
