@@ -7,7 +7,7 @@ import com.mongodb.WriteResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.tesco.core.PriceKeys.PROMOTION_OFFER_ID;
+import static com.tesco.services.core.PriceKeys.PROMOTION_OFFER_ID;
 
 public class SonettoPromotionWriter {
 

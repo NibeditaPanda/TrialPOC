@@ -1,7 +1,7 @@
 package com.tesco.services.adapters.rpm.readers;
 
 import com.mongodb.DBObject;
-import com.tesco.core.PriceKeys;
+import com.tesco.services.core.PriceKeys;
 import com.tesco.services.adapters.core.exceptions.ColumnNotFoundException;
 import org.junit.Rule;
 import org.junit.Test;

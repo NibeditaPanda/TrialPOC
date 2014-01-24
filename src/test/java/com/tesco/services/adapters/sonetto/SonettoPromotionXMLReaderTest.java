@@ -2,7 +2,7 @@ package com.tesco.services.adapters.sonetto;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.tesco.core.PriceKeys;
+import com.tesco.services.core.PriceKeys;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,7 +1,8 @@
-package com.tesco.core;
+package com.tesco.services.repositories;
 
-import com.tesco.services.Promotion;
+import com.tesco.services.core.Promotion;
 import org.infinispan.Cache;
+import org.infinispan.configuration.cache.Configuration;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.configuration.global.GlobalConfiguration;
 import org.infinispan.configuration.global.GlobalConfigurationBuilder;
@@ -27,7 +28,7 @@ public class DataGridResource {
         this.dgClient.stop();
     }
 
-    private org.infinispan.configuration.cache.Configuration getConfiguration() {
+    private Configuration getConfiguration() {
         Properties properties = new Properties();
         properties.put("hibernate.search.default.directory_provider", "ram");
         properties.put("hibernate.search.default.lucene_version", "3.2.6");

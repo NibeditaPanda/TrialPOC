@@ -1,4 +1,4 @@
-package com.tesco.core;
+package com.tesco.services.repositories;
 
 import java.util.UUID;
 

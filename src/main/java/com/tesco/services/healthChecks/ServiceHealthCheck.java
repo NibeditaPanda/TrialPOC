@@ -1,7 +1,7 @@
 package com.tesco.services.healthChecks;
 
-import com.tesco.core.Configuration;
-import com.tesco.core.DBFactory;
+import com.tesco.services.Configuration;
+import com.tesco.services.dao.DBFactory;
 import com.yammer.metrics.core.HealthCheck;
 
 public class ServiceHealthCheck extends HealthCheck {

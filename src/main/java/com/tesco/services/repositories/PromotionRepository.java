@@ -1,8 +1,7 @@
 package com.tesco.services.repositories;
 
 import com.google.common.base.Function;
-import com.tesco.core.UUIDGenerator;
-import com.tesco.services.Promotion;
+import com.tesco.services.core.Promotion;
 import org.apache.lucene.search.Query;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.infinispan.Cache;
@@ -13,7 +12,7 @@ import org.infinispan.query.SearchManager;
 import java.util.List;
 
 import static com.google.common.collect.Lists.transform;
-import static com.tesco.core.PriceKeys.*;
+import static com.tesco.services.core.PriceKeys.*;
 import static java.util.Collections.EMPTY_LIST;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 

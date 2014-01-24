@@ -2,9 +2,6 @@ package com.tesco.services.adapters.core;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
-import com.tesco.core.DBFactory;
-import com.tesco.core.UUIDGenerator;
-import com.tesco.services.Promotion;
 import com.tesco.services.adapters.core.exceptions.ColumnNotFoundException;
 import com.tesco.services.adapters.rpm.readers.RPMPriceZoneCSVFileReader;
 import com.tesco.services.adapters.rpm.readers.RPMPromotionCSVFileReader;
@@ -13,6 +10,9 @@ import com.tesco.services.adapters.rpm.readers.RPMStoreZoneCSVFileReader;
 import com.tesco.services.adapters.rpm.writers.RPMWriter;
 import com.tesco.services.adapters.sonetto.SonettoPromotionWriter;
 import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
+import com.tesco.services.dao.DBFactory;
+import com.tesco.services.core.Promotion;
+import com.tesco.services.repositories.UUIDGenerator;
 import com.tesco.services.repositories.PromotionRepository;
 import org.apache.commons.configuration.ConfigurationException;
 import org.infinispan.Cache;
@@ -25,12 +25,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
-import static com.tesco.core.PriceKeys.ITEM_NUMBER;
-import static com.tesco.core.PriceKeys.PRICE_COLLECTION;
-import static com.tesco.core.PriceKeys.PROMOTION_COLLECTION;
-import static com.tesco.core.PriceKeys.PROMOTION_OFFER_ID;
-import static com.tesco.core.PriceKeys.STORE_COLLECTION;
-import static com.tesco.core.PriceKeys.STORE_ID;
+import static com.tesco.services.core.PriceKeys.ITEM_NUMBER;
+import static com.tesco.services.core.PriceKeys.PRICE_COLLECTION;
+import static com.tesco.services.core.PriceKeys.PROMOTION_COLLECTION;
+import static com.tesco.services.core.PriceKeys.PROMOTION_OFFER_ID;
+import static com.tesco.services.core.PriceKeys.STORE_COLLECTION;
+import static com.tesco.services.core.PriceKeys.STORE_ID;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class ImportJob implements Runnable {
@@ -43,7 +43,7 @@ public class ImportJob implements Runnable {
     private String rpmPromotionDescCSVUrl;
     private String sonettoPromotionXSDDataPath;
     private Cache<String, Promotion> promotionCache;
-    private com.tesco.core.DBFactory dbFactory;
+    private com.tesco.services.dao.DBFactory dbFactory;
     private String sonettoPromotionsXMLFilePath;
     private String sonettoShelfImageUrl;
 

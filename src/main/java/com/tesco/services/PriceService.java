@@ -1,8 +1,7 @@
 package com.tesco.services;
 
-import com.tesco.core.Configuration;
-import com.tesco.core.DataGridResource;
-import com.tesco.core.UUIDGenerator;
+import com.tesco.services.repositories.DataGridResource;
+import com.tesco.services.repositories.UUIDGenerator;
 import com.tesco.services.dao.PriceDAO;
 import com.tesco.services.healthChecks.ServiceHealthCheck;
 import com.tesco.services.metrics.ResourceMetricsListener;

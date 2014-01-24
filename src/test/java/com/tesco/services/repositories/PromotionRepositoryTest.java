@@ -1,8 +1,6 @@
 package com.tesco.services.repositories;
 
-import com.tesco.core.DataGridResource;
-import com.tesco.core.UUIDGenerator;
-import com.tesco.services.Promotion;
+import com.tesco.services.core.Promotion;
 import org.infinispan.Cache;
 import org.junit.After;
 import org.junit.Before;

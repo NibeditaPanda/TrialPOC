@@ -3,8 +3,8 @@ package com.tesco.services.adapters.core;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.tesco.services.adapters.core.exceptions.ColumnNotFoundException;
-import com.tesco.core.DBFactory;
-import com.tesco.core.DataGridResource;
+import com.tesco.services.dao.DBFactory;
+import com.tesco.services.repositories.DataGridResource;
 import com.tesco.services.resources.TestConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.junit.After;
@@ -17,7 +17,7 @@ import java.io.IOException;
 
 import static com.mongodb.QueryBuilder.start;
 import static com.tesco.services.adapters.core.TestFiles.*;
-import static com.tesco.core.PriceKeys.*;
+import static com.tesco.services.core.PriceKeys.*;
 
 public class ImportJobTest {
     protected DBCollection priceCollection;

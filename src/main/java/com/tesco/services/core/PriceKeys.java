@@ -1,4 +1,4 @@
-package com.tesco.core;
+package com.tesco.services.core;
 
 public class PriceKeys {
     public static final String ITEM_NUMBER = "itemNumber";

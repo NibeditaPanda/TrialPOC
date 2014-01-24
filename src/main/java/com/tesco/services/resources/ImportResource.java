@@ -1,9 +1,9 @@
 package com.tesco.services.resources;
 
-import com.tesco.core.Configuration;
-import com.tesco.core.DBFactory;
-import com.tesco.core.DataGridResource;
-import com.tesco.services.Promotion;
+import com.tesco.services.Configuration;
+import com.tesco.services.dao.DBFactory;
+import com.tesco.services.repositories.DataGridResource;
+import com.tesco.services.core.Promotion;
 import com.tesco.services.adapters.core.ImportJob;
 import com.yammer.metrics.annotation.ExceptionMetered;
 import com.yammer.metrics.annotation.Metered;

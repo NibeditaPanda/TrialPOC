@@ -1,7 +1,7 @@
 package com.tesco.services.adapters.core;
 
 
-import com.tesco.services.Promotion;
+import com.tesco.services.core.Promotion;
 import org.infinispan.Cache;
 import org.mockito.Mock;
 

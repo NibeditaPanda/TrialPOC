@@ -1,4 +1,4 @@
-package com.tesco.services;
+package com.tesco.services.core;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;

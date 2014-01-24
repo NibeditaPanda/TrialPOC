@@ -3,15 +3,14 @@ package com.tesco.services.dao;
 import com.google.common.base.Optional;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
-import com.tesco.core.Configuration;
-import com.tesco.core.DBFactory;
+import com.tesco.services.Configuration;
 import com.tesco.services.exceptions.ItemNotFoundException;
 
 import java.net.UnknownHostException;
 import java.util.List;
 
-import static com.tesco.core.PriceKeys.ITEM_NUMBER;
-import static com.tesco.core.PriceKeys.STORE_ID;
+import static com.tesco.services.core.PriceKeys.ITEM_NUMBER;
+import static com.tesco.services.core.PriceKeys.STORE_ID;
 
 public class PriceDAO {
 

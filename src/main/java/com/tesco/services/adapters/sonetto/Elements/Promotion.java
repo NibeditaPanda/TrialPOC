@@ -5,7 +5,7 @@ import com.mongodb.DBObject;
 
 import javax.xml.bind.annotation.*;
 
-import static com.tesco.core.PriceKeys.*;
+import static com.tesco.services.core.PriceKeys.*;
 import static java.lang.String.format;
 
 @XmlRootElement(name = "Promotion")

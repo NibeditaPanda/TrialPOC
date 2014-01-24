@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import static com.mongodb.QueryBuilder.start;
 import static com.tesco.services.adapters.core.TestFiles.*;
-import static com.tesco.core.PriceKeys.*;
+import static com.tesco.services.core.PriceKeys.*;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class StoreCollectionIntegrationTest extends ImportJobTest {

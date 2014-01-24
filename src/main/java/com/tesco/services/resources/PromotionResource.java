@@ -1,6 +1,6 @@
 package com.tesco.services.resources;
 
-import com.tesco.services.Promotion;
+import com.tesco.services.core.Promotion;
 import com.tesco.services.repositories.PromotionRepository;
 import com.tesco.services.resources.model.PromotionRequest;
 import com.tesco.services.resources.model.PromotionRequestList;

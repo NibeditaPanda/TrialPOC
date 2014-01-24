@@ -1,6 +1,11 @@
-package com.tesco.core;
+package com.tesco.services.dao;
 
-import com.mongodb.*;
+import com.mongodb.DBCollection;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
+import com.tesco.services.Configuration;
 import org.slf4j.Logger;
 
 import java.net.UnknownHostException;

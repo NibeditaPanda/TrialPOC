@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
-import static com.tesco.core.PriceKeys.*;
+import static com.tesco.services.core.PriceKeys.*;
 import static com.tesco.services.adapters.core.utils.ExtractionUtils.getHeader;
 import static java.util.Arrays.asList;
 

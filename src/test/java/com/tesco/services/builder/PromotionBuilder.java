@@ -1,6 +1,6 @@
 package com.tesco.services.builder;
 
-import com.tesco.services.Promotion;
+import com.tesco.services.core.Promotion;
 
 public class PromotionBuilder {
 

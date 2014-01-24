@@ -2,7 +2,7 @@ package com.tesco.services.resources.fixtures;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.tesco.services.Promotion;
+import com.tesco.services.core.Promotion;
 
 public class TestPromotionDBObject {
 

@@ -1,7 +1,7 @@
 package com.tesco.services.resources;
 
 import com.fasterxml.jackson.dataformat.yaml.snakeyaml.Yaml;
-import com.tesco.core.Configuration;
+import com.tesco.services.Configuration;
 import com.tesco.services.HostedGraphiteConfiguration;
 import org.slf4j.LoggerFactory;
 

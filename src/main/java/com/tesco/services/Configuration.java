@@ -1,7 +1,6 @@
-package com.tesco.core;
+package com.tesco.services;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.tesco.services.HostedGraphiteConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 
 public class Configuration extends com.yammer.dropwizard.config.Configuration {

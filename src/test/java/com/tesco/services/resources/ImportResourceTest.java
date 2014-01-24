@@ -2,8 +2,8 @@ package com.tesco.services.resources;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import com.tesco.core.Configuration;
-import com.tesco.core.DataGridResource;
+import com.tesco.services.Configuration;
+import com.tesco.services.repositories.DataGridResource;
 import com.yammer.dropwizard.testing.ResourceTest;
 import org.junit.Ignore;
 import org.junit.Test;

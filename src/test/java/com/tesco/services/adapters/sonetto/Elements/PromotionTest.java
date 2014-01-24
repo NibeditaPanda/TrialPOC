@@ -1,7 +1,7 @@
 package com.tesco.services.adapters.sonetto.Elements;
 
 import com.mongodb.DBObject;
-import com.tesco.core.PriceKeys;
+import com.tesco.services.core.PriceKeys;
 import org.junit.Test;
 
 import static java.lang.String.format;

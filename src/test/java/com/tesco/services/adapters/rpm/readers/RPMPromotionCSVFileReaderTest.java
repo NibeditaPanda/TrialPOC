@@ -1,7 +1,7 @@
 package com.tesco.services.adapters.rpm.readers;
 
 import com.tesco.services.adapters.core.exceptions.ColumnNotFoundException;
-import com.tesco.services.Promotion;
+import com.tesco.services.core.Promotion;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

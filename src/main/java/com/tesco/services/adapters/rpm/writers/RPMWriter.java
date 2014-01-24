@@ -7,7 +7,7 @@ import com.mongodb.WriteResult;
 import com.tesco.services.adapters.core.exceptions.ColumnNotFoundException;
 import com.tesco.services.adapters.rpm.readers.*;
 import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
-import com.tesco.services.Promotion;
+import com.tesco.services.core.Promotion;
 import com.tesco.services.repositories.PromotionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,7 @@ import java.util.List;
 
 import static com.google.common.collect.Iterables.getFirst;
 import static com.tesco.services.adapters.rpm.readers.RPMPriceZoneCSVFileReader.PRICE_ZONE_FORMAT;
-import static com.tesco.core.PriceKeys.*;
+import static com.tesco.services.core.PriceKeys.*;
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.String.format;
 

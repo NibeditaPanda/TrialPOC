@@ -4,7 +4,7 @@ import au.com.bytecode.opencsv.CSVReader;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.tesco.services.adapters.core.exceptions.ColumnNotFoundException;
-import com.tesco.services.Promotion;
+import com.tesco.services.core.Promotion;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.tesco.services.adapters.core.utils.ExtractionUtils.getHeader;
-import static com.tesco.core.PriceKeys.*;
+import static com.tesco.services.core.PriceKeys.*;
 
 public class RPMPromotionDescriptionCSVFileReader implements RPMCSVFileReader {
     private final CSVReader csvReader;
