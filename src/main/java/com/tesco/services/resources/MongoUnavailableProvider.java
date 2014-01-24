@@ -1,7 +1,6 @@
 package com.tesco.services.resources;
 
 import com.mongodb.MongoException;
-import com.tesco.services.HTTPResponses;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;

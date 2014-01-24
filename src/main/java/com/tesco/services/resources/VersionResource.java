@@ -17,7 +17,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static com.google.common.io.Files.readLines;
-import static com.tesco.services.HTTPResponses.*;
+import static com.tesco.services.resources.HTTPResponses.*;
 import static com.tesco.services.resources.ResourceResponse.RESPONSE_TYPE;
 import static java.nio.charset.Charset.defaultCharset;
 

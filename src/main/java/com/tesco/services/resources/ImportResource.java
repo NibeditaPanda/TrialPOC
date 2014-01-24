@@ -1,11 +1,10 @@
 package com.tesco.services.resources;
 
-import com.mongodb.DBCollection;
-import com.tesco.adapters.core.Controller;
 import com.tesco.core.Configuration;
 import com.tesco.core.DBFactory;
 import com.tesco.core.DataGridResource;
 import com.tesco.services.Promotion;
+import com.tesco.services.adapters.core.ImportJob;
 import com.yammer.metrics.annotation.ExceptionMetered;
 import com.yammer.metrics.annotation.Metered;
 import com.yammer.metrics.annotation.Timed;
@@ -16,10 +15,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
-import static com.tesco.core.PriceKeys.*;
 import static javax.ws.rs.core.Response.ok;
 
 @Path("/admin")
@@ -45,46 +41,20 @@ public class ImportResource {
             //TODO Vyv is this a memory leak?
             Cache<String,Promotion> promotionCache = dataGridResource.getPromotionCache();
 
-            Controller controller = new Controller(
-                    configuration.getRPMPriceDataPath(), configuration.getRPMStoreDataPath(),
+            final ImportJob importJob = new ImportJob(configuration.getRPMPriceDataPath(), configuration.getRPMStoreDataPath(),
                     configuration.getRPMPromotionDataPath(),
                     configuration.getSonettoPromotionsXMLDataPath(),
                     configuration.getRPMPromotionDescCSVUrl(),
                     configuration.getSonettoPromotionXSDDataPath(),
                     configuration.getSonettoShelfImageUrl(),
-                    promotionCache);
+                    promotionCache, dbFactory);
 
-            Thread thread = new Thread(new DataImportRunner(controller, dbFactory));
+            Thread thread = new Thread(importJob);
             thread.start();
         } catch (ConfigurationException e) {
             Response.serverError();
         }
 
         return ok("{\"message\":\"Import Started.\"}").build();
-    }
-
-
-    private class DataImportRunner implements Runnable {
-        private Controller controller;
-        private DBFactory dbFactory;
-
-        public DataImportRunner(Controller controller, DBFactory dbFactory) {
-            this.controller = controller;
-            this.dbFactory = dbFactory;
-        }
-
-        @Override
-        public void run() {
-            DBCollection tempPriceCollection = dbFactory.getCollection(getTempCollectionName(PRICE_COLLECTION));
-            DBCollection tempStoreCollection = dbFactory.getCollection(getTempCollectionName(STORE_COLLECTION));
-            DBCollection tempPromotionCollection = dbFactory.getCollection(getTempCollectionName(PROMOTION_COLLECTION));
-
-            controller.processData(tempPriceCollection, tempStoreCollection, tempPromotionCollection, true);
-        }
-
-        private String getTempCollectionName(String baseCollectionName) {
-            return String.format("%s%s", baseCollectionName, new SimpleDateFormat("yyyyMMdd").format(new Date()));
-        }
-
     }
 }

@@ -22,8 +22,8 @@ import java.util.Set;
 import static com.google.common.base.Predicates.notNull;
 import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Lists.newArrayList;
-import static com.tesco.services.HTTPResponses.badRequest;
-import static com.tesco.services.HTTPResponses.ok;
+import static com.tesco.services.resources.HTTPResponses.badRequest;
+import static com.tesco.services.resources.HTTPResponses.ok;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/promotion")

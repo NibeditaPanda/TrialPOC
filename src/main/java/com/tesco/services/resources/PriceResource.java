@@ -16,7 +16,7 @@ import javax.ws.rs.core.UriInfo;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.tesco.services.HTTPResponses.*;
+import static com.tesco.services.resources.HTTPResponses.*;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 

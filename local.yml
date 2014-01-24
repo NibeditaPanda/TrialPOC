@@ -10,7 +10,7 @@ rpm.promotion.data.dump : src/main/resources/com/tesco/adapters/rpm/CSVFiles/PRO
 rpm.promotion_desc.data.dump : src/main/resources/com/tesco/adapters/rpm/CSVFiles/PROM_DESC_EXTRACT.csv
 sonetto.shelfUrl : http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/Superstore/Online/Product/pos/%s.png
 sonetto.promotions.data.dump : src/main/resources/com/tesco/adapters/sonetto/PromotionsDataExport.xml
-sonetto.promotions.xsd : templates/Promotions.xsd.xml
+sonetto.promotions.xsd : templates/Promotions.xsd
 
 hostedGraphite:
   hostname: carbon.hostedgraphite.com

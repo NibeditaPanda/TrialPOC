@@ -51,7 +51,7 @@ dependencies {
 }
 
 
-mainClassName = 'com.tesco.services.Controller'
+mainClassName = 'com.tesco.services.PriceService'
 
 fatJar {
     baseName = 'price-service'
