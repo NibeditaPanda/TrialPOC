@@ -4,12 +4,12 @@ DBPort: 27017
 Username:
 Password:
 
-rpm.price.data.dump : src/main/resources/com/tesco/adapters/rpm/CSVFiles/PRICE_ZONE.csv
-rpm.store.data.dump : src/main/resources/com/tesco/adapters/rpm/CSVFiles/STORE_ZONE.csv
-rpm.promotion.data.dump : src/main/resources/com/tesco/adapters/rpm/CSVFiles/PROM_EXTRACT.csv
-rpm.promotion_desc.data.dump : src/main/resources/com/tesco/adapters/rpm/CSVFiles/PROM_DESC_EXTRACT.csv
+rpm.price.data.dump : src/main/resources/com/tesco/services/adapters/rpm/CSVFiles/PRICE_ZONE.csv
+rpm.store.data.dump : src/main/resources/com/tesco/services/adapters/rpm/CSVFiles/STORE_ZONE.csv
+rpm.promotion.data.dump : src/main/resources/com/tesco/services/adapters/rpm/CSVFiles/PROM_EXTRACT.csv
+rpm.promotion_desc.data.dump : src/main/resources/com/tesco/services/adapters/rpm/CSVFiles/PROM_DESC_EXTRACT.csv
 sonetto.shelfUrl : http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/Superstore/Online/Product/pos/%s.png
-sonetto.promotions.data.dump : src/main/resources/com/tesco/adapters/sonetto/PromotionsDataExport.xml
+sonetto.promotions.data.dump : src/main/resources/com/tesco/services/adapters/sonetto/PromotionsDataExport.xml
 sonetto.promotions.xsd : templates/Promotions.xsd
 
 hostedGraphite:
