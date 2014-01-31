@@ -9,4 +9,6 @@ public class TestFiles {
     public static final String RPM_STORE_ZONE_TO_UPDATE_CSV_FILE_PATH = "./src/test/resources/com/tesco/services/adapters/rpm/fixtures/store_zone_to_update.csv";
     public static final String SONETTO_PROMOTIONS_XML_FILE_PATH = "./src/test/resources/com/tesco/services/adapters/sonetto/PromotionsDataExport.xml";
     public static final String SONETTO_PROMOTIONS_XSD_FILE_PATH = "./templates/Promotions.xsd";
+
+    public static final String RPM_PRICE_ZONE_PRICE_CSV_FILE_PATH = "./src/test/resources/com/tesco/services/adapters/rpm/fixtures/price_zone_price.csv";
 }

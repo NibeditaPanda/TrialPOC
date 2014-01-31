@@ -9,6 +9,7 @@ import com.tesco.services.adapters.sonetto.SonettoPromotionWriter;
 import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
 import com.tesco.services.dao.DBFactory;
 import com.tesco.services.core.Promotion;
+import com.tesco.services.repositories.ProductPriceRepository;
 import com.tesco.services.repositories.UUIDGenerator;
 import com.tesco.services.repositories.PromotionRepository;
 import org.apache.commons.configuration.ConfigurationException;
@@ -39,7 +40,9 @@ public class ImportJob implements Runnable {
     private String rpmPromotionCsvFilePath;
     private String rpmPromotionDescCSVUrl;
     private String sonettoPromotionXSDDataPath;
+    private String rpmPriceZoneDataPath;
     private Cache<String, Promotion> promotionCache;
+    private Cache<String, Product> productPriceCache;
     private com.tesco.services.dao.DBFactory dbFactory;
     private String sonettoPromotionsXMLFilePath;
     private String sonettoShelfImageUrl;
@@ -51,8 +54,9 @@ public class ImportJob implements Runnable {
                      String rpmPromotionDescCSVUrl,
                      String sonettoPromotionXSDDataPath,
                      String sonettoShelfImageUrl,
+                     String rpmPriceZoneDataPath,
                      Cache<String, Promotion> promotionCache,
-                     DBFactory dbFactory) {
+                     Cache<String, Product> productPriceCache, DBFactory dbFactory) {
         this.rpmPriceZoneCsvFilePath = rpmPriceZoneCsvFilePath;
         this.rpmStoreZoneCsvFilePath = rpmStoreZoneCsvFilePath;
         this.rpmPromotionCsvFilePath = rpmPromotionCsvFilePath;
@@ -60,7 +64,9 @@ public class ImportJob implements Runnable {
         this.rpmPromotionDescCSVUrl = rpmPromotionDescCSVUrl;
         this.sonettoPromotionXSDDataPath = sonettoPromotionXSDDataPath;
         this.sonettoShelfImageUrl = sonettoShelfImageUrl;
+        this.rpmPriceZoneDataPath = rpmPriceZoneDataPath;
         this.promotionCache = promotionCache;
+        this.productPriceCache = productPriceCache;
         this.dbFactory = dbFactory;
     }
 
@@ -120,6 +126,7 @@ public class ImportJob implements Runnable {
         UUIDGenerator uuidGenerator = new UUIDGenerator();
         PromotionRepository promotionRepository = new PromotionRepository(uuidGenerator, promotionCache);
 
+        RPMPriceReaderImpl rpmPriceReader = new RPMPriceReaderImpl(rpmPriceZoneDataPath);
         new RPMWriter(priceCollection,
                 storeCollection,
                 sonettoPromotionsXMLFilePath,
@@ -129,8 +136,8 @@ public class ImportJob implements Runnable {
                 promotionRepository,
                 rpmPromotionCSVFileReader,
                 rpmPromotionDescriptionCSVFileReader,
-                null,
-                new RPMPriceReaderImpl())
+                new ProductPriceRepository(productPriceCache),
+                rpmPriceReader)
                 .write();
     }
 

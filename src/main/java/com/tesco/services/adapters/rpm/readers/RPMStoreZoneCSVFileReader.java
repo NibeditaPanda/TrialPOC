@@ -11,7 +11,7 @@ import java.io.InputStreamReader;
 import java.util.List;
 
 import static com.tesco.services.core.PriceKeys.*;
-import static com.tesco.services.adapters.core.utils.ExtractionUtils.getHeader;
+import static com.tesco.services.adapters.core.utils.ExtractionUtils.getHeaderIndex;
 import static java.util.Arrays.asList;
 
 public class RPMStoreZoneCSVFileReader implements RPMCSVFileReader {
@@ -30,10 +30,10 @@ public class RPMStoreZoneCSVFileReader implements RPMCSVFileReader {
 
         List<String> headers = asList(csvReader.readNext());
 
-        storeIndex = getHeader(headers, "STORE");
-        zoneIdIndex = getHeader(headers, "ZONE_ID");
-        currencyIndex = getHeader(headers, "CURRENCY_CODE");
-        zoneType = getHeader(headers, "ZONE_TYPE");
+        storeIndex = getHeaderIndex(headers, "STORE");
+        zoneIdIndex = getHeaderIndex(headers, "ZONE_ID");
+        currencyIndex = getHeaderIndex(headers, "CURRENCY_CODE");
+        zoneType = getHeaderIndex(headers, "ZONE_TYPE");
     }
 
     public DBObject getNext() throws IOException {

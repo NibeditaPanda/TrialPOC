@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
-import static com.tesco.services.adapters.core.utils.ExtractionUtils.getHeader;
+import static com.tesco.services.adapters.core.utils.ExtractionUtils.getHeaderIndex;
 import static com.tesco.services.core.PriceKeys.*;
 import static java.util.Arrays.asList;
 
@@ -29,12 +29,12 @@ public class RPMPromotionCSVFileReader implements RPMCSVFileReader {
 
         List<String> headers = asList(csvReader.readNext());
 
-        itemNumberIndex = getHeader(headers, "TPNB");
-        zoneIndex = getHeader(headers, "ZONE_ID");
-        offerIdIndex = getHeader(headers, "OFFER_ID");
-        offerNameIndex = getHeader(headers, "OFFER_NAME");
-        startDateIndex = getHeader(headers, "START_DATE");
-        endDateIndex = getHeader(headers, "END_DATE");
+        itemNumberIndex = getHeaderIndex(headers, "TPNB");
+        zoneIndex = getHeaderIndex(headers, "ZONE_ID");
+        offerIdIndex = getHeaderIndex(headers, "OFFER_ID");
+        offerNameIndex = getHeaderIndex(headers, "OFFER_NAME");
+        startDateIndex = getHeaderIndex(headers, "START_DATE");
+        endDateIndex = getHeaderIndex(headers, "END_DATE");
     }
 
     public DBObject getNext() throws IOException {

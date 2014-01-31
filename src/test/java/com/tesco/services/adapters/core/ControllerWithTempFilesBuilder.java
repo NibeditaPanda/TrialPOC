@@ -22,6 +22,9 @@ public class ControllerWithTempFilesBuilder {
     @Mock
     private Cache<String, Promotion> promotionCache;
 
+    @Mock
+    private Cache<String, Product> productPriceCache;
+
     private File rpmPriceZoneCsvFile;
     private File rpmStoreZoneCsvFile;
     private File rpmPromotionCsvFile;
@@ -58,7 +61,7 @@ public class ControllerWithTempFilesBuilder {
 
         return new ImportJob(rpmPriceZoneCsvFile.getPath(), rpmStoreZoneCsvFile.getPath(),
                 rpmPromotionCsvFile.getPath(), sonettoPromotionsXMLFile.getPath(), rpmPromotionDescCSVFile.getPath(),
-                "", "", promotionCache, null);
+                "", "", "", promotionCache, productPriceCache, null);
     }
 
     private File createRpmPromotionDescCSVTempFile() throws IOException {

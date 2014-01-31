@@ -8,7 +8,7 @@ public class ExtractionUtils {
     private ExtractionUtils() {
     }
 
-    public static int getHeader(List<String> headers, String columnName) throws ColumnNotFoundException {
+    public static int getHeaderIndex(List<String> headers, String columnName) throws ColumnNotFoundException {
         int columnIndex = headers.indexOf(columnName);
         if (columnIndex == -1) {
             throw new ColumnNotFoundException(columnName + " is not found");

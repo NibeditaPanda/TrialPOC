@@ -34,9 +34,12 @@ public class StoreCollectionIntegrationTest extends ImportJobTest {
                 RPM_STORE_ZONE_TO_UPDATE_CSV_FILE_PATH,
                 RPM_PROMOTION_CSV_FILE_PATH,
                 SONETTO_PROMOTIONS_XML_FILE_PATH,
-                RPM_PROMOTION_DESC_CSV_FILE_PATH, SONETTO_PROMOTIONS_XSD_FILE_PATH,
+                RPM_PROMOTION_DESC_CSV_FILE_PATH,
+                SONETTO_PROMOTIONS_XSD_FILE_PATH,
                 testConfiguration.getSonettoShelfImageUrl(),
-                dataGridResource.getPromotionCache(), null);
+                RPM_PRICE_ZONE_PRICE_CSV_FILE_PATH,
+                dataGridResource.getPromotionCache(),
+                dataGridResource.getProductPriceCache(), null);
         importJob.processData(priceCollection, storeCollection, promotionCollection, false);
 
         DBObject store = getStore("2002");

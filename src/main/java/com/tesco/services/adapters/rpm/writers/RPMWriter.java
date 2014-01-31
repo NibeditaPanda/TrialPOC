@@ -95,7 +95,7 @@ public class RPMWriter {
         writePriceZonePricesToDataGrid();
     }
 
-    private void writePriceZonePricesToDataGrid() {
+    private void writePriceZonePricesToDataGrid() throws IOException {
         PriceDTO priceDTO;
         while((priceDTO = rpmPriceReader.getNext()) !=  null) {
             String tpnb = priceDTO.getTPNB();

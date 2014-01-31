@@ -1,6 +1,7 @@
 package com.tesco.services.resources;
 
 import com.tesco.services.Configuration;
+import com.tesco.services.adapters.core.Product;
 import com.tesco.services.dao.DBFactory;
 import com.tesco.services.repositories.DataGridResource;
 import com.tesco.services.core.Promotion;
@@ -39,7 +40,8 @@ public class ImportResource {
             DBFactory dbFactory = new DBFactory(configuration);
 
             //TODO Vyv is this a memory leak?
-            Cache<String,Promotion> promotionCache = dataGridResource.getPromotionCache();
+            Cache<String, Promotion> promotionCache = dataGridResource.getPromotionCache();
+            Cache<String, Product> productPriceCache = dataGridResource.getProductPriceCache();
 
             final ImportJob importJob = new ImportJob(configuration.getRPMPriceDataPath(), configuration.getRPMStoreDataPath(),
                     configuration.getRPMPromotionDataPath(),
@@ -47,7 +49,10 @@ public class ImportResource {
                     configuration.getRPMPromotionDescCSVUrl(),
                     configuration.getSonettoPromotionXSDDataPath(),
                     configuration.getSonettoShelfImageUrl(),
-                    promotionCache, dbFactory);
+                    configuration.getRPMPriceZoneDataPath(),
+                    promotionCache,
+                    productPriceCache,
+                    dbFactory);
 
             Thread thread = new Thread(importJob);
             thread.start();

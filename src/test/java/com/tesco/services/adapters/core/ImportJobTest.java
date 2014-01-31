@@ -59,8 +59,13 @@ public class ImportJobTest {
                 RPM_STORE_ZONE_CSV_FILE_PATH,
                 RPM_PROMOTION_CSV_FILE_PATH,
                 SONETTO_PROMOTIONS_XML_FILE_PATH,
-                RPM_PROMOTION_DESC_CSV_FILE_PATH, SONETTO_PROMOTIONS_XSD_FILE_PATH,
-                "http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/Superstore/Online/Product/pos/%s.png", dataGridResource.getPromotionCache(), dbFactory);
+                RPM_PROMOTION_DESC_CSV_FILE_PATH,
+                SONETTO_PROMOTIONS_XSD_FILE_PATH,
+                "http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/Superstore/Online/Product/pos/%s.png",
+                RPM_PRICE_ZONE_PRICE_CSV_FILE_PATH,
+                dataGridResource.getPromotionCache(),
+                dataGridResource.getProductPriceCache(),
+                dbFactory);
 
         importJob.processData(tempPriceCollection, tempStoreCollection, tempPromotionCollection, false);
     }
