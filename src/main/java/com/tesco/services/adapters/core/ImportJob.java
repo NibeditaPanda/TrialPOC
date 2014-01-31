@@ -3,10 +3,7 @@ package com.tesco.services.adapters.core;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.tesco.services.adapters.core.exceptions.ColumnNotFoundException;
-import com.tesco.services.adapters.rpm.readers.RPMPriceZoneCSVFileReader;
-import com.tesco.services.adapters.rpm.readers.RPMPromotionCSVFileReader;
-import com.tesco.services.adapters.rpm.readers.RPMPromotionDescriptionCSVFileReader;
-import com.tesco.services.adapters.rpm.readers.RPMStoreZoneCSVFileReader;
+import com.tesco.services.adapters.rpm.readers.*;
 import com.tesco.services.adapters.rpm.writers.RPMWriter;
 import com.tesco.services.adapters.sonetto.SonettoPromotionWriter;
 import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
@@ -131,8 +128,9 @@ public class ImportJob implements Runnable {
                 sonettoPromotionXMLReader,
                 promotionRepository,
                 rpmPromotionCSVFileReader,
-                rpmPromotionDescriptionCSVFileReader
-        )
+                rpmPromotionDescriptionCSVFileReader,
+                null,
+                new RPMPriceReaderImpl())
                 .write();
     }
 

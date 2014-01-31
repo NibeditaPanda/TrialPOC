@@ -1,5 +1,6 @@
 package com.tesco.services.repositories;
 
+import com.tesco.services.adapters.core.Product;
 import com.tesco.services.core.Promotion;
 import org.infinispan.Cache;
 import org.infinispan.configuration.cache.Configuration;
@@ -13,6 +14,7 @@ import java.util.Properties;
 public class DataGridResource {
 
     private static final String PROMOTIONS_CACHE = "promotions";
+    private static final String PRODUCT_PRICE_CACHE = "product-price";
 
     private DefaultCacheManager dgClient;
 
@@ -47,5 +49,9 @@ public class DataGridResource {
                 .globalJmxStatistics()
                 .allowDuplicateDomains(true)
                 .build();
+    }
+
+    public Cache<String, Product> getProductPriceCache() {
+        return dgClient.getCache(PRODUCT_PRICE_CACHE);
     }
 }

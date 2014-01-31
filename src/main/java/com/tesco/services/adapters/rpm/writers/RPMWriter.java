@@ -4,10 +4,15 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
+import com.tesco.services.adapters.core.Product;
+import com.tesco.services.adapters.core.ProductVariant;
 import com.tesco.services.adapters.core.exceptions.ColumnNotFoundException;
+import com.tesco.services.adapters.rpm.dto.PriceDTO;
 import com.tesco.services.adapters.rpm.readers.*;
 import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
 import com.tesco.services.core.Promotion;
+import com.tesco.services.core.SaleInfo;
+import com.tesco.services.repositories.ProductPriceRepository;
 import com.tesco.services.repositories.PromotionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +42,8 @@ public class RPMWriter {
     private RPMPromotionCSVFileReader rpmPromotionCSVFileReader;
 
     private RPMPromotionDescriptionCSVFileReader rpmPromotionDescriptionCSVFileReader;
+    private ProductPriceRepository productPriceRepository;
+    private RPMPriceReader rpmPriceReader;
     private SonettoPromotionXMLReader sonettoPromotionXMLReader;
 
     private PromotionRepository promotionRepository;
@@ -52,7 +59,9 @@ public class RPMWriter {
                      SonettoPromotionXMLReader sonettoPromotionXMLReader,
                      PromotionRepository promotionRepository,
                      RPMPromotionCSVFileReader rpmPromotionCSVFileReader,
-                     RPMPromotionDescriptionCSVFileReader rpmPromotionDescriptionCSVFileReader) throws IOException, ColumnNotFoundException {
+                     RPMPromotionDescriptionCSVFileReader rpmPromotionDescriptionCSVFileReader,
+                     ProductPriceRepository productPriceRepository,
+                     RPMPriceReader rpmPriceReader) throws IOException, ColumnNotFoundException {
 
         this.priceCollection = priceCollection;
         this.storeCollection = storeCollection;
@@ -63,6 +72,8 @@ public class RPMWriter {
         this.promotionRepository = promotionRepository;
         this.rpmPromotionCSVFileReader = rpmPromotionCSVFileReader;
         this.rpmPromotionDescriptionCSVFileReader = rpmPromotionDescriptionCSVFileReader;
+        this.productPriceRepository = productPriceRepository;
+        this.rpmPriceReader = rpmPriceReader;
 
         insertCount = 0;
         updateCount = 0;
@@ -79,6 +90,33 @@ public class RPMWriter {
         writePromotionsDescription();
         logger.info("Update Promotions with Shelf Talker Image...");
         updatePromotionsWithShelfTalker();
+
+        logger.info("Importing price zone prices into DataGrid");
+        writePriceZonePricesToDataGrid();
+    }
+
+    private void writePriceZonePricesToDataGrid() {
+        PriceDTO priceDTO;
+        while((priceDTO = rpmPriceReader.getNext()) !=  null) {
+            String tpnb = priceDTO.getTPNB();
+            Product product = productPriceRepository.getByTPNB(tpnb);
+
+            if (product == null) {
+                product = new Product(tpnb);
+            }
+
+            String tpnc = priceDTO.getTPNC();
+            ProductVariant productVariant = product.getProductVariantByTPNC(tpnc);
+
+            if (productVariant == null) {
+                productVariant = new ProductVariant(tpnc);
+                product.addProductVariant(productVariant);
+            }
+
+            productVariant.addSaleInfo(new SaleInfo(priceDTO.getZoneId(), priceDTO.getPrice()));
+
+            productPriceRepository.put(product);
+        }
     }
 
     private void writeToCollection(DBCollection collection, String identifierKey, RPMCSVFileReader reader) throws IOException {
