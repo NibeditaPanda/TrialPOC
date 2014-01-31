@@ -1,6 +1,8 @@
 package com.tesco.services.adapters.core;
 
 import com.mongodb.DBObject;
+import com.tesco.services.core.SaleInfo;
+import com.tesco.services.repositories.ProductPriceRepository;
 import com.tesco.services.resources.TestConfiguration;
 import org.junit.Test;
 
@@ -54,6 +56,27 @@ public class PriceCollectionIntegrationTest extends ImportJobTest {
 
         assertThat(prices.get(PRICE)).isEqualTo("20.33");
         assertThat(prices.get(PROMO_PRICE)).isEqualTo("12.33");
+    }
+
+    @Test
+    public void shouldUpdatePriceZonePrices() {
+        String tpnb,tpnc1,tpnc2;
+        tpnb = tpnc1 = "050925811";
+        tpnc2 = "050925811-001";
+
+        ProductVariant productVariant1 = new ProductVariant(tpnc1);
+        productVariant1.addSaleInfo(new SaleInfo("5", "1.40"));
+
+        ProductVariant productVariant2 = new ProductVariant(tpnc2);
+        productVariant2.addSaleInfo(new SaleInfo("5", "1.39"));
+        productVariant2.addSaleInfo(new SaleInfo("6", "1.38"));
+
+        Product product = new Product(tpnb);
+        product.addProductVariant(productVariant1);
+        product.addProductVariant(productVariant2);
+
+        ProductPriceRepository productPriceRepository = new ProductPriceRepository(productPriceCache);
+        assertThat(productPriceRepository.getByTPNB(tpnb)).isEqualTo(product);
     }
 
 }

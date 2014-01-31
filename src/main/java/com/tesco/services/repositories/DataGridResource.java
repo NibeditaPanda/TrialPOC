@@ -52,6 +52,6 @@ public class DataGridResource {
     }
 
     public Cache<String, Product> getProductPriceCache() {
-        return dgClient.getCache(PRODUCT_PRICE_CACHE);
+        return dgClient.getCache(PRODUCT_PRICE_CACHE, true);
     }
 }

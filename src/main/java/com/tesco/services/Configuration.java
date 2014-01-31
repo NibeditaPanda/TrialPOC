@@ -34,6 +34,7 @@ public class Configuration extends com.yammer.dropwizard.config.Configuration {
     private String sonettoShelfImageUrl;
     @JsonProperty("rpm.promotion_desc.data.dump")
     private String rpmPromotionDescCSVUrl;
+    @JsonProperty("rpm.price.zone.data.dump")
     private String rpmPriceZoneDataPath;
 
 

@@ -7,6 +7,7 @@ import com.tesco.services.dao.DBFactory;
 import com.tesco.services.repositories.DataGridResource;
 import com.tesco.services.resources.TestConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
+import org.infinispan.Cache;
 import org.junit.After;
 import org.junit.Before;
 import org.xml.sax.SAXException;
@@ -28,6 +29,8 @@ public class ImportJobTest {
     protected DBCollection tempPromotionCollection;
 
     protected DataGridResource dataGridResource;
+
+    protected Cache<String,Product> productPriceCache;
 
     @Before
     public void setUp() throws IOException, ParserConfigurationException, SAXException, ConfigurationException, JAXBException, ColumnNotFoundException {
@@ -54,6 +57,7 @@ public class ImportJobTest {
         tempPromotionCollection = dbFactory.getCollection(promotionCollection + "_temp");
 
 
+        productPriceCache = dataGridResource.getProductPriceCache();
         ImportJob importJob = new ImportJob(
                 RPM_PRICE_ZONE_CSV_FILE_PATH,
                 RPM_STORE_ZONE_CSV_FILE_PATH,
@@ -64,7 +68,7 @@ public class ImportJobTest {
                 "http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/Superstore/Online/Product/pos/%s.png",
                 RPM_PRICE_ZONE_PRICE_CSV_FILE_PATH,
                 dataGridResource.getPromotionCache(),
-                dataGridResource.getProductPriceCache(),
+                productPriceCache,
                 dbFactory);
 
         importJob.processData(tempPriceCollection, tempStoreCollection, tempPromotionCollection, false);

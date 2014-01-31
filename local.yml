@@ -12,6 +12,8 @@ sonetto.shelfUrl : http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/S
 sonetto.promotions.data.dump : src/main/resources/com/tesco/services/adapters/sonetto/PromotionsDataExport.xml
 sonetto.promotions.xsd : templates/Promotions.xsd
 
+rpm.price.zone.data.dump : src/main/resources/com/tesco/services/adapters/rpm/CSVFiles/latest/PRICE_ZONE.csv
+
 hostedGraphite:
   hostname: carbon.hostedgraphite.com
   port: 2003

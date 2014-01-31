@@ -47,7 +47,7 @@ public class ImportJob implements Runnable {
     private String sonettoPromotionsXMLFilePath;
     private String sonettoShelfImageUrl;
 
-    public ImportJob(String rpmPriceZoneCsvFilePath,
+    public  ImportJob(String rpmPriceZoneCsvFilePath,
                      String rpmStoreZoneCsvFilePath,
                      String rpmPromotionCsvFilePath,
                      String sonettoPromotionsXMLFilePath,
