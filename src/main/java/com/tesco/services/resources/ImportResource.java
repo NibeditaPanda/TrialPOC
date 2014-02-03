@@ -50,9 +50,7 @@ public class ImportResource {
                     configuration.getSonettoPromotionXSDDataPath(),
                     configuration.getSonettoShelfImageUrl(),
                     configuration.getRPMPriceZoneDataPath(),
-                    promotionCache,
-                    productPriceCache,
-                    dbFactory);
+                    dbFactory, null);
 
             Thread thread = new Thread(importJob);
             thread.start();

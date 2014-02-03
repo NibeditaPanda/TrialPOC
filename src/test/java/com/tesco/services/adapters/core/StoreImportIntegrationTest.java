@@ -9,7 +9,7 @@ import static com.tesco.services.adapters.core.TestFiles.*;
 import static com.tesco.services.core.PriceKeys.*;
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class StoreCollectionIntegrationTest extends ImportJobTest {
+public class StoreImportIntegrationTest extends ImportJobTest {
 
 
     @Test
@@ -38,8 +38,7 @@ public class StoreCollectionIntegrationTest extends ImportJobTest {
                 SONETTO_PROMOTIONS_XSD_FILE_PATH,
                 testConfiguration.getSonettoShelfImageUrl(),
                 RPM_PRICE_ZONE_PRICE_CSV_FILE_PATH,
-                dataGridResource.getPromotionCache(),
-                dataGridResource.getProductPriceCache(), null);
+                null, dataGridResource);
         importJob.processData(priceCollection, storeCollection, promotionCollection, false);
 
         DBObject store = getStore("2002");

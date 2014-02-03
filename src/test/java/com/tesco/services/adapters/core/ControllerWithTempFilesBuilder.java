@@ -61,7 +61,7 @@ public class ControllerWithTempFilesBuilder {
 
         return new ImportJob(rpmPriceZoneCsvFile.getPath(), rpmStoreZoneCsvFile.getPath(),
                 rpmPromotionCsvFile.getPath(), sonettoPromotionsXMLFile.getPath(), rpmPromotionDescCSVFile.getPath(),
-                "", "", "", promotionCache, productPriceCache, null);
+                "", "", "", null, null);
     }
 
     private File createRpmPromotionDescCSVTempFile() throws IOException {

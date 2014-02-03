@@ -30,13 +30,14 @@ public class ImportJobTest {
 
     protected DataGridResource dataGridResource;
 
-    protected Cache<String,Product> productPriceCache;
 
     @Before
     public void setUp() throws IOException, ParserConfigurationException, SAXException, ConfigurationException, JAXBException, ColumnNotFoundException {
         System.out.println("ImportJobTest setup");
         TestConfiguration configuration = new TestConfiguration();
         dataGridResource = new DataGridResource(configuration);
+        dataGridResource.getProductPriceCache();
+        dataGridResource.getPromotionCache();
 
         DBFactory dbFactory = new DBFactory(configuration);
 
@@ -56,8 +57,6 @@ public class ImportJobTest {
         dbFactory.getCollection(promotionCollection + "_temp").drop();
         tempPromotionCollection = dbFactory.getCollection(promotionCollection + "_temp");
 
-
-        productPriceCache = dataGridResource.getProductPriceCache();
         ImportJob importJob = new ImportJob(
                 RPM_PRICE_ZONE_CSV_FILE_PATH,
                 RPM_STORE_ZONE_CSV_FILE_PATH,
@@ -67,9 +66,7 @@ public class ImportJobTest {
                 SONETTO_PROMOTIONS_XSD_FILE_PATH,
                 "http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/Superstore/Online/Product/pos/%s.png",
                 RPM_PRICE_ZONE_PRICE_CSV_FILE_PATH,
-                dataGridResource.getPromotionCache(),
-                dataGridResource.getProductPriceCache(),
-                dbFactory);
+                dbFactory, dataGridResource);
 
         importJob.processData(tempPriceCollection, tempStoreCollection, tempPromotionCollection, false);
     }

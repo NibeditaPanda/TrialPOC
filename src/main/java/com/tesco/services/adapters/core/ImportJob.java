@@ -9,6 +9,7 @@ import com.tesco.services.adapters.sonetto.SonettoPromotionWriter;
 import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
 import com.tesco.services.dao.DBFactory;
 import com.tesco.services.core.Promotion;
+import com.tesco.services.repositories.DataGridResource;
 import com.tesco.services.repositories.ProductPriceRepository;
 import com.tesco.services.repositories.UUIDGenerator;
 import com.tesco.services.repositories.PromotionRepository;
@@ -41,22 +42,20 @@ public class ImportJob implements Runnable {
     private String rpmPromotionDescCSVUrl;
     private String sonettoPromotionXSDDataPath;
     private String rpmPriceZoneDataPath;
-    private Cache<String, Promotion> promotionCache;
-    private Cache<String, Product> productPriceCache;
     private com.tesco.services.dao.DBFactory dbFactory;
+    private DataGridResource dataGridResource;
     private String sonettoPromotionsXMLFilePath;
     private String sonettoShelfImageUrl;
 
     public  ImportJob(String rpmPriceZoneCsvFilePath,
-                     String rpmStoreZoneCsvFilePath,
-                     String rpmPromotionCsvFilePath,
-                     String sonettoPromotionsXMLFilePath,
-                     String rpmPromotionDescCSVUrl,
-                     String sonettoPromotionXSDDataPath,
-                     String sonettoShelfImageUrl,
-                     String rpmPriceZoneDataPath,
-                     Cache<String, Promotion> promotionCache,
-                     Cache<String, Product> productPriceCache, DBFactory dbFactory) {
+                      String rpmStoreZoneCsvFilePath,
+                      String rpmPromotionCsvFilePath,
+                      String sonettoPromotionsXMLFilePath,
+                      String rpmPromotionDescCSVUrl,
+                      String sonettoPromotionXSDDataPath,
+                      String sonettoShelfImageUrl,
+                      String rpmPriceZoneDataPath,
+                      DBFactory dbFactory, DataGridResource dataGridResource) {
         this.rpmPriceZoneCsvFilePath = rpmPriceZoneCsvFilePath;
         this.rpmStoreZoneCsvFilePath = rpmStoreZoneCsvFilePath;
         this.rpmPromotionCsvFilePath = rpmPromotionCsvFilePath;
@@ -65,9 +64,8 @@ public class ImportJob implements Runnable {
         this.sonettoPromotionXSDDataPath = sonettoPromotionXSDDataPath;
         this.sonettoShelfImageUrl = sonettoShelfImageUrl;
         this.rpmPriceZoneDataPath = rpmPriceZoneDataPath;
-        this.promotionCache = promotionCache;
-        this.productPriceCache = productPriceCache;
         this.dbFactory = dbFactory;
+        this.dataGridResource = dataGridResource;
     }
 
     @Override
@@ -98,6 +96,9 @@ public class ImportJob implements Runnable {
             logger.info("Renaming Promotion collection....");
             tempPromotionCollection.rename(PROMOTION_COLLECTION, true);
 
+            logger.info("Swapping Price and Promotion Caches...");
+            dataGridResource.replaceCurrentWithRefresh();
+
             logger.info("Successfully imported data for " + new Date());
 
         } catch (Exception exception) {
@@ -124,7 +125,8 @@ public class ImportJob implements Runnable {
         SonettoPromotionXMLReader sonettoPromotionXMLReader = new SonettoPromotionXMLReader(new SonettoPromotionWriter(promotionCollection), sonettoShelfImageUrl, sonettoPromotionXSDDataPath);
 
         UUIDGenerator uuidGenerator = new UUIDGenerator();
-        PromotionRepository promotionRepository = new PromotionRepository(uuidGenerator, promotionCache);
+        PromotionRepository promotionRepository = new PromotionRepository(uuidGenerator, dataGridResource.getPromotionRefreshCache());
+        ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceRefreshCache());
 
         RPMPriceReaderImpl rpmPriceReader = new RPMPriceReaderImpl(rpmPriceZoneDataPath);
         new RPMWriter(priceCollection,
@@ -136,7 +138,7 @@ public class ImportJob implements Runnable {
                 promotionRepository,
                 rpmPromotionCSVFileReader,
                 rpmPromotionDescriptionCSVFileReader,
-                new ProductPriceRepository(productPriceCache),
+                productPriceRepository,
                 rpmPriceReader)
                 .write();
     }

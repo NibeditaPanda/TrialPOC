@@ -13,7 +13,7 @@ import static com.tesco.services.core.PriceKeys.PRICE;
 import static com.tesco.services.core.PriceKeys.PROMO_PRICE;
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class PriceCollectionIntegrationTest extends ImportJobTest {
+public class PriceImportIntegrationTest extends ImportJobTest {
 
     @Test
     public void shouldFindPriceFromOneZone() throws IOException {
@@ -47,9 +47,7 @@ public class PriceCollectionIntegrationTest extends ImportJobTest {
                 SONETTO_PROMOTIONS_XSD_FILE_PATH,
                 testConfiguration.getSonettoShelfImageUrl(),
                 RPM_PRICE_ZONE_PRICE_CSV_FILE_PATH,
-                dataGridResource.getPromotionCache(),
-                dataGridResource.getProductPriceCache(),
-                null);
+                null, dataGridResource);
         importJob.processData(tempPriceCollection, tempStoreCollection, tempPromotionCollection, false);
 
         DBObject prices = findPricesFromZone("050925811", "5");
@@ -78,7 +76,7 @@ public class PriceCollectionIntegrationTest extends ImportJobTest {
         product.addProductVariant(productVariant1);
         product.addProductVariant(productVariant2);
 
-        ProductPriceRepository productPriceRepository = new ProductPriceRepository(productPriceCache);
+        ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceCache());
         assertThat(productPriceRepository.getByTPNB(tpnb)).isEqualTo(product);
     }
 
