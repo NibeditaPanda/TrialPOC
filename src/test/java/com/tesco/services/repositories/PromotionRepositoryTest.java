@@ -1,6 +1,7 @@
 package com.tesco.services.repositories;
 
 import com.tesco.services.core.Promotion;
+import com.tesco.services.resources.TestConfiguration;
 import org.infinispan.Cache;
 import org.junit.After;
 import org.junit.Before;
@@ -22,7 +23,7 @@ public class PromotionRepositoryTest {
 
     @Before
     public void setUp() throws Exception {
-        dataGridResource = new DataGridResource();
+        dataGridResource = new DataGridResource(new TestConfiguration());
         promotionCache = dataGridResource.getPromotionCache();
         promotionCache.clear();
 

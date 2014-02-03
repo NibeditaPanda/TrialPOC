@@ -58,6 +58,9 @@ public class PriceCollectionIntegrationTest extends ImportJobTest {
         assertThat(prices.get(PROMO_PRICE)).isEqualTo("12.33");
     }
 
+    // =========
+    // DataGrid
+    // =========
     @Test
     public void shouldUpdatePriceZonePrices() {
         String tpnb,tpnc1,tpnc2;

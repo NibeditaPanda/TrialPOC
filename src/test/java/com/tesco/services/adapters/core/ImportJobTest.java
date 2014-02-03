@@ -36,7 +36,7 @@ public class ImportJobTest {
     public void setUp() throws IOException, ParserConfigurationException, SAXException, ConfigurationException, JAXBException, ColumnNotFoundException {
         System.out.println("ImportJobTest setup");
         TestConfiguration configuration = new TestConfiguration();
-        dataGridResource = new DataGridResource();
+        dataGridResource = new DataGridResource(configuration);
 
         DBFactory dbFactory = new DBFactory(configuration);
 
@@ -68,7 +68,7 @@ public class ImportJobTest {
                 "http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/Superstore/Online/Product/pos/%s.png",
                 RPM_PRICE_ZONE_PRICE_CSV_FILE_PATH,
                 dataGridResource.getPromotionCache(),
-                productPriceCache,
+                dataGridResource.getProductPriceCache(),
                 dbFactory);
 
         importJob.processData(tempPriceCollection, tempStoreCollection, tempPromotionCollection, false);

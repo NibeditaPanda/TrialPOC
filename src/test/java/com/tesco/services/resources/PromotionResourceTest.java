@@ -94,7 +94,7 @@ public class PromotionResourceTest extends ResourceTest {
 
         Promotion promotion3 = aPromotion().offerId("345").build();
 
-        dataGridResource = new DataGridResource();
+        dataGridResource = new DataGridResource(testConfiguration);
         dataGridResource.getPromotionCache().put(UUID.randomUUID().toString(), promotion);
         dataGridResource.getPromotionCache().put(UUID.randomUUID().toString(), promotion1);
         dataGridResource.getPromotionCache().put(UUID.randomUUID().toString(), promotion2);

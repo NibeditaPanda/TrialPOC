@@ -83,7 +83,7 @@ public class ImportJob implements Runnable {
         return String.format("%s%s", baseCollectionName, new java.text.SimpleDateFormat("yyyyMMdd").format(new java.util.Date()));
     }
 
-    public void processData(DBCollection tempPriceCollection, DBCollection tempStoreCollection, DBCollection tempPromotionCollection, boolean deleteFilesOnFailure) {
+    void processData(DBCollection tempPriceCollection, DBCollection tempStoreCollection, DBCollection tempPromotionCollection, boolean deleteFilesOnFailure) {
         try {
             logger.info("Firing up...");
 

@@ -44,7 +44,7 @@ public class PriceService extends Service<Configuration> {
 
     @Override
     public void run(Configuration configuration, Environment environment) throws Exception {
-        MutablePicoContainer container = configureDependencies();
+        MutablePicoContainer container = configureDependencies(configuration);
 
         environment.addResource(new PriceResource(new PriceDAO(configuration)));
         environment.addResource(new PromotionResource(container.getComponent(PromotionRepository.class)));
@@ -60,9 +60,9 @@ public class PriceService extends Service<Configuration> {
         configureSwagger(environment, configuration);
     }
 
-    private MutablePicoContainer configureDependencies() {
+    private MutablePicoContainer configureDependencies(Configuration configuration) {
         MutablePicoContainer container = new DefaultPicoContainer();
-        container.addComponent(new DataGridResource());
+        container.addComponent(new DataGridResource(configuration));
         container.addComponent(new UUIDGenerator());
         container.addComponent(new PromotionRepository(container.getComponent(UUIDGenerator.class),
                 container.getComponent(DataGridResource.class).getPromotionCache()));

@@ -1,6 +1,7 @@
 package com.tesco.services.repositories;
 
 import com.tesco.services.adapters.core.Product;
+import com.tesco.services.resources.TestConfiguration;
 import org.infinispan.Cache;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +14,7 @@ public class ProductPriceRepositoryTest {
 
     @Before
     public void setUp() throws Exception {
-        dataGridResource = new DataGridResource();
+        dataGridResource = new DataGridResource(new TestConfiguration());
         productPriceCache = dataGridResource.getProductPriceCache();
         productPriceCache.clear();
     }
