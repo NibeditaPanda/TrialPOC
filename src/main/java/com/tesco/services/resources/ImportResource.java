@@ -50,7 +50,7 @@ public class ImportResource {
                     configuration.getSonettoPromotionXSDDataPath(),
                     configuration.getSonettoShelfImageUrl(),
                     configuration.getRPMPriceZoneDataPath(),
-                    dbFactory, null);
+                    dbFactory, dataGridResource);
 
             Thread thread = new Thread(importJob);
             thread.start();
