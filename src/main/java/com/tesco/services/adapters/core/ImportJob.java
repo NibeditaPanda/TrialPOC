@@ -122,7 +122,7 @@ public class ImportJob implements Runnable {
         UUIDGenerator uuidGenerator = new UUIDGenerator();
         PromotionRepository promotionRepository = new PromotionRepository(uuidGenerator, dataGridResource.getPromotionRefreshCache());
         ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceRefreshCache());
-        StoreRepository storeRepository = new StoreRepository(dataGridResource.getStoreCache());
+        StoreRepository storeRepository = new StoreRepository(dataGridResource.getStoreRefreshCache());
 
         RPMPriceReaderImpl rpmPriceReader = new RPMPriceReaderImpl(rpmPriceZoneDataPath);
 

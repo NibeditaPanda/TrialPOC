@@ -85,9 +85,14 @@ public class DataGridResource {
         return dgClient.getCache(getRefreshCacheNameFor(PRODUCT_PRICE_CACHE), true);
     }
 
+    public Cache<String,Store> getStoreRefreshCache() {
+        return dgClient.getCache(getRefreshCacheNameFor(STORE_CACHE), true);
+    }
+
     public void replaceCurrentWithRefresh() {
         swapCurrentCacheWithRefreshedCache(PRODUCT_PRICE_CACHE);
         swapCurrentCacheWithRefreshedCache(PROMOTIONS_CACHE);
+        swapCurrentCacheWithRefreshedCache(STORE_CACHE);
     }
 
     private void swapCurrentCacheWithRefreshedCache(String cache) {

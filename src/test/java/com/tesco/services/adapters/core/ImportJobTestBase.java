@@ -1,12 +1,17 @@
 package com.tesco.services.adapters.core;
 
+import com.google.common.base.Optional;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.tesco.services.adapters.core.exceptions.ColumnNotFoundException;
+import com.tesco.services.core.Product;
+import com.tesco.services.core.Promotion;
+import com.tesco.services.core.Store;
 import com.tesco.services.dao.DBFactory;
 import com.tesco.services.repositories.DataGridResource;
 import com.tesco.services.resources.TestConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
+import org.infinispan.Cache;
 import org.junit.After;
 import org.junit.Before;
 import org.xml.sax.SAXException;
@@ -26,6 +31,8 @@ public class ImportJobTestBase {
 
     protected DataGridResource dataGridResource;
     protected DBFactory dbFactory;
+    protected String oldTpnb;
+    protected String oldStoreId;
 
 
     @Before
@@ -33,8 +40,8 @@ public class ImportJobTestBase {
         System.out.println("ImportJobTestBase setup");
         TestConfiguration configuration = new TestConfiguration();
         dataGridResource = new DataGridResource(configuration);
-        dataGridResource.getProductPriceCache();
-        dataGridResource.getPromotionCache();
+
+        primeCachesToVerifyThatCachesAreReplaced();
 
         dbFactory = new DBFactory(configuration);
 
@@ -47,6 +54,7 @@ public class ImportJobTestBase {
         dbFactory.getCollection(PROMOTION_COLLECTION).drop();
         promotionCollection = dbFactory.getCollection(PROMOTION_COLLECTION);
 
+
         ImportJob importJob = new ImportJob(
                 RPM_PRICE_ZONE_CSV_FILE_PATH,
                 RPM_STORE_ZONE_CSV_FILE_PATH,
@@ -58,6 +66,19 @@ public class ImportJobTestBase {
                 RPM_PRICE_ZONE_PRICE_CSV_FILE_PATH,
                 dbFactory, dataGridResource);
         importJob.run();
+    }
+
+    private void primeCachesToVerifyThatCachesAreReplaced() {
+        Cache<String,Product> productPriceCache = dataGridResource.getProductPriceCache();
+        oldTpnb = "01212323";
+        productPriceCache.put(oldTpnb, new Product(oldTpnb));
+
+        Cache<String,Promotion> promotionCache = dataGridResource.getPromotionCache();
+
+        Cache<String,Store> storeCache = dataGridResource.getStoreCache();
+        oldStoreId = "4002";
+        storeCache.put(oldStoreId, new Store(oldStoreId, Optional.of(1), Optional.of(2), "GBP"));
+
     }
 
     @After

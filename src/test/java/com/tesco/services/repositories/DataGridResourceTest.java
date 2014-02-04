@@ -85,9 +85,23 @@ public class DataGridResourceTest {
     }
 
     @Test
+    public void shouldGetStoreRefreshCache(){
+        Cache<String, Store> storeRefreshCache = dataGridResource.getStoreRefreshCache();
+        assertThat(storeRefreshCache.isEmpty()).isTrue();
+
+        String storeId = "2002";
+        Store store = new Store(storeId, Optional.of(1), Optional.<Integer>absent(), "GBP");
+        storeRefreshCache.put(storeId, store);
+
+        assertThat(storeRefreshCache.get(storeId)).isEqualTo(store);
+
+        assertThat(dataGridResource.getStoreRefreshCache().isEmpty()).isTrue();
+    }
+
+    @Test
     public void shouldReplaceCurrentProductPriceCacheWithRefresh() throws Exception {
-        dataGridResource.getPromotionCache();
-        dataGridResource.getPromotionRefreshCache();
+        initPromotionCaches();
+        initStoreCaches();
 
         Cache<String,Product> productPriceCache = dataGridResource.getProductPriceCache();
 
@@ -105,9 +119,29 @@ public class DataGridResourceTest {
     }
 
     @Test
+    public void shouldReplaceCurrentStoreCacheWithRefresh() throws Exception {
+        initPromotionCaches();
+        initProductPriceCaches();
+
+        Cache<String, Store> storeCache = dataGridResource.getStoreCache();
+        Cache<String, Store> storeRefreshCache = dataGridResource.getStoreRefreshCache();
+
+        String storeId = "2002";
+        Store store = new Store(storeId, Optional.of(1), Optional.<Integer>absent(), "GBP");
+        storeRefreshCache.put(storeId, store);
+
+        dataGridResource.replaceCurrentWithRefresh();
+
+        assertThat(storeCache.getStatus()).isEqualTo(ComponentStatus.TERMINATED);
+
+        Cache<String, Store> newStoreCache = dataGridResource.getStoreCache();
+        assertThat(newStoreCache.get(storeId)).isSameAs(store);
+    }
+
+    @Test
     public void shouldReplaceCurrentPromotionCacheWithRefresh() throws Exception {
-        dataGridResource.getProductPriceCache();
-        dataGridResource.getProductPriceRefreshCache();
+        initProductPriceCaches();
+        initStoreCaches();
 
         Cache<String, Promotion> promotionCache = dataGridResource.getPromotionCache();
 
@@ -122,5 +156,20 @@ public class DataGridResourceTest {
 
         Cache<String, Promotion> newPromotionCache = dataGridResource.getPromotionCache();
         assertThat(newPromotionCache.get(key)).isSameAs(promotion);
+    }
+
+    private void initPromotionCaches() {
+        dataGridResource.getPromotionCache();
+        dataGridResource.getPromotionRefreshCache();
+    }
+
+    private void initStoreCaches() {
+        dataGridResource.getStoreCache();
+        dataGridResource.getStoreRefreshCache();
+    }
+
+    private void initProductPriceCaches() {
+        dataGridResource.getProductPriceCache();
+        dataGridResource.getProductPriceRefreshCache();
     }
 }

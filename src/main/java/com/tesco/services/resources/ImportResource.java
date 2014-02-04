@@ -40,8 +40,7 @@ public class ImportResource {
             DBFactory dbFactory = new DBFactory(configuration);
 
             //TODO Vyv is this a memory leak?
-            Cache<String, Promotion> promotionCache = dataGridResource.getPromotionCache();
-            Cache<String, Product> productPriceCache = dataGridResource.getProductPriceCache();
+            initializeCaches();
 
             final ImportJob importJob = new ImportJob(configuration.getRPMPriceDataPath(), configuration.getRPMStoreDataPath(),
                     configuration.getRPMPromotionDataPath(),
@@ -59,5 +58,11 @@ public class ImportResource {
         }
 
         return ok("{\"message\":\"Import Started.\"}").build();
+    }
+
+    private void initializeCaches() {
+        dataGridResource.getPromotionCache();
+        dataGridResource.getProductPriceCache();
+        dataGridResource.getStoreCache();
     }
 }

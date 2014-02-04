@@ -1,6 +1,9 @@
 package com.tesco.services.adapters.core;
 
+import com.google.common.base.Optional;
 import com.mongodb.DBObject;
+import com.tesco.services.core.Store;
+import com.tesco.services.repositories.StoreRepository;
 import com.tesco.services.resources.TestConfiguration;
 import org.junit.Test;
 
@@ -49,6 +52,16 @@ public class StoreImportIntegrationTestBase extends ImportJobTestBase {
         assertThat(store.get(PRICE_ZONE_ID)).isEqualTo("1");
         assertThat(store.get(PROMOTION_ZONE_ID)).isEqualTo("7");
         assertThat(store.get(STORE_ID)).isEqualTo("2002");
+    }
+
+    @Test
+    public void shouldImportStoreZones(){
+        String storeId = "2002";
+        Store store = new Store(storeId, Optional.of(1), Optional.of(5), "GBP");
+
+        StoreRepository storeRepository = new StoreRepository(dataGridResource.getStoreCache());
+        assertThat(storeRepository.getByStoreId(storeId)).isEqualTo(store);
+        assertThat(storeRepository.getByStoreId(oldStoreId)).isNull();
     }
 
     private DBObject getStore(String storeId) {

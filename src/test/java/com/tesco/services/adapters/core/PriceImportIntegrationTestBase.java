@@ -80,6 +80,7 @@ public class PriceImportIntegrationTestBase extends ImportJobTestBase {
 
         ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceCache());
         assertThat(productPriceRepository.getByTPNB(tpnb)).isEqualTo(product);
+        assertThat(productPriceRepository.getByTPNB(oldTpnb)).isNull();
     }
 
 }
