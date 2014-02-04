@@ -40,4 +40,8 @@ public class SaleInfo {
     public int getZoneId() {
         return zoneId;
     }
+
+    public String getPrice() {
+        return price;
+    }
 }

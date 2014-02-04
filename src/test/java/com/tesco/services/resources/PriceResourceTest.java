@@ -6,9 +6,14 @@ import com.mongodb.util.JSON;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.tesco.services.Configuration;
+import com.tesco.services.core.Product;
+import com.tesco.services.core.ProductVariant;
+import com.tesco.services.core.SaleInfo;
 import com.tesco.services.dao.PriceDAO;
 import com.tesco.services.dao.DBFactory;
 import com.tesco.services.exceptions.ItemNotFoundException;
+import com.tesco.services.repositories.DataGridResource;
+import com.tesco.services.repositories.ProductPriceRepository;
 import com.tesco.services.resources.fixtures.TestProductPriceDBObject;
 import com.tesco.services.resources.fixtures.TestPromotionDBObject;
 import com.tesco.services.resources.fixtures.TestStoreDBObject;
@@ -18,7 +23,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -28,11 +36,13 @@ public class PriceResourceTest extends ResourceTest {
     private PriceDAO priceDAO;
     private static DBCollection priceCollection;
     private static DBCollection storeCollection;
+    private DataGridResource dataGridResource;
 
     @Override
     protected void setUpResources() throws Exception {
         priceDAO = new PriceDAO(testConfiguration);
-        PriceResource priceResource = new PriceResource(priceDAO);
+        dataGridResource = new DataGridResource(testConfiguration);
+        PriceResource priceResource = new PriceResource(priceDAO, dataGridResource);
         addResource(priceResource);
     }
 
@@ -283,11 +293,66 @@ public class PriceResourceTest extends ResourceTest {
     public void shouldReturn400ResponseWhenAppendingInvalidPath() throws IOException, ItemNotFoundException {
         priceCollection.insert(new TestProductPriceDBObject("randomItem").withPrice("3.00").withPromotionPrice("2.33").inZone("5").build());
 
-        WebResource resource = client().resource("/price/randomItem/blah");
+        WebResource resource = client().resource("/price/B/randomItem/blahblah");
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(400);
         assertThat(response.getEntity(String.class)).contains("Invalid request");
+    }
+
+    // DataGrid tests
+    // ==============
+    @Test
+    public void shouldReturnNationalPriceForMultipleItemsWhenStoreIdIsNotSpecified() throws IOException, ItemNotFoundException {
+        ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceCache());
+        String tpnb = "050925811";
+        String tpnc1 = "266072275";
+        String tpnc2 = "266072276";
+        Product product = createProductWithVariants(tpnb, tpnc1, tpnc2);
+        productPriceRepository.put(product);
+
+        WebResource resource = client().resource(String.format("/price/B/%s", tpnb));
+
+        ClientResponse response = resource.get(ClientResponse.class);
+        assertThat(response.getStatus()).isEqualTo(200);
+        Map actualProductPriceInfo = resource.get(Map.class);
+        assertThat(actualProductPriceInfo).isEqualTo(expectedProductPriceInfo(tpnb, tpnc1, tpnc2));
+    }
+
+    private Product createProductWithVariants(String tpnb, String tpnc1, String tpnc2) {
+
+        ProductVariant productVariant1 = new ProductVariant(tpnc1);
+        productVariant1.addSaleInfo(new SaleInfo(1, "1.40"));
+
+        ProductVariant productVariant2 = new ProductVariant(tpnc2);
+        productVariant2.addSaleInfo(new SaleInfo(1, "1.39"));
+        productVariant2.addSaleInfo(new SaleInfo(6, "1.38"));
+
+        Product product = new Product(tpnb);
+        product.addProductVariant(productVariant1);
+        product.addProductVariant(productVariant2);
+
+        return product;
+    }
+
+    private Map<String, Object> expectedProductPriceInfo(String tpnb, String tpnc1, String tpnc2) {
+        Map<String, String> variantInfo1 = new LinkedHashMap<>();
+        variantInfo1.put("tpnc", tpnc1);
+        variantInfo1.put("price", "1.40");
+
+        Map<String, String> variantInfo2 = new LinkedHashMap<>();
+        variantInfo2.put("tpnc", tpnc2);
+        variantInfo2.put("price", "1.39");
+
+        ArrayList<Map<String, String>> variants = new ArrayList<>();
+        variants.add(variantInfo1);
+        variants.add(variantInfo2);
+
+        Map<String, Object> productPriceMap = new LinkedHashMap<>();
+        productPriceMap.put("tpnb", tpnb);
+        productPriceMap.put("variants", variants);
+
+        return productPriceMap;
     }
 
 }

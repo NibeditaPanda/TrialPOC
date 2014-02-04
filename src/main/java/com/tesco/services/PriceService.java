@@ -46,7 +46,7 @@ public class PriceService extends Service<Configuration> {
     public void run(Configuration configuration, Environment environment) throws Exception {
         MutablePicoContainer container = configureDependencies(configuration);
 
-        environment.addResource(new PriceResource(new PriceDAO(configuration)));
+        environment.addResource(new PriceResource(new PriceDAO(configuration), container.getComponent(DataGridResource.class)));
         environment.addResource(new PromotionResource(container.getComponent(PromotionRepository.class)));
         environment.addResource(new VersionResource());
         environment.addResource(new ImportResource(configuration, container.getComponent(DataGridResource.class)));

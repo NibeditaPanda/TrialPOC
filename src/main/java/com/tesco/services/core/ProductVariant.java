@@ -3,7 +3,7 @@ package com.tesco.services.core;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ProductVariant {
+public class ProductVariant implements PriceVisitable {
     private String tpnc;
     private Map<Integer, SaleInfo> zoneIdToSaleInfo = new HashMap<>();
 
@@ -45,5 +45,14 @@ public class ProductVariant {
 
     public String getTPNC() {
         return tpnc;
+    }
+
+    @Override
+    public void accept(ProductPriceVisitor visitor) {
+        visitor.visit(this);
+    }
+
+    public SaleInfo getSaleInfo(int zoneId) {
+        return zoneIdToSaleInfo.get(zoneId);
     }
 }

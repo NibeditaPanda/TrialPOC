@@ -1,8 +1,12 @@
 package com.tesco.services.resources;
 
 import com.mongodb.DBObject;
+import com.tesco.services.core.Product;
+import com.tesco.services.core.ProductPriceBuilder;
 import com.tesco.services.dao.PriceDAO;
 import com.tesco.services.exceptions.ItemNotFoundException;
+import com.tesco.services.repositories.DataGridResource;
+import com.tesco.services.repositories.ProductPriceRepository;
 import com.wordnik.swagger.annotations.*;
 import com.yammer.metrics.annotation.ExceptionMetered;
 import com.yammer.metrics.annotation.Metered;
@@ -15,6 +19,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static com.tesco.services.resources.HTTPResponses.*;
 import static org.apache.commons.lang.StringUtils.isBlank;
@@ -25,10 +30,13 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 @Produces(ResourceResponse.RESPONSE_TYPE)
 public class PriceResource {
 
+    public static final int NATIONAL_PRICE_ZONE_ID = 1;
     private PriceDAO priceDAO;
+    private DataGridResource dataGridResource;
 
-    public PriceResource(PriceDAO priceDAO) {
+    public PriceResource(PriceDAO priceDAO, DataGridResource dataGridResource) {
         this.priceDAO = priceDAO;
+        this.dataGridResource = dataGridResource;
     }
 
     @GET
@@ -60,7 +68,24 @@ public class PriceResource {
     }
 
     @GET
-    @Path("/{itemNumber}/{path: .*}")
+    @Path("/{tpnIdentifier}/{tpn}")
+    public Response get(
+            @PathParam("tpnIdentifier") String tpnIdentifier,
+            @PathParam("tpn") String tpn
+    ) {
+        return ok(getProductPrice(tpn));
+    }
+
+    private Map<String, Object> getProductPrice(String tpn) {
+        ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceCache());
+        Product product = productPriceRepository.getByTPNB(tpn);
+        ProductPriceBuilder productPriceVisitor = new ProductPriceBuilder(NATIONAL_PRICE_ZONE_ID);
+        product.accept(productPriceVisitor);
+        return productPriceVisitor.getPriceInfo();
+    }
+
+    @GET
+    @Path("/{itemNumber}/{tpn}/{path: .*}")
     @ExceptionMetered(name = "getPriceItemNumber-Failures", group = "PriceServices")
     public Response getItem() {
         return badRequest();
