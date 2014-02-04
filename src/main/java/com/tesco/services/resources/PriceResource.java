@@ -7,10 +7,12 @@ import com.tesco.services.dao.PriceDAO;
 import com.tesco.services.exceptions.ItemNotFoundException;
 import com.tesco.services.repositories.DataGridResource;
 import com.tesco.services.repositories.ProductPriceRepository;
+import com.tesco.services.repositories.StoreRepository;
 import com.wordnik.swagger.annotations.*;
 import com.yammer.metrics.annotation.ExceptionMetered;
 import com.yammer.metrics.annotation.Metered;
 import com.yammer.metrics.annotation.Timed;
+import org.apache.commons.lang.StringUtils;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -19,7 +21,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import static com.tesco.services.resources.HTTPResponses.*;
 import static org.apache.commons.lang.StringUtils.isBlank;
@@ -71,17 +72,25 @@ public class PriceResource {
     @Path("/{tpnIdentifier}/{tpn}")
     public Response get(
             @PathParam("tpnIdentifier") String tpnIdentifier,
-            @PathParam("tpn") String tpn
-    ) {
-        return ok(getProductPrice(tpn));
-    }
+            @PathParam("tpn") String tpn,
+            @QueryParam("store") String storeId) {
 
-    private Map<String, Object> getProductPrice(String tpn) {
         ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceCache());
         Product product = productPriceRepository.getByTPNB(tpn);
-        ProductPriceBuilder productPriceVisitor = new ProductPriceBuilder(NATIONAL_PRICE_ZONE_ID);
+
+        ProductPriceBuilder productPriceVisitor = new ProductPriceBuilder(getZoneId(storeId));
         product.accept(productPriceVisitor);
-        return productPriceVisitor.getPriceInfo();
+
+        return ok(productPriceVisitor.getPriceInfo());
+    }
+
+    private int getZoneId(String storeId) {
+        if (StringUtils.isBlank(storeId)) {
+            return NATIONAL_PRICE_ZONE_ID;
+        }
+        StoreRepository storeRepository = new StoreRepository(dataGridResource.getStoreCache());
+
+        return storeRepository.getByStoreId(storeId).getPriceZoneId().get();
     }
 
     @GET

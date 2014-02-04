@@ -1,5 +1,6 @@
 package com.tesco.services.resources;
 
+import com.google.common.base.Optional;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
@@ -9,11 +10,13 @@ import com.tesco.services.Configuration;
 import com.tesco.services.core.Product;
 import com.tesco.services.core.ProductVariant;
 import com.tesco.services.core.SaleInfo;
+import com.tesco.services.core.Store;
 import com.tesco.services.dao.PriceDAO;
 import com.tesco.services.dao.DBFactory;
 import com.tesco.services.exceptions.ItemNotFoundException;
 import com.tesco.services.repositories.DataGridResource;
 import com.tesco.services.repositories.ProductPriceRepository;
+import com.tesco.services.repositories.StoreRepository;
 import com.tesco.services.resources.fixtures.TestProductPriceDBObject;
 import com.tesco.services.resources.fixtures.TestPromotionDBObject;
 import com.tesco.services.resources.fixtures.TestStoreDBObject;
@@ -319,10 +322,45 @@ public class PriceResourceTest extends ResourceTest {
         assertThat(actualProductPriceInfo).isEqualTo(expectedProductPriceInfo(tpnb, tpnc1, tpnc2));
     }
 
+    @Test
+    public void shouldReturnBasePriceForWhenStoreIdIsSpecified() throws IOException, ItemNotFoundException {
+        ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceCache());
+        StoreRepository storeRepository = new StoreRepository(dataGridResource.getStoreCache());
+
+        String tpnb = "050925811";
+        String tpnc1 = "266072275";
+        String tpnc2 = "266072276";
+        Product product = createProductWithVariants(tpnb, tpnc1, tpnc2);
+        productPriceRepository.put(product);
+
+        String storeId = "2002";
+        storeRepository.put(new Store(storeId, Optional.of(6), Optional.<Integer>absent(), "GBP"));
+
+        WebResource resource = client().resource(String.format("/price/B/%s?store=%s", tpnb, storeId));
+
+        ClientResponse response = resource.get(ClientResponse.class);
+        assertThat(response.getStatus()).isEqualTo(200);
+        Map actualProductPriceInfo = resource.get(Map.class);
+
+        Map<String, String> variantInfo = new LinkedHashMap<>();
+        variantInfo.put("tpnc", tpnc2);
+        variantInfo.put("price", "1.38");
+
+        ArrayList<Map<String, String>> variants = new ArrayList<>();
+        variants.add(variantInfo);
+
+        Map<String, Object> productPriceMap = new LinkedHashMap<>();
+        productPriceMap.put("tpnb", tpnb);
+        productPriceMap.put("variants", variants);
+
+        assertThat(actualProductPriceInfo).isEqualTo(productPriceMap);
+    }
+
     private Product createProductWithVariants(String tpnb, String tpnc1, String tpnc2) {
 
         ProductVariant productVariant1 = new ProductVariant(tpnc1);
         productVariant1.addSaleInfo(new SaleInfo(1, "1.40"));
+        productVariant1.addSaleInfo(new SaleInfo(5, "1.40"));
 
         ProductVariant productVariant2 = new ProductVariant(tpnc2);
         productVariant2.addSaleInfo(new SaleInfo(1, "1.39"));

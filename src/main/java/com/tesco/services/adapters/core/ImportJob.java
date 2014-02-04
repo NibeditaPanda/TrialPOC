@@ -29,7 +29,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class ImportJob implements Runnable {
 
-    private static final Logger logger = getLogger("Price_Controller");
+    private static final Logger logger = getLogger("Price_ImportJob");
 
     private String rpmPriceZoneCsvFilePath;
     private String rpmStoreZoneCsvFilePath;
