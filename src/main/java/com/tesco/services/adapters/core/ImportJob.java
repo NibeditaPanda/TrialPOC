@@ -122,11 +122,12 @@ public class ImportJob implements Runnable {
         UUIDGenerator uuidGenerator = new UUIDGenerator();
         PromotionRepository promotionRepository = new PromotionRepository(uuidGenerator, dataGridResource.getPromotionRefreshCache());
         ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceRefreshCache());
-        StoreRepository storeRepository = new StoreRepository();
+        StoreRepository storeRepository = new StoreRepository(dataGridResource.getStoreCache());
 
         RPMPriceReaderImpl rpmPriceReader = new RPMPriceReaderImpl(rpmPriceZoneDataPath);
 
-        RPMStoreZoneReader storeZoneReader = new RPMStoreZoneReaderImpl();
+        RPMStoreZoneReader storeZoneReader = new RPMStoreZoneReaderImpl(rpmStoreZoneCsvFilePath);
+
         new RPMWriter(priceCollection,
                 storeCollection,
                 sonettoPromotionsXMLFilePath,

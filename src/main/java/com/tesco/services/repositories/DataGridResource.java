@@ -3,6 +3,7 @@ package com.tesco.services.repositories;
 import com.tesco.services.Configuration;
 import com.tesco.services.core.Product;
 import com.tesco.services.core.Promotion;
+import com.tesco.services.core.Store;
 import org.apache.commons.lang.StringUtils;
 import org.infinispan.Cache;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
@@ -20,7 +21,7 @@ public class DataGridResource {
     private static final String PROMOTIONS_CACHE = "promotions";
     private static final String PRODUCT_PRICE_CACHE = "product-price";
     private static final Logger logger = LoggerFactory.getLogger(DataGridResource.class);
-
+    private static final String STORE_CACHE = "store";
 
     private DefaultCacheManager dgClient;
 
@@ -70,6 +71,10 @@ public class DataGridResource {
 
     public Cache<String, Product> getProductPriceCache() {
         return dgClient.getCache(getCacheNameFor(PRODUCT_PRICE_CACHE), true);
+    }
+
+    public Cache<String, Store> getStoreCache() {
+        return dgClient.getCache(getCacheNameFor(STORE_CACHE), true);
     }
 
     public Cache<String, Promotion> getPromotionRefreshCache() {

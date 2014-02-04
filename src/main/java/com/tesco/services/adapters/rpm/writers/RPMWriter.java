@@ -103,7 +103,7 @@ public class RPMWriter {
         writeStoreZones();
     }
 
-    private void writeStoreZones() {
+    private void writeStoreZones() throws IOException {
         StoreDTO storeDTO;
         while((storeDTO = storeZoneReader.getNext()) != null) {
             Store store = storeRepository.getByStoreId(storeDTO.getStoreId());

@@ -3,7 +3,7 @@ package com.tesco.services.core;
 import com.google.common.base.Optional;
 
 public class Store {
-    private String id;
+    private String storeId;
     private Optional<Integer> priceZoneId;
     private Optional<Integer> promoZoneId;
     private String currency;
@@ -24,11 +24,15 @@ public class Store {
         return promoZoneId;
     }
 
-    public Store(String id, Optional<Integer> priceZoneId, Optional<Integer> promoZoneId, String currency) {
-        this.id = id;
+    public Store(String storeId, Optional<Integer> priceZoneId, Optional<Integer> promoZoneId, String currency) {
+        this.storeId = storeId;
         this.priceZoneId = priceZoneId;
         this.promoZoneId = promoZoneId;
         this.currency = currency;
+    }
+
+    public String getStoreId() {
+        return storeId;
     }
 
     @Override
@@ -39,7 +43,7 @@ public class Store {
         Store store = (Store) o;
 
         if (!currency.equals(store.currency)) return false;
-        if (!id.equals(store.id)) return false;
+        if (!storeId.equals(store.storeId)) return false;
         if (!priceZoneId.equals(store.priceZoneId)) return false;
         if (!promoZoneId.equals(store.promoZoneId)) return false;
 
@@ -48,7 +52,7 @@ public class Store {
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
+        int result = storeId.hashCode();
         result = 31 * result + priceZoneId.hashCode();
         result = 31 * result + promoZoneId.hashCode();
         result = 31 * result + currency.hashCode();
@@ -58,7 +62,7 @@ public class Store {
     @Override
     public String toString() {
         return "Store{" +
-                "id='" + id + '\'' +
+                "storeId='" + storeId + '\'' +
                 ", priceZoneId=" + priceZoneId +
                 ", promoZoneId=" + promoZoneId +
                 ", currency='" + currency + '\'' +

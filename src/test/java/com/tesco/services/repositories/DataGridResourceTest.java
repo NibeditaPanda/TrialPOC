@@ -1,8 +1,10 @@
 package com.tesco.services.repositories;
 
+import com.google.common.base.Optional;
 import com.tesco.services.Configuration;
 import com.tesco.services.core.Product;
 import com.tesco.services.core.Promotion;
+import com.tesco.services.core.Store;
 import org.infinispan.Cache;
 import org.infinispan.lifecycle.ComponentStatus;
 import org.junit.Before;
@@ -40,6 +42,17 @@ public class DataGridResourceTest {
         dataGridResource.getProductPriceCache().put(tpnb, product);
 
         assertThat(dataGridResource.getProductPriceCache().get(tpnb)).isEqualTo(product);
+    }
+
+    @Test
+    public void shouldGetSameStoreCache() {
+        assertThat(dataGridResource.getStoreCache().isEmpty()).isTrue();
+
+        String storeId = "2002";
+        Store store = new Store(storeId, Optional.of(1), Optional.<Integer>absent(), "GBP");
+        dataGridResource.getStoreCache().put(storeId, store);
+
+        assertThat(dataGridResource.getStoreCache().get(storeId)).isEqualTo(store);
     }
 
     @Test
