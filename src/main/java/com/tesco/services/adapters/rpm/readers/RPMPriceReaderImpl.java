@@ -41,7 +41,7 @@ public class RPMPriceReaderImpl implements RPMPriceReader {
             return null;
         }
 
-        PriceDTO priceDTO = new PriceDTO(nextLine[itemNumberIndex], nextLine[zoneIdIndex], nextLine[priceIndex]);
+        PriceDTO priceDTO = new PriceDTO(nextLine[itemNumberIndex], Integer.parseInt(nextLine[zoneIdIndex]), nextLine[priceIndex]);
 
         return priceDTO;
     }

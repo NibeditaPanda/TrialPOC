@@ -1,6 +1,8 @@
 package com.tesco.services.adapters.core;
 
 import com.mongodb.DBObject;
+import com.tesco.services.core.Product;
+import com.tesco.services.core.ProductVariant;
 import com.tesco.services.core.SaleInfo;
 import com.tesco.services.repositories.ProductPriceRepository;
 import com.tesco.services.resources.TestConfiguration;
@@ -13,7 +15,7 @@ import static com.tesco.services.core.PriceKeys.PRICE;
 import static com.tesco.services.core.PriceKeys.PROMO_PRICE;
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class PriceImportIntegrationTest extends ImportJobTest {
+public class PriceImportIntegrationTestBase extends ImportJobTestBase {
 
     @Test
     public void shouldFindPriceFromOneZone() throws IOException {
@@ -47,8 +49,8 @@ public class PriceImportIntegrationTest extends ImportJobTest {
                 SONETTO_PROMOTIONS_XSD_FILE_PATH,
                 testConfiguration.getSonettoShelfImageUrl(),
                 RPM_PRICE_ZONE_PRICE_CSV_FILE_PATH,
-                null, dataGridResource);
-        importJob.processData(tempPriceCollection, tempStoreCollection, tempPromotionCollection, false);
+                dbFactory, dataGridResource);
+        importJob.run();
 
         DBObject prices = findPricesFromZone("050925811", "5");
 
@@ -66,11 +68,11 @@ public class PriceImportIntegrationTest extends ImportJobTest {
         tpnc2 = "050925811-001";
 
         ProductVariant productVariant1 = new ProductVariant(tpnc1);
-        productVariant1.addSaleInfo(new SaleInfo("5", "1.40"));
+        productVariant1.addSaleInfo(new SaleInfo(5, "1.40"));
 
         ProductVariant productVariant2 = new ProductVariant(tpnc2);
-        productVariant2.addSaleInfo(new SaleInfo("5", "1.39"));
-        productVariant2.addSaleInfo(new SaleInfo("6", "1.38"));
+        productVariant2.addSaleInfo(new SaleInfo(5, "1.39"));
+        productVariant2.addSaleInfo(new SaleInfo(6, "1.38"));
 
         Product product = new Product(tpnb);
         product.addProductVariant(productVariant1);

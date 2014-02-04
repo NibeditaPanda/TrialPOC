@@ -8,13 +8,8 @@ import com.tesco.services.adapters.rpm.writers.RPMWriter;
 import com.tesco.services.adapters.sonetto.SonettoPromotionWriter;
 import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
 import com.tesco.services.dao.DBFactory;
-import com.tesco.services.core.Promotion;
-import com.tesco.services.repositories.DataGridResource;
-import com.tesco.services.repositories.ProductPriceRepository;
-import com.tesco.services.repositories.UUIDGenerator;
-import com.tesco.services.repositories.PromotionRepository;
+import com.tesco.services.repositories.*;
 import org.apache.commons.configuration.ConfigurationException;
-import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.xml.sax.SAXException;
 
@@ -127,8 +122,11 @@ public class ImportJob implements Runnable {
         UUIDGenerator uuidGenerator = new UUIDGenerator();
         PromotionRepository promotionRepository = new PromotionRepository(uuidGenerator, dataGridResource.getPromotionRefreshCache());
         ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceRefreshCache());
+        StoreRepository storeRepository = new StoreRepository();
 
         RPMPriceReaderImpl rpmPriceReader = new RPMPriceReaderImpl(rpmPriceZoneDataPath);
+
+        RPMStoreZoneReader storeZoneReader = new RPMStoreZoneReaderImpl();
         new RPMWriter(priceCollection,
                 storeCollection,
                 sonettoPromotionsXMLFilePath,
@@ -139,7 +137,9 @@ public class ImportJob implements Runnable {
                 rpmPromotionCSVFileReader,
                 rpmPromotionDescriptionCSVFileReader,
                 productPriceRepository,
-                rpmPriceReader)
+                storeRepository,
+                rpmPriceReader,
+                storeZoneReader)
                 .write();
     }
 

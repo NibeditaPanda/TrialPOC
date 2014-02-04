@@ -14,7 +14,7 @@ public class RPMPriceReaderImplTest {
     public void shouldGetPrice() throws Exception {
         RPMPriceReaderImpl rpmPriceReader = new RPMPriceReaderImpl("./src/test/java/com/tesco/services/adapters/rpm/readers/fixtures/single_price_zone.csv");
 
-        assertThat(rpmPriceReader.getNext()).isEqualTo(new PriceDTO("122223", "1", "1.5"));
+        assertThat(rpmPriceReader.getNext()).isEqualTo(new PriceDTO("122223", 1, "1.5"));
         assertThat(rpmPriceReader.getNext()).isNull();
     }
 
@@ -22,8 +22,8 @@ public class RPMPriceReaderImplTest {
     public void shouldGetMultiplePrices() throws Exception {
         RPMPriceReaderImpl rpmPriceReader = new RPMPriceReaderImpl("./src/test/java/com/tesco/services/adapters/rpm/readers/fixtures/multiple_price_zone.csv");
 
-        assertThat(rpmPriceReader.getNext()).isEqualTo(new PriceDTO("122223", "1", "1.5"));
-        assertThat(rpmPriceReader.getNext()).isEqualTo(new PriceDTO("122223-001", "1", "1.7"));
+        assertThat(rpmPriceReader.getNext()).isEqualTo(new PriceDTO("122223", 1, "1.5"));
+        assertThat(rpmPriceReader.getNext()).isEqualTo(new PriceDTO("122223-001", 1, "1.7"));
         assertThat(rpmPriceReader.getNext()).isNull();
     }
 

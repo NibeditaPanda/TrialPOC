@@ -56,7 +56,9 @@ public class PriceService extends Service<Configuration> {
         /**
          *   @Toy commented out Graphite because tesco boxes don't have access to the Internet at the moment
          */
-//      configureMetrics(configuration, environment);
+//        configureMetrics(configuration);
+
+        environment.addHealthCheck(new ServiceHealthCheck(configuration));
         configureSwagger(environment, configuration);
     }
 
@@ -69,8 +71,7 @@ public class PriceService extends Service<Configuration> {
         return container;
     }
 
-    private void configureMetrics(Configuration configuration, Environment environment) {
-        environment.addHealthCheck(new ServiceHealthCheck(configuration));
+    private void configureMetrics(Configuration configuration) {
         ResourceMetricsListener metricsListener = new ResourceMetricsListener();
         Metrics.defaultRegistry().addListener(metricsListener);
         HostedGraphiteConfiguration hostedGraphiteConfig = configuration.getHostedGraphiteConfig();

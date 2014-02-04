@@ -1,21 +1,16 @@
 package com.tesco.services.adapters.rpm.writers;
 
+import com.google.common.base.Optional;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.WriteResult;
-import com.tesco.services.adapters.core.Product;
-import com.tesco.services.adapters.core.ProductVariant;
+import com.tesco.services.adapters.rpm.dto.StoreDTO;
+import com.tesco.services.core.*;
 import com.tesco.services.adapters.rpm.dto.PriceDTO;
 import com.tesco.services.adapters.rpm.readers.*;
 import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
-import com.tesco.services.core.PriceKeys;
-import com.tesco.services.core.Promotion;
-import com.tesco.services.core.SaleInfo;
-import com.tesco.services.repositories.DataGridResource;
-import com.tesco.services.repositories.ProductPriceRepository;
-import com.tesco.services.repositories.PromotionRepository;
-import com.tesco.services.repositories.UUIDGenerator;
+import com.tesco.services.repositories.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -82,6 +77,12 @@ public class RPMWriterTest {
     @Mock
     private RPMPriceReader rpmPriceReader;
 
+    @Mock
+    private StoreRepository storeRepository;
+
+    @Mock
+    private RPMStoreZoneReader storeZoneReader;
+
     @Before
     public void setUp() throws Exception {
         rpmWriter = new RPMWriter(priceCollection,
@@ -94,7 +95,9 @@ public class RPMWriterTest {
                 rpmPromotionCSVFileReader,
                 rpmPromotionDescriptionCSVFileReader,
                 productPriceRepository,
-                rpmPriceReader);
+                storeRepository,
+                rpmPriceReader,
+                storeZoneReader);
 
         when(uuidGenerator.getUUID()).thenReturn("uuid");
 
@@ -145,7 +148,7 @@ public class RPMWriterTest {
     @Test
     public void shouldInsertPriceZonePrice() throws Exception {
         ProductVariant productVariant = new ProductVariant("059428124");
-        String zoneId = "1";
+        int zoneId = 1;
         String price = "2.4";
         productVariant.addSaleInfo(new SaleInfo(zoneId, price));
 
@@ -164,8 +167,8 @@ public class RPMWriterTest {
     public void shouldInsertMultiplePriceZonePricesForAVariant() throws Exception {
         String itemNumber = "0123";
 
-        when(rpmPriceReader.getNext()).thenReturn(new PriceDTO(itemNumber, "2", "2.4"))
-                                        .thenReturn(new PriceDTO(itemNumber, "4", "4.4"))
+        when(rpmPriceReader.getNext()).thenReturn(new PriceDTO(itemNumber, 2, "2.4"))
+                                        .thenReturn(new PriceDTO(itemNumber, 4, "4.4"))
                                         .thenReturn(null);
 
         Product product = createProductWithVariant(itemNumber, itemNumber);
@@ -176,13 +179,13 @@ public class RPMWriterTest {
         
         InOrder inOrder = inOrder(productPriceRepository);
 
-        ProductVariant expectedProductVariant = createProductVariant(itemNumber, "2", "2.4");
+        ProductVariant expectedProductVariant = createProductVariant(itemNumber, 2, "2.4");
         Product expectedProduct = new Product(itemNumber);
         expectedProduct.addProductVariant(expectedProductVariant);
 
         inOrder.verify(productPriceRepository).put(expectedProduct);
 
-        expectedProductVariant.addSaleInfo(new SaleInfo("4", "4.4"));
+        expectedProductVariant.addSaleInfo(new SaleInfo(4, "4.4"));
 
         inOrder.verify(productPriceRepository).put(expectedProduct);
     }
@@ -193,8 +196,8 @@ public class RPMWriterTest {
         String itemNumber = String.format("%s-001", tpnb);
         String itemNumber2 = String.format("%s-002", tpnb);
 
-        when(rpmPriceReader.getNext()).thenReturn(new PriceDTO(itemNumber, "2", "2.4"))
-                                        .thenReturn(new PriceDTO(itemNumber2, "3", "3.0"))
+        when(rpmPriceReader.getNext()).thenReturn(new PriceDTO(itemNumber, 2, "2.4"))
+                                        .thenReturn(new PriceDTO(itemNumber2, 3, "3.0"))
                                         .thenReturn(null);
 
         Product product = createProductWithVariant(tpnb, itemNumber);
@@ -209,13 +212,41 @@ public class RPMWriterTest {
 
         inOrder.verify(productPriceRepository).put(expectedProduct);
 
-        ProductVariant expectedProductVariant2 = createProductVariant(itemNumber2, "3", "3.0");
+        ProductVariant expectedProductVariant2 = createProductVariant(itemNumber2, 3, "3.0");
         expectedProduct.addProductVariant(expectedProductVariant2);
 
         inOrder.verify(productPriceRepository).put(expectedProduct);
     }
 
-    private ProductVariant createProductVariant(String tpnc, String zoneId, String price) {
+    @Test
+    public void shouldInsertStorePriceZones() throws Exception {
+        String firstStoreId = "2002";
+        String secondStoreId = "2003";
+
+        when(storeZoneReader.getNext()).thenReturn(new StoreDTO(firstStoreId, 1, 1, "GBP")).thenReturn(new StoreDTO(secondStoreId, 2, 1, "EUR")).thenReturn(null);
+
+        this.rpmWriter.write();
+
+        InOrder inOrder = inOrder(storeRepository);
+        inOrder.verify(storeRepository).put(new Store(firstStoreId, Optional.of(1), Optional.<Integer>absent(), "GBP"));
+        inOrder.verify(storeRepository).put(new Store(secondStoreId, Optional.of(2), Optional.<Integer>absent(), "EUR"));
+    }
+
+    @Test
+    public void shouldInsertStorePriceAndPromoZones() throws Exception {
+        String storeId = "2002";
+
+        when(storeZoneReader.getNext()).thenReturn(new StoreDTO(storeId, 1, 1, "GBP")).thenReturn(new StoreDTO(storeId, 5, 2, "GBP")).thenReturn(null);
+        when(storeRepository.getByStoreId(storeId)).thenReturn(null).thenReturn(new Store(storeId, Optional.of(1), Optional.<Integer>absent(), "GBP"));
+
+        this.rpmWriter.write();
+
+        InOrder inOrder = inOrder(storeRepository);
+        inOrder.verify(storeRepository).put(new Store(storeId, Optional.of(1), Optional.<Integer>absent(), "GBP"));
+        inOrder.verify(storeRepository).put(new Store(storeId, Optional.of(1), Optional.of(5), "GBP"));
+    }
+
+    private ProductVariant createProductVariant(String tpnc, int zoneId, String price) {
         ProductVariant productVariant = new ProductVariant(tpnc);
         productVariant.addSaleInfo(new SaleInfo(zoneId, price));
         return productVariant;
@@ -223,7 +254,7 @@ public class RPMWriterTest {
 
     private Product createProductWithVariant(String tpnb, String tpnc) {
         Product product = new Product(tpnb);
-        product.addProductVariant(createProductVariant(tpnc, "2", "2.4"));
+        product.addProductVariant(createProductVariant(tpnc, 2, "2.4"));
 
         return product;
     }

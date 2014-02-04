@@ -1,7 +1,7 @@
 package com.tesco.services.repositories;
 
 import com.tesco.services.Configuration;
-import com.tesco.services.adapters.core.Product;
+import com.tesco.services.core.Product;
 import com.tesco.services.core.Promotion;
 import org.infinispan.Cache;
 import org.infinispan.lifecycle.ComponentStatus;

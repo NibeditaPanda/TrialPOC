@@ -9,7 +9,7 @@ import static com.tesco.services.adapters.core.TestFiles.*;
 import static com.tesco.services.core.PriceKeys.*;
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class StoreImportIntegrationTest extends ImportJobTest {
+public class StoreImportIntegrationTestBase extends ImportJobTestBase {
 
 
     @Test
@@ -29,6 +29,7 @@ public class StoreImportIntegrationTest extends ImportJobTest {
     public void shouldImportStoreAndZoneMappingOnRefresh() throws Exception {
         TestConfiguration testConfiguration = new TestConfiguration();
 
+
         ImportJob importJob = new ImportJob(
                 RPM_PRICE_ZONE_CSV_FILE_PATH,
                 RPM_STORE_ZONE_TO_UPDATE_CSV_FILE_PATH,
@@ -38,7 +39,8 @@ public class StoreImportIntegrationTest extends ImportJobTest {
                 SONETTO_PROMOTIONS_XSD_FILE_PATH,
                 testConfiguration.getSonettoShelfImageUrl(),
                 RPM_PRICE_ZONE_PRICE_CSV_FILE_PATH,
-                null, dataGridResource);
+                dbFactory, dataGridResource);
+
         importJob.processData(priceCollection, storeCollection, promotionCollection, false);
 
         DBObject store = getStore("2002");

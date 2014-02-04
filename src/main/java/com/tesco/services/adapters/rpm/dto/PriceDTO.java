@@ -2,16 +2,16 @@ package com.tesco.services.adapters.rpm.dto;
 
 public class PriceDTO {
     private String itemNumber;
-    private String zoneId;
+    private int zoneId;
     private String price;
 
-    public PriceDTO(String itemNumber, String zoneId, String price) {
+    public PriceDTO(String itemNumber, int zoneId, String price) {
         this.itemNumber = itemNumber;
         this.zoneId = zoneId;
         this.price = price;
     }
 
-    public String getZoneId() {
+    public int getZoneId() {
         return zoneId;
     }
 
@@ -37,7 +37,7 @@ public class PriceDTO {
 
         if (!itemNumber.equals(priceDTO.itemNumber)) return false;
         if (!price.equals(priceDTO.price)) return false;
-        if (!zoneId.equals(priceDTO.zoneId)) return false;
+        if (zoneId != priceDTO.zoneId) return false;
 
         return true;
     }
@@ -45,7 +45,7 @@ public class PriceDTO {
     @Override
     public int hashCode() {
         int result = itemNumber.hashCode();
-        result = 31 * result + zoneId.hashCode();
+        result = 31 * result + zoneId;
         result = 31 * result + price.hashCode();
         return result;
     }

@@ -1,10 +1,10 @@
 package com.tesco.services.core;
 
 public class SaleInfo {
-    private String zoneId;
+    private int zoneId;
     private String price;
 
-    public SaleInfo(String zoneId, String price) {
+    public SaleInfo(int zoneId, String price) {
         this.zoneId = zoneId;
         this.price = price;
     }
@@ -17,14 +17,14 @@ public class SaleInfo {
         SaleInfo saleInfo = (SaleInfo) o;
 
         if (!price.equals(saleInfo.price)) return false;
-        if (!zoneId.equals(saleInfo.zoneId)) return false;
+        if (zoneId != saleInfo.zoneId) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = zoneId.hashCode();
+        int result = zoneId;
         result = 31 * result + price.hashCode();
         return result;
     }
@@ -37,7 +37,7 @@ public class SaleInfo {
                 '}';
     }
 
-    public String getZoneId() {
+    public int getZoneId() {
         return zoneId;
     }
 }

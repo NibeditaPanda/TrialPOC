@@ -1,4 +1,4 @@
-package com.tesco.services.adapters.core;
+package com.tesco.services.core;
 
 import java.util.HashMap;
 import java.util.Map;

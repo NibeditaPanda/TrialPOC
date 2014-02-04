@@ -27,15 +27,15 @@ public class Promotion implements Serializable {
     private String shelfTalkerImage;
 
     @JsonProperty
-    @Field(index = Index.YES, analyze = Analyze.NO, store = Store.YES)
+    @Field(index = Index.YES, analyze = Analyze.NO, store = org.hibernate.search.annotations.Store.YES)
     private String offerId;
 
     @JsonProperty
-    @Field(index = Index.YES, analyze = Analyze.NO, store = Store.YES)
+    @Field(index = Index.YES, analyze = Analyze.NO, store = org.hibernate.search.annotations.Store.YES)
     private String itemNumber;
 
     @JsonProperty
-    @Field(index = Index.YES, analyze = Analyze.NO, store = Store.YES)
+    @Field(index = Index.YES, analyze = Analyze.NO, store = org.hibernate.search.annotations.Store.YES)
     private String zoneId;
     @JsonProperty
     private String CFDescription1;

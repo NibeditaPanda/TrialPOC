@@ -1,13 +1,11 @@
-package com.tesco.services.adapters.core;
-
-import com.tesco.services.core.SaleInfo;
+package com.tesco.services.core;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class ProductVariant {
     private String tpnc;
-    private Map<String, SaleInfo> zoneIdToSaleInfo = new HashMap<>();
+    private Map<Integer, SaleInfo> zoneIdToSaleInfo = new HashMap<>();
 
     public ProductVariant(String tpnc) {
         this.tpnc = tpnc;

@@ -1,6 +1,7 @@
 package com.tesco.services.adapters.core;
 
 
+import com.tesco.services.core.Product;
 import com.tesco.services.core.Promotion;
 import org.infinispan.Cache;
 import org.mockito.Mock;
@@ -95,10 +96,6 @@ public class ControllerWithTempFilesBuilder {
         new FileWriter(sonettoPromotionsXMLFile).append(new StringBuilder().append(fileContents));
         return this;
     }
-//            new FileWriter(rpmStoreZoneCsvFile).append(new StringBuilder().append(", , , "));
-//            new FileWriter(rpmPromotionCsvFile).append(new StringBuilder().append(", , , "));
-//            new FileWriter(sonettoPromotionsXMLFile).append(new StringBuilder().append(", , , "));
-//            new FileWriter(rpmPromotionDescCSV).append(new StringBuilder().append(", , , "));
 
     public void deleteTempFiles(){
         rpmPriceZoneCsvFile.delete();
