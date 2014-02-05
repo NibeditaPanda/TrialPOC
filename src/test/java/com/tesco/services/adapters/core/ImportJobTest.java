@@ -7,6 +7,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.io.IOException;
+
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyString;
@@ -37,7 +39,6 @@ public class ImportJobTest {
         verify(tempPriceDbCollection, never()).rename(anyString());
         verify(tempStoreDbCollection, never()).rename(anyString());
         verify(tempPromotionDbCollection, never()).rename(anyString());
-
     }
 
     @Test
@@ -61,4 +62,12 @@ public class ImportJobTest {
         controllerBuilder.deleteTempFiles();
     }
 
+   @Test
+    public void shouldNotReplaceCachesInEventOfFailure() throws IOException {
+       ControllerWithTempFilesBuilder controllerBuilder = new ControllerWithTempFilesBuilder().withInvalidStoreZoneFile(",,,");
+       ImportJob importJob = controllerBuilder.build();
+       importJob.run();
+
+       verify(dataGridResource, never()).replaceCurrentWithRefresh();
+   }
 }

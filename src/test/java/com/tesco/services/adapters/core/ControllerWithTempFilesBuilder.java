@@ -3,6 +3,8 @@ package com.tesco.services.adapters.core;
 
 import com.tesco.services.core.Product;
 import com.tesco.services.core.Promotion;
+import com.tesco.services.dao.DBFactory;
+import com.tesco.services.resources.TestConfiguration;
 import org.infinispan.Cache;
 import org.mockito.Mock;
 
@@ -62,7 +64,7 @@ public class ControllerWithTempFilesBuilder {
 
         return new ImportJob(rpmPriceZoneCsvFile.getPath(), rpmStoreZoneCsvFile.getPath(),
                 rpmPromotionCsvFile.getPath(), sonettoPromotionsXMLFile.getPath(), rpmPromotionDescCSVFile.getPath(),
-                "", "", "", null, null);
+                "", "", "", new DBFactory(new TestConfiguration()), null);
     }
 
     private File createRpmPromotionDescCSVTempFile() throws IOException {
@@ -94,6 +96,12 @@ public class ControllerWithTempFilesBuilder {
     public ControllerWithTempFilesBuilder withFakeSonettoPromotionsXMLFile(String fileContents) throws IOException {
         sonettoPromotionsXMLFile = createSonettoPromotionsXMLTempFile();
         new FileWriter(sonettoPromotionsXMLFile).append(new StringBuilder().append(fileContents));
+        return this;
+    }
+
+    public ControllerWithTempFilesBuilder withInvalidStoreZoneFile(String fileContents) throws IOException {
+        rpmStoreZoneCsvFile = createRpmStoreZoneCsvTempFile();
+        new FileWriter(rpmStoreZoneCsvFile).append(new StringBuilder().append(fileContents));
         return this;
     }
 

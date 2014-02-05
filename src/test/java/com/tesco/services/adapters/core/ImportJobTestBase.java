@@ -1,17 +1,12 @@
 package com.tesco.services.adapters.core;
 
-import com.google.common.base.Optional;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.tesco.services.adapters.core.exceptions.ColumnNotFoundException;
-import com.tesco.services.core.Product;
-import com.tesco.services.core.Promotion;
-import com.tesco.services.core.Store;
 import com.tesco.services.dao.DBFactory;
 import com.tesco.services.repositories.DataGridResource;
 import com.tesco.services.resources.TestConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
-import org.infinispan.Cache;
 import org.junit.After;
 import org.junit.Before;
 import org.xml.sax.SAXException;
@@ -21,18 +16,26 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 
 import static com.mongodb.QueryBuilder.start;
-import static com.tesco.services.adapters.core.TestFiles.*;
-import static com.tesco.services.core.PriceKeys.*;
+import static com.tesco.services.adapters.core.TestFiles.RPM_PRICE_ZONE_CSV_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.RPM_PRICE_ZONE_PRICE_CSV_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.RPM_PROMOTION_CSV_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.RPM_PROMOTION_DESC_CSV_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.RPM_STORE_ZONE_CSV_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.SONETTO_PROMOTIONS_XML_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.SONETTO_PROMOTIONS_XSD_FILE_PATH;
+import static com.tesco.services.core.PriceKeys.ITEM_NUMBER;
+import static com.tesco.services.core.PriceKeys.PRICE_COLLECTION;
+import static com.tesco.services.core.PriceKeys.PROMOTION_COLLECTION;
+import static com.tesco.services.core.PriceKeys.STORE_COLLECTION;
+import static com.tesco.services.core.PriceKeys.ZONES;
 
-public class ImportJobTestBase {
+public abstract class ImportJobTestBase {
     protected DBCollection priceCollection;
     protected DBCollection storeCollection;
     protected DBCollection promotionCollection;
 
     protected DataGridResource dataGridResource;
     protected DBFactory dbFactory;
-    protected String oldTpnb;
-    protected String oldStoreId;
 
 
     @Before
@@ -41,7 +44,7 @@ public class ImportJobTestBase {
         TestConfiguration configuration = new TestConfiguration();
         dataGridResource = new DataGridResource(configuration);
 
-        primeCachesToVerifyThatCachesAreReplaced();
+        initCaches();
 
         dbFactory = new DBFactory(configuration);
 
@@ -54,6 +57,7 @@ public class ImportJobTestBase {
         dbFactory.getCollection(PROMOTION_COLLECTION).drop();
         promotionCollection = dbFactory.getCollection(PROMOTION_COLLECTION);
 
+        preImportCallBack();
 
         ImportJob importJob = new ImportJob(
                 RPM_PRICE_ZONE_CSV_FILE_PATH,
@@ -68,17 +72,14 @@ public class ImportJobTestBase {
         importJob.run();
     }
 
-    private void primeCachesToVerifyThatCachesAreReplaced() {
-        Cache<String,Product> productPriceCache = dataGridResource.getProductPriceCache();
-        oldTpnb = "01212323";
-        productPriceCache.put(oldTpnb, new Product(oldTpnb));
+    protected void preImportCallBack() {
 
-        Cache<String,Promotion> promotionCache = dataGridResource.getPromotionCache();
+    }
 
-        Cache<String,Store> storeCache = dataGridResource.getStoreCache();
-        oldStoreId = "4002";
-        storeCache.put(oldStoreId, new Store(oldStoreId, Optional.of(1), Optional.of(2), "GBP"));
-
+    private void initCaches() {
+        dataGridResource.getProductPriceCache();
+        dataGridResource.getPromotionCache();
+        dataGridResource.getStoreCache();
     }
 
     @After

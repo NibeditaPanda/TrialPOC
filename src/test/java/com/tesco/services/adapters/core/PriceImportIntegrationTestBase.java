@@ -16,6 +16,13 @@ import static com.tesco.services.core.PriceKeys.PROMO_PRICE;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class PriceImportIntegrationTestBase extends ImportJobTestBase {
+    private String oldTpnb;
+
+    @Override
+    protected void preImportCallBack() {
+        oldTpnb = "01212323";
+        dataGridResource.getProductPriceCache().put(oldTpnb, new Product(oldTpnb));
+    }
 
     @Test
     public void shouldFindPriceFromOneZone() throws IOException {
@@ -62,7 +69,7 @@ public class PriceImportIntegrationTestBase extends ImportJobTestBase {
     // DataGrid
     // =========
     @Test
-    public void shouldUpdatePriceZonePrices() {
+    public void shouldUpdatePriceZonePricesToReplacedCache() {
         String tpnb,tpnc1,tpnc2;
         tpnb = tpnc1 = "050925811";
         tpnc2 = "050925811-001";
@@ -82,5 +89,7 @@ public class PriceImportIntegrationTestBase extends ImportJobTestBase {
         assertThat(productPriceRepository.getByTPNB(tpnb)).isEqualTo(product);
         assertThat(productPriceRepository.getByTPNB(oldTpnb)).isNull();
     }
+
+
 
 }

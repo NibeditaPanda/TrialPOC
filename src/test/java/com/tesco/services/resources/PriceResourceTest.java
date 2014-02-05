@@ -11,8 +11,8 @@ import com.tesco.services.core.Product;
 import com.tesco.services.core.ProductVariant;
 import com.tesco.services.core.SaleInfo;
 import com.tesco.services.core.Store;
-import com.tesco.services.dao.PriceDAO;
 import com.tesco.services.dao.DBFactory;
+import com.tesco.services.dao.PriceDAO;
 import com.tesco.services.exceptions.ItemNotFoundException;
 import com.tesco.services.repositories.DataGridResource;
 import com.tesco.services.repositories.ProductPriceRepository;
@@ -342,18 +342,10 @@ public class PriceResourceTest extends ResourceTest {
         assertThat(response.getStatus()).isEqualTo(200);
         Map actualProductPriceInfo = resource.get(Map.class);
 
-        Map<String, String> variantInfo = new LinkedHashMap<>();
-        variantInfo.put("tpnc", tpnc2);
-        variantInfo.put("price", "1.38");
-
         ArrayList<Map<String, String>> variants = new ArrayList<>();
-        variants.add(variantInfo);
+        variants.add(getVariantInfo(tpnc2, "1.38"));
 
-        Map<String, Object> productPriceMap = new LinkedHashMap<>();
-        productPriceMap.put("tpnb", tpnb);
-        productPriceMap.put("variants", variants);
-
-        assertThat(actualProductPriceInfo).isEqualTo(productPriceMap);
+        assertThat(actualProductPriceInfo).isEqualTo(getProductPriceMap(tpnb, variants));
     }
 
     private Product createProductWithVariants(String tpnb, String tpnc1, String tpnc2) {
@@ -374,23 +366,25 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     private Map<String, Object> expectedProductPriceInfo(String tpnb, String tpnc1, String tpnc2) {
-        Map<String, String> variantInfo1 = new LinkedHashMap<>();
-        variantInfo1.put("tpnc", tpnc1);
-        variantInfo1.put("price", "1.40");
-
-        Map<String, String> variantInfo2 = new LinkedHashMap<>();
-        variantInfo2.put("tpnc", tpnc2);
-        variantInfo2.put("price", "1.39");
-
         ArrayList<Map<String, String>> variants = new ArrayList<>();
-        variants.add(variantInfo1);
-        variants.add(variantInfo2);
+        variants.add(getVariantInfo(tpnc1, "1.40"));
+        variants.add(getVariantInfo(tpnc2, "1.39"));
 
+        return getProductPriceMap(tpnb, variants);
+    }
+
+    private Map<String, Object> getProductPriceMap(String tpnb, ArrayList<Map<String, String>> variants) {
         Map<String, Object> productPriceMap = new LinkedHashMap<>();
         productPriceMap.put("tpnb", tpnb);
         productPriceMap.put("variants", variants);
-
         return productPriceMap;
+    }
+
+    private Map<String, String> getVariantInfo(String tpnc, String price) {
+        Map<String, String> variantInfo1 = new LinkedHashMap<>();
+        variantInfo1.put("tpnc", tpnc);
+        variantInfo1.put("price", price);
+        return variantInfo1;
     }
 
 }
