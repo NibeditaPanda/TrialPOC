@@ -15,6 +15,7 @@ import com.tesco.services.dao.DBFactory;
 import com.tesco.services.dao.PriceDAO;
 import com.tesco.services.exceptions.ItemNotFoundException;
 import com.tesco.services.repositories.DataGridResource;
+import com.tesco.services.repositories.DataGridResourceForTest;
 import com.tesco.services.repositories.ProductPriceRepository;
 import com.tesco.services.repositories.StoreRepository;
 import com.tesco.services.resources.fixtures.TestProductPriceDBObject;
@@ -44,7 +45,7 @@ public class PriceResourceTest extends ResourceTest {
     @Override
     protected void setUpResources() throws Exception {
         priceDAO = new PriceDAO(testConfiguration);
-        dataGridResource = new DataGridResource(testConfiguration);
+        dataGridResource = new DataGridResourceForTest(testConfiguration);
         PriceResource priceResource = new PriceResource(priceDAO, dataGridResource);
         addResource(priceResource);
     }
@@ -57,7 +58,7 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     @Before
-    public void beforeEachTest(){
+    public void beforeEachTest() {
         priceCollection.drop();
         storeCollection.drop();
     }

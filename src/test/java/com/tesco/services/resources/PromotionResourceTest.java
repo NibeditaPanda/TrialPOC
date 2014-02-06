@@ -9,6 +9,7 @@ import com.sun.jersey.api.client.WebResource;
 import com.tesco.services.Configuration;
 import com.tesco.services.dao.DBFactory;
 import com.tesco.services.repositories.DataGridResource;
+import com.tesco.services.repositories.DataGridResourceForTest;
 import com.tesco.services.repositories.UUIDGenerator;
 import com.tesco.services.core.Promotion;
 import com.tesco.services.repositories.PromotionRepository;
@@ -94,7 +95,7 @@ public class PromotionResourceTest extends ResourceTest {
 
         Promotion promotion3 = aPromotion().offerId("345").build();
 
-        dataGridResource = new DataGridResource(testConfiguration);
+        dataGridResource = new DataGridResourceForTest(testConfiguration);
         dataGridResource.getPromotionCache().put(UUID.randomUUID().toString(), promotion);
         dataGridResource.getPromotionCache().put(UUID.randomUUID().toString(), promotion1);
         dataGridResource.getPromotionCache().put(UUID.randomUUID().toString(), promotion2);

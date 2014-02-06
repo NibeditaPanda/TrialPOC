@@ -1,9 +1,10 @@
 package com.tesco.services.core;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ProductVariant implements PriceVisitable {
+public class ProductVariant implements PriceVisitable, Serializable {
     private String tpnc;
     private Map<Integer, SaleInfo> zoneIdToSaleInfo = new HashMap<>();
 

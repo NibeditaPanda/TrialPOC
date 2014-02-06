@@ -87,6 +87,11 @@ test {
     systemProperties 'environment': System.getProperty("environment")
     jvmArgs '-XX:-UseSplitVerifier'
     include '**/**'
+
+    // set heap size for the test JVM(s)
+    minHeapSize = "128m"
+    maxHeapSize = "512m"
+
 }
 
 run {

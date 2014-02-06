@@ -15,7 +15,7 @@ public class StoreRepositoryTest {
 
     @Before
     public void setUp() throws Exception {
-        dataGridResource = new DataGridResource(new TestConfiguration());
+        dataGridResource = new DataGridResourceForTest(new TestConfiguration());
         storeCache = dataGridResource.getStoreCache();
     }
 

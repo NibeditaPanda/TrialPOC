@@ -5,6 +5,7 @@ import com.mongodb.DBObject;
 import com.tesco.services.adapters.core.exceptions.ColumnNotFoundException;
 import com.tesco.services.dao.DBFactory;
 import com.tesco.services.repositories.DataGridResource;
+import com.tesco.services.repositories.DataGridResourceForTest;
 import com.tesco.services.resources.TestConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.junit.After;
@@ -42,7 +43,7 @@ public abstract class ImportJobTestBase {
     public void setUp() throws IOException, ParserConfigurationException, SAXException, ConfigurationException, JAXBException, ColumnNotFoundException {
         System.out.println("ImportJobTestBase setup");
         TestConfiguration configuration = new TestConfiguration();
-        dataGridResource = new DataGridResource(configuration);
+        dataGridResource = new DataGridResourceForTest(configuration);
 
         initCaches();
 

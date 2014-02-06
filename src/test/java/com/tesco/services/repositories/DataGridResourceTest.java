@@ -18,7 +18,7 @@ public class DataGridResourceTest {
 
     @Before
     public void setUp() {
-        dataGridResource = new DataGridResource(new Configuration());
+        dataGridResource = new DataGridResourceForTest(new Configuration());
     }
 
     @Test
@@ -172,4 +172,97 @@ public class DataGridResourceTest {
         dataGridResource.getProductPriceCache();
         dataGridResource.getProductPriceRefreshCache();
     }
+
+//
+//    @Test
+//    public void dgTest() throws IOException {
+//        BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("temp.csv")));
+//        bufferedWriter.write("==========================\n");
+//        bufferedWriter.write(System.currentTimeMillis() + "\n");
+//        bufferedWriter.write("==========================\n");
+//
+//        final Cache<String, String> temp = dataGridResource.getTemp();
+//        System.out.println(temp.size());
+//        final int capacity = 1000000;
+//        for (int i = 0; i < capacity; i++) {
+//            if (i % 10000 == 0) {
+//                int mb = 1024 * 1024;
+//                Runtime runtime = Runtime.getRuntime();
+//                long total = runtime.totalMemory();
+//                long free = runtime.freeMemory();
+//
+//                bufferedWriter.write("{ '" + (total - free) / mb + "MB'  }");
+//
+//                System.out.println("One thousands puts over");
+//            }
+//            temp.put(String.format("Key:%d", i), String.format("Value:%d", i));
+//        }
+//
+//        bufferedWriter.write("==========================\n");
+//        bufferedWriter.write(System.currentTimeMillis() + "\n");
+//        bufferedWriter.write("==========================\n");
+//
+//
+//        int j = 0;
+//        for (int i = 0; i < capacity; i++) {
+//            final String key = String.format("Key:%d", i);
+//            bufferedWriter.write(String.format("%s,%s\n", key, temp.get(key)));
+//
+//        }
+//
+//        bufferedWriter.write("==========================\n");
+//        bufferedWriter.write(System.currentTimeMillis() + "\n");
+//        bufferedWriter.write("==========================\n");
+//
+//        bufferedWriter.close();
+//
+//    }
+//
+//    @Test
+//    public void productPriceCacheTest() throws IOException {
+//        BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("product.csv")));
+//
+//        bufferedWriter.write("==========================\n");
+//        bufferedWriter.write(System.currentTimeMillis() + "\n");
+//        bufferedWriter.write("==========================\n");
+//
+//        final Cache<String, Product> temp = dataGridResource.getProductPriceCache();
+//        final int capacity = 1000000;
+//        for (int i = 0; i < capacity; i++) {
+//            if (i % 10000 == 0) {
+//                int mb = 1024 * 1024;
+//                Runtime runtime = Runtime.getRuntime();
+//                long total = runtime.totalMemory();
+//                long free = runtime.freeMemory();
+//
+//                bufferedWriter.write("{ '" + (total - free) / mb + "MB'  }");
+//
+//                System.out.println("Ten thousand puts over");
+//            }
+//
+//            final String tpnb = String.format("TPNB:%d", i);
+//            final String tpnc1 = String.format("TPNC1:%d", i);
+//            final String tpnc2 = String.format("TPNC2:%d", i);
+//            temp.put(tpnb, createProductWithVariants(tpnb, tpnc1, tpnc2));
+//        }
+//
+//        bufferedWriter.write("==========================\n");
+//        bufferedWriter.write(System.currentTimeMillis() + "\n");
+//        bufferedWriter.write("==========================\n");
+//
+//
+//        for (int i = 0; i < capacity; i++) {
+//            final String tpnb = String.format("TPNB:%d", i);
+//            bufferedWriter.write(String.format("%s,%s\n", tpnb, temp.get(tpnb)));
+//
+//        }
+//
+//
+//        bufferedWriter.write("==========================\n");
+//        bufferedWriter.write(System.currentTimeMillis() + "\n");
+//        bufferedWriter.write("==========================\n");
+//
+//        bufferedWriter.close();
+//
+//    }
 }

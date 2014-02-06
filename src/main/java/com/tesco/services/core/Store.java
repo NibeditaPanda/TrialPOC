@@ -2,7 +2,9 @@ package com.tesco.services.core;
 
 import com.google.common.base.Optional;
 
-public class Store {
+import java.io.Serializable;
+
+public class Store implements Serializable {
     private String storeId;
     private int priceZoneId;
     private int promoZoneId;

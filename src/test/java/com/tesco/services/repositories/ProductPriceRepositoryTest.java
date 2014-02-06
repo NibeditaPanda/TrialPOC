@@ -14,7 +14,7 @@ public class ProductPriceRepositoryTest {
 
     @Before
     public void setUp() throws Exception {
-        dataGridResource = new DataGridResource(new TestConfiguration());
+        dataGridResource = new DataGridResourceForTest(new TestConfiguration());
         productPriceCache = dataGridResource.getProductPriceCache();
         productPriceCache.clear();
     }

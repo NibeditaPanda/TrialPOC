@@ -1,6 +1,8 @@
 package com.tesco.services.core;
 
-public class SaleInfo {
+import java.io.Serializable;
+
+public class SaleInfo implements Serializable {
     private int zoneId;
     private String price;
 

@@ -6,15 +6,17 @@ import com.tesco.services.core.Promotion;
 import com.tesco.services.core.Store;
 import org.apache.commons.lang.StringUtils;
 import org.infinispan.Cache;
+import org.infinispan.configuration.cache.CacheMode;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.configuration.global.GlobalConfiguration;
 import org.infinispan.configuration.global.GlobalConfigurationBuilder;
+import org.infinispan.eviction.EvictionStrategy;
 import org.infinispan.manager.DefaultCacheManager;
+import org.infinispan.transaction.LockingMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.Properties;
 
 public class DataGridResource {
 
@@ -28,10 +30,11 @@ public class DataGridResource {
     private static Cache<String, String> priceCacheNameCache;
 
     public static String DATA_GRID_PASSIVATION_LOCATION = "cache/passivation";
+    public static String INDEX_FILE_LOCATION = "cache/indexes/";
 
 
     public DataGridResource(Configuration configuration) {
-        dgClient = new DefaultCacheManager(getGlobalConfiguration(), getConfiguration());
+        dgClient = new DefaultCacheManager(getGlobalConfiguration(), getConfiguration("cache"));
         priceCacheNameCache = dgClient.getCache("priceCacheNameCache", true);
         String cacheLocation = configuration.getCacheLocation();
 
@@ -44,17 +47,29 @@ public class DataGridResource {
         this.dgClient.stop();
     }
 
-    private org.infinispan.configuration.cache.Configuration getConfiguration() {
-        Properties properties = new Properties();
-        properties.put("hibernate.search.default.directory_provider", "ram");
-        properties.put("hibernate.search.default.lucene_version", "3.2.6");
+    protected org.infinispan.configuration.cache.Configuration getConfiguration(String indexName) {
+        final String dataGridMergeFactor = "10";
+        final String dataGridNumberOfShards =  "4";
+        int maxEntries = 50000;
 
-        return new ConfigurationBuilder()
-                .indexing()
-                .enable()
-                .indexLocalOnly(true)
-                .withProperties(properties)
+        return new ConfigurationBuilder()//.storeAsBinary()
+//                .clustering().cacheMode(CacheMode.DIST_SYNC).hash().numOwners(1)//.sync()//.locking().useLockStriping(false)
+                .clustering().cacheMode(CacheMode.LOCAL)//.hash()
+                .invocationBatching().enable()
+                .transaction().syncCommitPhase(true).lockingMode(LockingMode.PESSIMISTIC)
+                .eviction().maxEntries(maxEntries).strategy(EvictionStrategy.LIRS)
+                .persistence().passivation(false).addSingleFileStore().location(DATA_GRID_PASSIVATION_LOCATION)
+                .indexing().enable().indexLocalOnly(true)
+                    .addProperty("default.indexmanager", "near-real-time")
+                    .addProperty("default.directory_provider", "filesystem")
+                    .addProperty("default.indexBase", INDEX_FILE_LOCATION + indexName)
+                    .addProperty("default.exclusive_index_use", "true")
+                    .addProperty("default.indexwriter.merge_factor", dataGridMergeFactor)
+                    .addProperty("default.indexwriter.ram_buffer_size", "256")
+                    .addProperty("default.sharding_strategy.nbr_of_shards", dataGridNumberOfShards)
+                    .addProperty("lucene_version", "LUCENE_36")
                 .build();
+
     }
 
     private GlobalConfiguration getGlobalConfiguration() {
