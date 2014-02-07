@@ -4,9 +4,9 @@ import com.tesco.services.core.Store;
 import org.infinispan.Cache;
 
 public class StoreRepository {
-    private Cache<String, Store> storeCache;
+    private Cache<Integer, Store> storeCache;
 
-    public StoreRepository(Cache<String, Store> storeCache) {
+    public StoreRepository(Cache<Integer, Store> storeCache) {
         this.storeCache = storeCache;
     }
 
@@ -14,7 +14,7 @@ public class StoreRepository {
         storeCache.put(store.getStoreId(), store);
     }
 
-    public Store getByStoreId(String storeId) {
+    public Store getByStoreId(int storeId) {
         return storeCache.get(storeId);
     }
 }

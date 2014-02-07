@@ -13,11 +13,10 @@ import static com.tesco.services.core.PriceKeys.*;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class StoreImportIntegrationTestBase extends ImportJobTestBase {
-    private String oldStoreId;
+    private int oldStoreId = 4002;
 
     @Override
-    protected void preImportCallBack() {
-        oldStoreId = "4002";
+    protected void preImportCallBack() {;
         dataGridResource.getStoreCache().put(oldStoreId, new Store(oldStoreId, Optional.of(1), Optional.of(2), "GBP"));
     }
 
@@ -62,7 +61,7 @@ public class StoreImportIntegrationTestBase extends ImportJobTestBase {
 
     @Test
     public void shouldImportStoreZonesToReplacedCache(){
-        String storeId = "2002";
+        int storeId = 2002;
         Store store = new Store(storeId, Optional.of(1), Optional.of(5), "GBP");
 
         StoreRepository storeRepository = new StoreRepository(dataGridResource.getStoreCache());

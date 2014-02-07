@@ -12,7 +12,7 @@ public class RPMStoreZoneReaderImplTest {
     public void shouldGetPrice() throws Exception {
         RPMStoreZoneReaderImpl rpmStoreZoneReader = new RPMStoreZoneReaderImpl("./src/test/java/com/tesco/services/adapters/rpm/readers/fixtures/single_store_zone.csv");
 
-        assertThat(rpmStoreZoneReader.getNext()).isEqualTo(new StoreDTO("2002", 1, 1, "GBP"));
+        assertThat(rpmStoreZoneReader.getNext()).isEqualTo(new StoreDTO(2002, 1, 1, "GBP"));
         assertThat(rpmStoreZoneReader.getNext()).isNull();
     }
 
@@ -20,8 +20,8 @@ public class RPMStoreZoneReaderImplTest {
     public void shouldGetMultiplePrices() throws Exception {
         RPMStoreZoneReaderImpl rpmStoreZoneReader = new RPMStoreZoneReaderImpl("./src/test/java/com/tesco/services/adapters/rpm/readers/fixtures/multiple_store_zone.csv");
 
-        assertThat(rpmStoreZoneReader.getNext()).isEqualTo(new StoreDTO("2002", 1, 1, "GBP"));
-        assertThat(rpmStoreZoneReader.getNext()).isEqualTo(new StoreDTO("2002", 5, 2, "GBP"));
+        assertThat(rpmStoreZoneReader.getNext()).isEqualTo(new StoreDTO(2002, 1, 1, "GBP"));
+        assertThat(rpmStoreZoneReader.getNext()).isEqualTo(new StoreDTO(2002, 5, 2, "GBP"));
         assertThat(rpmStoreZoneReader.getNext()).isNull();
     }
 

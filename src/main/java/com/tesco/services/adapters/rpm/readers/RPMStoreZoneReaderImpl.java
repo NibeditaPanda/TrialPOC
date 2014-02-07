@@ -43,7 +43,7 @@ public class RPMStoreZoneReaderImpl implements RPMStoreZoneReader {
             return null;
         }
 
-        return new StoreDTO(nextLine[storeIdIndex],
+        return new StoreDTO(Integer.parseInt(nextLine[storeIdIndex]),
                 Integer.parseInt(nextLine[zoneIdIndex]),
                 Integer.parseInt(nextLine[zoneTypeIndex]),
                 nextLine[currencyCodeIndex]);

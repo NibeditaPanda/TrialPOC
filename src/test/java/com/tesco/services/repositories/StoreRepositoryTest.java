@@ -10,7 +10,7 @@ import org.junit.Test;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class StoreRepositoryTest {
-    private Cache<String,Store> storeCache;
+    private Cache<Integer, Store> storeCache;
     private DataGridResource dataGridResource;
 
     @Before
@@ -22,7 +22,7 @@ public class StoreRepositoryTest {
     @Test
     public void shouldCacheStoreByStoreId() throws Exception {
         StoreRepository storeRepository = new StoreRepository(storeCache);
-        String storeId = "2002";
+        int storeId = 2002;
         Store store = new Store(storeId, Optional.of(1), Optional.<Integer>absent(), "GBP");
 
         storeRepository.put(store);

@@ -220,8 +220,8 @@ public class RPMWriterTest {
 
     @Test
     public void shouldInsertStorePriceZones() throws Exception {
-        String firstStoreId = "2002";
-        String secondStoreId = "2003";
+        int firstStoreId = 2002;
+        int secondStoreId = 2003;
 
         when(storeZoneReader.getNext()).thenReturn(new StoreDTO(firstStoreId, 1, 1, "GBP")).thenReturn(new StoreDTO(secondStoreId, 2, 1, "EUR")).thenReturn(null);
 
@@ -234,7 +234,7 @@ public class RPMWriterTest {
 
     @Test
     public void shouldInsertStorePriceAndPromoZones() throws Exception {
-        String storeId = "2002";
+        int storeId = 2002;
 
         when(storeZoneReader.getNext()).thenReturn(new StoreDTO(storeId, 1, 1, "GBP")).thenReturn(new StoreDTO(storeId, 5, 2, "GBP")).thenReturn(null);
         when(storeRepository.getByStoreId(storeId)).thenReturn(null).thenReturn(new Store(storeId, Optional.of(1), Optional.<Integer>absent(), "GBP"));

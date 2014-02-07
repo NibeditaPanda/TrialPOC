@@ -5,19 +5,19 @@ import com.google.common.base.Optional;
 public class StoreDTO {
     public static final int PRICE_ZONE_TYPE = 1;
     public static final int PROMO_ZONE_TYPE = 2;
-    private final String storeId;
+    private final int storeId;
     private final int zoneId;
     private final String currency;
     private final int zoneType;
 
-    public StoreDTO(String storeId, int zoneId, int zoneType, String currency) {
+    public StoreDTO(int storeId, int zoneId, int zoneType, String currency) {
         this.storeId = storeId;
         this.zoneId = zoneId;
         this.currency = currency;
         this.zoneType = zoneType;
     }
 
-    public String getStoreId() {
+    public int getStoreId() {
         return storeId;
     }
 
@@ -47,14 +47,14 @@ public class StoreDTO {
         if (zoneId != storeDTO.zoneId) return false;
         if (zoneType != storeDTO.zoneType) return false;
         if (!currency.equals(storeDTO.currency)) return false;
-        if (!storeId.equals(storeDTO.storeId)) return false;
+        if (storeId != storeDTO.storeId) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = storeId.hashCode();
+        int result = storeId;
         result = 31 * result + zoneId;
         result = 31 * result + currency.hashCode();
         result = 31 * result + zoneType;

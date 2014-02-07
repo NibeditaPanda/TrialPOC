@@ -334,7 +334,7 @@ public class PriceResourceTest extends ResourceTest {
         Product product = createProductWithVariants(tpnb, tpnc1, tpnc2);
         productPriceRepository.put(product);
 
-        String storeId = "2002";
+        int storeId = 2002;
         storeRepository.put(new Store(storeId, Optional.of(6), Optional.<Integer>absent(), "GBP"));
 
         WebResource resource = client().resource(String.format("/price/B/%s?store=%s", tpnb, storeId));

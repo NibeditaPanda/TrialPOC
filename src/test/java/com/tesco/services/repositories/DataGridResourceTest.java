@@ -48,7 +48,7 @@ public class DataGridResourceTest {
     public void shouldGetSameStoreCache() {
         assertThat(dataGridResource.getStoreCache().isEmpty()).isTrue();
 
-        String storeId = "2002";
+        int storeId = 2002;
         Store store = new Store(storeId, Optional.of(1), Optional.<Integer>absent(), "GBP");
         dataGridResource.getStoreCache().put(storeId, store);
 
@@ -86,10 +86,10 @@ public class DataGridResourceTest {
 
     @Test
     public void shouldGetStoreRefreshCache(){
-        Cache<String, Store> storeRefreshCache = dataGridResource.getStoreRefreshCache();
+        Cache<Integer, Store> storeRefreshCache = dataGridResource.getStoreRefreshCache();
         assertThat(storeRefreshCache.isEmpty()).isTrue();
 
-        String storeId = "2002";
+        int storeId = 2002;
         Store store = new Store(storeId, Optional.of(1), Optional.<Integer>absent(), "GBP");
         storeRefreshCache.put(storeId, store);
 
@@ -123,10 +123,10 @@ public class DataGridResourceTest {
         initPromotionCaches();
         initProductPriceCaches();
 
-        Cache<String, Store> storeCache = dataGridResource.getStoreCache();
-        Cache<String, Store> storeRefreshCache = dataGridResource.getStoreRefreshCache();
+        Cache<Integer, Store> storeCache = dataGridResource.getStoreCache();
+        Cache<Integer, Store> storeRefreshCache = dataGridResource.getStoreRefreshCache();
 
-        String storeId = "2002";
+        int storeId = 2002;
         Store store = new Store(storeId, Optional.of(1), Optional.<Integer>absent(), "GBP");
         storeRefreshCache.put(storeId, store);
 
@@ -134,7 +134,7 @@ public class DataGridResourceTest {
 
         assertThat(storeCache.getStatus()).isEqualTo(ComponentStatus.TERMINATED);
 
-        Cache<String, Store> newStoreCache = dataGridResource.getStoreCache();
+        Cache<Integer, Store> newStoreCache = dataGridResource.getStoreCache();
         assertThat(newStoreCache.get(storeId)).isSameAs(store);
     }
 

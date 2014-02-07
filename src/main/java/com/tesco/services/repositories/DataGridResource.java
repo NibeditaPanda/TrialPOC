@@ -88,7 +88,7 @@ public class DataGridResource {
         return dgClient.getCache(getCacheNameFor(PRODUCT_PRICE_CACHE), true);
     }
 
-    public Cache<String, Store> getStoreCache() {
+    public Cache<Integer, Store> getStoreCache() {
         return dgClient.getCache(getCacheNameFor(STORE_CACHE), true);
     }
 
@@ -100,7 +100,7 @@ public class DataGridResource {
         return dgClient.getCache(getRefreshCacheNameFor(PRODUCT_PRICE_CACHE), true);
     }
 
-    public Cache<String,Store> getStoreRefreshCache() {
+    public Cache<Integer, Store> getStoreRefreshCache() {
         return dgClient.getCache(getRefreshCacheNameFor(STORE_CACHE), true);
     }
 

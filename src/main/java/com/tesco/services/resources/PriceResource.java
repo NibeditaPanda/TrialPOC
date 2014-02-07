@@ -8,13 +8,20 @@ import com.tesco.services.exceptions.ItemNotFoundException;
 import com.tesco.services.repositories.DataGridResource;
 import com.tesco.services.repositories.ProductPriceRepository;
 import com.tesco.services.repositories.StoreRepository;
-import com.wordnik.swagger.annotations.*;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 import com.yammer.metrics.annotation.ExceptionMetered;
 import com.yammer.metrics.annotation.Metered;
 import com.yammer.metrics.annotation.Timed;
-import org.apache.commons.lang.StringUtils;
 
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -22,7 +29,9 @@ import javax.ws.rs.core.UriInfo;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.tesco.services.resources.HTTPResponses.*;
+import static com.tesco.services.resources.HTTPResponses.badRequest;
+import static com.tesco.services.resources.HTTPResponses.notFound;
+import static com.tesco.services.resources.HTTPResponses.ok;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
@@ -73,7 +82,7 @@ public class PriceResource {
     public Response get(
             @PathParam("tpnIdentifier") String tpnIdentifier,
             @PathParam("tpn") String tpn,
-            @QueryParam("store") String storeId) {
+            @QueryParam("store") Integer storeId) {
 
         ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceCache());
         Product product = productPriceRepository.getByTPNB(tpn);
@@ -84,8 +93,8 @@ public class PriceResource {
         return ok(productPriceVisitor.getPriceInfo());
     }
 
-    private int getZoneId(String storeId) {
-        if (StringUtils.isBlank(storeId)) {
+    private int getZoneId(Integer storeId) {
+        if (storeId == null) {
             return NATIONAL_PRICE_ZONE_ID;
         }
         StoreRepository storeRepository = new StoreRepository(dataGridResource.getStoreCache());
