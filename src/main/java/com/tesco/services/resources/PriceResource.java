@@ -79,10 +79,12 @@ public class PriceResource {
 
     @GET
     @Path("/{tpnIdentifier}/{tpn}")
+    @ApiOperation(value = "Find price of product variants by product's base tPNB/ Find price of specific product variant by its tpnc")
+    @ApiResponses(value = {@ApiResponse(code = 404, message = "Product not found")})
     public Response get(
-            @PathParam("tpnIdentifier") String tpnIdentifier,
-            @PathParam("tpn") String tpn,
-            @QueryParam("store") Integer storeId) {
+            @ApiParam(value = "Type of identifier(B => TPNB, C => TPNC)") @PathParam("tpnIdentifier") String tpnIdentifier,
+            @ApiParam(value = "TPNB/TPNC of Product", required = true) @PathParam("tpn") String tpn,
+            @ApiParam(value = "ID of Store if a store-specific price is desired", required = false) @QueryParam("store") Integer storeId) {
 
         ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceCache());
         Product product = productPriceRepository.getByTPNB(tpn);
