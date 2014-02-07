@@ -15,7 +15,7 @@ public class ProductPriceBuilderTest {
         String tpnc1 = "82345";
         String tpnc2 = "94553";
         Product productWithVariants = createProductWithVariants(tpnb, tpnc1, tpnc2);
-        ProductPriceBuilder productPriceVisitor = new ProductPriceBuilder(1);
+        ProductPriceBuilder productPriceVisitor = new ProductPriceBuilder(1, "GBP");
 
         productWithVariants.accept(productPriceVisitor);
 
@@ -25,10 +25,12 @@ public class ProductPriceBuilderTest {
     private Map<String, Object> expectedProductPriceMap(String tpnb, String tpnc1, String tpnc2) {
         Map<String, String> variantInfo1 = new LinkedHashMap<>();
         variantInfo1.put("tpnc", tpnc1);
+        variantInfo1.put("currency", "GBP");
         variantInfo1.put("price", "1.40");
 
         Map<String, String> variantInfo2 = new LinkedHashMap<>();
         variantInfo2.put("tpnc", tpnc2);
+        variantInfo2.put("currency", "GBP");
         variantInfo2.put("price", "1.39");
 
         ArrayList<Map<String, String>> variants = new ArrayList<>();

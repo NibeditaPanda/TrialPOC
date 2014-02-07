@@ -20,6 +20,7 @@ out
 build
 log
 logs/
+cache/
 
 .gradle/
 **/.gradle/*

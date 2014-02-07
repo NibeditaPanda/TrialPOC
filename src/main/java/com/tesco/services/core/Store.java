@@ -70,4 +70,8 @@ public class Store implements Serializable {
                 ", currency='" + currency + '\'' +
                 '}';
     }
+
+    public String getCurrency() {
+        return currency;
+    }
 }

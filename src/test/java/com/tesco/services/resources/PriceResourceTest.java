@@ -335,7 +335,7 @@ public class PriceResourceTest extends ResourceTest {
         productPriceRepository.put(product);
 
         int storeId = 2002;
-        storeRepository.put(new Store(storeId, Optional.of(6), Optional.<Integer>absent(), "GBP"));
+        storeRepository.put(new Store(storeId, Optional.of(6), Optional.<Integer>absent(), "EUR"));
 
         WebResource resource = client().resource(String.format("/price/B/%s?store=%s", tpnb, storeId));
 
@@ -344,7 +344,7 @@ public class PriceResourceTest extends ResourceTest {
         Map actualProductPriceInfo = resource.get(Map.class);
 
         ArrayList<Map<String, String>> variants = new ArrayList<>();
-        variants.add(getVariantInfo(tpnc2, "1.38"));
+        variants.add(getVariantInfo(tpnc2, "EUR", "1.38"));
 
         assertThat(actualProductPriceInfo).isEqualTo(getProductPriceMap(tpnb, variants));
     }
@@ -368,8 +368,8 @@ public class PriceResourceTest extends ResourceTest {
 
     private Map<String, Object> expectedProductPriceInfo(String tpnb, String tpnc1, String tpnc2) {
         ArrayList<Map<String, String>> variants = new ArrayList<>();
-        variants.add(getVariantInfo(tpnc1, "1.40"));
-        variants.add(getVariantInfo(tpnc2, "1.39"));
+        variants.add(getVariantInfo(tpnc1, "GBP", "1.40"));
+        variants.add(getVariantInfo(tpnc2, "GBP", "1.39"));
 
         return getProductPriceMap(tpnb, variants);
     }
@@ -381,9 +381,10 @@ public class PriceResourceTest extends ResourceTest {
         return productPriceMap;
     }
 
-    private Map<String, String> getVariantInfo(String tpnc, String price) {
+    private Map<String, String> getVariantInfo(String tpnc, String currency, String price) {
         Map<String, String> variantInfo1 = new LinkedHashMap<>();
         variantInfo1.put("tpnc", tpnc);
+        variantInfo1.put("currency", currency);
         variantInfo1.put("price", price);
         return variantInfo1;
     }

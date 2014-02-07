@@ -7,12 +7,15 @@ public class ProductPriceBuilder implements ProductPriceVisitor {
     public static final String TPNB = "tpnb";
     public static final String TPNC = "tpnc";
     public static final String PRICE = "price";
+    public static final String CURRENCY = "currency";
 
     private Map<String, Object> priceInfo = new LinkedHashMap<>();
     private int priceZoneId;
+    private String currency;
 
-    public ProductPriceBuilder(int priceZoneId) {
+    public ProductPriceBuilder(int priceZoneId, String currency) {
         this.priceZoneId = priceZoneId;
+        this.currency = currency;
     }
 
     @Override
@@ -29,6 +32,7 @@ public class ProductPriceBuilder implements ProductPriceVisitor {
         if (saleInfo != null) {
             Map<String, String> variantInfo = new LinkedHashMap<>();
             variantInfo.put(TPNC, productVariant.getTPNC());
+            variantInfo.put(CURRENCY, currency);
             variantInfo.put(PRICE, saleInfo.getPrice());
             variants.add(variantInfo);
         }

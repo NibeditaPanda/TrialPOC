@@ -3,6 +3,7 @@ package com.tesco.services.resources;
 import com.mongodb.DBObject;
 import com.tesco.services.core.Product;
 import com.tesco.services.core.ProductPriceBuilder;
+import com.tesco.services.core.Store;
 import com.tesco.services.dao.PriceDAO;
 import com.tesco.services.exceptions.ItemNotFoundException;
 import com.tesco.services.repositories.DataGridResource;
@@ -41,6 +42,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 public class PriceResource {
 
     public static final int NATIONAL_PRICE_ZONE_ID = 1;
+    public static final String NATIONAL_ZONE_CURRENCY = "GBP";
     private PriceDAO priceDAO;
     private DataGridResource dataGridResource;
 
@@ -89,20 +91,23 @@ public class PriceResource {
         ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceCache());
         Product product = productPriceRepository.getByTPNB(tpn);
 
-        ProductPriceBuilder productPriceVisitor = new ProductPriceBuilder(getZoneId(storeId));
+        ProductPriceBuilder productPriceVisitor = getProductPriceBuilder(storeId);
         product.accept(productPriceVisitor);
 
         return ok(productPriceVisitor.getPriceInfo());
     }
 
-    private int getZoneId(Integer storeId) {
+    private ProductPriceBuilder getProductPriceBuilder(Integer storeId) {
         if (storeId == null) {
-            return NATIONAL_PRICE_ZONE_ID;
+            return new ProductPriceBuilder(NATIONAL_PRICE_ZONE_ID, NATIONAL_ZONE_CURRENCY);
         }
-        StoreRepository storeRepository = new StoreRepository(dataGridResource.getStoreCache());
 
-        return storeRepository.getByStoreId(storeId).getPriceZoneId().get();
+        StoreRepository storeRepository = new StoreRepository(dataGridResource.getStoreCache());
+        final Store store = storeRepository.getByStoreId(storeId);
+
+        return new ProductPriceBuilder(store.getPriceZoneId().get(), store.getCurrency());
     }
+
 
     @GET
     @Path("/{itemNumber}/{tpn}/{path: .*}")
