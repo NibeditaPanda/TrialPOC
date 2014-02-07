@@ -5,7 +5,7 @@ Username: qa
 Password: Services123
 
 rpm.price.data.dump : /tmp/to_process/price/PRICE_ZONE.csv
-rpm.store.data.dump : /tmp/to_process/price/STORE_ZONE.csv
+rpm.store.data.dump : /tmp/to_process/price/latest/STORE_ZONE.csv
 rpm.promotion.data.dump : /tmp/to_process/price/PROM_EXTRACT.csv
 rpm.promotion_desc.data.dump : /tmp/to_process/price/PROM_DESC_EXTRACT.csv
 sonetto.shelfUrl : http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/Superstore/Online/Product/pos/%s.png
