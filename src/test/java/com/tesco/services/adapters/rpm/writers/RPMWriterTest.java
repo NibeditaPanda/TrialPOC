@@ -6,11 +6,24 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.WriteResult;
 import com.tesco.services.adapters.rpm.dto.StoreDTO;
-import com.tesco.services.core.*;
-import com.tesco.services.adapters.rpm.dto.PriceDTO;
-import com.tesco.services.adapters.rpm.readers.*;
+import com.tesco.services.adapters.rpm.readers.PriceCSVReader;
+import com.tesco.services.adapters.rpm.readers.RPMPriceZoneCSVFileReader;
+import com.tesco.services.adapters.rpm.readers.RPMPromotionCSVFileReader;
+import com.tesco.services.adapters.rpm.readers.RPMPromotionDescriptionCSVFileReader;
+import com.tesco.services.adapters.rpm.readers.RPMStoreZoneCSVFileReader;
+import com.tesco.services.adapters.rpm.readers.RPMStoreZoneReader;
 import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
-import com.tesco.services.repositories.*;
+import com.tesco.services.core.PriceKeys;
+import com.tesco.services.core.Product;
+import com.tesco.services.core.ProductVariant;
+import com.tesco.services.core.Promotion;
+import com.tesco.services.core.SaleInfo;
+import com.tesco.services.core.Store;
+import com.tesco.services.repositories.DataGridResource;
+import com.tesco.services.repositories.ProductPriceRepository;
+import com.tesco.services.repositories.PromotionRepository;
+import com.tesco.services.repositories.StoreRepository;
+import com.tesco.services.repositories.UUIDGenerator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,7 +39,9 @@ import static com.tesco.services.core.PriceKeys.STORE_ID;
 import static org.fest.util.Lists.newArrayList;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RPMWriterTest {
@@ -75,10 +90,10 @@ public class RPMWriterTest {
     private ProductPriceRepository productPriceRepository;
 
     @Mock
-    private RPMPriceReader rpmPriceReader;
+    private PriceCSVReader rpmPriceReader;
 
     @Mock
-    private RPMPriceReader rpmPromoReader;
+    private PriceCSVReader rpmPromoReader;
 
     @Mock
     private StoreRepository storeRepository;
@@ -102,6 +117,8 @@ public class RPMWriterTest {
                 rpmPriceReader,
                 rpmPromoReader,
                 storeZoneReader);
+        when(rpmPriceReader.getNext()).thenReturn(null);
+        when(rpmPromoReader.getNext()).thenReturn(null);
 
         when(uuidGenerator.getUUID()).thenReturn("uuid");
 
@@ -159,8 +176,8 @@ public class RPMWriterTest {
         Product product = new Product("059428124");
         product.addProductVariant(productVariant);
 
-        PriceDTO priceDTO = new PriceDTO("059428124", zoneId, price);
-        when(rpmPriceReader.getNext()).thenReturn(priceDTO).thenReturn(null);
+        Map<String, String> productInfoMap = productInfoMap("059428124", zoneId, price);
+        when(rpmPriceReader.getNext()).thenReturn(productInfoMap).thenReturn(null);
 
         this.rpmWriter.write();
 
@@ -171,8 +188,8 @@ public class RPMWriterTest {
     public void shouldInsertMultiplePriceZonePricesForAVariant() throws Exception {
         String itemNumber = "0123";
 
-        when(rpmPriceReader.getNext()).thenReturn(new PriceDTO(itemNumber, 2, "2.4"))
-                                        .thenReturn(new PriceDTO(itemNumber, 4, "4.4"))
+        when(rpmPriceReader.getNext()).thenReturn(productInfoMap(itemNumber, 2, "2.4"))
+                                        .thenReturn(productInfoMap(itemNumber, 4, "4.4"))
                                         .thenReturn(null);
 
         Product product = createProductWithVariant(itemNumber, itemNumber);
@@ -200,8 +217,8 @@ public class RPMWriterTest {
         String itemNumber = String.format("%s-001", tpnb);
         String itemNumber2 = String.format("%s-002", tpnb);
 
-        when(rpmPriceReader.getNext()).thenReturn(new PriceDTO(itemNumber, 2, "2.4"))
-                                        .thenReturn(new PriceDTO(itemNumber2, 3, "3.0"))
+        when(rpmPriceReader.getNext()).thenReturn(productInfoMap(itemNumber, 2, "2.4"))
+                                        .thenReturn(productInfoMap(itemNumber2, 3, "3.0"))
                                         .thenReturn(null);
 
         Product product = createProductWithVariant(tpnb, itemNumber);
@@ -222,6 +239,24 @@ public class RPMWriterTest {
         inOrder.verify(productPriceRepository).put(expectedProduct);
     }
 
+    private Map<String, String> productInfoMap(String itemNumber, int zoneId, String price) {
+        Map<String, String> productInfoMap = new HashMap<>();
+        productInfoMap.put(CSVHeaders.TPNB, itemNumber);
+        productInfoMap.put(CSVHeaders.PRICE_ZONE_ID, String.valueOf(zoneId));
+        productInfoMap.put(CSVHeaders.PRICE_ZONE_PRICE, price);
+
+        return productInfoMap;
+    }
+
+    private Map<String, String> productPromoInfoMap(String itemNumber, int zoneId, String price) {
+        Map<String, String> productInfoMap = new HashMap<>();
+        productInfoMap.put(CSVHeaders.TPNB, itemNumber);
+        productInfoMap.put(CSVHeaders.PROMO_ZONE_ID, String.valueOf(zoneId));
+        productInfoMap.put(CSVHeaders.PROMO_ZONE_PRICE, price);
+
+        return productInfoMap;
+    }
+
     @Test
     public void shouldInsertPromoZonePrice() throws Exception {
         final String tpnc = "059428124"; // This will change when TPNC story is played
@@ -234,10 +269,10 @@ public class RPMWriterTest {
         final String tpnb = "059428124";
         Product product = new Product(tpnb);
         product.addProductVariant(productVariant);
-        PriceDTO priceDTO = new PriceDTO("059428124", zoneId, price);
+        Map<String, String> productInfoMap = productPromoInfoMap("059428124", zoneId, price);
 
         when(productPriceRepository.getByTPNB(tpnb)).thenReturn(product);
-        when(rpmPromoReader.getNext()).thenReturn(priceDTO).thenReturn(null);
+        when(rpmPromoReader.getNext()).thenReturn(productInfoMap).thenReturn(null);
 
         this.rpmWriter.write();
 

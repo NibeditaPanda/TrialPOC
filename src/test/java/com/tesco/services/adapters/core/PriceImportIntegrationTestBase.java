@@ -76,11 +76,14 @@ public class PriceImportIntegrationTestBase extends ImportJobTestBase {
         tpnc2 = "050925811-001";
 
         ProductVariant productVariant1 = new ProductVariant(tpnc1);
-        productVariant1.addSaleInfo(new SaleInfo(5, "1.40"));
+        productVariant1.addSaleInfo(new SaleInfo(1, "1.40"));
+        productVariant1.addSaleInfo(new SaleInfo(5, "0.30"));
 
         ProductVariant productVariant2 = new ProductVariant(tpnc2);
-        productVariant2.addSaleInfo(new SaleInfo(5, "1.39"));
-        productVariant2.addSaleInfo(new SaleInfo(6, "1.38"));
+        productVariant2.addSaleInfo(new SaleInfo(1, "1.39"));
+        productVariant2.addSaleInfo(new SaleInfo(2, "1.38"));
+        productVariant2.addSaleInfo(new SaleInfo(5, "0.34"));
+        productVariant2.addSaleInfo(new SaleInfo(14, "0.35"));
 
         Product product = new Product(tpnb);
         product.addProductVariant(productVariant1);
@@ -90,7 +93,4 @@ public class PriceImportIntegrationTestBase extends ImportJobTestBase {
         assertThat(productPriceRepository.getByTPNB(tpnb)).isEqualTo(product);
         assertThat(productPriceRepository.getByTPNB(oldTpnb)).isNull();
     }
-
-
-
 }

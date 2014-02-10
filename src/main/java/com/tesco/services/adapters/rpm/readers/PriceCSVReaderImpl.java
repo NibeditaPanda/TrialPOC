@@ -13,16 +13,16 @@ import java.util.Map;
 import static com.tesco.services.adapters.core.utils.ExtractionUtils.getHeaderIndex;
 import static java.util.Arrays.asList;
 
-public class CSVPriceReaderImpl implements PriceCSVReader {
+public class PriceCSVReaderImpl implements PriceCSVReader {
 
     private final CSVReader csvReader;
     private Map<String, Integer> headerIndex = new HashMap<>();
 
-    public CSVPriceReaderImpl(String filePath, String... headers) throws IOException, ColumnNotFoundException {
+    public PriceCSVReaderImpl(String filePath, String... headers) throws IOException, ColumnNotFoundException {
         this(new CSVReader(new InputStreamReader(new FileInputStream(filePath), "UTF-8"), ','), headers);
     }
 
-    CSVPriceReaderImpl(CSVReader csvReader, String[] headers) throws IOException, ColumnNotFoundException {
+    PriceCSVReaderImpl(CSVReader csvReader, String[] headers) throws IOException, ColumnNotFoundException {
         this.csvReader = csvReader;
         List<String> headersInCSVFile = asList(csvReader.readNext());
 

@@ -4,6 +4,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.tesco.services.adapters.core.exceptions.ColumnNotFoundException;
 import com.tesco.services.adapters.rpm.readers.*;
+import com.tesco.services.adapters.rpm.writers.CSVHeaders;
 import com.tesco.services.adapters.rpm.writers.RPMWriter;
 import com.tesco.services.adapters.sonetto.SonettoPromotionWriter;
 import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
@@ -128,11 +129,10 @@ public class ImportJob implements Runnable {
         ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceRefreshCache());
         StoreRepository storeRepository = new StoreRepository(dataGridResource.getStoreRefreshCache());
 
-        RPMPriceReaderImpl rpmPriceReader = new RPMPriceReaderImpl(rpmPriceZoneDataPath);
-
+        PriceCSVReader rpmPriceReader = new PriceCSVReaderImpl(rpmPriceZoneDataPath, CSVHeaders.PRICE_ZONE_HEADERS);
+        PriceCSVReader rpmPromoReader = new PriceCSVReaderImpl(rpmPromoZoneDataPath, CSVHeaders.PROMO_ZONE_HEADERS);
         RPMStoreZoneReader storeZoneReader = new RPMStoreZoneReaderImpl(rpmStoreZoneCsvFilePath);
 
-        RPMPriceReader rpmPromoReader = new RPMPriceReaderImpl(rpmPromoZoneDataPath);
 
         new RPMWriter(priceCollection,
                 storeCollection,

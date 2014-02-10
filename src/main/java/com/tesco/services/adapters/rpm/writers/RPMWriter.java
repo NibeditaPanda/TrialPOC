@@ -4,12 +4,19 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
-import com.tesco.services.adapters.rpm.dto.StoreDTO;
-import com.tesco.services.core.*;
 import com.tesco.services.adapters.core.exceptions.ColumnNotFoundException;
-import com.tesco.services.adapters.rpm.dto.PriceDTO;
-import com.tesco.services.adapters.rpm.readers.*;
+import com.tesco.services.adapters.rpm.dto.StoreDTO;
+import com.tesco.services.adapters.rpm.readers.PriceCSVReader;
+import com.tesco.services.adapters.rpm.readers.RPMCSVFileReader;
+import com.tesco.services.adapters.rpm.readers.RPMPriceZoneCSVFileReader;
+import com.tesco.services.adapters.rpm.readers.RPMPromotionCSVFileReader;
+import com.tesco.services.adapters.rpm.readers.RPMPromotionDescriptionCSVFileReader;
+import com.tesco.services.adapters.rpm.readers.RPMStoreZoneCSVFileReader;
+import com.tesco.services.adapters.rpm.readers.RPMStoreZoneReader;
 import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
+import com.tesco.services.core.Product;
+import com.tesco.services.core.Promotion;
+import com.tesco.services.core.Store;
 import com.tesco.services.repositories.ProductPriceRepository;
 import com.tesco.services.repositories.PromotionRepository;
 import com.tesco.services.repositories.StoreRepository;
@@ -21,10 +28,19 @@ import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import static com.google.common.collect.Iterables.getFirst;
 import static com.tesco.services.adapters.rpm.readers.RPMPriceZoneCSVFileReader.PRICE_ZONE_FORMAT;
-import static com.tesco.services.core.PriceKeys.*;
+import static com.tesco.services.core.PriceKeys.ITEM_NUMBER;
+import static com.tesco.services.core.PriceKeys.PROMOTIONS;
+import static com.tesco.services.core.PriceKeys.PROMOTION_END_DATE;
+import static com.tesco.services.core.PriceKeys.PROMOTION_OFFER_ID;
+import static com.tesco.services.core.PriceKeys.PROMOTION_OFFER_NAME;
+import static com.tesco.services.core.PriceKeys.PROMOTION_START_DATE;
+import static com.tesco.services.core.PriceKeys.STORE_ID;
+import static com.tesco.services.core.PriceKeys.ZONES;
+import static com.tesco.services.core.PriceKeys.ZONE_ID;
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.String.format;
 
@@ -43,8 +59,8 @@ public class RPMWriter {
     private RPMPromotionDescriptionCSVFileReader rpmPromotionDescriptionCSVFileReader;
     private ProductPriceRepository productPriceRepository;
     private StoreRepository storeRepository;
-    private RPMPriceReader rpmPriceReader;
-    private RPMPriceReader rpmPromoReader;
+    private PriceCSVReader rpmPriceReader;
+    private PriceCSVReader rpmPromoReader;
     private RPMStoreZoneReader storeZoneReader;
     private SonettoPromotionXMLReader sonettoPromotionXMLReader;
 
@@ -64,8 +80,8 @@ public class RPMWriter {
                      RPMPromotionDescriptionCSVFileReader rpmPromotionDescriptionCSVFileReader,
                      ProductPriceRepository productPriceRepository,
                      StoreRepository storeRepository,
-                     RPMPriceReader rpmPriceReader,
-                     RPMPriceReader rpmPromoReader,
+                     PriceCSVReader rpmPriceReader,
+                     PriceCSVReader rpmPromoReader,
                      RPMStoreZoneReader storeZoneReader) throws IOException, ColumnNotFoundException {
 
         this.priceCollection = priceCollection;
@@ -102,8 +118,8 @@ public class RPMWriter {
         // Using DataGrid
         // ===============
         logger.info("Importing price zone prices into DataGrid");
-        writeZoneSpecificPrices(rpmPriceReader);
-        writeZoneSpecificPrices(rpmPromoReader);
+        writePriceZonePrices();
+        writePromoZonePrices();
         writeStoreZones();
     }
 
@@ -122,26 +138,22 @@ public class RPMWriter {
         }
     }
 
-    private void writeZoneSpecificPrices(RPMPriceReader priceReader) throws IOException {
-        PriceDTO priceDTO;
-        while((priceDTO = priceReader.getNext()) !=  null) {
-            String tpnb = priceDTO.getTPNB();
-            Product product = productPriceRepository.getByTPNB(tpnb);
+    private void writePriceZonePrices() throws IOException {
+        Map<String, String> productInfoMap;
+        final ProductPriceMapper productPriceMapper = new ProductPriceMapper(productPriceRepository);
 
-            if (product == null) {
-                product = new Product(tpnb);
-            }
+        while((productInfoMap = rpmPriceReader.getNext()) !=  null) {
+            final Product product = productPriceMapper.mapPriceZonePrice(productInfoMap);
+            productPriceRepository.put(product);
+        }
+    }
 
-            String tpnc = priceDTO.getTPNC();
-            ProductVariant productVariant = product.getProductVariantByTPNC(tpnc);
+    private void writePromoZonePrices() throws IOException {
+        Map<String, String> productInfoMap;
+        final ProductPriceMapper productPriceMapper = new ProductPriceMapper(productPriceRepository);
 
-            if (productVariant == null) {
-                productVariant = new ProductVariant(tpnc);
-                product.addProductVariant(productVariant);
-            }
-
-            productVariant.addSaleInfo(new SaleInfo(priceDTO.getZoneId(), priceDTO.getPrice()));
-
+        while((productInfoMap = rpmPromoReader.getNext()) !=  null) {
+            final Product product = productPriceMapper.mapPromoZonePrice(productInfoMap);
             productPriceRepository.put(product);
         }
     }
