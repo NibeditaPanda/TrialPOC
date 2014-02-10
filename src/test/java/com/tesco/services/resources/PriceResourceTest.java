@@ -307,7 +307,7 @@ public class PriceResourceTest extends ResourceTest {
     // DataGrid tests
     // ==============
     @Test
-    public void shouldReturnNationalPriceForMultipleItemsWhenStoreIdIsNotSpecified() throws IOException, ItemNotFoundException {
+    public void shouldReturnNationalPricesForMultipleItemsWhenStoreIdIsNotSpecified() throws IOException, ItemNotFoundException {
         ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceCache());
         String tpnb = "050925811";
         String tpnc1 = "266072275";
@@ -324,7 +324,7 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     @Test
-    public void shouldReturnBasePriceForWhenStoreIdIsSpecified() throws IOException, ItemNotFoundException {
+    public void shouldReturnPricesWhenStoreIdIsSpecified() throws IOException, ItemNotFoundException {
         ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceCache());
         StoreRepository storeRepository = new StoreRepository(dataGridResource.getStoreCache());
 
@@ -335,7 +335,7 @@ public class PriceResourceTest extends ResourceTest {
         productPriceRepository.put(product);
 
         int storeId = 2002;
-        storeRepository.put(new Store(storeId, Optional.of(6), Optional.<Integer>absent(), "EUR"));
+        storeRepository.put(new Store(storeId, Optional.of(6), Optional.of(14), "EUR"));
 
         WebResource resource = client().resource(String.format("/price/B/%s?store=%s", tpnb, storeId));
 
@@ -344,7 +344,8 @@ public class PriceResourceTest extends ResourceTest {
         Map actualProductPriceInfo = resource.get(Map.class);
 
         ArrayList<Map<String, String>> variants = new ArrayList<>();
-        variants.add(getVariantInfo(tpnc2, "EUR", "1.38"));
+        variants.add(getVariantInfo(tpnc1, "EUR", null, "1.10"));
+        variants.add(getVariantInfo(tpnc2, "EUR", "1.38", null));
 
         assertThat(actualProductPriceInfo).isEqualTo(getProductPriceMap(tpnb, variants));
     }
@@ -353,7 +354,8 @@ public class PriceResourceTest extends ResourceTest {
 
         ProductVariant productVariant1 = new ProductVariant(tpnc1);
         productVariant1.addSaleInfo(new SaleInfo(1, "1.40"));
-        productVariant1.addSaleInfo(new SaleInfo(5, "1.40"));
+        productVariant1.addSaleInfo(new SaleInfo(5, "1.20"));
+        productVariant1.addSaleInfo(new SaleInfo(14, "1.10"));
 
         ProductVariant productVariant2 = new ProductVariant(tpnc2);
         productVariant2.addSaleInfo(new SaleInfo(1, "1.39"));
@@ -368,8 +370,8 @@ public class PriceResourceTest extends ResourceTest {
 
     private Map<String, Object> expectedProductPriceInfo(String tpnb, String tpnc1, String tpnc2) {
         ArrayList<Map<String, String>> variants = new ArrayList<>();
-        variants.add(getVariantInfo(tpnc1, "GBP", "1.40"));
-        variants.add(getVariantInfo(tpnc2, "GBP", "1.39"));
+        variants.add(getVariantInfo(tpnc1, "GBP", "1.40", "1.20"));
+        variants.add(getVariantInfo(tpnc2, "GBP", "1.39", null));
 
         return getProductPriceMap(tpnb, variants);
     }
@@ -381,11 +383,12 @@ public class PriceResourceTest extends ResourceTest {
         return productPriceMap;
     }
 
-    private Map<String, String> getVariantInfo(String tpnc, String currency, String price) {
+    private Map<String, String> getVariantInfo(String tpnc, String currency, String price, String promoPrice) {
         Map<String, String> variantInfo1 = new LinkedHashMap<>();
         variantInfo1.put("tpnc", tpnc);
         variantInfo1.put("currency", currency);
-        variantInfo1.put("price", price);
+        if (price != null) variantInfo1.put("price", price);
+        if (promoPrice != null) variantInfo1.put("promoPrice", promoPrice);
         return variantInfo1;
     }
 

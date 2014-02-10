@@ -1,5 +1,6 @@
 package com.tesco.services.resources;
 
+import com.google.common.base.Optional;
 import com.mongodb.DBObject;
 import com.tesco.services.core.Product;
 import com.tesco.services.core.ProductPriceBuilder;
@@ -43,6 +44,8 @@ public class PriceResource {
 
     public static final int NATIONAL_PRICE_ZONE_ID = 1;
     public static final String NATIONAL_ZONE_CURRENCY = "GBP";
+    private static final int NATIONAL_PROMO_ZONE_ID = 5;
+
     private PriceDAO priceDAO;
     private DataGridResource dataGridResource;
 
@@ -99,13 +102,13 @@ public class PriceResource {
 
     private ProductPriceBuilder getProductPriceBuilder(Integer storeId) {
         if (storeId == null) {
-            return new ProductPriceBuilder(NATIONAL_PRICE_ZONE_ID, NATIONAL_ZONE_CURRENCY);
+            return new ProductPriceBuilder(Optional.of(NATIONAL_PRICE_ZONE_ID), Optional.of(NATIONAL_PROMO_ZONE_ID), NATIONAL_ZONE_CURRENCY);
         }
 
         StoreRepository storeRepository = new StoreRepository(dataGridResource.getStoreCache());
         final Store store = storeRepository.getByStoreId(storeId);
 
-        return new ProductPriceBuilder(store.getPriceZoneId().get(), store.getCurrency());
+        return new ProductPriceBuilder(store.getPriceZoneId(), store.getPromoZoneId(), store.getCurrency());
     }
 
 
