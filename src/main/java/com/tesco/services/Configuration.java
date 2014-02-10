@@ -36,6 +36,8 @@ public class Configuration extends com.yammer.dropwizard.config.Configuration {
     private String rpmPromotionDescCSVUrl;
     @JsonProperty("rpm.price.zone.data.dump")
     private String rpmPriceZoneDataPath;
+    @JsonProperty("rpm.promo.zone.data.dump")
+    private String rpmPromoZoneDataPath;
     @JsonProperty("datagrid.cache.location")
     private String cacheLocation;
 
@@ -101,5 +103,9 @@ public class Configuration extends com.yammer.dropwizard.config.Configuration {
 
     public String getCacheLocation() {
         return cacheLocation;
+    }
+
+    public String getRPMPromoZoneDataPath() {
+        return rpmPromoZoneDataPath;
     }
 }

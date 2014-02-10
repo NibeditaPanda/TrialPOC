@@ -19,6 +19,7 @@ import java.io.IOException;
 import static com.mongodb.QueryBuilder.start;
 import static com.tesco.services.adapters.core.TestFiles.RPM_PRICE_ZONE_CSV_FILE_PATH;
 import static com.tesco.services.adapters.core.TestFiles.RPM_PRICE_ZONE_PRICE_CSV_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.RPM_PROMO_ZONE_PRICE_CSV_FILE_PATH;
 import static com.tesco.services.adapters.core.TestFiles.RPM_PROMOTION_CSV_FILE_PATH;
 import static com.tesco.services.adapters.core.TestFiles.RPM_PROMOTION_DESC_CSV_FILE_PATH;
 import static com.tesco.services.adapters.core.TestFiles.RPM_STORE_ZONE_CSV_FILE_PATH;
@@ -69,7 +70,9 @@ public abstract class ImportJobTestBase {
                 SONETTO_PROMOTIONS_XSD_FILE_PATH,
                 "http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/Superstore/Online/Product/pos/%s.png",
                 RPM_PRICE_ZONE_PRICE_CSV_FILE_PATH,
-                dbFactory, dataGridResource);
+                RPM_PROMO_ZONE_PRICE_CSV_FILE_PATH,
+                dbFactory,
+                dataGridResource);
         importJob.run();
     }
 

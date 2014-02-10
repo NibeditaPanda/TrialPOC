@@ -11,4 +11,5 @@ public class TestFiles {
     public static final String SONETTO_PROMOTIONS_XSD_FILE_PATH = "./templates/Promotions.xsd";
 
     public static final String RPM_PRICE_ZONE_PRICE_CSV_FILE_PATH = "./src/test/resources/com/tesco/services/adapters/rpm/fixtures/price_zone_price.csv";
+    public static final String RPM_PROMO_ZONE_PRICE_CSV_FILE_PATH = "./src/test/resources/com/tesco/services/adapters/rpm/fixtures/promo_zone_price.csv";
 }

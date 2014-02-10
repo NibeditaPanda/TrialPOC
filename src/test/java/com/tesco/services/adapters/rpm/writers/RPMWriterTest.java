@@ -78,6 +78,9 @@ public class RPMWriterTest {
     private RPMPriceReader rpmPriceReader;
 
     @Mock
+    private RPMPriceReader rpmPromoReader;
+
+    @Mock
     private StoreRepository storeRepository;
 
     @Mock
@@ -97,6 +100,7 @@ public class RPMWriterTest {
                 productPriceRepository,
                 storeRepository,
                 rpmPriceReader,
+                rpmPromoReader,
                 storeZoneReader);
 
         when(uuidGenerator.getUUID()).thenReturn("uuid");
@@ -216,6 +220,28 @@ public class RPMWriterTest {
         expectedProduct.addProductVariant(expectedProductVariant2);
 
         inOrder.verify(productPriceRepository).put(expectedProduct);
+    }
+
+    @Test
+    public void shouldInsertPromoZonePrice() throws Exception {
+        final String tpnc = "059428124"; // This will change when TPNC story is played
+        ProductVariant productVariant = new ProductVariant(tpnc);
+        int zoneId = 5;
+
+        String price = "2.3";
+        productVariant.addSaleInfo(new SaleInfo(zoneId, price));
+
+        final String tpnb = "059428124";
+        Product product = new Product(tpnb);
+        product.addProductVariant(productVariant);
+        PriceDTO priceDTO = new PriceDTO("059428124", zoneId, price);
+
+        when(productPriceRepository.getByTPNB(tpnb)).thenReturn(product);
+        when(rpmPromoReader.getNext()).thenReturn(priceDTO).thenReturn(null);
+
+        this.rpmWriter.write();
+
+        verify(productPriceRepository).put(product);
     }
 
     @Test

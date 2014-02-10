@@ -81,10 +81,10 @@ public class PriceResource {
 
     @GET
     @Path("/{tpnIdentifier}/{tpn}")
-    @ApiOperation(value = "Find price of product variants by product's base tPNB/ Find price of specific product variant by its tpnc")
+    @ApiOperation(value = "Find price of product variants by product's base TPNB or variants' TPNC")
     @ApiResponses(value = {@ApiResponse(code = 404, message = "Product not found")})
     public Response get(
-            @ApiParam(value = "Type of identifier(B => TPNB, C => TPNC)") @PathParam("tpnIdentifier") String tpnIdentifier,
+            @ApiParam(value = "Type of identifier(B => TPNB, C => TPNC)", required = true) @PathParam("tpnIdentifier") String tpnIdentifier,
             @ApiParam(value = "TPNB/TPNC of Product", required = true) @PathParam("tpn") String tpn,
             @ApiParam(value = "ID of Store if a store-specific price is desired", required = false) @QueryParam("store") Integer storeId) {
 

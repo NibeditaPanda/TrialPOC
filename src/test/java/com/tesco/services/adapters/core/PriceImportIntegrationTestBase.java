@@ -56,6 +56,7 @@ public class PriceImportIntegrationTestBase extends ImportJobTestBase {
                 SONETTO_PROMOTIONS_XSD_FILE_PATH,
                 testConfiguration.getSonettoShelfImageUrl(),
                 RPM_PRICE_ZONE_PRICE_CSV_FILE_PATH,
+                RPM_PROMO_ZONE_PRICE_CSV_FILE_PATH,
                 dbFactory, dataGridResource);
         importJob.run();
 

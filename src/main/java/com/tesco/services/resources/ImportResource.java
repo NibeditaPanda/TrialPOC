@@ -1,16 +1,13 @@
 package com.tesco.services.resources;
 
 import com.tesco.services.Configuration;
-import com.tesco.services.core.Product;
+import com.tesco.services.adapters.core.ImportJob;
 import com.tesco.services.dao.DBFactory;
 import com.tesco.services.repositories.DataGridResource;
-import com.tesco.services.core.Promotion;
-import com.tesco.services.adapters.core.ImportJob;
 import com.yammer.metrics.annotation.ExceptionMetered;
 import com.yammer.metrics.annotation.Metered;
 import com.yammer.metrics.annotation.Timed;
 import org.apache.commons.configuration.ConfigurationException;
-import org.infinispan.Cache;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -49,7 +46,9 @@ public class ImportResource {
                     configuration.getSonettoPromotionXSDDataPath(),
                     configuration.getSonettoShelfImageUrl(),
                     configuration.getRPMPriceZoneDataPath(),
-                    dbFactory, dataGridResource);
+                    configuration.getRPMPromoZoneDataPath(),
+                    dbFactory,
+                    dataGridResource);
 
             Thread thread = new Thread(importJob);
             thread.start();

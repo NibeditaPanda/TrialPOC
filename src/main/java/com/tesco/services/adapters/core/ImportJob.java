@@ -37,6 +37,7 @@ public class ImportJob implements Runnable {
     private String rpmPromotionDescCSVUrl;
     private String sonettoPromotionXSDDataPath;
     private String rpmPriceZoneDataPath;
+    private String rpmPromoZoneDataPath;
     private com.tesco.services.dao.DBFactory dbFactory;
     private DataGridResource dataGridResource;
     private String sonettoPromotionsXMLFilePath;
@@ -50,7 +51,9 @@ public class ImportJob implements Runnable {
                       String sonettoPromotionXSDDataPath,
                       String sonettoShelfImageUrl,
                       String rpmPriceZoneDataPath,
-                      DBFactory dbFactory, DataGridResource dataGridResource) {
+                      String rpmPromoZoneDataPath,
+                      DBFactory dbFactory,
+                      DataGridResource dataGridResource) {
         this.rpmPriceZoneCsvFilePath = rpmPriceZoneCsvFilePath;
         this.rpmStoreZoneCsvFilePath = rpmStoreZoneCsvFilePath;
         this.rpmPromotionCsvFilePath = rpmPromotionCsvFilePath;
@@ -59,6 +62,7 @@ public class ImportJob implements Runnable {
         this.sonettoPromotionXSDDataPath = sonettoPromotionXSDDataPath;
         this.sonettoShelfImageUrl = sonettoShelfImageUrl;
         this.rpmPriceZoneDataPath = rpmPriceZoneDataPath;
+        this.rpmPromoZoneDataPath = rpmPromoZoneDataPath;
         this.dbFactory = dbFactory;
         this.dataGridResource = dataGridResource;
     }
@@ -128,6 +132,8 @@ public class ImportJob implements Runnable {
 
         RPMStoreZoneReader storeZoneReader = new RPMStoreZoneReaderImpl(rpmStoreZoneCsvFilePath);
 
+        RPMPriceReader rpmPromoReader = new RPMPriceReaderImpl(rpmPromoZoneDataPath);
+
         new RPMWriter(priceCollection,
                 storeCollection,
                 sonettoPromotionsXMLFilePath,
@@ -140,6 +146,7 @@ public class ImportJob implements Runnable {
                 productPriceRepository,
                 storeRepository,
                 rpmPriceReader,
+                rpmPromoReader,
                 storeZoneReader)
                 .write();
     }

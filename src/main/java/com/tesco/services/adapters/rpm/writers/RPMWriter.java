@@ -44,6 +44,7 @@ public class RPMWriter {
     private ProductPriceRepository productPriceRepository;
     private StoreRepository storeRepository;
     private RPMPriceReader rpmPriceReader;
+    private RPMPriceReader rpmPromoReader;
     private RPMStoreZoneReader storeZoneReader;
     private SonettoPromotionXMLReader sonettoPromotionXMLReader;
 
@@ -64,6 +65,7 @@ public class RPMWriter {
                      ProductPriceRepository productPriceRepository,
                      StoreRepository storeRepository,
                      RPMPriceReader rpmPriceReader,
+                     RPMPriceReader rpmPromoReader,
                      RPMStoreZoneReader storeZoneReader) throws IOException, ColumnNotFoundException {
 
         this.priceCollection = priceCollection;
@@ -78,6 +80,7 @@ public class RPMWriter {
         this.productPriceRepository = productPriceRepository;
         this.storeRepository = storeRepository;
         this.rpmPriceReader = rpmPriceReader;
+        this.rpmPromoReader = rpmPromoReader;
         this.storeZoneReader = storeZoneReader;
 
         insertCount = 0;
@@ -99,7 +102,8 @@ public class RPMWriter {
         // Using DataGrid
         // ===============
         logger.info("Importing price zone prices into DataGrid");
-        writePriceZonePrices();
+        writeZoneSpecificPrices(rpmPriceReader);
+        writeZoneSpecificPrices(rpmPromoReader);
         writeStoreZones();
     }
 
@@ -118,9 +122,9 @@ public class RPMWriter {
         }
     }
 
-    private void writePriceZonePrices() throws IOException {
+    private void writeZoneSpecificPrices(RPMPriceReader priceReader) throws IOException {
         PriceDTO priceDTO;
-        while((priceDTO = rpmPriceReader.getNext()) !=  null) {
+        while((priceDTO = priceReader.getNext()) !=  null) {
             String tpnb = priceDTO.getTPNB();
             Product product = productPriceRepository.getByTPNB(tpnb);
 
@@ -141,6 +145,7 @@ public class RPMWriter {
             productPriceRepository.put(product);
         }
     }
+
 
     private void writeToCollection(DBCollection collection, String identifierKey, RPMCSVFileReader reader) throws IOException {
         DBObject next;
