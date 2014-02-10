@@ -13,6 +13,7 @@ sonetto.promotions.data.dump : src/test/resources/com/tesco/services/adapters/so
 sonetto.promotions.xsd : templates/Promotions.xsd
 
 rpm.price.zone.data.dump : src/main/resources/com/tesco/services/adapters/rpm/CSVFiles/latest/PRICE_ZONE.csv
+rpm.promo.zone.data.dump : src/main/resources/com/tesco/services/adapters/rpm/CSVFiles/latest/PROM_ZONE.csv
 
 hostedGraphite:
   hostname: carbon.hostedgraphite.com
