@@ -15,7 +15,7 @@ import static com.tesco.services.core.PriceKeys.PRICE;
 import static com.tesco.services.core.PriceKeys.PROMO_PRICE;
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class PriceImportIntegrationTestBase extends ImportJobTestBase {
+public class PriceImportIntegrationTest extends ImportJobTestBase {
     private String oldTpnb;
 
     @Override
@@ -90,7 +90,7 @@ public class PriceImportIntegrationTestBase extends ImportJobTestBase {
         product.addProductVariant(productVariant2);
 
         ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceCache());
-        assertThat(productPriceRepository.getByTPNB(tpnb)).isEqualTo(product);
-        assertThat(productPriceRepository.getByTPNB(oldTpnb)).isNull();
+        assertThat(productPriceRepository.getByTPNB(tpnb).get()).isEqualTo(product);
+        assertThat(productPriceRepository.getByTPNB(oldTpnb).isPresent()).isFalse();
     }
 }

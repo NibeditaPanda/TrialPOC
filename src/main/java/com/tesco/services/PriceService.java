@@ -1,5 +1,6 @@
 package com.tesco.services;
 
+import com.tesco.services.mappers.*;
 import com.tesco.services.repositories.DataGridResource;
 import com.tesco.services.repositories.UUIDGenerator;
 import com.tesco.services.dao.PriceDAO;
@@ -52,6 +53,8 @@ public class PriceService extends Service<Configuration> {
         environment.addResource(new ImportResource(configuration, container.getComponent(DataGridResource.class)));
 
         environment.addProvider(new MongoUnavailableProvider());
+        environment.addProvider(new InvalidUrlMapper());
+        environment.addProvider(new ServerErrorMapper());
 
         /**
          *   @Toy commented out Graphite because tesco boxes don't have access to the Internet at the moment

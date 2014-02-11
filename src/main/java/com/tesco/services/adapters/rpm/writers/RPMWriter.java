@@ -1,5 +1,6 @@
 package com.tesco.services.adapters.rpm.writers;
 
+import com.google.common.base.Optional;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
@@ -126,13 +127,16 @@ public class RPMWriter {
     private void writeStoreZones() throws IOException {
         StoreDTO storeDTO;
         while((storeDTO = storeZoneReader.getNext()) != null) {
-            Store store = storeRepository.getByStoreId(storeDTO.getStoreId());
+            Optional<Store> storeContainer = storeRepository.getByStoreId(storeDTO.getStoreId());
 
-            if (store == null) {
-                store = new Store(storeDTO.getStoreId(), storeDTO.getPriceZoneId(), storeDTO.getPromoZoneId(), storeDTO.getCurrency());
-            } else {
+            Store store;
+
+            if (storeContainer.isPresent()) {
+                store = storeContainer.get();
                 store.setPriceZoneId(storeDTO.getPriceZoneId().or(store.getPriceZoneId()));
                 store.setPromoZoneId(storeDTO.getPromoZoneId().or(store.getPromoZoneId()));
+            } else {
+                store = new Store(storeDTO.getStoreId(), storeDTO.getPriceZoneId(), storeDTO.getPromoZoneId(), storeDTO.getCurrency());
             }
             storeRepository.put(store);
         }

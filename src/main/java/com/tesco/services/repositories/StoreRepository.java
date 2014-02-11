@@ -1,5 +1,6 @@
 package com.tesco.services.repositories;
 
+import com.google.common.base.Optional;
 import com.tesco.services.core.Store;
 import org.infinispan.Cache;
 
@@ -14,7 +15,8 @@ public class StoreRepository {
         storeCache.put(store.getStoreId(), store);
     }
 
-    public Store getByStoreId(int storeId) {
-        return storeCache.get(storeId);
+    public Optional<Store> getByStoreId(int storeId) {
+        Store store = storeCache.get(storeId);
+        return (store != null) ? Optional.of(store) : Optional.<Store>absent();
     }
 }

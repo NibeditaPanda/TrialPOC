@@ -350,6 +350,39 @@ public class PriceResourceTest extends ResourceTest {
         assertThat(actualProductPriceInfo).isEqualTo(getProductPriceMap(tpnb, variants));
     }
 
+    @Test
+    public void shouldReturn404WhenItemIsNotFound() throws ItemNotFoundException {
+        WebResource resource = client().resource("/price/B/non_existent_item");
+        ClientResponse response = resource.get(ClientResponse.class);
+
+        assertThat(response.getStatus()).isEqualTo(404);
+        assertThat(response.getEntity(String.class)).contains("Product not found");
+    }
+
+    @Test
+    public void shouldReturn404WhenStoreIsNotFound() throws Exception {
+        ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceCache());
+        productPriceRepository.put(createProductWithVariants("050925811", "266072275", "266072276"));
+
+        WebResource resource = client().resource("/price/B/050925811?store=2002");
+        ClientResponse response = resource.get(ClientResponse.class);
+
+        assertThat(response.getStatus()).isEqualTo(404);
+        assertThat(response.getEntity(String.class)).contains("Store not found");
+    }
+
+    @Test
+    public void shouldReturn404WhenStoreIsInvalid() throws Exception {
+        ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceCache());
+        productPriceRepository.put(createProductWithVariants("050925811", "266072275", "266072276"));
+
+        WebResource resource = client().resource("/price/B/050925811?store=invalidstore");
+        ClientResponse response = resource.get(ClientResponse.class);
+
+        assertThat(response.getStatus()).isEqualTo(400);
+        assertThat(response.getEntity(String.class)).contains("Invalid request");
+    }
+
     private Product createProductWithVariants(String tpnb, String tpnc1, String tpnc2) {
 
         ProductVariant productVariant1 = new ProductVariant(tpnc1);

@@ -24,11 +24,7 @@ public class ProductPriceMapper {
 
     private Product mapToProduct(Map<String, String> headerToValueMap, String zoneIdHeader, String priceHeader) {
         String tpnb = headerToValueMap.get(CSVHeaders.TPNB).split("-")[0]; //TODO: Remove the splitting logic once TPNC is given in the CSV extracts
-        Product product = productPriceRepository.getByTPNB(tpnb);
-
-        if (product == null) {
-            product = new Product(tpnb);
-        }
+        Product product = productPriceRepository.getByTPNB(tpnb).or(new Product(tpnb));
 
         String tpnc = headerToValueMap.get(CSVHeaders.TPNB); // Todo: to be changed to tpnc when we get tpnc
         ProductVariant productVariant = product.getProductVariantByTPNC(tpnc);

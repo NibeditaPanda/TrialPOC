@@ -168,17 +168,19 @@ public class RPMWriterTest {
 
     @Test
     public void shouldInsertPriceZonePrice() throws Exception {
-        ProductVariant productVariant = new ProductVariant("059428124");
+        String tpnb = "059428124";
+        ProductVariant productVariant = new ProductVariant(tpnb);
         int zoneId = 1;
         String price = "2.4";
         productVariant.addSaleInfo(new SaleInfo(zoneId, price));
 
-        Product product = new Product("059428124");
+        Product product = new Product(tpnb);
         product.addProductVariant(productVariant);
 
-        Map<String, String> productInfoMap = productInfoMap("059428124", zoneId, price);
+        Map<String, String> productInfoMap = productInfoMap(tpnb, zoneId, price);
         when(rpmPriceReader.getNext()).thenReturn(productInfoMap).thenReturn(null);
 
+        when(productPriceRepository.getByTPNB(tpnb)).thenReturn(Optional.<Product>absent());
         this.rpmWriter.write();
 
         verify(productPriceRepository).put(product);
@@ -194,7 +196,7 @@ public class RPMWriterTest {
 
         Product product = createProductWithVariant(itemNumber, itemNumber);
 
-        when(productPriceRepository.getByTPNB(itemNumber)).thenReturn(null).thenReturn(product);
+        when(productPriceRepository.getByTPNB(itemNumber)).thenReturn(Optional.<Product>absent()).thenReturn(Optional.of(product));
 
         this.rpmWriter.write();
         
@@ -223,7 +225,7 @@ public class RPMWriterTest {
 
         Product product = createProductWithVariant(tpnb, itemNumber);
 
-        when(productPriceRepository.getByTPNB(tpnb)).thenReturn(null).thenReturn(product);
+        when(productPriceRepository.getByTPNB(tpnb)).thenReturn(Optional.<Product>absent()).thenReturn(Optional.of(product));
 
         this.rpmWriter.write();
 
@@ -271,7 +273,7 @@ public class RPMWriterTest {
         product.addProductVariant(productVariant);
         Map<String, String> productInfoMap = productPromoInfoMap("059428124", zoneId, price);
 
-        when(productPriceRepository.getByTPNB(tpnb)).thenReturn(product);
+        when(productPriceRepository.getByTPNB(tpnb)).thenReturn(Optional.of(product));
         when(rpmPromoReader.getNext()).thenReturn(productInfoMap).thenReturn(null);
 
         this.rpmWriter.write();
@@ -285,7 +287,8 @@ public class RPMWriterTest {
         int secondStoreId = 2003;
 
         when(storeZoneReader.getNext()).thenReturn(new StoreDTO(firstStoreId, 1, 1, "GBP")).thenReturn(new StoreDTO(secondStoreId, 2, 1, "EUR")).thenReturn(null);
-
+        when(storeRepository.getByStoreId(firstStoreId)).thenReturn(Optional.<Store>absent());
+        when(storeRepository.getByStoreId(secondStoreId)).thenReturn(Optional.<Store>absent());
         this.rpmWriter.write();
 
         InOrder inOrder = inOrder(storeRepository);
@@ -298,7 +301,8 @@ public class RPMWriterTest {
         int storeId = 2002;
 
         when(storeZoneReader.getNext()).thenReturn(new StoreDTO(storeId, 1, 1, "GBP")).thenReturn(new StoreDTO(storeId, 5, 2, "GBP")).thenReturn(null);
-        when(storeRepository.getByStoreId(storeId)).thenReturn(null).thenReturn(new Store(storeId, Optional.of(1), Optional.<Integer>absent(), "GBP"));
+        Store store = new Store(storeId, Optional.of(1), Optional.<Integer>absent(), "GBP");
+        when(storeRepository.getByStoreId(storeId)).thenReturn(Optional.<Store>absent()).thenReturn(Optional.of(store));
 
         this.rpmWriter.write();
 

@@ -25,6 +25,13 @@ public class ProductPriceRepositoryTest {
         String tpnb = "123455";
         Product product = new Product(tpnb);
         productPriceRepository.put(product);
-        assertThat(productPriceRepository.getByTPNB(tpnb)).isEqualTo(product);
+        assertThat(productPriceRepository.getByTPNB(tpnb).get()).isEqualTo(product);
+    }
+
+    @Test
+    public void shouldReturnNullObjectWhenProductIsNotFound() throws Exception {
+        ProductPriceRepository productPriceRepository = new ProductPriceRepository(productPriceCache);
+        String tpnb = "12345";
+        assertThat(productPriceRepository.getByTPNB(tpnb).isPresent()).isFalse();
     }
 }

@@ -27,7 +27,14 @@ public class StoreRepositoryTest {
 
         storeRepository.put(store);
 
-        assertThat(storeRepository.getByStoreId(storeId)).isEqualTo(store);
+        assertThat(storeRepository.getByStoreId(storeId)).isEqualTo(Optional.of(store));
+    }
+
+    @Test
+    public void shouldReturnNullObjectWhenProductIsNotFound() throws Exception {
+        StoreRepository storeRepository = new StoreRepository(storeCache);
+        int storeId = 1234;
+        assertThat(storeRepository.getByStoreId(storeId).isPresent()).isFalse();
     }
 
 }

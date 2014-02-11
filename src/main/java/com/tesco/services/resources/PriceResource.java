@@ -46,6 +46,9 @@ public class PriceResource {
     public static final String NATIONAL_ZONE_CURRENCY = "GBP";
     private static final int NATIONAL_PROMO_ZONE_ID = 5;
 
+    public static final String STORE_NOT_FOUND = "Store not found";
+    public static final String PRODUCT_NOT_FOUND = "Product not found";
+
     private PriceDAO priceDAO;
     private DataGridResource dataGridResource;
 
@@ -65,7 +68,6 @@ public class PriceResource {
             @ApiParam(value = "ItemNumber (Base tPNB) of product whose price needs to be fetched", required = true) @PathParam("itemNumber") String itemNumber,
             @ApiParam(value = "ID of Store if a store-specific price is desired", required = false) @QueryParam("store") String storeId,
             @Context UriInfo uriInfo) {
-
         MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
         if (storeQueryParamWasSentWithoutAStoreID(storeId, queryParameters)) return badRequest();
 
@@ -89,26 +91,41 @@ public class PriceResource {
     public Response get(
             @ApiParam(value = "Type of identifier(B => TPNB, C => TPNC)", required = true) @PathParam("tpnIdentifier") String tpnIdentifier,
             @ApiParam(value = "TPNB/TPNC of Product", required = true) @PathParam("tpn") String tpn,
-            @ApiParam(value = "ID of Store if a store-specific price is desired", required = false) @QueryParam("store") Integer storeId) {
+            @ApiParam(value = "ID of Store if a store-specific price is desired", required = false) @QueryParam("store") String storeId) {
 
         ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceCache());
-        Product product = productPriceRepository.getByTPNB(tpn);
+        Optional<Product> productContainer = productPriceRepository.getByTPNB(tpn);
 
-        ProductPriceBuilder productPriceVisitor = getProductPriceBuilder(storeId);
-        product.accept(productPriceVisitor);
+        if (!productContainer.isPresent()) return notFound(PRODUCT_NOT_FOUND);
 
-        return ok(productPriceVisitor.getPriceInfo());
-    }
-
-    private ProductPriceBuilder getProductPriceBuilder(Integer storeId) {
         if (storeId == null) {
-            return new ProductPriceBuilder(Optional.of(NATIONAL_PRICE_ZONE_ID), Optional.of(NATIONAL_PROMO_ZONE_ID), NATIONAL_ZONE_CURRENCY);
+            return getPriceResponse(productContainer, Optional.of(NATIONAL_PRICE_ZONE_ID), Optional.of(NATIONAL_PROMO_ZONE_ID), NATIONAL_ZONE_CURRENCY);
         }
 
-        StoreRepository storeRepository = new StoreRepository(dataGridResource.getStoreCache());
-        final Store store = storeRepository.getByStoreId(storeId);
+        return getPriceResponse(storeId, productContainer);
+    }
 
-        return new ProductPriceBuilder(store.getPriceZoneId(), store.getPromoZoneId(), store.getCurrency());
+    private Response getPriceResponse(String storeIdValue, Optional<Product> productContainer) {
+        StoreRepository storeRepository = new StoreRepository(dataGridResource.getStoreCache());
+        int storeId;
+
+        try {
+            storeId = Integer.parseInt(storeIdValue);
+        } catch (NumberFormatException e) {
+            return badRequest();
+        }
+        Optional<Store> storeContainer = storeRepository.getByStoreId(storeId);
+
+        if (!storeContainer.isPresent()) return notFound(STORE_NOT_FOUND);
+
+        Store store = storeContainer.get();
+        return getPriceResponse(productContainer, store.getPriceZoneId(), store.getPromoZoneId(), store.getCurrency());
+    }
+
+    private Response getPriceResponse(Optional<Product> productContainer, Optional<Integer> priceZoneId, Optional<Integer> promoZoneId, String currency) {
+        ProductPriceBuilder productPriceVisitor = new ProductPriceBuilder(priceZoneId, promoZoneId, currency);
+        productContainer.get().accept(productPriceVisitor);
+        return ok(productPriceVisitor.getPriceInfo());
     }
 
 

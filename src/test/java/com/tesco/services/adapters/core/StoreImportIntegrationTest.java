@@ -12,7 +12,7 @@ import static com.tesco.services.adapters.core.TestFiles.*;
 import static com.tesco.services.core.PriceKeys.*;
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class StoreImportIntegrationTestBase extends ImportJobTestBase {
+public class StoreImportIntegrationTest extends ImportJobTestBase {
     private int oldStoreId = 4002;
 
     @Override
@@ -66,8 +66,8 @@ public class StoreImportIntegrationTestBase extends ImportJobTestBase {
         Store store = new Store(storeId, Optional.of(1), Optional.of(5), "GBP");
 
         StoreRepository storeRepository = new StoreRepository(dataGridResource.getStoreCache());
-        assertThat(storeRepository.getByStoreId(storeId)).isEqualTo(store);
-        assertThat(storeRepository.getByStoreId(oldStoreId)).isNull();
+        assertThat(storeRepository.getByStoreId(storeId).get()).isEqualTo(store);
+        assertThat(storeRepository.getByStoreId(oldStoreId).isPresent()).isFalse();
     }
 
     private DBObject getStore(String storeId) {
