@@ -11,7 +11,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class PriceCSVReaderImplTest {
+public class PriceServiceCSVReaderImplTest {
     final String itemHeader = "ITEM";
     final String priceZoneIdHeader = "PRICE_ZONE_ID";
     final String sellingRetailHeader = "SELLING_RETAIL";
@@ -19,7 +19,7 @@ public class PriceCSVReaderImplTest {
     @Test
     public void shouldGetRecord() throws Exception {
         final String filePath = "./src/test/java/com/tesco/services/adapters/rpm/readers/fixtures/single_price_zone.csv";
-        PriceCSVReaderImpl csvPriceReader = new PriceCSVReaderImpl(filePath, itemHeader, priceZoneIdHeader, sellingRetailHeader);
+        PriceServiceCSVReaderImpl csvPriceReader = new PriceServiceCSVReaderImpl(filePath, itemHeader, priceZoneIdHeader, sellingRetailHeader);
 
         assertThat(csvPriceReader.getNext()).isEqualTo(getHeaderToValueMap("122223", "1", "1.5"));
         assertThat(csvPriceReader.getNext()).isNull();
@@ -28,7 +28,7 @@ public class PriceCSVReaderImplTest {
     @Test
     public void shouldGetMultipleRecords() throws Exception {
         final String filePath = "./src/test/java/com/tesco/services/adapters/rpm/readers/fixtures/multiple_price_zone.csv";
-        PriceCSVReaderImpl csvPriceReader = new PriceCSVReaderImpl(filePath, itemHeader, priceZoneIdHeader, sellingRetailHeader);
+        PriceServiceCSVReaderImpl csvPriceReader = new PriceServiceCSVReaderImpl(filePath, itemHeader, priceZoneIdHeader, sellingRetailHeader);
 
         assertThat(csvPriceReader.getNext()).isEqualTo(getHeaderToValueMap("122223", "1", "1.5"));
         assertThat(csvPriceReader.getNext()).isEqualTo(getHeaderToValueMap("122223-001", "1", "1.7"));
@@ -38,7 +38,7 @@ public class PriceCSVReaderImplTest {
     @Test
     public void shouldIgnoreUnwantedHeaders() throws Exception {
         final String filePath = "./src/test/java/com/tesco/services/adapters/rpm/readers/fixtures/single_price_zone.csv";
-        PriceCSVReaderImpl csvPriceReader = new PriceCSVReaderImpl(filePath, itemHeader, priceZoneIdHeader, sellingRetailHeader);
+        PriceServiceCSVReaderImpl csvPriceReader = new PriceServiceCSVReaderImpl(filePath, itemHeader, priceZoneIdHeader, sellingRetailHeader);
 
         assertThat(csvPriceReader.getNext()).doesNotContainKey("EXTRA_HEADER");
     }
@@ -46,14 +46,14 @@ public class PriceCSVReaderImplTest {
     @Test(expected = ColumnNotFoundException.class)
     public void shouldThrowExceptionForMissingHeader() throws Exception {
         final String filePath = "./src/test/java/com/tesco/services/adapters/rpm/readers/fixtures/single_price_zone.csv";
-        new PriceCSVReaderImpl(filePath, itemHeader, priceZoneIdHeader, sellingRetailHeader, "MISSING_HEADER");
+        new PriceServiceCSVReaderImpl(filePath, itemHeader, priceZoneIdHeader, sellingRetailHeader, "MISSING_HEADER");
     }
 
     @Test
     public void shouldCloseReaderAfterReading() throws Exception {
         CSVReader csvReaderMock = mock(CSVReader.class);
         when(csvReaderMock.readNext()).thenReturn(new String[]{}).thenReturn(null);
-        PriceCSVReaderImpl csvPriceReader = new PriceCSVReaderImpl(csvReaderMock, new String[]{});
+        PriceServiceCSVReaderImpl csvPriceReader = new PriceServiceCSVReaderImpl(csvReaderMock, new String[]{});
 
         csvPriceReader.getNext();
 

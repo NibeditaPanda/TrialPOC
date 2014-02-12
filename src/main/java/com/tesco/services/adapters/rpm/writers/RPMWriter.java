@@ -1,19 +1,12 @@
 package com.tesco.services.adapters.rpm.writers;
 
-import com.google.common.base.Optional;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
 import com.tesco.services.adapters.core.exceptions.ColumnNotFoundException;
-import com.tesco.services.adapters.rpm.dto.StoreDTO;
-import com.tesco.services.adapters.rpm.readers.PriceCSVReader;
-import com.tesco.services.adapters.rpm.readers.RPMCSVFileReader;
-import com.tesco.services.adapters.rpm.readers.RPMPriceZoneCSVFileReader;
-import com.tesco.services.adapters.rpm.readers.RPMPromotionCSVFileReader;
-import com.tesco.services.adapters.rpm.readers.RPMPromotionDescriptionCSVFileReader;
-import com.tesco.services.adapters.rpm.readers.RPMStoreZoneCSVFileReader;
-import com.tesco.services.adapters.rpm.readers.RPMStoreZoneReader;
+import com.tesco.services.adapters.rpm.readers.*;
+import com.tesco.services.adapters.rpm.readers.PriceServiceCSVReader;
 import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
 import com.tesco.services.core.Product;
 import com.tesco.services.core.Promotion;
@@ -60,9 +53,9 @@ public class RPMWriter {
     private RPMPromotionDescriptionCSVFileReader rpmPromotionDescriptionCSVFileReader;
     private ProductPriceRepository productPriceRepository;
     private StoreRepository storeRepository;
-    private PriceCSVReader rpmPriceReader;
-    private PriceCSVReader rpmPromoReader;
-    private RPMStoreZoneReader storeZoneReader;
+    private PriceServiceCSVReader rpmPriceReader;
+    private PriceServiceCSVReader rpmPromoReader;
+    private PriceServiceCSVReader storeZoneReader;
     private SonettoPromotionXMLReader sonettoPromotionXMLReader;
 
     private PromotionRepository promotionRepository;
@@ -81,9 +74,9 @@ public class RPMWriter {
                      RPMPromotionDescriptionCSVFileReader rpmPromotionDescriptionCSVFileReader,
                      ProductPriceRepository productPriceRepository,
                      StoreRepository storeRepository,
-                     PriceCSVReader rpmPriceReader,
-                     PriceCSVReader rpmPromoReader,
-                     RPMStoreZoneReader storeZoneReader) throws IOException, ColumnNotFoundException {
+                     PriceServiceCSVReader rpmPriceReader,
+                     PriceServiceCSVReader rpmPromoReader,
+                     PriceServiceCSVReader storeZoneReader) throws IOException, ColumnNotFoundException {
 
         this.priceCollection = priceCollection;
         this.storeCollection = storeCollection;
@@ -125,19 +118,11 @@ public class RPMWriter {
     }
 
     private void writeStoreZones() throws IOException {
-        StoreDTO storeDTO;
-        while((storeDTO = storeZoneReader.getNext()) != null) {
-            Optional<Store> storeContainer = storeRepository.getByStoreId(storeDTO.getStoreId());
+        Map<String, String> storeInfoMap;
+        StoreMapper storeMapper = new StoreMapper(storeRepository);
 
-            Store store;
-
-            if (storeContainer.isPresent()) {
-                store = storeContainer.get();
-                store.setPriceZoneId(storeDTO.getPriceZoneId().or(store.getPriceZoneId()));
-                store.setPromoZoneId(storeDTO.getPromoZoneId().or(store.getPromoZoneId()));
-            } else {
-                store = new Store(storeDTO.getStoreId(), storeDTO.getPriceZoneId(), storeDTO.getPromoZoneId(), storeDTO.getCurrency());
-            }
+        while((storeInfoMap = storeZoneReader.getNext()) !=  null) {
+            final Store store = storeMapper.map(storeInfoMap);
             storeRepository.put(store);
         }
     }

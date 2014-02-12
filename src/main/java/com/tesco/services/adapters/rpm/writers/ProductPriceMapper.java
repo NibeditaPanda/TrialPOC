@@ -15,18 +15,18 @@ public class ProductPriceMapper {
     }
 
     public Product mapPriceZonePrice(Map<String, String> headerToValueMap) {
-        return mapToProduct(headerToValueMap, CSVHeaders.PRICE_ZONE_ID, CSVHeaders.PRICE_ZONE_PRICE);
+        return mapToProduct(headerToValueMap, CSVHeaders.Price.PRICE_ZONE_ID, CSVHeaders.Price.PRICE_ZONE_PRICE);
     }
 
     public Product mapPromoZonePrice(Map<String, String> headerToValueMap) {
-        return mapToProduct(headerToValueMap, CSVHeaders.PROMO_ZONE_ID, CSVHeaders.PROMO_ZONE_PRICE);
+        return mapToProduct(headerToValueMap, CSVHeaders.Price.PROMO_ZONE_ID, CSVHeaders.Price.PROMO_ZONE_PRICE);
     }
 
     private Product mapToProduct(Map<String, String> headerToValueMap, String zoneIdHeader, String priceHeader) {
-        String tpnb = headerToValueMap.get(CSVHeaders.TPNB).split("-")[0]; //TODO: Remove the splitting logic once TPNC is given in the CSV extracts
+        String tpnb = headerToValueMap.get(CSVHeaders.Price.TPNB).split("-")[0]; //TODO: Remove the splitting logic once TPNC is given in the CSV extracts
         Product product = productPriceRepository.getByTPNB(tpnb).or(new Product(tpnb));
 
-        String tpnc = headerToValueMap.get(CSVHeaders.TPNB); // Todo: to be changed to tpnc when we get tpnc
+        String tpnc = headerToValueMap.get(CSVHeaders.Price.TPNB); // Todo: to be changed to tpnc when we get tpnc
         ProductVariant productVariant = product.getProductVariantByTPNC(tpnc);
 
         if (productVariant == null) {

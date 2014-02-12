@@ -5,13 +5,8 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.WriteResult;
-import com.tesco.services.adapters.rpm.dto.StoreDTO;
-import com.tesco.services.adapters.rpm.readers.PriceCSVReader;
-import com.tesco.services.adapters.rpm.readers.RPMPriceZoneCSVFileReader;
-import com.tesco.services.adapters.rpm.readers.RPMPromotionCSVFileReader;
-import com.tesco.services.adapters.rpm.readers.RPMPromotionDescriptionCSVFileReader;
-import com.tesco.services.adapters.rpm.readers.RPMStoreZoneCSVFileReader;
-import com.tesco.services.adapters.rpm.readers.RPMStoreZoneReader;
+import com.tesco.services.adapters.rpm.readers.*;
+import com.tesco.services.adapters.rpm.readers.PriceServiceCSVReader;
 import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
 import com.tesco.services.core.PriceKeys;
 import com.tesco.services.core.Product;
@@ -90,16 +85,16 @@ public class RPMWriterTest {
     private ProductPriceRepository productPriceRepository;
 
     @Mock
-    private PriceCSVReader rpmPriceReader;
+    private PriceServiceCSVReader rpmPriceReader;
 
     @Mock
-    private PriceCSVReader rpmPromoReader;
+    private PriceServiceCSVReader rpmPromoReader;
 
     @Mock
     private StoreRepository storeRepository;
 
     @Mock
-    private RPMStoreZoneReader storeZoneReader;
+    private PriceServiceCSVReader storeZoneReader;
 
     @Before
     public void setUp() throws Exception {
@@ -119,6 +114,7 @@ public class RPMWriterTest {
                 storeZoneReader);
         when(rpmPriceReader.getNext()).thenReturn(null);
         when(rpmPromoReader.getNext()).thenReturn(null);
+        when(storeZoneReader.getNext()).thenReturn(null);
 
         when(uuidGenerator.getUUID()).thenReturn("uuid");
 
@@ -243,18 +239,18 @@ public class RPMWriterTest {
 
     private Map<String, String> productInfoMap(String itemNumber, int zoneId, String price) {
         Map<String, String> productInfoMap = new HashMap<>();
-        productInfoMap.put(CSVHeaders.TPNB, itemNumber);
-        productInfoMap.put(CSVHeaders.PRICE_ZONE_ID, String.valueOf(zoneId));
-        productInfoMap.put(CSVHeaders.PRICE_ZONE_PRICE, price);
+        productInfoMap.put(CSVHeaders.Price.TPNB, itemNumber);
+        productInfoMap.put(CSVHeaders.Price.PRICE_ZONE_ID, String.valueOf(zoneId));
+        productInfoMap.put(CSVHeaders.Price.PRICE_ZONE_PRICE, price);
 
         return productInfoMap;
     }
 
     private Map<String, String> productPromoInfoMap(String itemNumber, int zoneId, String price) {
         Map<String, String> productInfoMap = new HashMap<>();
-        productInfoMap.put(CSVHeaders.TPNB, itemNumber);
-        productInfoMap.put(CSVHeaders.PROMO_ZONE_ID, String.valueOf(zoneId));
-        productInfoMap.put(CSVHeaders.PROMO_ZONE_PRICE, price);
+        productInfoMap.put(CSVHeaders.Price.TPNB, itemNumber);
+        productInfoMap.put(CSVHeaders.Price.PROMO_ZONE_ID, String.valueOf(zoneId));
+        productInfoMap.put(CSVHeaders.Price.PROMO_ZONE_PRICE, price);
 
         return productInfoMap;
     }
@@ -286,7 +282,7 @@ public class RPMWriterTest {
         int firstStoreId = 2002;
         int secondStoreId = 2003;
 
-        when(storeZoneReader.getNext()).thenReturn(new StoreDTO(firstStoreId, 1, 1, "GBP")).thenReturn(new StoreDTO(secondStoreId, 2, 1, "EUR")).thenReturn(null);
+        when(storeZoneReader.getNext()).thenReturn(getStoreInfoMap(firstStoreId, 1, 1, "GBP")).thenReturn(getStoreInfoMap(secondStoreId, 2, 1, "EUR")).thenReturn(null);
         when(storeRepository.getByStoreId(firstStoreId)).thenReturn(Optional.<Store>absent());
         when(storeRepository.getByStoreId(secondStoreId)).thenReturn(Optional.<Store>absent());
         this.rpmWriter.write();
@@ -296,11 +292,21 @@ public class RPMWriterTest {
         inOrder.verify(storeRepository).put(new Store(secondStoreId, Optional.of(2), Optional.<Integer>absent(), "EUR"));
     }
 
+    private Map<String,String> getStoreInfoMap(int firstStoreId, int zoneId, int zoneType, String currency) {
+        Map<String, String> storeInfoMap = new HashMap<>();
+        storeInfoMap.put(CSVHeaders.StoreZone.STORE_ID, String.valueOf(firstStoreId));
+        storeInfoMap.put(CSVHeaders.StoreZone.ZONE_ID, String.valueOf(zoneId));
+        storeInfoMap.put(CSVHeaders.StoreZone.ZONE_TYPE, String.valueOf(zoneType));
+        storeInfoMap.put(CSVHeaders.StoreZone.CURRENCY_CODE, currency);
+
+        return storeInfoMap;
+    }
+
     @Test
     public void shouldInsertStorePriceAndPromoZones() throws Exception {
         int storeId = 2002;
 
-        when(storeZoneReader.getNext()).thenReturn(new StoreDTO(storeId, 1, 1, "GBP")).thenReturn(new StoreDTO(storeId, 5, 2, "GBP")).thenReturn(null);
+        when(storeZoneReader.getNext()).thenReturn(getStoreInfoMap(storeId, 1, 1, "GBP")).thenReturn(getStoreInfoMap(storeId, 5, 2, "GBP")).thenReturn(null);
         Store store = new Store(storeId, Optional.of(1), Optional.<Integer>absent(), "GBP");
         when(storeRepository.getByStoreId(storeId)).thenReturn(Optional.<Store>absent()).thenReturn(Optional.of(store));
 

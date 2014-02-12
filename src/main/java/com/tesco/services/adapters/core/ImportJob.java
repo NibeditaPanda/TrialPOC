@@ -129,10 +129,9 @@ public class ImportJob implements Runnable {
         ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceRefreshCache());
         StoreRepository storeRepository = new StoreRepository(dataGridResource.getStoreRefreshCache());
 
-        PriceCSVReader rpmPriceReader = new PriceCSVReaderImpl(rpmPriceZoneDataPath, CSVHeaders.PRICE_ZONE_HEADERS);
-        PriceCSVReader rpmPromoReader = new PriceCSVReaderImpl(rpmPromoZoneDataPath, CSVHeaders.PROMO_ZONE_HEADERS);
-        RPMStoreZoneReader storeZoneReader = new RPMStoreZoneReaderImpl(rpmStoreZoneCsvFilePath);
-
+        PriceServiceCSVReader rpmPriceReader = new PriceServiceCSVReaderImpl(rpmPriceZoneDataPath, CSVHeaders.Price.PRICE_ZONE_HEADERS);
+        PriceServiceCSVReader rpmPromoReader = new PriceServiceCSVReaderImpl(rpmPromoZoneDataPath, CSVHeaders.Price.PROMO_ZONE_HEADERS);
+        PriceServiceCSVReader storeZoneReader = new PriceServiceCSVReaderImpl(rpmStoreZoneCsvFilePath, CSVHeaders.StoreZone.HEADERS);
 
         new RPMWriter(priceCollection,
                 storeCollection,

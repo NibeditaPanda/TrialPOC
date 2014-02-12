@@ -17,6 +17,10 @@ public class Store implements Serializable {
         this.currency = currency;
     }
 
+    public Store(int storeId, String currency) {
+        this(storeId, Optional.<Integer>absent(), Optional.<Integer>absent(), currency);
+    }
+
     public void setPriceZoneId(Optional<Integer> priceZoneId) {
         this.priceZoneId = priceZoneId.or(-1);
     }
