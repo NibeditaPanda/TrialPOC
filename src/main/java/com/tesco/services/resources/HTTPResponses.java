@@ -6,6 +6,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;
 
 public class HTTPResponses {
+    public static final String INTERNAL_SERVER_ERROR = "Internal Server Error";
+    public static final String INVALID_REQUEST = "Invalid request";
 
     public static Response ok(Object entity) {
         return Response.status(HttpServletResponse.SC_OK).entity(entity).build();
@@ -20,10 +22,10 @@ public class HTTPResponses {
     }
 
     public static Response badRequest() {
-        return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity("{\"error\":\"Invalid request\"}").build();
+        return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity(String.format("{\"error\":\"%s\"}", INVALID_REQUEST)).build();
     }
 
     public static Response serverError() {
-        return Response.serverError().entity("{\"message\":\"Internal Server Error.\"}").build();
+        return Response.serverError().entity(String.format("{\"message\":\"%s\"}", INTERNAL_SERVER_ERROR)).build();
     }
 }

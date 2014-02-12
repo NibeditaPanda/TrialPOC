@@ -379,6 +379,15 @@ public class PriceResourceTest extends ResourceTest {
         WebResource resource = client().resource("/price/B/050925811?store=invalidstore");
         ClientResponse response = resource.get(ClientResponse.class);
 
+        assertThat(response.getStatus()).isEqualTo(404);
+        assertThat(response.getEntity(String.class)).contains("Store not found");
+    }
+
+    @Test
+    public void shouldReturn400WhenIncorrectQueryParamIsGiven() throws Exception {
+        WebResource resource = client().resource("/price/B/050925811?storee=store");
+        ClientResponse response = resource.get(ClientResponse.class);
+
         assertThat(response.getStatus()).isEqualTo(400);
         assertThat(response.getEntity(String.class)).contains("Invalid request");
     }

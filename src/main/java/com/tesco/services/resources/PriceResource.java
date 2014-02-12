@@ -48,6 +48,8 @@ public class PriceResource {
 
     public static final String STORE_NOT_FOUND = "Store not found";
     public static final String PRODUCT_NOT_FOUND = "Product not found";
+    private static final String PRODUCT_OR_STORE_NOT_FOUND = PRODUCT_NOT_FOUND + " / " + STORE_NOT_FOUND;
+
 
     private PriceDAO priceDAO;
     private DataGridResource dataGridResource;
@@ -87,11 +89,18 @@ public class PriceResource {
     @GET
     @Path("/{tpnIdentifier}/{tpn}")
     @ApiOperation(value = "Find price of product variants by product's base TPNB or variants' TPNC")
-    @ApiResponses(value = {@ApiResponse(code = 404, message = "Product not found")})
+    @ApiResponses(value = {
+            @ApiResponse(code = 404, message =  PRODUCT_OR_STORE_NOT_FOUND),
+            @ApiResponse(code = 400, message = HTTPResponses.INVALID_REQUEST),
+            @ApiResponse(code = 500, message = HTTPResponses.INTERNAL_SERVER_ERROR)
+    })
     public Response get(
             @ApiParam(value = "Type of identifier(B => TPNB, C => TPNC)", required = true) @PathParam("tpnIdentifier") String tpnIdentifier,
             @ApiParam(value = "TPNB/TPNC of Product", required = true) @PathParam("tpn") String tpn,
-            @ApiParam(value = "ID of Store if a store-specific price is desired", required = false) @QueryParam("store") String storeId) {
+            @ApiParam(value = "ID of Store if a store-specific price is desired", required = false) @QueryParam("store") String storeId,
+            @Context UriInfo uriInfo) {
+
+        if (storeQueryParamWasSentWithoutAStoreID(storeId, uriInfo.getQueryParameters())) return badRequest();
 
         ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceCache());
         Optional<Product> productContainer = productPriceRepository.getByTPNB(tpn);
@@ -112,8 +121,9 @@ public class PriceResource {
         try {
             storeId = Integer.parseInt(storeIdValue);
         } catch (NumberFormatException e) {
-            return badRequest();
+            return notFound(STORE_NOT_FOUND);
         }
+
         Optional<Store> storeContainer = storeRepository.getByStoreId(storeId);
 
         if (!storeContainer.isPresent()) return notFound(STORE_NOT_FOUND);

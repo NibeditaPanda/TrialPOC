@@ -17,7 +17,7 @@ public class MongoUnavailableProviderTest {
         MongoException exeception = new MongoInternalException("Internal Server Error.");
         Response response = mongoUnavailableProvider.toResponse(exeception);
 
-        assertThat(response.getEntity().toString()).isEqualTo("{\"message\":\"Internal Server Error.\"}");
+        assertThat(response.getEntity().toString()).isEqualTo("{\"message\":\"Internal Server Error\"}");
         assertThat(response.getStatus() == 500);
     }
 }
