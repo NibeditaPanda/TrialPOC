@@ -11,7 +11,7 @@ import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
 import com.tesco.services.core.Product;
 import com.tesco.services.core.Promotion;
 import com.tesco.services.core.Store;
-import com.tesco.services.repositories.ProductPriceRepository;
+import com.tesco.services.repositories.ProductRepository;
 import com.tesco.services.repositories.PromotionRepository;
 import com.tesco.services.repositories.StoreRepository;
 import org.slf4j.Logger;
@@ -51,11 +51,13 @@ public class RPMWriter {
     private RPMPromotionCSVFileReader rpmPromotionCSVFileReader;
 
     private RPMPromotionDescriptionCSVFileReader rpmPromotionDescriptionCSVFileReader;
-    private ProductPriceRepository productPriceRepository;
+    private ProductRepository productRepository;
     private StoreRepository storeRepository;
     private PriceServiceCSVReader rpmPriceReader;
-    private PriceServiceCSVReader rpmPromoReader;
+    private PriceServiceCSVReader rpmPromoPriceReader;
     private PriceServiceCSVReader storeZoneReader;
+    private PriceServiceCSVReader rpmPromotionReader;
+
     private SonettoPromotionXMLReader sonettoPromotionXMLReader;
 
     private PromotionRepository promotionRepository;
@@ -72,11 +74,12 @@ public class RPMWriter {
                      PromotionRepository promotionRepository,
                      RPMPromotionCSVFileReader rpmPromotionCSVFileReader,
                      RPMPromotionDescriptionCSVFileReader rpmPromotionDescriptionCSVFileReader,
-                     ProductPriceRepository productPriceRepository,
+                     ProductRepository productRepository,
                      StoreRepository storeRepository,
                      PriceServiceCSVReader rpmPriceReader,
-                     PriceServiceCSVReader rpmPromoReader,
-                     PriceServiceCSVReader storeZoneReader) throws IOException, ColumnNotFoundException {
+                     PriceServiceCSVReader rpmPromoPriceReader,
+                     PriceServiceCSVReader storeZoneReader,
+                     PriceServiceCSVReader rpmPromotionReader) throws IOException, ColumnNotFoundException {
 
         this.priceCollection = priceCollection;
         this.storeCollection = storeCollection;
@@ -87,11 +90,12 @@ public class RPMWriter {
         this.promotionRepository = promotionRepository;
         this.rpmPromotionCSVFileReader = rpmPromotionCSVFileReader;
         this.rpmPromotionDescriptionCSVFileReader = rpmPromotionDescriptionCSVFileReader;
-        this.productPriceRepository = productPriceRepository;
+        this.productRepository = productRepository;
         this.storeRepository = storeRepository;
         this.rpmPriceReader = rpmPriceReader;
-        this.rpmPromoReader = rpmPromoReader;
+        this.rpmPromoPriceReader = rpmPromoPriceReader;
         this.storeZoneReader = storeZoneReader;
+        this.rpmPromotionReader = rpmPromotionReader;
 
         insertCount = 0;
         updateCount = 0;
@@ -114,6 +118,7 @@ public class RPMWriter {
         logger.info("Importing price zone prices into DataGrid");
         writePriceZonePrices();
         writePromoZonePrices();
+        writePromotions();
         writeStoreZones();
     }
 
@@ -129,22 +134,33 @@ public class RPMWriter {
 
     private void writePriceZonePrices() throws IOException {
         Map<String, String> productInfoMap;
-        final ProductPriceMapper productPriceMapper = new ProductPriceMapper(productPriceRepository);
+        final ProductMapper productMapper = new ProductMapper(productRepository);
 
         while((productInfoMap = rpmPriceReader.getNext()) !=  null) {
-            final Product product = productPriceMapper.mapPriceZonePrice(productInfoMap);
-            productPriceRepository.put(product);
+            final Product product = productMapper.mapPriceZonePrice(productInfoMap);
+            productRepository.put(product);
         }
     }
 
     private void writePromoZonePrices() throws IOException {
         Map<String, String> productInfoMap;
-        final ProductPriceMapper productPriceMapper = new ProductPriceMapper(productPriceRepository);
+        final ProductMapper productMapper = new ProductMapper(productRepository);
 
-        while((productInfoMap = rpmPromoReader.getNext()) !=  null) {
-            final Product product = productPriceMapper.mapPromoZonePrice(productInfoMap);
-            productPriceRepository.put(product);
+        while((productInfoMap = rpmPromoPriceReader.getNext()) !=  null) {
+            final Product product = productMapper.mapPromoZonePrice(productInfoMap);
+            productRepository.put(product);
         }
+    }
+
+    private void writePromotions() throws IOException {
+        Map<String, String> promotionInfoMap;
+        final ProductMapper productMapper = new ProductMapper(productRepository);
+
+        while((promotionInfoMap = rpmPromotionReader.getNext()) !=  null) {
+            final Product product = productMapper.mapPromotion(promotionInfoMap);
+            productRepository.put(product);
+        }
+
     }
 
 

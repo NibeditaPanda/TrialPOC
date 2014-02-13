@@ -25,11 +25,13 @@ public class PromotionRepository {
         this.promotionCache = promotionCache;
     }
 
-    public List<Promotion> getPromotionsByOfferIdZoneIdAndItemNumber(String offerId, String itemNumber, String zoneId) {
+    public List<Promotion> getPromotionsByOfferIdZoneIdAndItemNumber(String offerId, String itemNumber, int zoneId) {
 
-        if(isEmpty(offerId) || isEmpty(itemNumber) || isEmpty(zoneId)) {
-            return EMPTY_LIST;
-        }
+        if (isEmpty(offerId) || isEmpty(itemNumber)) return EMPTY_LIST;
+        //TODO: Handle this case
+//        if(isEmpty(offerId) || isEmpty(itemNumber) || isEmpty(zoneId)) {
+//            return EMPTY_LIST;
+//        }
 
         SearchManager manager = Search.getSearchManager(promotionCache);
 

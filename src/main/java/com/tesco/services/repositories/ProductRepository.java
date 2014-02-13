@@ -4,11 +4,11 @@ import com.google.common.base.Optional;
 import com.tesco.services.core.Product;
 import org.infinispan.Cache;
 
-public class ProductPriceRepository {
+public class ProductRepository {
 
     private Cache<String, Product> productPriceCache;
 
-    public ProductPriceRepository(Cache<String, Product> productPriceCache) {
+    public ProductRepository(Cache<String, Product> productPriceCache) {
         this.productPriceCache = productPriceCache;
     }
 

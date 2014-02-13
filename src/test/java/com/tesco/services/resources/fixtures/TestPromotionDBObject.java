@@ -13,7 +13,7 @@ public class TestPromotionDBObject {
     private String cfDescription1 = "default";
     private String cfDescription2 = "default";
     private String itemNumber = "default";
-    private String promotionZoneId = "default";
+    private int promotionZoneId = -1;
     private String shelfTalkerImage = "default";
     private String offerText = "default";
 
@@ -51,7 +51,7 @@ public class TestPromotionDBObject {
         return this;
     }
 
-    public TestPromotionDBObject withPromotionZone(String promotionZoneId){
+    public TestPromotionDBObject withPromotionZone(int promotionZoneId){
         this.promotionZoneId = promotionZoneId;
         return this;
     }
@@ -92,7 +92,6 @@ public class TestPromotionDBObject {
         promotion.setCFDescription2(cfDescription2);
         promotion.setZoneId(promotionZoneId);
         promotion.setShelfTalkerImage(shelfTalkerImage);
-        promotion.setOfferText(offerText);
         return promotion;
     }
 }

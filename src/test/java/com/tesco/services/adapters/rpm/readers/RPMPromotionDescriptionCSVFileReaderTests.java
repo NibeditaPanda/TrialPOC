@@ -25,7 +25,7 @@ public class RPMPromotionDescriptionCSVFileReaderTests {
 
         assertThat(promotionInfo.getOfferId()).isEqualTo("A29721647");
         assertThat(promotionInfo.getItemNumber()).isEqualTo("70918231");
-        assertThat(promotionInfo.getZoneId()).isEqualTo("5");
+        assertThat(promotionInfo.getZoneId()).isEqualTo(5);
         assertThat(promotionInfo.getCFDescription1()).isEqualTo("SPECIAL PURCHASE 50p");
         assertThat(promotionInfo.getCFDescription2()).isEqualTo("3 LIONS FLAG");
     }

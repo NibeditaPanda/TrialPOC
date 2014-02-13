@@ -3,7 +3,7 @@ package com.tesco.services.builder;
 import com.tesco.services.resources.model.PromotionRequest;
 
 public class PromotionRequestBuilder {
-    private String zoneId;
+    private int zoneId;
     private String itemNumber;
     private String offerId;
 
@@ -11,7 +11,7 @@ public class PromotionRequestBuilder {
         return new PromotionRequestBuilder();
     }
 
-    public PromotionRequestBuilder zoneId(String zoneId) {
+    public PromotionRequestBuilder zoneId(int zoneId) {
         this.zoneId = zoneId;
         return this;
     }

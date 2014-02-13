@@ -39,7 +39,8 @@ public class ImportResource {
             //TODO Vyv is this a memory leak?
             initializeCaches();
 
-            final ImportJob importJob = new ImportJob(configuration.getRPMPriceDataPath(), configuration.getRPMStoreDataPath(),
+            final ImportJob importJob = new ImportJob(configuration.getRPMPriceDataPath(),
+                    configuration.getRPMStoreDataPath(),
                     configuration.getRPMPromotionDataPath(),
                     configuration.getSonettoPromotionsXMLDataPath(),
                     configuration.getRPMPromotionDescCSVUrl(),
@@ -47,6 +48,7 @@ public class ImportResource {
                     configuration.getSonettoShelfImageUrl(),
                     configuration.getRPMPriceZoneDataPath(),
                     configuration.getRPMPromoZoneDataPath(),
+                    configuration.getRPMPromoExtractDataPath(),
                     dbFactory,
                     dataGridResource);
 

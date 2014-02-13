@@ -8,7 +8,7 @@ import com.tesco.services.core.Store;
 import com.tesco.services.dao.PriceDAO;
 import com.tesco.services.exceptions.ItemNotFoundException;
 import com.tesco.services.repositories.DataGridResource;
-import com.tesco.services.repositories.ProductPriceRepository;
+import com.tesco.services.repositories.ProductRepository;
 import com.tesco.services.repositories.StoreRepository;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -102,8 +102,8 @@ public class PriceResource {
 
         if (storeQueryParamWasSentWithoutAStoreID(storeId, uriInfo.getQueryParameters())) return badRequest();
 
-        ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceCache());
-        Optional<Product> productContainer = productPriceRepository.getByTPNB(tpn);
+        ProductRepository productRepository = new ProductRepository(dataGridResource.getProductPriceCache());
+        Optional<Product> productContainer = productRepository.getByTPNB(tpn);
 
         if (!productContainer.isPresent()) return notFound(PRODUCT_NOT_FOUND);
 

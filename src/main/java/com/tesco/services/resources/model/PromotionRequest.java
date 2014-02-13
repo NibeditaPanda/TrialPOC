@@ -17,7 +17,7 @@ public class PromotionRequest {
 
     @JsonProperty
     @ApiModelProperty(required = true)
-    private String zoneId;
+    private int zoneId;
 
     public String getOfferId() {
         return offerId;
@@ -27,7 +27,7 @@ public class PromotionRequest {
         return itemNumber;
     }
 
-    public String getZoneId() {
+    public int getZoneId() {
         return zoneId;
     }
 
@@ -39,7 +39,7 @@ public class PromotionRequest {
         this.itemNumber = itemNumber;
     }
 
-    public void setZoneId(String zoneId) {
+    public void setZoneId(int zoneId) {
         this.zoneId = zoneId;
     }
 
@@ -52,7 +52,7 @@ public class PromotionRequest {
 
         if (itemNumber != null ? !itemNumber.equals(that.itemNumber) : that.itemNumber != null) return false;
         if (offerId != null ? !offerId.equals(that.offerId) : that.offerId != null) return false;
-        if (zoneId != null ? !zoneId.equals(that.zoneId) : that.zoneId != null) return false;
+        if (zoneId != that.zoneId) return false;
 
         return true;
     }
@@ -61,7 +61,7 @@ public class PromotionRequest {
     public int hashCode() {
         int result = offerId != null ? offerId.hashCode() : 0;
         result = 31 * result + (itemNumber != null ? itemNumber.hashCode() : 0);
-        result = 31 * result + (zoneId != null ? zoneId.hashCode() : 0);
+        result = 31 * result + zoneId;
         return result;
     }
 }

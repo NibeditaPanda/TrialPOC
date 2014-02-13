@@ -16,7 +16,7 @@ import com.tesco.services.dao.PriceDAO;
 import com.tesco.services.exceptions.ItemNotFoundException;
 import com.tesco.services.repositories.DataGridResource;
 import com.tesco.services.repositories.DataGridResourceForTest;
-import com.tesco.services.repositories.ProductPriceRepository;
+import com.tesco.services.repositories.ProductRepository;
 import com.tesco.services.repositories.StoreRepository;
 import com.tesco.services.resources.fixtures.TestProductPriceDBObject;
 import com.tesco.services.resources.fixtures.TestPromotionDBObject;
@@ -308,12 +308,12 @@ public class PriceResourceTest extends ResourceTest {
     // ==============
     @Test
     public void shouldReturnNationalPricesForMultipleItemsWhenStoreIdIsNotSpecified() throws IOException, ItemNotFoundException {
-        ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceCache());
+        ProductRepository productRepository = new ProductRepository(dataGridResource.getProductPriceCache());
         String tpnb = "050925811";
         String tpnc1 = "266072275";
         String tpnc2 = "266072276";
         Product product = createProductWithVariants(tpnb, tpnc1, tpnc2);
-        productPriceRepository.put(product);
+        productRepository.put(product);
 
         WebResource resource = client().resource(String.format("/price/B/%s", tpnb));
 
@@ -325,14 +325,14 @@ public class PriceResourceTest extends ResourceTest {
 
     @Test
     public void shouldReturnPricesWhenStoreIdIsSpecified() throws IOException, ItemNotFoundException {
-        ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceCache());
+        ProductRepository productRepository = new ProductRepository(dataGridResource.getProductPriceCache());
         StoreRepository storeRepository = new StoreRepository(dataGridResource.getStoreCache());
 
         String tpnb = "050925811";
         String tpnc1 = "266072275";
         String tpnc2 = "266072276";
         Product product = createProductWithVariants(tpnb, tpnc1, tpnc2);
-        productPriceRepository.put(product);
+        productRepository.put(product);
 
         int storeId = 2002;
         storeRepository.put(new Store(storeId, Optional.of(6), Optional.of(14), "EUR"));
@@ -361,8 +361,8 @@ public class PriceResourceTest extends ResourceTest {
 
     @Test
     public void shouldReturn404WhenStoreIsNotFound() throws Exception {
-        ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceCache());
-        productPriceRepository.put(createProductWithVariants("050925811", "266072275", "266072276"));
+        ProductRepository productRepository = new ProductRepository(dataGridResource.getProductPriceCache());
+        productRepository.put(createProductWithVariants("050925811", "266072275", "266072276"));
 
         WebResource resource = client().resource("/price/B/050925811?store=2002");
         ClientResponse response = resource.get(ClientResponse.class);
@@ -373,8 +373,8 @@ public class PriceResourceTest extends ResourceTest {
 
     @Test
     public void shouldReturn404WhenStoreIsInvalid() throws Exception {
-        ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceCache());
-        productPriceRepository.put(createProductWithVariants("050925811", "266072275", "266072276"));
+        ProductRepository productRepository = new ProductRepository(dataGridResource.getProductPriceCache());
+        productRepository.put(createProductWithVariants("050925811", "266072275", "266072276"));
 
         WebResource resource = client().resource("/price/B/050925811?store=invalidstore");
         ClientResponse response = resource.get(ClientResponse.class);

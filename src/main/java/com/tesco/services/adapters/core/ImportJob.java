@@ -39,6 +39,7 @@ public class ImportJob implements Runnable {
     private String sonettoPromotionXSDDataPath;
     private String rpmPriceZoneDataPath;
     private String rpmPromoZoneDataPath;
+    private String rpmPromoExtractDataPath;
     private com.tesco.services.dao.DBFactory dbFactory;
     private DataGridResource dataGridResource;
     private String sonettoPromotionsXMLFilePath;
@@ -52,7 +53,8 @@ public class ImportJob implements Runnable {
                       String sonettoPromotionXSDDataPath,
                       String sonettoShelfImageUrl,
                       String rpmPriceZoneDataPath,
-                      String rpmPromoZoneDataPath,
+                      String rpmPromZoneDataPath,
+                      String rpmPromoExtractDataPath,
                       DBFactory dbFactory,
                       DataGridResource dataGridResource) {
         this.rpmPriceZoneCsvFilePath = rpmPriceZoneCsvFilePath;
@@ -63,7 +65,8 @@ public class ImportJob implements Runnable {
         this.sonettoPromotionXSDDataPath = sonettoPromotionXSDDataPath;
         this.sonettoShelfImageUrl = sonettoShelfImageUrl;
         this.rpmPriceZoneDataPath = rpmPriceZoneDataPath;
-        this.rpmPromoZoneDataPath = rpmPromoZoneDataPath;
+        this.rpmPromoZoneDataPath = rpmPromZoneDataPath;
+        this.rpmPromoExtractDataPath = rpmPromoExtractDataPath;
         this.dbFactory = dbFactory;
         this.dataGridResource = dataGridResource;
     }
@@ -126,12 +129,13 @@ public class ImportJob implements Runnable {
 
         UUIDGenerator uuidGenerator = new UUIDGenerator();
         PromotionRepository promotionRepository = new PromotionRepository(uuidGenerator, dataGridResource.getPromotionRefreshCache());
-        ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceRefreshCache());
+        ProductRepository productRepository = new ProductRepository(dataGridResource.getProductPriceRefreshCache());
         StoreRepository storeRepository = new StoreRepository(dataGridResource.getStoreRefreshCache());
 
         PriceServiceCSVReader rpmPriceReader = new PriceServiceCSVReaderImpl(rpmPriceZoneDataPath, CSVHeaders.Price.PRICE_ZONE_HEADERS);
-        PriceServiceCSVReader rpmPromoReader = new PriceServiceCSVReaderImpl(rpmPromoZoneDataPath, CSVHeaders.Price.PROMO_ZONE_HEADERS);
+        PriceServiceCSVReader rpmPromoPriceReader = new PriceServiceCSVReaderImpl(rpmPromoZoneDataPath, CSVHeaders.Price.PROMO_ZONE_HEADERS);
         PriceServiceCSVReader storeZoneReader = new PriceServiceCSVReaderImpl(rpmStoreZoneCsvFilePath, CSVHeaders.StoreZone.HEADERS);
+        PriceServiceCSVReader rpmPromotionReader = new PriceServiceCSVReaderImpl(rpmPromoExtractDataPath, CSVHeaders.Promotion.PROMO_EXTRACT_HEADERS);
 
         new RPMWriter(priceCollection,
                 storeCollection,
@@ -142,11 +146,12 @@ public class ImportJob implements Runnable {
                 promotionRepository,
                 rpmPromotionCSVFileReader,
                 rpmPromotionDescriptionCSVFileReader,
-                productPriceRepository,
+                productRepository,
                 storeRepository,
                 rpmPriceReader,
-                rpmPromoReader,
-                storeZoneReader)
+                rpmPromoPriceReader,
+                storeZoneReader,
+                rpmPromotionReader)
                 .write();
     }
 

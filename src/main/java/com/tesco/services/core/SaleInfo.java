@@ -18,8 +18,8 @@ public class SaleInfo implements Serializable {
 
         SaleInfo saleInfo = (SaleInfo) o;
 
-        if (!price.equals(saleInfo.price)) return false;
         if (zoneId != saleInfo.zoneId) return false;
+        if (price != null ? !price.equals(saleInfo.price) : saleInfo.price != null) return false;
 
         return true;
     }
@@ -27,7 +27,7 @@ public class SaleInfo implements Serializable {
     @Override
     public int hashCode() {
         int result = zoneId;
-        result = 31 * result + price.hashCode();
+        result = 31 * result + (price != null ? price.hashCode() : 0);
         return result;
     }
 

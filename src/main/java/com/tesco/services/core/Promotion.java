@@ -36,7 +36,7 @@ public class Promotion implements Serializable {
 
     @JsonProperty
     @Field(index = Index.YES, analyze = Analyze.NO, store = org.hibernate.search.annotations.Store.YES)
-    private String zoneId;
+    private int zoneId;
     @JsonProperty
     private String CFDescription1;
     @JsonProperty
@@ -47,9 +47,6 @@ public class Promotion implements Serializable {
     private String startDate;
     @JsonProperty
     private String endDate;
-
-    @JsonProperty
-    private String offerText;
 
     public Promotion() {
     }
@@ -70,7 +67,7 @@ public class Promotion implements Serializable {
         return itemNumber;
     }
 
-    public String getZoneId() {
+    public int getZoneId() {
         return zoneId;
     }
 
@@ -94,10 +91,6 @@ public class Promotion implements Serializable {
         return endDate;
     }
 
-    public String getOfferText() {
-        return offerText;
-    }
-
     public String getShelfTalkerImage() {
         return shelfTalkerImage;
     }
@@ -114,7 +107,7 @@ public class Promotion implements Serializable {
         this.itemNumber = itemNumber;
     }
 
-    public void setZoneId(String zoneId) {
+    public void setZoneId(int zoneId) {
         this.zoneId = zoneId;
     }
 
@@ -138,10 +131,6 @@ public class Promotion implements Serializable {
         this.endDate = endDate;
     }
 
-    public void setOfferText(String offerText) {
-        this.offerText = offerText;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -149,6 +138,18 @@ public class Promotion implements Serializable {
 
         Promotion promotion = (Promotion) o;
 
+        if (zoneId != promotion.zoneId) return false;
+        if (CFDescription1 != null ? !CFDescription1.equals(promotion.CFDescription1) : promotion.CFDescription1 != null)
+            return false;
+        if (CFDescription2 != null ? !CFDescription2.equals(promotion.CFDescription2) : promotion.CFDescription2 != null)
+            return false;
+        if (endDate != null ? !endDate.equals(promotion.endDate) : promotion.endDate != null) return false;
+        if (itemNumber != null ? !itemNumber.equals(promotion.itemNumber) : promotion.itemNumber != null) return false;
+        if (offerId != null ? !offerId.equals(promotion.offerId) : promotion.offerId != null) return false;
+        if (offerName != null ? !offerName.equals(promotion.offerName) : promotion.offerName != null) return false;
+        if (shelfTalkerImage != null ? !shelfTalkerImage.equals(promotion.shelfTalkerImage) : promotion.shelfTalkerImage != null)
+            return false;
+        if (startDate != null ? !startDate.equals(promotion.startDate) : promotion.startDate != null) return false;
         if (uniqueKey != null ? !uniqueKey.equals(promotion.uniqueKey) : promotion.uniqueKey != null) return false;
 
         return true;
@@ -156,7 +157,17 @@ public class Promotion implements Serializable {
 
     @Override
     public int hashCode() {
-        return uniqueKey != null ? uniqueKey.hashCode() : 0;
+        int result = uniqueKey != null ? uniqueKey.hashCode() : 0;
+        result = 31 * result + (shelfTalkerImage != null ? shelfTalkerImage.hashCode() : 0);
+        result = 31 * result + (offerId != null ? offerId.hashCode() : 0);
+        result = 31 * result + (itemNumber != null ? itemNumber.hashCode() : 0);
+        result = 31 * result + zoneId;
+        result = 31 * result + (CFDescription1 != null ? CFDescription1.hashCode() : 0);
+        result = 31 * result + (CFDescription2 != null ? CFDescription2.hashCode() : 0);
+        result = 31 * result + (offerName != null ? offerName.hashCode() : 0);
+        result = 31 * result + (startDate != null ? startDate.hashCode() : 0);
+        result = 31 * result + (endDate != null ? endDate.hashCode() : 0);
+        return result;
     }
 }
 

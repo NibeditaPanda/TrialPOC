@@ -12,11 +12,11 @@ import static com.tesco.services.adapters.core.TestFiles.*;
 import static com.tesco.services.core.PriceKeys.*;
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class StoreImportIntegrationTest extends ImportJobTestBase {
+public class StoreImportIntegrationTest extends ImportJobIntegrationTestBase {
     private int oldStoreId = 4002;
 
     @Override
-    protected void preImportCallBack() {;
+    protected void preImportCallBack() {
         dataGridResource.getStoreCache().put(oldStoreId, new Store(oldStoreId, Optional.of(1), Optional.of(2), "GBP"));
     }
 
@@ -48,6 +48,7 @@ public class StoreImportIntegrationTest extends ImportJobTestBase {
                 testConfiguration.getSonettoShelfImageUrl(),
                 RPM_PRICE_ZONE_PRICE_CSV_FILE_PATH,
                 RPM_PROMO_ZONE_PRICE_CSV_FILE_PATH,
+                RPM_PROMO_EXTRACT_CSV_FILE_PATH,
                 dbFactory, dataGridResource);
 
         importJob.processData(priceCollection, storeCollection, promotionCollection, false);

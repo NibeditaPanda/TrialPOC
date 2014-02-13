@@ -17,21 +17,14 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 
 import static com.mongodb.QueryBuilder.start;
-import static com.tesco.services.adapters.core.TestFiles.RPM_PRICE_ZONE_CSV_FILE_PATH;
-import static com.tesco.services.adapters.core.TestFiles.RPM_PRICE_ZONE_PRICE_CSV_FILE_PATH;
-import static com.tesco.services.adapters.core.TestFiles.RPM_PROMO_ZONE_PRICE_CSV_FILE_PATH;
-import static com.tesco.services.adapters.core.TestFiles.RPM_PROMOTION_CSV_FILE_PATH;
-import static com.tesco.services.adapters.core.TestFiles.RPM_PROMOTION_DESC_CSV_FILE_PATH;
-import static com.tesco.services.adapters.core.TestFiles.RPM_STORE_ZONE_CSV_FILE_PATH;
-import static com.tesco.services.adapters.core.TestFiles.SONETTO_PROMOTIONS_XML_FILE_PATH;
-import static com.tesco.services.adapters.core.TestFiles.SONETTO_PROMOTIONS_XSD_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.*;
 import static com.tesco.services.core.PriceKeys.ITEM_NUMBER;
 import static com.tesco.services.core.PriceKeys.PRICE_COLLECTION;
 import static com.tesco.services.core.PriceKeys.PROMOTION_COLLECTION;
 import static com.tesco.services.core.PriceKeys.STORE_COLLECTION;
 import static com.tesco.services.core.PriceKeys.ZONES;
 
-public abstract class ImportJobTestBase {
+public abstract class ImportJobIntegrationTestBase {
     protected DBCollection priceCollection;
     protected DBCollection storeCollection;
     protected DBCollection promotionCollection;
@@ -71,6 +64,7 @@ public abstract class ImportJobTestBase {
                 "http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/Superstore/Online/Product/pos/%s.png",
                 RPM_PRICE_ZONE_PRICE_CSV_FILE_PATH,
                 RPM_PROMO_ZONE_PRICE_CSV_FILE_PATH,
+                RPM_PROMO_EXTRACT_CSV_FILE_PATH,
                 dbFactory,
                 dataGridResource);
         importJob.run();

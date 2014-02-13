@@ -8,14 +8,9 @@ import com.mongodb.WriteResult;
 import com.tesco.services.adapters.rpm.readers.*;
 import com.tesco.services.adapters.rpm.readers.PriceServiceCSVReader;
 import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
-import com.tesco.services.core.PriceKeys;
-import com.tesco.services.core.Product;
-import com.tesco.services.core.ProductVariant;
-import com.tesco.services.core.Promotion;
-import com.tesco.services.core.SaleInfo;
-import com.tesco.services.core.Store;
+import com.tesco.services.core.*;
 import com.tesco.services.repositories.DataGridResource;
-import com.tesco.services.repositories.ProductPriceRepository;
+import com.tesco.services.repositories.ProductRepository;
 import com.tesco.services.repositories.PromotionRepository;
 import com.tesco.services.repositories.StoreRepository;
 import com.tesco.services.repositories.UUIDGenerator;
@@ -64,6 +59,18 @@ public class RPMWriterTest {
     private SonettoPromotionXMLReader sonettoPromotionXMLReader;
 
     @Mock
+    private PriceServiceCSVReader rpmPriceReader;
+
+    @Mock
+    private PriceServiceCSVReader rpmPromoPriceReader;
+
+    @Mock
+    private PriceServiceCSVReader storeZoneReader;
+
+    @Mock
+    private PriceServiceCSVReader rpmPromotionReader;
+
+    @Mock
     private WriteResult writeResult;
 
     @Mock
@@ -82,19 +89,11 @@ public class RPMWriterTest {
     private PromotionRepository promotionRepository;
 
     @Mock
-    private ProductPriceRepository productPriceRepository;
-
-    @Mock
-    private PriceServiceCSVReader rpmPriceReader;
-
-    @Mock
-    private PriceServiceCSVReader rpmPromoReader;
+    private ProductRepository productRepository;
 
     @Mock
     private StoreRepository storeRepository;
-
-    @Mock
-    private PriceServiceCSVReader storeZoneReader;
+    private int zoneId = 1;
 
     @Before
     public void setUp() throws Exception {
@@ -107,14 +106,16 @@ public class RPMWriterTest {
                 promotionRepository,
                 rpmPromotionCSVFileReader,
                 rpmPromotionDescriptionCSVFileReader,
-                productPriceRepository,
+                productRepository,
                 storeRepository,
                 rpmPriceReader,
-                rpmPromoReader,
-                storeZoneReader);
+                rpmPromoPriceReader,
+                storeZoneReader,
+                rpmPromotionReader);
         when(rpmPriceReader.getNext()).thenReturn(null);
-        when(rpmPromoReader.getNext()).thenReturn(null);
+        when(rpmPromoPriceReader.getNext()).thenReturn(null);
         when(storeZoneReader.getNext()).thenReturn(null);
+        when(rpmPromotionReader.getNext()).thenReturn(null);
 
         when(uuidGenerator.getUUID()).thenReturn("uuid");
 
@@ -137,11 +138,10 @@ public class RPMWriterTest {
 
         when(rpmPromotionDescriptionCSVFileReader.getNextDG()).thenReturn(aPromotionWithDescriptions()).thenReturn(null);
 
-        when(this.promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber("promotionOfferId", "itemNumber", "zoneId")).thenReturn(newArrayList(aPromotionWithDescriptions()));
+        when(this.promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber("promotionOfferId", "itemNumber", zoneId)).thenReturn(newArrayList(aPromotionWithDescriptions()));
 
         when(writeResult.getN()).thenReturn(0);
         when(writeResult.getField("updatedExisting")).thenReturn("false");
-
     }
 
     @Test
@@ -176,10 +176,10 @@ public class RPMWriterTest {
         Map<String, String> productInfoMap = productInfoMap(tpnb, zoneId, price);
         when(rpmPriceReader.getNext()).thenReturn(productInfoMap).thenReturn(null);
 
-        when(productPriceRepository.getByTPNB(tpnb)).thenReturn(Optional.<Product>absent());
+        when(productRepository.getByTPNB(tpnb)).thenReturn(Optional.<Product>absent());
         this.rpmWriter.write();
 
-        verify(productPriceRepository).put(product);
+        verify(productRepository).put(product);
     }
 
     @Test
@@ -187,26 +187,26 @@ public class RPMWriterTest {
         String itemNumber = "0123";
 
         when(rpmPriceReader.getNext()).thenReturn(productInfoMap(itemNumber, 2, "2.4"))
-                                        .thenReturn(productInfoMap(itemNumber, 4, "4.4"))
-                                        .thenReturn(null);
+                .thenReturn(productInfoMap(itemNumber, 4, "4.4"))
+                .thenReturn(null);
 
         Product product = createProductWithVariant(itemNumber, itemNumber);
 
-        when(productPriceRepository.getByTPNB(itemNumber)).thenReturn(Optional.<Product>absent()).thenReturn(Optional.of(product));
+        when(productRepository.getByTPNB(itemNumber)).thenReturn(Optional.<Product>absent()).thenReturn(Optional.of(product));
 
         this.rpmWriter.write();
-        
-        InOrder inOrder = inOrder(productPriceRepository);
+
+        InOrder inOrder = inOrder(productRepository);
 
         ProductVariant expectedProductVariant = createProductVariant(itemNumber, 2, "2.4");
         Product expectedProduct = new Product(itemNumber);
         expectedProduct.addProductVariant(expectedProductVariant);
 
-        inOrder.verify(productPriceRepository).put(expectedProduct);
+        inOrder.verify(productRepository).put(expectedProduct);
 
         expectedProductVariant.addSaleInfo(new SaleInfo(4, "4.4"));
 
-        inOrder.verify(productPriceRepository).put(expectedProduct);
+        inOrder.verify(productRepository).put(expectedProduct);
     }
 
     @Test
@@ -216,25 +216,25 @@ public class RPMWriterTest {
         String itemNumber2 = String.format("%s-002", tpnb);
 
         when(rpmPriceReader.getNext()).thenReturn(productInfoMap(itemNumber, 2, "2.4"))
-                                        .thenReturn(productInfoMap(itemNumber2, 3, "3.0"))
-                                        .thenReturn(null);
+                .thenReturn(productInfoMap(itemNumber2, 3, "3.0"))
+                .thenReturn(null);
 
         Product product = createProductWithVariant(tpnb, itemNumber);
 
-        when(productPriceRepository.getByTPNB(tpnb)).thenReturn(Optional.<Product>absent()).thenReturn(Optional.of(product));
+        when(productRepository.getByTPNB(tpnb)).thenReturn(Optional.<Product>absent()).thenReturn(Optional.of(product));
 
         this.rpmWriter.write();
 
-        InOrder inOrder = inOrder(productPriceRepository);
+        InOrder inOrder = inOrder(productRepository);
 
         Product expectedProduct = createProductWithVariant(tpnb, itemNumber);
 
-        inOrder.verify(productPriceRepository).put(expectedProduct);
+        inOrder.verify(productRepository).put(expectedProduct);
 
         ProductVariant expectedProductVariant2 = createProductVariant(itemNumber2, 3, "3.0");
         expectedProduct.addProductVariant(expectedProductVariant2);
 
-        inOrder.verify(productPriceRepository).put(expectedProduct);
+        inOrder.verify(productRepository).put(expectedProduct);
     }
 
     private Map<String, String> productInfoMap(String itemNumber, int zoneId, String price) {
@@ -258,23 +258,81 @@ public class RPMWriterTest {
     @Test
     public void shouldInsertPromoZonePrice() throws Exception {
         final String tpnc = "059428124"; // This will change when TPNC story is played
-        ProductVariant productVariant = new ProductVariant(tpnc);
-        int zoneId = 5;
-
+        int priceZoneId = 2;
         String price = "2.3";
-        productVariant.addSaleInfo(new SaleInfo(zoneId, price));
+        ProductVariant productVariant = createProductVariant(tpnc, priceZoneId, price);
 
         final String tpnb = "059428124";
         Product product = new Product(tpnb);
         product.addProductVariant(productVariant);
-        Map<String, String> productInfoMap = productPromoInfoMap("059428124", zoneId, price);
 
-        when(productPriceRepository.getByTPNB(tpnb)).thenReturn(Optional.of(product));
-        when(rpmPromoReader.getNext()).thenReturn(productInfoMap).thenReturn(null);
+        int promoZoneId = 5;
+        String promoPrice = "2.0";
+        Map<String, String> productInfoMap = productPromoInfoMap(tpnc, promoZoneId, promoPrice);
+
+        when(productRepository.getByTPNB(tpnb)).thenReturn(Optional.of(product));
+        when(rpmPromoPriceReader.getNext()).thenReturn(productInfoMap).thenReturn(null);
 
         this.rpmWriter.write();
 
-        verify(productPriceRepository).put(product);
+        ProductVariant expectedProductVariant = createProductVariant(tpnc, priceZoneId, price);
+        expectedProductVariant.addSaleInfo(new SaleInfo(promoZoneId, promoPrice));
+
+        Product expectedProduct = new Product(tpnb);
+        expectedProduct.addProductVariant(expectedProductVariant);
+
+        verify(productRepository).put(expectedProduct);
+    }
+
+    @Test
+    public void shouldInsertPromotionIntoProductPriceRepository() throws Exception {
+        final String tpnc = "059428124-001"; // This will change when TPNC story is played
+        int zoneId = 5;
+        String price = "2.3";
+
+        ProductVariant productVariant = new ProductVariant(tpnc);
+        PromotionSaleInfo promoSaleInfo = new PromotionSaleInfo(zoneId, price);
+        productVariant.addSaleInfo(promoSaleInfo);
+
+        String tpnb = "059428124";
+        Product product = new Product(tpnb);
+        product.addProductVariant(productVariant);
+
+        String offerId = "A01";
+        String offerName = "PHD NUTRITION DIET WHEY BARS 2.29-1.7 s0.59";
+        String startDate = "Sep 12 2012 12:00AM";
+        String endDate = "Jan 5 2014 11:59PM";
+        when(rpmPromotionReader.getNext()).thenReturn(promotionInfoMap(tpnc, zoneId, offerId, offerName, startDate, endDate)).thenReturn(null);
+        when(productRepository.getByTPNB(tpnb)).thenReturn(Optional.of(product));
+        this.rpmWriter.write();
+
+        ProductVariant expectedProductVariant = new ProductVariant(tpnc);
+        PromotionSaleInfo expectedPromoSaleInfo = new PromotionSaleInfo(zoneId, price);
+        expectedProductVariant.addSaleInfo(expectedPromoSaleInfo);
+
+        Promotion promotion = new Promotion();
+        promotion.setOfferId(offerId);
+        promotion.setOfferName(offerName);
+        promotion.setStartDate(startDate);
+        promotion.setEndDate(endDate);
+
+        expectedPromoSaleInfo.addPromotion(promotion);
+
+        Product expectedProduct = new Product(tpnb);
+        expectedProduct.addProductVariant(expectedProductVariant);
+
+        verify(productRepository).put(expectedProduct);
+    }
+
+    private Map<String, String> promotionInfoMap(String tpnb, int zoneId, String offerId, String offerName, String startDate, String endDate) {
+        Map<String, String> promotionInfoMap = new HashMap<>();
+        promotionInfoMap.put(CSVHeaders.Promotion.TPNB, tpnb);
+        promotionInfoMap.put(CSVHeaders.Promotion.ZONE_ID, String.valueOf(zoneId));
+        promotionInfoMap.put(CSVHeaders.Promotion.OFFER_ID, offerId);
+        promotionInfoMap.put(CSVHeaders.Promotion.OFFER_NAME, offerName);
+        promotionInfoMap.put(CSVHeaders.Promotion.START_DATE, startDate);
+        promotionInfoMap.put(CSVHeaders.Promotion.END_DATE, endDate);
+        return promotionInfoMap;
     }
 
     @Test
@@ -292,16 +350,6 @@ public class RPMWriterTest {
         inOrder.verify(storeRepository).put(new Store(secondStoreId, Optional.of(2), Optional.<Integer>absent(), "EUR"));
     }
 
-    private Map<String,String> getStoreInfoMap(int firstStoreId, int zoneId, int zoneType, String currency) {
-        Map<String, String> storeInfoMap = new HashMap<>();
-        storeInfoMap.put(CSVHeaders.StoreZone.STORE_ID, String.valueOf(firstStoreId));
-        storeInfoMap.put(CSVHeaders.StoreZone.ZONE_ID, String.valueOf(zoneId));
-        storeInfoMap.put(CSVHeaders.StoreZone.ZONE_TYPE, String.valueOf(zoneType));
-        storeInfoMap.put(CSVHeaders.StoreZone.CURRENCY_CODE, currency);
-
-        return storeInfoMap;
-    }
-
     @Test
     public void shouldInsertStorePriceAndPromoZones() throws Exception {
         int storeId = 2002;
@@ -315,6 +363,16 @@ public class RPMWriterTest {
         InOrder inOrder = inOrder(storeRepository);
         inOrder.verify(storeRepository).put(new Store(storeId, Optional.of(1), Optional.<Integer>absent(), "GBP"));
         inOrder.verify(storeRepository).put(new Store(storeId, Optional.of(1), Optional.of(5), "GBP"));
+    }
+
+    private Map<String, String> getStoreInfoMap(int firstStoreId, int zoneId, int zoneType, String currency) {
+        Map<String, String> storeInfoMap = new HashMap<>();
+        storeInfoMap.put(CSVHeaders.StoreZone.STORE_ID, String.valueOf(firstStoreId));
+        storeInfoMap.put(CSVHeaders.StoreZone.ZONE_ID, String.valueOf(zoneId));
+        storeInfoMap.put(CSVHeaders.StoreZone.ZONE_TYPE, String.valueOf(zoneType));
+        storeInfoMap.put(CSVHeaders.StoreZone.CURRENCY_CODE, currency);
+
+        return storeInfoMap;
     }
 
     private ProductVariant createProductVariant(String tpnc, int zoneId, String price) {
@@ -351,7 +409,7 @@ public class RPMWriterTest {
         Promotion promotion = new Promotion();
         promotion.setUniqueKey("uuid");
         promotion.setItemNumber("itemNumber");
-        promotion.setZoneId("zoneId");
+        promotion.setZoneId(zoneId);
         promotion.setOfferId("promotionOfferId");
         promotion.setOfferName("promotionOfferName");
         promotion.setStartDate("promotionStartDate");
@@ -363,7 +421,7 @@ public class RPMWriterTest {
         Promotion promotion = new Promotion();
         promotion.setUniqueKey("uuid");
         promotion.setItemNumber("itemNumber");
-        promotion.setZoneId("zoneId");
+        promotion.setZoneId(zoneId);
         promotion.setOfferId("promotionOfferId");
         promotion.setOfferName("promotionOfferName");
         promotion.setStartDate("promotionStartDate");

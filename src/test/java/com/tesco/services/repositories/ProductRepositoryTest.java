@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class ProductPriceRepositoryTest {
+public class ProductRepositoryTest {
     private Cache<String,Product> productPriceCache;
     private DataGridResource dataGridResource;
 
@@ -21,17 +21,17 @@ public class ProductPriceRepositoryTest {
 
     @Test
     public void shouldCacheProductByTPNB() throws Exception {
-        ProductPriceRepository productPriceRepository = new ProductPriceRepository(productPriceCache);
+        ProductRepository productRepository = new ProductRepository(productPriceCache);
         String tpnb = "123455";
         Product product = new Product(tpnb);
-        productPriceRepository.put(product);
-        assertThat(productPriceRepository.getByTPNB(tpnb).get()).isEqualTo(product);
+        productRepository.put(product);
+        assertThat(productRepository.getByTPNB(tpnb).get()).isEqualTo(product);
     }
 
     @Test
     public void shouldReturnNullObjectWhenProductIsNotFound() throws Exception {
-        ProductPriceRepository productPriceRepository = new ProductPriceRepository(productPriceCache);
+        ProductRepository productRepository = new ProductRepository(productPriceCache);
         String tpnb = "12345";
-        assertThat(productPriceRepository.getByTPNB(tpnb).isPresent()).isFalse();
+        assertThat(productRepository.getByTPNB(tpnb).isPresent()).isFalse();
     }
 }

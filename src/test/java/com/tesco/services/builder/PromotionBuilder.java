@@ -7,14 +7,13 @@ public class PromotionBuilder {
     private String uniqueKey = "uuid";
     private String offerId = "offerId";
     private String itemNumber = "itemNumber";
-    private String zoneId = "zoneId";
+    private int zoneId = 1;
     private String description1 = "description";
     private String description2 = "description";
     private String startDate = "startDate";
     private String endDate = "endDate";
     private String offerName = "offerName";
     private String shelfTalker = "shelfTalker";
-    private String offerText = "default";
 
     public static PromotionBuilder aPromotion() {
         return new PromotionBuilder();
@@ -25,12 +24,12 @@ public class PromotionBuilder {
         return this;
     }
 
-    public PromotionBuilder itemNumber(String itemNumber) {
+    public PromotionBuilder tpnc(String itemNumber) {
         this.itemNumber = itemNumber;
         return this;
     }
 
-    public PromotionBuilder zoneId(String zoneId) {
+    public PromotionBuilder zoneId(int zoneId) {
         this.zoneId = zoneId;
         return this;
     }
@@ -82,7 +81,6 @@ public class PromotionBuilder {
         promotion.setEndDate(this.endDate);
         promotion.setOfferName(this.offerName);
         promotion.setShelfTalkerImage(this.shelfTalker);
-        promotion.setOfferText(this.offerText);
 
         return promotion;
     }

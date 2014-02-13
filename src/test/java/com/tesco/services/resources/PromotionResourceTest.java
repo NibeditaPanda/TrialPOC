@@ -58,8 +58,8 @@ public class PromotionResourceTest extends ResourceTest {
 
         Promotion promotion = aPromotion()
                 .offerId("A29721688")
-                .itemNumber("070918248")
-                .zoneId("5")
+                .tpnc("070918248")
+                .zoneId(5)
                 .startDate("31-Apr-12")
                 .endDate("04-May-13")
                 .offerName("3 LIONS KICK & TRICK BALL 1.00 SPECIAL PURCHASE")
@@ -71,8 +71,8 @@ public class PromotionResourceTest extends ResourceTest {
 
         Promotion promotion1 = aPromotion()
                 .offerId("R29029470")
-                .itemNumber("66367922")
-                .zoneId("12")
+                .tpnc("66367922")
+                .zoneId(12)
                 .startDate("25-Sep-10")
                 .endDate("22/09/35")
                 .offerName("ROI HARDWARE")
@@ -83,8 +83,8 @@ public class PromotionResourceTest extends ResourceTest {
 
         Promotion promotion2 = aPromotion()
                 .offerId("A29721690")
-                .itemNumber("70918248")
-                .zoneId("4")
+                .tpnc("70918248")
+                .zoneId(4)
                 .startDate("31-Jun-12")
                 .endDate("04-Jul-13")
                 .offerName("3 LIONS KICK & TRICK BALL 3.00 SPECIAL PURCHASE")
@@ -112,13 +112,13 @@ public class PromotionResourceTest extends ResourceTest {
         PromotionRequest promotionRequest = aPromotionRequest()
                 .offerId("A29721688")
                 .itemNumber("070918248")
-                .zoneId("5")
+                .zoneId(5)
                 .build();
 
         PromotionRequest promotionRequest1 = aPromotionRequest()
                 .offerId("A29721690")
                 .itemNumber("70918248")
-                .zoneId("4")
+                .zoneId(4)
                 .build();
 
 
@@ -137,34 +137,32 @@ public class PromotionResourceTest extends ResourceTest {
         assertThat(promotions).hasSize(2);
 
         Promotion firstPromotion = promotions.get(0);
-        assertThat(firstPromotion.getOfferId()).isEqualTo("A29721690");
-        assertThat(firstPromotion.getItemNumber()).isEqualTo("70918248");
-        assertThat(firstPromotion.getZoneId()).isEqualTo("4");
-        assertThat(firstPromotion.getOfferName()).isEqualTo("3 LIONS KICK & TRICK BALL 3.00 SPECIAL PURCHASE");
-        assertThat(firstPromotion.getStartDate()).isEqualTo("31-Jun-12");
-        assertThat(firstPromotion.getEndDate()).isEqualTo("04-Jul-13");
+        assertThat(firstPromotion.getOfferId()).isEqualTo("A29721688");
+        assertThat(firstPromotion.getItemNumber()).isEqualTo("070918248");
+        assertThat(firstPromotion.getZoneId()).isEqualTo(5);
+        assertThat(firstPromotion.getOfferName()).isEqualTo("3 LIONS KICK & TRICK BALL 1.00 SPECIAL PURCHASE");
+        assertThat(firstPromotion.getStartDate()).isEqualTo("31-Apr-12");
+        assertThat(firstPromotion.getEndDate()).isEqualTo("04-May-13");
         assertThat(firstPromotion.getCFDescription1()).isEqualTo("SPECIAL PURCHASE 50p");
-        assertThat(firstPromotion.getCFDescription2()).isEqualTo("3 LIONS|CAR FLAG");
-        assertThat(firstPromotion.getOfferText()).isEqualTo("default");
+        assertThat(firstPromotion.getCFDescription2()).isEqualTo("3 LIONS|WATERBOTTLE");
+        assertThat(firstPromotion.getShelfTalkerImage()).isEqualTo("OnSale.png");
 
         Promotion secondPromotion = promotions.get(1);
-        assertThat(secondPromotion.getOfferId()).isEqualTo("A29721688");
-        assertThat(secondPromotion.getItemNumber()).isEqualTo("070918248");
-        assertThat(secondPromotion.getZoneId()).isEqualTo("5");
-        assertThat(secondPromotion.getOfferName()).isEqualTo("3 LIONS KICK & TRICK BALL 1.00 SPECIAL PURCHASE");
-        assertThat(secondPromotion.getStartDate()).isEqualTo("31-Apr-12");
-        assertThat(secondPromotion.getEndDate()).isEqualTo("04-May-13");
+        assertThat(secondPromotion.getOfferId()).isEqualTo("A29721690");
+        assertThat(secondPromotion.getItemNumber()).isEqualTo("70918248");
+        assertThat(secondPromotion.getZoneId()).isEqualTo(4);
+        assertThat(secondPromotion.getOfferName()).isEqualTo("3 LIONS KICK & TRICK BALL 3.00 SPECIAL PURCHASE");
+        assertThat(secondPromotion.getStartDate()).isEqualTo("31-Jun-12");
+        assertThat(secondPromotion.getEndDate()).isEqualTo("04-Jul-13");
         assertThat(secondPromotion.getCFDescription1()).isEqualTo("SPECIAL PURCHASE 50p");
-        assertThat(secondPromotion.getCFDescription2()).isEqualTo("3 LIONS|WATERBOTTLE");
-        assertThat(secondPromotion.getShelfTalkerImage()).isEqualTo("OnSale.png");
-        assertThat(secondPromotion.getOfferText()).isEqualTo("default");
+        assertThat(secondPromotion.getCFDescription2()).isEqualTo("3 LIONS|CAR FLAG");
 
     }
 
     @Test
     public void shouldReturnEmptyList() throws Exception {
         PromotionRequest promotionRequest = aPromotionRequest()
-                .zoneId("5")
+                .zoneId(5)
                 .itemNumber("something wrong")
                 .offerId("something wrong")
                 .build();
@@ -203,7 +201,7 @@ public class PromotionResourceTest extends ResourceTest {
     @Test
     public void shouldReturnValueForCorrectRequestItemOnly() throws Exception {
         PromotionRequest promotionRequest = aPromotionRequest()
-                .zoneId("5")
+                .zoneId(5)
                 .itemNumber("070918248")
                 .offerId("A29721688")
                 .build();
@@ -227,27 +225,25 @@ public class PromotionResourceTest extends ResourceTest {
         Promotion firstPromotion = promotions.get(0);
         assertThat(firstPromotion.getOfferId()).isEqualTo("A29721688");
         assertThat(firstPromotion.getItemNumber()).isEqualTo("070918248");
-        assertThat(firstPromotion.getZoneId()).isEqualTo("5");
+        assertThat(firstPromotion.getZoneId()).isEqualTo(5);
         assertThat(firstPromotion.getOfferName()).isEqualTo("3 LIONS KICK & TRICK BALL 1.00 SPECIAL PURCHASE");
         assertThat(firstPromotion.getStartDate()).isEqualTo("31-Apr-12");
         assertThat(firstPromotion.getEndDate()).isEqualTo("04-May-13");
         assertThat(firstPromotion.getCFDescription1()).isEqualTo("SPECIAL PURCHASE 50p");
         assertThat(firstPromotion.getCFDescription2()).isEqualTo("3 LIONS|WATERBOTTLE");
         assertThat(firstPromotion.getShelfTalkerImage()).isEqualTo("OnSale.png");
-        assertThat(firstPromotion.getOfferText()).isEqualTo("default");
-
     }
 
     @Test
     public void shouldReturnOnlyOneResultGivenDuplicateRequests() throws Exception {
         PromotionRequest promotionRequest = aPromotionRequest()
-                .zoneId("5")
+                .zoneId(5)
                 .itemNumber("070918248")
                 .offerId("A29721688")
                 .build();
 
         PromotionRequest promotionRequest1 = aPromotionRequest()
-                .zoneId("5")
+                .zoneId(5)
                 .itemNumber("070918248")
                 .offerId("A29721688")
                 .build();
@@ -265,14 +261,12 @@ public class PromotionResourceTest extends ResourceTest {
         Promotion firstPromotion = promotions.get(0);
         assertThat(firstPromotion.getOfferId()).isEqualTo("A29721688");
         assertThat(firstPromotion.getItemNumber()).isEqualTo("070918248");
-        assertThat(firstPromotion.getZoneId()).isEqualTo("5");
+        assertThat(firstPromotion.getZoneId()).isEqualTo(5);
         assertThat(firstPromotion.getOfferName()).isEqualTo("3 LIONS KICK & TRICK BALL 1.00 SPECIAL PURCHASE");
         assertThat(firstPromotion.getStartDate()).isEqualTo("31-Apr-12");
         assertThat(firstPromotion.getEndDate()).isEqualTo("04-May-13");
         assertThat(firstPromotion.getCFDescription1()).isEqualTo("SPECIAL PURCHASE 50p");
         assertThat(firstPromotion.getCFDescription2()).isEqualTo("3 LIONS|WATERBOTTLE");
         assertThat(firstPromotion.getShelfTalkerImage()).isEqualTo("OnSale.png");
-        assertThat(firstPromotion.getOfferText()).isEqualTo("default");
-
     }
 }

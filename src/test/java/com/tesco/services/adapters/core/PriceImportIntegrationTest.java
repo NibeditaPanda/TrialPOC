@@ -4,7 +4,7 @@ import com.mongodb.DBObject;
 import com.tesco.services.core.Product;
 import com.tesco.services.core.ProductVariant;
 import com.tesco.services.core.SaleInfo;
-import com.tesco.services.repositories.ProductPriceRepository;
+import com.tesco.services.repositories.ProductRepository;
 import com.tesco.services.resources.TestConfiguration;
 import org.junit.Test;
 
@@ -15,7 +15,7 @@ import static com.tesco.services.core.PriceKeys.PRICE;
 import static com.tesco.services.core.PriceKeys.PROMO_PRICE;
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class PriceImportIntegrationTest extends ImportJobTestBase {
+public class PriceImportIntegrationTest extends ImportJobIntegrationTestBase {
     private String oldTpnb;
 
     @Override
@@ -57,6 +57,7 @@ public class PriceImportIntegrationTest extends ImportJobTestBase {
                 testConfiguration.getSonettoShelfImageUrl(),
                 RPM_PRICE_ZONE_PRICE_CSV_FILE_PATH,
                 RPM_PROMO_ZONE_PRICE_CSV_FILE_PATH,
+                RPM_PROMO_EXTRACT_CSV_FILE_PATH,
                 dbFactory, dataGridResource);
         importJob.run();
 
@@ -89,8 +90,8 @@ public class PriceImportIntegrationTest extends ImportJobTestBase {
         product.addProductVariant(productVariant1);
         product.addProductVariant(productVariant2);
 
-        ProductPriceRepository productPriceRepository = new ProductPriceRepository(dataGridResource.getProductPriceCache());
-        assertThat(productPriceRepository.getByTPNB(tpnb).get()).isEqualTo(product);
-        assertThat(productPriceRepository.getByTPNB(oldTpnb).isPresent()).isFalse();
+        ProductRepository productRepository = new ProductRepository(dataGridResource.getProductPriceCache());
+        assertThat(productRepository.getByTPNB(tpnb).get()).isEqualTo(product);
+        assertThat(productRepository.getByTPNB(oldTpnb).isPresent()).isFalse();
     }
 }
