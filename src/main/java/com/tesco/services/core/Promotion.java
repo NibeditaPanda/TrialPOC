@@ -169,5 +169,21 @@ public class Promotion implements Serializable {
         result = 31 * result + (endDate != null ? endDate.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Promotion{" +
+                "uniqueKey='" + uniqueKey + '\'' +
+                ", shelfTalkerImage='" + shelfTalkerImage + '\'' +
+                ", offerId='" + offerId + '\'' +
+                ", itemNumber='" + itemNumber + '\'' +
+                ", zoneId=" + zoneId +
+                ", CFDescription1='" + CFDescription1 + '\'' +
+                ", CFDescription2='" + CFDescription2 + '\'' +
+                ", offerName='" + offerName + '\'' +
+                ", startDate='" + startDate + '\'' +
+                ", endDate='" + endDate + '\'' +
+                '}';
+    }
 }
 

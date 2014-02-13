@@ -8,6 +8,7 @@ import com.mongodb.WriteResult;
 import com.tesco.services.adapters.rpm.readers.*;
 import com.tesco.services.adapters.rpm.readers.PriceServiceCSVReader;
 import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
+import com.tesco.services.builder.PromotionBuilder;
 import com.tesco.services.core.*;
 import com.tesco.services.repositories.DataGridResource;
 import com.tesco.services.repositories.ProductRepository;
@@ -291,7 +292,7 @@ public class RPMWriterTest {
         String price = "2.3";
 
         ProductVariant productVariant = new ProductVariant(tpnc);
-        PromotionSaleInfo promoSaleInfo = new PromotionSaleInfo(zoneId, price);
+        SaleInfo promoSaleInfo = new SaleInfo(zoneId, price);
         productVariant.addSaleInfo(promoSaleInfo);
 
         String tpnb = "059428124";
@@ -299,22 +300,18 @@ public class RPMWriterTest {
         product.addProductVariant(productVariant);
 
         String offerId = "A01";
-        String offerName = "PHD NUTRITION DIET WHEY BARS 2.29-1.7 s0.59";
-        String startDate = "Sep 12 2012 12:00AM";
-        String endDate = "Jan 5 2014 11:59PM";
+        String offerName = "Test Offer Name";
+        String startDate = "20130729";
+        String endDate = "20130819";
         when(rpmPromotionReader.getNext()).thenReturn(promotionInfoMap(tpnc, zoneId, offerId, offerName, startDate, endDate)).thenReturn(null);
         when(productRepository.getByTPNB(tpnb)).thenReturn(Optional.of(product));
         this.rpmWriter.write();
 
         ProductVariant expectedProductVariant = new ProductVariant(tpnc);
-        PromotionSaleInfo expectedPromoSaleInfo = new PromotionSaleInfo(zoneId, price);
+        SaleInfo expectedPromoSaleInfo = new SaleInfo(zoneId, price);
         expectedProductVariant.addSaleInfo(expectedPromoSaleInfo);
 
-        Promotion promotion = new Promotion();
-        promotion.setOfferId(offerId);
-        promotion.setOfferName(offerName);
-        promotion.setStartDate(startDate);
-        promotion.setEndDate(endDate);
+        Promotion promotion = new PromotionBuilder().offerId(offerId).offerName(offerName).startDate(startDate).endDate(endDate).buildForDataGrid();
 
         expectedPromoSaleInfo.addPromotion(promotion);
 

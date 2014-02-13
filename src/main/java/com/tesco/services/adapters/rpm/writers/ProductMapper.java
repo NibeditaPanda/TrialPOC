@@ -40,11 +40,11 @@ public class ProductMapper {
         ProductVariant productVariant = getProductVariant(product, tpnc);
 
         final int zoneId = Integer.parseInt(promotionInfoMap.get(CSVHeaders.Promotion.ZONE_ID));
-        PromotionSaleInfo promotionSaleInfo = (PromotionSaleInfo) productVariant.getSaleInfo(zoneId);
+        SaleInfo saleInfo = productVariant.getSaleInfo(zoneId);
 
-        if (promotionSaleInfo == null) {
-            promotionSaleInfo = new PromotionSaleInfo(zoneId, null);
-            productVariant.addSaleInfo(promotionSaleInfo);
+        if (saleInfo == null) {
+            saleInfo = new SaleInfo(zoneId, null);
+            productVariant.addSaleInfo(saleInfo);
         }
 
         Promotion promotion = new Promotion();
@@ -52,7 +52,7 @@ public class ProductMapper {
         promotion.setOfferName(promotionInfoMap.get(CSVHeaders.Promotion.OFFER_NAME));
         promotion.setStartDate(promotionInfoMap.get(CSVHeaders.Promotion.START_DATE));
         promotion.setEndDate(promotionInfoMap.get(CSVHeaders.Promotion.END_DATE));
-        promotionSaleInfo.addPromotion(promotion);
+        saleInfo.addPromotion(promotion);
 
         return product;
     }

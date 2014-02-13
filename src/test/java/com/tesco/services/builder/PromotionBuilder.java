@@ -84,4 +84,14 @@ public class PromotionBuilder {
 
         return promotion;
     }
+
+    public Promotion buildForDataGrid() {
+        Promotion promotion = new Promotion();
+        promotion.setOfferId(this.offerId);
+        promotion.setStartDate(this.startDate);
+        promotion.setEndDate(this.endDate);
+        promotion.setOfferName(this.offerName);
+
+        return promotion;
+    }
 }

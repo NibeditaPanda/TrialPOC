@@ -1,9 +1,8 @@
 package com.tesco.services.adapters.core;
 
 import com.mongodb.DBObject;
-import com.tesco.services.core.Product;
-import com.tesco.services.core.ProductVariant;
-import com.tesco.services.core.SaleInfo;
+import com.tesco.services.builder.PromotionBuilder;
+import com.tesco.services.core.*;
 import com.tesco.services.repositories.ProductRepository;
 import com.tesco.services.resources.TestConfiguration;
 import org.junit.Test;
@@ -78,13 +77,21 @@ public class PriceImportIntegrationTest extends ImportJobIntegrationTestBase {
 
         ProductVariant productVariant1 = new ProductVariant(tpnc1);
         productVariant1.addSaleInfo(new SaleInfo(1, "1.40"));
-        productVariant1.addSaleInfo(new SaleInfo(5, "0.30"));
+
+        SaleInfo saleInfo1 = new SaleInfo(5, "0.30");
+        Promotion promotion1 = new PromotionBuilder().offerId("A30718670").offerName("Test Offer Name1").startDate("20130729").endDate("20130819").buildForDataGrid();
+        saleInfo1.addPromotion(promotion1);
+        productVariant1.addSaleInfo(saleInfo1);
 
         ProductVariant productVariant2 = new ProductVariant(tpnc2);
         productVariant2.addSaleInfo(new SaleInfo(1, "1.39"));
         productVariant2.addSaleInfo(new SaleInfo(2, "1.38"));
         productVariant2.addSaleInfo(new SaleInfo(5, "0.34"));
-        productVariant2.addSaleInfo(new SaleInfo(14, "0.35"));
+
+        SaleInfo saleInfo2 = new SaleInfo(14, "0.35");
+        Promotion promotion2 = new PromotionBuilder().offerId("A30718671").offerName("Test Offer Name2").startDate("20130829").endDate("20130919").buildForDataGrid();
+        saleInfo2.addPromotion(promotion2);
+        productVariant2.addSaleInfo(saleInfo2);
 
         Product product = new Product(tpnb);
         product.addProductVariant(productVariant1);
