@@ -444,7 +444,7 @@ public class RPMWriterTest {
         promotion.setZoneId(zoneId);
         promotion.setOfferId("promotionOfferId");
         promotion.setOfferName("promotionOfferName");
-        promotion.setStartDate("promotionStartDate");
+        promotion.setEffectiveDate("promotionStartDate");
         promotion.setEndDate("promotionEndDate");
         return promotion;
     }
@@ -456,7 +456,7 @@ public class RPMWriterTest {
         promotion.setZoneId(zoneId);
         promotion.setOfferId("promotionOfferId");
         promotion.setOfferName("promotionOfferName");
-        promotion.setStartDate("promotionStartDate");
+        promotion.setEffectiveDate("promotionStartDate");
         promotion.setEndDate("promotionEndDate");
         promotion.setCFDescription1("promotionCfDesc1");
         promotion.setCFDescription2("promotionCfDesc2");

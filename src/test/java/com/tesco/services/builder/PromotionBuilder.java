@@ -10,7 +10,7 @@ public class PromotionBuilder {
     private int zoneId = 1;
     private String description1 = "description";
     private String description2 = "description";
-    private String startDate = "startDate";
+    private String effectiveDate = "startDate";
     private String endDate = "endDate";
     private String offerName = "offerName";
     private String shelfTalker = "shelfTalker";
@@ -50,7 +50,7 @@ public class PromotionBuilder {
     }
 
     public PromotionBuilder startDate(String startDate) {
-        this.startDate = startDate;
+        this.effectiveDate = startDate;
         return this;
     }
 
@@ -77,7 +77,7 @@ public class PromotionBuilder {
         promotion.setZoneId(this.zoneId);
         promotion.setCFDescription1(this.description1);
         promotion.setCFDescription2(this.description2);
-        promotion.setStartDate(this.startDate);
+        promotion.setEffectiveDate(this.effectiveDate);
         promotion.setEndDate(this.endDate);
         promotion.setOfferName(this.offerName);
         promotion.setShelfTalkerImage(this.shelfTalker);
@@ -88,7 +88,7 @@ public class PromotionBuilder {
     public Promotion buildForDataGrid() {
         Promotion promotion = new Promotion();
         promotion.setOfferId(this.offerId);
-        promotion.setStartDate(this.startDate);
+        promotion.setEffectiveDate(this.effectiveDate);
         promotion.setEndDate(this.endDate);
         promotion.setOfferName(this.offerName);
         promotion.setCFDescription1(this.description1);

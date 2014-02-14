@@ -26,7 +26,7 @@ public class RPMPromotionCSVFileReaderTest {
         assertThat(promotionInfo.getItemNumber()).isEqualTo("070918248");
         assertThat(promotionInfo.getOfferId()).isEqualTo("A29721688");
         assertThat(promotionInfo.getOfferName()).isEqualTo("3 LIONS KICK & TRICK BALL 1.00 SPECIAL PURCHASE");
-        assertThat(promotionInfo.getStartDate()).isEqualTo("31-Apr-12");
+        assertThat(promotionInfo.getEffectiveDate()).isEqualTo("31-Apr-12");
         assertThat(promotionInfo.getEndDate()).isEqualTo("04-May-13");
     }
 

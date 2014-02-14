@@ -1,12 +1,11 @@
 package com.tesco.services.core;
 
 import com.google.common.base.Optional;
+import com.tesco.services.builder.PromotionBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -38,7 +37,7 @@ public class ProductPriceBuilderTest {
     }
 
     @Test
-    public void shouldNotAddPVariantInfoWhenVariantDoesNotHaveSaleInfo(){
+    public void shouldNotAddProductVariantInfoWhenVariantDoesNotHaveSaleInfo(){
         Product productWithVariants = createProductWithVariants();
 
         ProductVariant productVariantThatDoesNotHaveMatchingZone = new ProductVariant(tpnc3);
@@ -71,19 +70,23 @@ public class ProductPriceBuilderTest {
     }
 
     private Map<String, Object> expectedProductPriceMap(boolean includePrice, boolean includePromoPrice) {
-        Map<String, String> variantInfo1 = new LinkedHashMap<>();
+        Map<String, Object> variantInfo1 = new LinkedHashMap<>();
         variantInfo1.put("tpnc", tpnc1);
         variantInfo1.put("currency", "GBP");
         if (includePrice) variantInfo1.put("price", "1.40");
-        if (includePromoPrice) variantInfo1.put("promoPrice", "1.30");
+        if (includePromoPrice) {
+            variantInfo1.put("promoPrice", "1.30");
+            List<Map<String, String>> promotions = Arrays.asList(createPromotionInfo("A30718669"), createPromotionInfo("A30718670"));
+            variantInfo1.put("promotions", promotions);
+        }
 
-        Map<String, String> variantInfo2 = new LinkedHashMap<>();
+        Map<String, Object> variantInfo2 = new LinkedHashMap<>();
         variantInfo2.put("tpnc", tpnc2);
         variantInfo2.put("currency", "GBP");
         if (includePrice) variantInfo2.put("price", "1.39");
         if (includePromoPrice) variantInfo2.put("promoPrice", "1.20");
 
-        ArrayList<Map<String, String>> variants = new ArrayList<>();
+        ArrayList<Map<String, Object>> variants = new ArrayList<>();
         variants.add(variantInfo1);
         variants.add(variantInfo2);
 
@@ -95,10 +98,13 @@ public class ProductPriceBuilderTest {
     }
 
     private Product createProductWithVariants() {
+        SaleInfo saleInfoWithPromotion = new SaleInfo(5, "1.30");
+        saleInfoWithPromotion.addPromotion(createPromotion("A30718670"));
+        saleInfoWithPromotion.addPromotion(createPromotion("A30718669"));
 
         ProductVariant productVariant1 = new ProductVariant(tpnc1);
         productVariant1.addSaleInfo(new SaleInfo(1, "1.40"));
-        productVariant1.addSaleInfo(new SaleInfo(5, "1.30"));
+        productVariant1.addSaleInfo(saleInfoWithPromotion);
 
         ProductVariant productVariant2 = new ProductVariant(tpnc2);
         productVariant2.addSaleInfo(new SaleInfo(1, "1.39"));
@@ -106,11 +112,32 @@ public class ProductPriceBuilderTest {
         productVariant2.addSaleInfo(new SaleInfo(5, "1.20"));
         productVariant2.addSaleInfo(new SaleInfo(14, "1.10"));
 
-
         Product product = new Product(tpnb);
         product.addProductVariant(productVariant1);
         product.addProductVariant(productVariant2);
 
         return product;
+    }
+
+    private Promotion createPromotion(String offerId) {
+        return new PromotionBuilder().
+                    offerId(offerId).
+                    offerName("Test Offer Name " + offerId).
+                    startDate("20130729").
+                    endDate("20130819").
+                    description1("Test Description 1 " + offerId).
+                    description2("Test Description 2 " + offerId).
+                    buildForDataGrid();
+    }
+
+    private Map<String, String> createPromotionInfo(String offerId) {
+        Promotion promotion = createPromotion(offerId);
+        Map<String, String> promotionInfo = new LinkedHashMap<>();
+        promotionInfo.put("offerName", promotion.getOfferName());
+        promotionInfo.put("effectiveDate", promotion.getEffectiveDate());
+        promotionInfo.put("endDate", promotion.getEndDate());
+        promotionInfo.put("customerFriendlyDescription1", promotion.getCFDescription1());
+        promotionInfo.put("customerFriendlyDescription2", promotion.getCFDescription2());
+        return promotionInfo;
     }
 }

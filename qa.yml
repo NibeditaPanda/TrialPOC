@@ -15,6 +15,7 @@ sonetto.promotions.xsd : /tmp/to_process/price/Promotions.xsd
 rpm.price.zone.data.dump : /tmp/to_process/price/latest/PRICE_ZONE.csv
 rpm.promo.zone.data.dump : /tmp/to_process/price/latest/PROM_ZONE.csv
 rpm.promo.extract.data.dump : /tmp/to_process/price/latest/PROM_EXTRACT.csv
+rpm.promo.desc.extract.data.dump : /tmp/to_process/price/latest/PROM_DESC_EXTRACT_full_dump.csv
 
 hostedGraphite:
   hostname: carbon.hostedgraphite.com

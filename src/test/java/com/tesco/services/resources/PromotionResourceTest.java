@@ -141,7 +141,7 @@ public class PromotionResourceTest extends ResourceTest {
         assertThat(firstPromotion.getItemNumber()).isEqualTo("070918248");
         assertThat(firstPromotion.getZoneId()).isEqualTo(5);
         assertThat(firstPromotion.getOfferName()).isEqualTo("3 LIONS KICK & TRICK BALL 1.00 SPECIAL PURCHASE");
-        assertThat(firstPromotion.getStartDate()).isEqualTo("31-Apr-12");
+        assertThat(firstPromotion.getEffectiveDate()).isEqualTo("31-Apr-12");
         assertThat(firstPromotion.getEndDate()).isEqualTo("04-May-13");
         assertThat(firstPromotion.getCFDescription1()).isEqualTo("SPECIAL PURCHASE 50p");
         assertThat(firstPromotion.getCFDescription2()).isEqualTo("3 LIONS|WATERBOTTLE");
@@ -152,7 +152,7 @@ public class PromotionResourceTest extends ResourceTest {
         assertThat(secondPromotion.getItemNumber()).isEqualTo("70918248");
         assertThat(secondPromotion.getZoneId()).isEqualTo(4);
         assertThat(secondPromotion.getOfferName()).isEqualTo("3 LIONS KICK & TRICK BALL 3.00 SPECIAL PURCHASE");
-        assertThat(secondPromotion.getStartDate()).isEqualTo("31-Jun-12");
+        assertThat(secondPromotion.getEffectiveDate()).isEqualTo("31-Jun-12");
         assertThat(secondPromotion.getEndDate()).isEqualTo("04-Jul-13");
         assertThat(secondPromotion.getCFDescription1()).isEqualTo("SPECIAL PURCHASE 50p");
         assertThat(secondPromotion.getCFDescription2()).isEqualTo("3 LIONS|CAR FLAG");
@@ -227,7 +227,7 @@ public class PromotionResourceTest extends ResourceTest {
         assertThat(firstPromotion.getItemNumber()).isEqualTo("070918248");
         assertThat(firstPromotion.getZoneId()).isEqualTo(5);
         assertThat(firstPromotion.getOfferName()).isEqualTo("3 LIONS KICK & TRICK BALL 1.00 SPECIAL PURCHASE");
-        assertThat(firstPromotion.getStartDate()).isEqualTo("31-Apr-12");
+        assertThat(firstPromotion.getEffectiveDate()).isEqualTo("31-Apr-12");
         assertThat(firstPromotion.getEndDate()).isEqualTo("04-May-13");
         assertThat(firstPromotion.getCFDescription1()).isEqualTo("SPECIAL PURCHASE 50p");
         assertThat(firstPromotion.getCFDescription2()).isEqualTo("3 LIONS|WATERBOTTLE");
@@ -263,7 +263,7 @@ public class PromotionResourceTest extends ResourceTest {
         assertThat(firstPromotion.getItemNumber()).isEqualTo("070918248");
         assertThat(firstPromotion.getZoneId()).isEqualTo(5);
         assertThat(firstPromotion.getOfferName()).isEqualTo("3 LIONS KICK & TRICK BALL 1.00 SPECIAL PURCHASE");
-        assertThat(firstPromotion.getStartDate()).isEqualTo("31-Apr-12");
+        assertThat(firstPromotion.getEffectiveDate()).isEqualTo("31-Apr-12");
         assertThat(firstPromotion.getEndDate()).isEqualTo("04-May-13");
         assertThat(firstPromotion.getCFDescription1()).isEqualTo("SPECIAL PURCHASE 50p");
         assertThat(firstPromotion.getCFDescription2()).isEqualTo("3 LIONS|WATERBOTTLE");

@@ -8,7 +8,7 @@ public class TestPromotionDBObject {
 
     private String offerId;
     private String offerName = "default";
-    private String startDate = "default";
+    private String effectiveDate = "default";
     private String endDate = "default";
     private String cfDescription1 = "default";
     private String cfDescription2 = "default";
@@ -27,7 +27,7 @@ public class TestPromotionDBObject {
     }
 
     public TestPromotionDBObject withStartDate(String startDate){
-        this.startDate = startDate;
+        this.effectiveDate = startDate;
         return this;
     }
 
@@ -71,7 +71,7 @@ public class TestPromotionDBObject {
         promotion.put("itemNumber", itemNumber);
         promotion.put("offerId", offerId);
         promotion.put("offerName", offerName);
-        promotion.put("startDate", startDate);
+        promotion.put("startDate", effectiveDate);
         promotion.put("endDate", endDate);
         promotion.put("CFDescription1", cfDescription1);
         promotion.put("CFDescription2", cfDescription2);
@@ -86,7 +86,7 @@ public class TestPromotionDBObject {
         promotion.setItemNumber(itemNumber);
         promotion.setOfferId(offerId);
         promotion.setOfferName(offerName);
-        promotion.setStartDate(startDate);
+        promotion.setEffectiveDate(effectiveDate);
         promotion.setEndDate(endDate);
         promotion.setCFDescription1(cfDescription1);
         promotion.setCFDescription2(cfDescription2);

@@ -1,13 +1,14 @@
 package com.tesco.services.core;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 public class SaleInfo implements Serializable {
     private int zoneId;
     private String price;
-    private Map<String, Promotion> promotions;
+    private Map<String, Promotion> promotions = new HashMap<>();
 
     public SaleInfo(int zoneId, String price) {
         this.zoneId = zoneId;
@@ -15,8 +16,6 @@ public class SaleInfo implements Serializable {
     }
 
     public void addPromotion(Promotion promotion) {
-        if (promotions == null) promotions = new HashMap<>();
-
         promotions.put(promotion.getOfferId(), promotion);
     }
 
@@ -29,8 +28,6 @@ public class SaleInfo implements Serializable {
     }
 
     public Promotion getPromotionByOfferId(String offerId) {
-        if (promotions == null) return null;
-
         return promotions.get(offerId);
     }
 
@@ -63,5 +60,9 @@ public class SaleInfo implements Serializable {
                 ", price='" + price + '\'' +
                 ", promotions=" + promotions +
                 '}';
+    }
+
+    public Collection<Promotion> getPromotions() {
+        return promotions.values();
     }
 }

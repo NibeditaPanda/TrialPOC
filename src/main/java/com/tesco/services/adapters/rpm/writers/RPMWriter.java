@@ -227,7 +227,7 @@ public class RPMWriter {
             promotion.put(ZONE_ID, nextPromotionDG.getZoneId());
             promotion.put(PROMOTION_OFFER_ID, nextPromotionDG.getOfferId());
             promotion.put(PROMOTION_OFFER_NAME, nextPromotionDG.getOfferName());
-            promotion.put(PROMOTION_START_DATE, nextPromotionDG.getStartDate());
+            promotion.put(PROMOTION_START_DATE, nextPromotionDG.getEffectiveDate());
             promotion.put(PROMOTION_END_DATE, nextPromotionDG.getEndDate());
 
             appendPromotionToPrice(promotion);

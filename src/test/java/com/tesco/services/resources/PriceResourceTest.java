@@ -7,10 +7,8 @@ import com.mongodb.util.JSON;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.tesco.services.Configuration;
-import com.tesco.services.core.Product;
-import com.tesco.services.core.ProductVariant;
-import com.tesco.services.core.SaleInfo;
-import com.tesco.services.core.Store;
+import com.tesco.services.builder.PromotionBuilder;
+import com.tesco.services.core.*;
 import com.tesco.services.dao.DBFactory;
 import com.tesco.services.dao.PriceDAO;
 import com.tesco.services.exceptions.ItemNotFoundException;
@@ -343,9 +341,9 @@ public class PriceResourceTest extends ResourceTest {
         assertThat(response.getStatus()).isEqualTo(200);
         Map actualProductPriceInfo = resource.get(Map.class);
 
-        ArrayList<Map<String, String>> variants = new ArrayList<>();
-        variants.add(getVariantInfo(tpnc1, "EUR", null, "1.10"));
-        variants.add(getVariantInfo(tpnc2, "EUR", "1.38", null));
+        ArrayList<Map<String, Object>> variants = new ArrayList<>();
+        variants.add(getVariantInfo(tpnc1, "EUR", null, "1.10", false));
+        variants.add(getVariantInfo(tpnc2, "EUR", "1.38", null, false));
 
         assertThat(actualProductPriceInfo).isEqualTo(getProductPriceMap(tpnb, variants));
     }
@@ -393,10 +391,11 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     private Product createProductWithVariants(String tpnb, String tpnc1, String tpnc2) {
-
         ProductVariant productVariant1 = new ProductVariant(tpnc1);
         productVariant1.addSaleInfo(new SaleInfo(1, "1.40"));
-        productVariant1.addSaleInfo(new SaleInfo(5, "1.20"));
+        SaleInfo promoSaleInfo = new SaleInfo(5, "1.20");
+        promoSaleInfo.addPromotion(createPromotion("A30718670"));
+        productVariant1.addSaleInfo(promoSaleInfo);
         productVariant1.addSaleInfo(new SaleInfo(14, "1.10"));
 
         ProductVariant productVariant2 = new ProductVariant(tpnc2);
@@ -410,28 +409,57 @@ public class PriceResourceTest extends ResourceTest {
         return product;
     }
 
+    private Promotion createPromotion(String offerId) {
+        return new PromotionBuilder().
+                offerId(offerId).
+                offerName("Test Offer Name " + offerId).
+                startDate("20130729").
+                endDate("20130819").
+                description1("Test Description 1 " + offerId).
+                description2("Test Description 2 " + offerId).
+                buildForDataGrid();
+    }
+
     private Map<String, Object> expectedProductPriceInfo(String tpnb, String tpnc1, String tpnc2) {
-        ArrayList<Map<String, String>> variants = new ArrayList<>();
-        variants.add(getVariantInfo(tpnc1, "GBP", "1.40", "1.20"));
-        variants.add(getVariantInfo(tpnc2, "GBP", "1.39", null));
+        ArrayList<Map<String, Object>> variants = new ArrayList<>();
+        variants.add(getVariantInfo(tpnc1, "GBP", "1.40", "1.20", true));
+        variants.add(getVariantInfo(tpnc2, "GBP", "1.39", null, true));
 
         return getProductPriceMap(tpnb, variants);
     }
 
-    private Map<String, Object> getProductPriceMap(String tpnb, ArrayList<Map<String, String>> variants) {
+    private Map<String, Object> getProductPriceMap(String tpnb, ArrayList<Map<String, Object>> variants) {
         Map<String, Object> productPriceMap = new LinkedHashMap<>();
         productPriceMap.put("tpnb", tpnb);
         productPriceMap.put("variants", variants);
         return productPriceMap;
     }
 
-    private Map<String, String> getVariantInfo(String tpnc, String currency, String price, String promoPrice) {
-        Map<String, String> variantInfo1 = new LinkedHashMap<>();
+    private Map<String, Object> getVariantInfo(String tpnc, String currency, String price, String promoPrice, boolean shouldAddPromotionInfo) {
+        Map<String, Object> variantInfo1 = new LinkedHashMap<>();
         variantInfo1.put("tpnc", tpnc);
         variantInfo1.put("currency", currency);
         if (price != null) variantInfo1.put("price", price);
-        if (promoPrice != null) variantInfo1.put("promoPrice", promoPrice);
+        if (promoPrice != null) {
+            variantInfo1.put("promoPrice", promoPrice);
+            if (shouldAddPromotionInfo) {
+                ArrayList<Object> promotions = new ArrayList<>();
+                promotions.add(createPromotionInfo("A30718670"));
+                variantInfo1.put("promotions", promotions);
+            }
+        }
         return variantInfo1;
+    }
+
+    private Map<String, String> createPromotionInfo(String offerId) {
+        Promotion promotion = createPromotion(offerId);
+        Map<String, String> promotionInfo = new LinkedHashMap<>();
+        promotionInfo.put("offerName", promotion.getOfferName());
+        promotionInfo.put("effectiveDate", promotion.getEffectiveDate());
+        promotionInfo.put("endDate", promotion.getEndDate());
+        promotionInfo.put("customerFriendlyDescription1", promotion.getCFDescription1());
+        promotionInfo.put("customerFriendlyDescription2", promotion.getCFDescription2());
+        return promotionInfo;
     }
 
 }

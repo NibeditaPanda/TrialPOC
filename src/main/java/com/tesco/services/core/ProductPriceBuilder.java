@@ -10,7 +10,13 @@ public class ProductPriceBuilder implements ProductPriceVisitor {
     public static final String TPNC = "tpnc";
     public static final String PRICE = "price";
     public static final String PROMO_PRICE = "promoPrice";
+    public static final String PROMOTION_INFO = "promotions";
     public static final String CURRENCY = "currency";
+    public static final String OFFER_NAME = "offerName";
+    public static final String EFFECTIVE_DATE = "effectiveDate";
+    public static final String END_DATE = "endDate";
+    public static final String CUSTOMER_FRIENDLY_DESCRIPTION_1 = "customerFriendlyDescription1";
+    private static final String CUSTOMER_FRIENDLY_DESCRIPTION_2 = "customerFriendlyDescription2";
 
     private Map<String, Object> priceInfo = new LinkedHashMap<>();
     private Optional<Integer> priceZoneId;
@@ -26,19 +32,19 @@ public class ProductPriceBuilder implements ProductPriceVisitor {
     @Override
     public void visit(Product product) {
         priceInfo.put(TPNB, product.getTPNB());
-        priceInfo.put(VARIANTS, new ArrayList<Map<String, String>>());
+        priceInfo.put(VARIANTS, new ArrayList<Map<String, Object>>());
     }
 
     @Override
     public void visit(ProductVariant productVariant) {
-        List<Map<String, String>> variants = (List<Map<String, String>>) priceInfo.get(VARIANTS);
+        List<Map<String, Object>> variants = (List<Map<String, Object>>) priceInfo.get(VARIANTS);
 
         SaleInfo priceZoneSaleInfo = priceZoneId.isPresent() ? productVariant.getSaleInfo(priceZoneId.get()) : null;
         SaleInfo promoZoneSaleInfo = promoZoneId.isPresent() ? productVariant.getSaleInfo(promoZoneId.get()) : null;
 
         if (priceZoneSaleInfo == null && promoZoneSaleInfo == null) return;
 
-        Map<String, String> variantInfo = new LinkedHashMap<>();
+        Map<String, Object> variantInfo = new LinkedHashMap<>();
         variantInfo.put(TPNC, productVariant.getTPNC());
         variantInfo.put(CURRENCY, currency);
         variants.add(variantInfo);
@@ -48,8 +54,29 @@ public class ProductPriceBuilder implements ProductPriceVisitor {
         }
 
         if (promoZoneSaleInfo != null) {
-            variantInfo.put(PROMO_PRICE, promoZoneSaleInfo.getPrice());
+            addPromotionInfo(promoZoneSaleInfo, variantInfo);
         }
+    }
+
+    private void addPromotionInfo(SaleInfo promoZoneSaleInfo, Map<String, Object> variantInfo) {
+        variantInfo.put(PROMO_PRICE, promoZoneSaleInfo.getPrice());
+        Collection<Promotion> promotions = promoZoneSaleInfo.getPromotions();
+
+        if (promotions.isEmpty()) return;
+
+        List<Map<String, String>> promotionMaps = new ArrayList<>();
+
+        for (Promotion promotion : promotions) {
+            Map<String, String> promotionInfoMap = new LinkedHashMap<>();
+            promotionInfoMap.put(OFFER_NAME, promotion.getOfferName());
+            promotionInfoMap.put(EFFECTIVE_DATE, promotion.getEffectiveDate());
+            promotionInfoMap.put(END_DATE, promotion.getEndDate());
+            promotionInfoMap.put(CUSTOMER_FRIENDLY_DESCRIPTION_1, promotion.getCFDescription1());
+            promotionInfoMap.put(CUSTOMER_FRIENDLY_DESCRIPTION_2, promotion.getCFDescription2());
+            promotionMaps.add(promotionInfoMap);
+        }
+
+        variantInfo.put(PROMOTION_INFO, promotionMaps);
     }
 
     public Map<String, Object> getPriceInfo() {

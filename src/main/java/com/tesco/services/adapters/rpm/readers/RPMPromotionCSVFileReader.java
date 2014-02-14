@@ -67,7 +67,7 @@ public class RPMPromotionCSVFileReader implements RPMCSVFileReader {
         promotion.setZoneId(Integer.parseInt(nextLine[zoneIndex]));
         promotion.setOfferId(nextLine[offerIdIndex]);
         promotion.setOfferName(nextLine[offerNameIndex]);
-        promotion.setStartDate(nextLine[startDateIndex]);
+        promotion.setEffectiveDate(nextLine[startDateIndex]);
         promotion.setEndDate(nextLine[endDateIndex]);
 
         return promotion;

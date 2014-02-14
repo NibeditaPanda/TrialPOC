@@ -44,7 +44,7 @@ public class Promotion implements Serializable {
     @JsonProperty
     private String offerName;
     @JsonProperty
-    private String startDate;
+    private String effectiveDate;
     @JsonProperty
     private String endDate;
 
@@ -83,8 +83,8 @@ public class Promotion implements Serializable {
         return offerName;
     }
 
-    public String getStartDate() {
-        return startDate;
+    public String getEffectiveDate() {
+        return effectiveDate;
     }
 
     public String getEndDate() {
@@ -123,8 +123,8 @@ public class Promotion implements Serializable {
         this.offerName = offerName;
     }
 
-    public void setStartDate(String startDate) {
-        this.startDate = startDate;
+    public void setEffectiveDate(String effectiveDate) {
+        this.effectiveDate = effectiveDate;
     }
 
     public void setEndDate(String endDate) {
@@ -149,7 +149,7 @@ public class Promotion implements Serializable {
         if (offerName != null ? !offerName.equals(promotion.offerName) : promotion.offerName != null) return false;
         if (shelfTalkerImage != null ? !shelfTalkerImage.equals(promotion.shelfTalkerImage) : promotion.shelfTalkerImage != null)
             return false;
-        if (startDate != null ? !startDate.equals(promotion.startDate) : promotion.startDate != null) return false;
+        if (effectiveDate != null ? !effectiveDate.equals(promotion.effectiveDate) : promotion.effectiveDate != null) return false;
         if (uniqueKey != null ? !uniqueKey.equals(promotion.uniqueKey) : promotion.uniqueKey != null) return false;
 
         return true;
@@ -165,7 +165,7 @@ public class Promotion implements Serializable {
         result = 31 * result + (CFDescription1 != null ? CFDescription1.hashCode() : 0);
         result = 31 * result + (CFDescription2 != null ? CFDescription2.hashCode() : 0);
         result = 31 * result + (offerName != null ? offerName.hashCode() : 0);
-        result = 31 * result + (startDate != null ? startDate.hashCode() : 0);
+        result = 31 * result + (effectiveDate != null ? effectiveDate.hashCode() : 0);
         result = 31 * result + (endDate != null ? endDate.hashCode() : 0);
         return result;
     }
@@ -181,7 +181,7 @@ public class Promotion implements Serializable {
                 ", CFDescription1='" + CFDescription1 + '\'' +
                 ", CFDescription2='" + CFDescription2 + '\'' +
                 ", offerName='" + offerName + '\'' +
-                ", startDate='" + startDate + '\'' +
+                ", effectiveDate='" + effectiveDate + '\'' +
                 ", endDate='" + endDate + '\'' +
                 '}';
     }
