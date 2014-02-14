@@ -15,9 +15,7 @@ public class SaleInfo implements Serializable {
     }
 
     public void addPromotion(Promotion promotion) {
-        if (promotions == null) {
-            promotions = new HashMap<>();
-        }
+        if (promotions == null) promotions = new HashMap<>();
 
         promotions.put(promotion.getOfferId(), promotion);
     }
@@ -28,6 +26,12 @@ public class SaleInfo implements Serializable {
 
     public String getPrice() {
         return price;
+    }
+
+    public Promotion getPromotionByOfferId(String offerId) {
+        if (promotions == null) return null;
+
+        return promotions.get(offerId);
     }
 
     @Override

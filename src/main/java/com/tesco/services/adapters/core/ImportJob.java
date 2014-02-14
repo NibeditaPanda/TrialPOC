@@ -40,6 +40,7 @@ public class ImportJob implements Runnable {
     private String rpmPriceZoneDataPath;
     private String rpmPromoZoneDataPath;
     private String rpmPromoExtractDataPath;
+    private String rpmPromoDescExtractDataPath;
     private com.tesco.services.dao.DBFactory dbFactory;
     private DataGridResource dataGridResource;
     private String sonettoPromotionsXMLFilePath;
@@ -55,6 +56,7 @@ public class ImportJob implements Runnable {
                       String rpmPriceZoneDataPath,
                       String rpmPromZoneDataPath,
                       String rpmPromoExtractDataPath,
+                      String rpmPromoDescExtractDataPath,
                       DBFactory dbFactory,
                       DataGridResource dataGridResource) {
         this.rpmPriceZoneCsvFilePath = rpmPriceZoneCsvFilePath;
@@ -67,6 +69,7 @@ public class ImportJob implements Runnable {
         this.rpmPriceZoneDataPath = rpmPriceZoneDataPath;
         this.rpmPromoZoneDataPath = rpmPromZoneDataPath;
         this.rpmPromoExtractDataPath = rpmPromoExtractDataPath;
+        this.rpmPromoDescExtractDataPath = rpmPromoDescExtractDataPath;
         this.dbFactory = dbFactory;
         this.dataGridResource = dataGridResource;
     }
@@ -135,7 +138,8 @@ public class ImportJob implements Runnable {
         PriceServiceCSVReader rpmPriceReader = new PriceServiceCSVReaderImpl(rpmPriceZoneDataPath, CSVHeaders.Price.PRICE_ZONE_HEADERS);
         PriceServiceCSVReader rpmPromoPriceReader = new PriceServiceCSVReaderImpl(rpmPromoZoneDataPath, CSVHeaders.Price.PROMO_ZONE_HEADERS);
         PriceServiceCSVReader storeZoneReader = new PriceServiceCSVReaderImpl(rpmStoreZoneCsvFilePath, CSVHeaders.StoreZone.HEADERS);
-        PriceServiceCSVReader rpmPromotionReader = new PriceServiceCSVReaderImpl(rpmPromoExtractDataPath, CSVHeaders.Promotion.PROMO_EXTRACT_HEADERS);
+        PriceServiceCSVReader rpmPromotionReader = new PriceServiceCSVReaderImpl(rpmPromoExtractDataPath, CSVHeaders.PromoExtract.HEADERS);
+        PriceServiceCSVReader rpmPromotionDescReader = new PriceServiceCSVReaderImpl(rpmPromoDescExtractDataPath, CSVHeaders.PromoDescExtract.HEADERS);
 
         new RPMWriter(priceCollection,
                 storeCollection,
@@ -151,7 +155,8 @@ public class ImportJob implements Runnable {
                 rpmPriceReader,
                 rpmPromoPriceReader,
                 storeZoneReader,
-                rpmPromotionReader)
+                rpmPromotionReader,
+                rpmPromotionDescReader)
                 .write();
     }
 

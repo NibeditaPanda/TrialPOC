@@ -49,6 +49,7 @@ public class ImportResource {
                     configuration.getRPMPriceZoneDataPath(),
                     configuration.getRPMPromoZoneDataPath(),
                     configuration.getRPMPromoExtractDataPath(),
+                    configuration.getRPMPromoDescExtractDataPath(),
                     dbFactory,
                     dataGridResource);
 

@@ -57,6 +57,7 @@ public class PriceImportIntegrationTest extends ImportJobIntegrationTestBase {
                 RPM_PRICE_ZONE_PRICE_CSV_FILE_PATH,
                 RPM_PROMO_ZONE_PRICE_CSV_FILE_PATH,
                 RPM_PROMO_EXTRACT_CSV_FILE_PATH,
+                RPM_PROMO_DESC_EXTRACT_CSV_FILE_PATH,
                 dbFactory, dataGridResource);
         importJob.run();
 
@@ -75,23 +76,39 @@ public class PriceImportIntegrationTest extends ImportJobIntegrationTestBase {
         tpnb = tpnc1 = "050925811";
         tpnc2 = "050925811-001";
 
-        ProductVariant productVariant1 = new ProductVariant(tpnc1);
-        productVariant1.addSaleInfo(new SaleInfo(1, "1.40"));
+        Promotion promotion1 = new PromotionBuilder().
+                offerId("A30718670").
+                offerName("Test Offer Name1").
+                startDate("20130729").
+                endDate("20130819").
+                description1("Test Description 1").
+                description2("Test Description 2").
+                buildForDataGrid();
 
         SaleInfo saleInfo1 = new SaleInfo(5, "0.30");
-        Promotion promotion1 = new PromotionBuilder().offerId("A30718670").offerName("Test Offer Name1").startDate("20130729").endDate("20130819").buildForDataGrid();
         saleInfo1.addPromotion(promotion1);
+        
+        ProductVariant productVariant1 = new ProductVariant(tpnc1);
         productVariant1.addSaleInfo(saleInfo1);
+        productVariant1.addSaleInfo(new SaleInfo(1, "1.40"));
 
+        Promotion promotion2 = new PromotionBuilder().
+                offerId("A30718671").
+                offerName("Test Offer Name2").
+                startDate("20130829").
+                endDate("20130919").
+                description1("Test Description 3").
+                description2("Test Description 4").
+                buildForDataGrid();
+
+        SaleInfo saleInfo2 = new SaleInfo(14, "0.35");
+        saleInfo2.addPromotion(promotion2);
+        
         ProductVariant productVariant2 = new ProductVariant(tpnc2);
+        productVariant2.addSaleInfo(saleInfo2);
         productVariant2.addSaleInfo(new SaleInfo(1, "1.39"));
         productVariant2.addSaleInfo(new SaleInfo(2, "1.38"));
         productVariant2.addSaleInfo(new SaleInfo(5, "0.34"));
-
-        SaleInfo saleInfo2 = new SaleInfo(14, "0.35");
-        Promotion promotion2 = new PromotionBuilder().offerId("A30718671").offerName("Test Offer Name2").startDate("20130829").endDate("20130919").buildForDataGrid();
-        saleInfo2.addPromotion(promotion2);
-        productVariant2.addSaleInfo(saleInfo2);
 
         Product product = new Product(tpnb);
         product.addProductVariant(productVariant1);

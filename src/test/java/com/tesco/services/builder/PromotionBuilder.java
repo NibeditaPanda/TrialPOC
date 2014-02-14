@@ -91,6 +91,8 @@ public class PromotionBuilder {
         promotion.setStartDate(this.startDate);
         promotion.setEndDate(this.endDate);
         promotion.setOfferName(this.offerName);
+        promotion.setCFDescription1(this.description1);
+        promotion.setCFDescription2(this.description2);
 
         return promotion;
     }

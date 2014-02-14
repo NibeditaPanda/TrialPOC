@@ -1,0 +1,4 @@
+"template_id","offer_id","ITEM","promo_zone","desc_1","desc_2","start_date","end_date","effv_dttm","offer_type","trigger_amount","Context","context_value"
+"A0000368","A30718670","050925811","5","Test Description 1","Test Description 2","Sep 12 2012 12:00AM","Jan  5 2014 11:59PM","Jul 29 2013 12:00AM","M","2.000","group","5"
+"A0000368","A30718671","050925811-001","14","Test Description 3","Test Description 4","Sep 12 2012 12:00AM","Jan  5 2014 11:59PM","Jul 29 2013 12:00AM","M","2.000","group","6"
+"A0000368","A30718672","072569352","6","Any 2 for �1.00","BUTCHERS|CAT FOOD|400G|20\\02\\13","Sep 12 2012 12:00AM","Jan  5 2014 11:59PM","Jul 29 2013 12:00AM","M","2.000","group","6"

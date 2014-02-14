@@ -13,4 +13,5 @@ public class TestFiles {
     public static final String RPM_PRICE_ZONE_PRICE_CSV_FILE_PATH = "./src/test/resources/com/tesco/services/adapters/rpm/fixtures/latest/price_zone_price.csv";
     public static final String RPM_PROMO_ZONE_PRICE_CSV_FILE_PATH = "./src/test/resources/com/tesco/services/adapters/rpm/fixtures/latest/promo_zone_price.csv";
     public static final String RPM_PROMO_EXTRACT_CSV_FILE_PATH = "./src/test/resources/com/tesco/services/adapters/rpm/fixtures/latest/prom_extract.csv";
+    public static final String RPM_PROMO_DESC_EXTRACT_CSV_FILE_PATH = "./src/test/resources/com/tesco/services/adapters/rpm/fixtures/latest/prom_desc_extract.csv";
 }

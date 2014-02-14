@@ -21,13 +21,22 @@ public interface CSVHeaders {
         String[] HEADERS = {STORE_ID, ZONE_ID, CURRENCY_CODE, ZONE_TYPE};
     }
 
-    static interface Promotion {
+    static interface PromoExtract {
         String TPNB = "ITEM";
         String ZONE_ID = "ZONE_ID";
         String OFFER_ID = "OFFER_ID";
         String OFFER_NAME = "OFFER_NAME";
         String START_DATE = "EFFECTIVE_DATE";
         String END_DATE = "END_DATE";
-        String[] PROMO_EXTRACT_HEADERS = {TPNB, ZONE_ID, OFFER_ID, OFFER_NAME, START_DATE, END_DATE};
+        String[] HEADERS = {TPNB, ZONE_ID, OFFER_ID, OFFER_NAME, START_DATE, END_DATE};
+    }
+
+    static interface PromoDescExtract {
+        String TPNB = "ITEM";
+        String ZONE_ID = "promo_zone";
+        String OFFER_ID = "offer_id";
+        String DESC1 = "desc_1";
+        String DESC2 = "desc_2";
+        String[] HEADERS = {TPNB, ZONE_ID, OFFER_ID, DESC1, DESC2};
     }
 }

@@ -65,6 +65,7 @@ public abstract class ImportJobIntegrationTestBase {
                 RPM_PRICE_ZONE_PRICE_CSV_FILE_PATH,
                 RPM_PROMO_ZONE_PRICE_CSV_FILE_PATH,
                 RPM_PROMO_EXTRACT_CSV_FILE_PATH,
+                RPM_PROMO_DESC_EXTRACT_CSV_FILE_PATH,
                 dbFactory,
                 dataGridResource);
         importJob.run();

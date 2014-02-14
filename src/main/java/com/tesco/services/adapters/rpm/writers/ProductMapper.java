@@ -34,12 +34,12 @@ public class ProductMapper {
     }
 
     public Product mapPromotion(Map<String, String> promotionInfoMap) {
-        String tpncHeader = CSVHeaders.Promotion.TPNB; // Todo: to be changed to tpnc when we get tpnc
+        String tpncHeader = CSVHeaders.PromoExtract.TPNB; // Todo: to be changed to tpnc when we get tpnc
         String tpnc = promotionInfoMap.get(tpncHeader);
         Product product = getProduct(tpnc.split("-")[0]);//TODO: Remove the splitting logic once TPNC is given in the CSV extracts
         ProductVariant productVariant = getProductVariant(product, tpnc);
 
-        final int zoneId = Integer.parseInt(promotionInfoMap.get(CSVHeaders.Promotion.ZONE_ID));
+        final int zoneId = Integer.parseInt(promotionInfoMap.get(CSVHeaders.PromoExtract.ZONE_ID));
         SaleInfo saleInfo = productVariant.getSaleInfo(zoneId);
 
         if (saleInfo == null) {
@@ -48,11 +48,40 @@ public class ProductMapper {
         }
 
         Promotion promotion = new Promotion();
-        promotion.setOfferId(promotionInfoMap.get(CSVHeaders.Promotion.OFFER_ID));
-        promotion.setOfferName(promotionInfoMap.get(CSVHeaders.Promotion.OFFER_NAME));
-        promotion.setStartDate(promotionInfoMap.get(CSVHeaders.Promotion.START_DATE));
-        promotion.setEndDate(promotionInfoMap.get(CSVHeaders.Promotion.END_DATE));
+        promotion.setOfferId(promotionInfoMap.get(CSVHeaders.PromoExtract.OFFER_ID));
+        promotion.setOfferName(promotionInfoMap.get(CSVHeaders.PromoExtract.OFFER_NAME));
+        promotion.setStartDate(promotionInfoMap.get(CSVHeaders.PromoExtract.START_DATE));
+        promotion.setEndDate(promotionInfoMap.get(CSVHeaders.PromoExtract.END_DATE));
         saleInfo.addPromotion(promotion);
+
+        return product;
+    }
+
+    public Product mapPromotionDescription(Map<String, String> promotionDescInfoMap) {
+        String tpncHeader = CSVHeaders.PromoDescExtract.TPNB; // Todo: to be changed to tpnc when we get tpnc
+        String tpnc = promotionDescInfoMap.get(tpncHeader);
+        Product product = getProduct(tpnc.split("-")[0]);//TODO: Remove the splitting logic once TPNC is given in the CSV extracts
+        ProductVariant productVariant = getProductVariant(product, tpnc);
+
+        final int zoneId = Integer.parseInt(promotionDescInfoMap.get(CSVHeaders.PromoDescExtract.ZONE_ID));
+        SaleInfo saleInfo = productVariant.getSaleInfo(zoneId);
+
+        if (saleInfo == null) {
+            saleInfo = new SaleInfo(zoneId, null);
+            productVariant.addSaleInfo(saleInfo);
+        }
+
+        String offerId = promotionDescInfoMap.get(CSVHeaders.PromoDescExtract.OFFER_ID);
+        Promotion promotion = saleInfo.getPromotionByOfferId(offerId);
+
+        if(promotion == null) {
+            promotion = new Promotion();
+            promotion.setOfferId(offerId);
+            saleInfo.addPromotion(promotion);
+        }
+
+        promotion.setCFDescription1(promotionDescInfoMap.get(CSVHeaders.PromoDescExtract.DESC1));
+        promotion.setCFDescription2(promotionDescInfoMap.get(CSVHeaders.PromoDescExtract.DESC2));
 
         return product;
     }

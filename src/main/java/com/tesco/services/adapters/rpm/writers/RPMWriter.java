@@ -57,6 +57,7 @@ public class RPMWriter {
     private PriceServiceCSVReader rpmPromoPriceReader;
     private PriceServiceCSVReader storeZoneReader;
     private PriceServiceCSVReader rpmPromotionReader;
+    private PriceServiceCSVReader rpmPromotionDescReader;
 
     private SonettoPromotionXMLReader sonettoPromotionXMLReader;
 
@@ -79,7 +80,8 @@ public class RPMWriter {
                      PriceServiceCSVReader rpmPriceReader,
                      PriceServiceCSVReader rpmPromoPriceReader,
                      PriceServiceCSVReader storeZoneReader,
-                     PriceServiceCSVReader rpmPromotionReader) throws IOException, ColumnNotFoundException {
+                     PriceServiceCSVReader rpmPromotionReader,
+                     PriceServiceCSVReader rpmPromotionDescReader) throws IOException, ColumnNotFoundException {
 
         this.priceCollection = priceCollection;
         this.storeCollection = storeCollection;
@@ -96,6 +98,7 @@ public class RPMWriter {
         this.rpmPromoPriceReader = rpmPromoPriceReader;
         this.storeZoneReader = storeZoneReader;
         this.rpmPromotionReader = rpmPromotionReader;
+        this.rpmPromotionDescReader = rpmPromotionDescReader;
 
         insertCount = 0;
         updateCount = 0;
@@ -119,6 +122,7 @@ public class RPMWriter {
         writePriceZonePrices();
         writePromoZonePrices();
         writePromotions();
+        writePromotionsDesc();
         writeStoreZones();
     }
 
@@ -158,6 +162,17 @@ public class RPMWriter {
 
         while((promotionInfoMap = rpmPromotionReader.getNext()) !=  null) {
             final Product product = productMapper.mapPromotion(promotionInfoMap);
+            productRepository.put(product);
+        }
+
+    }
+
+    private void writePromotionsDesc() throws IOException {
+        Map<String, String> promotionDescInfoMap;
+        final ProductMapper productMapper = new ProductMapper(productRepository);
+
+        while((promotionDescInfoMap = rpmPromotionDescReader.getNext()) !=  null) {
+            final Product product = productMapper.mapPromotionDescription(promotionDescInfoMap);
             productRepository.put(product);
         }
 
