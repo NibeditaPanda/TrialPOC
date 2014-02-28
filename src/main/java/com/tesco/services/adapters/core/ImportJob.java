@@ -1,15 +1,25 @@
 package com.tesco.services.adapters.core;
 
+import com.couchbase.client.CouchbaseClient;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.tesco.services.adapters.core.exceptions.ColumnNotFoundException;
-import com.tesco.services.adapters.rpm.readers.*;
+import com.tesco.services.adapters.rpm.readers.PriceServiceCSVReader;
+import com.tesco.services.adapters.rpm.readers.PriceServiceCSVReaderImpl;
+import com.tesco.services.adapters.rpm.readers.RPMPriceZoneCSVFileReader;
+import com.tesco.services.adapters.rpm.readers.RPMPromotionCSVFileReader;
+import com.tesco.services.adapters.rpm.readers.RPMPromotionDescriptionCSVFileReader;
+import com.tesco.services.adapters.rpm.readers.RPMStoreZoneCSVFileReader;
 import com.tesco.services.adapters.rpm.writers.CSVHeaders;
 import com.tesco.services.adapters.rpm.writers.RPMWriter;
 import com.tesco.services.adapters.sonetto.SonettoPromotionWriter;
 import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
 import com.tesco.services.dao.DBFactory;
-import com.tesco.services.repositories.*;
+import com.tesco.services.repositories.ImportCouchbaseConnectionManager;
+import com.tesco.services.repositories.ProductRepository;
+import com.tesco.services.repositories.PromotionRepository;
+import com.tesco.services.repositories.StoreRepository;
+import com.tesco.services.repositories.UUIDGenerator;
 import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 import org.xml.sax.SAXException;
@@ -18,6 +28,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Date;
 
 import static com.tesco.services.core.PriceKeys.ITEM_NUMBER;
@@ -42,7 +53,7 @@ public class ImportJob implements Runnable {
     private String rpmPromoExtractDataPath;
     private String rpmPromoDescExtractDataPath;
     private com.tesco.services.dao.DBFactory dbFactory;
-    private DataGridResource dataGridResource;
+    private ImportCouchbaseConnectionManager couchbaseConnectionManager;
     private String sonettoPromotionsXMLFilePath;
     private String sonettoShelfImageUrl;
 
@@ -58,7 +69,7 @@ public class ImportJob implements Runnable {
                       String rpmPromoExtractDataPath,
                       String rpmPromoDescExtractDataPath,
                       DBFactory dbFactory,
-                      DataGridResource dataGridResource) {
+                      ImportCouchbaseConnectionManager couchbaseConnectionManager) {
         this.rpmPriceZoneCsvFilePath = rpmPriceZoneCsvFilePath;
         this.rpmStoreZoneCsvFilePath = rpmStoreZoneCsvFilePath;
         this.rpmPromotionCsvFilePath = rpmPromotionCsvFilePath;
@@ -71,7 +82,7 @@ public class ImportJob implements Runnable {
         this.rpmPromoExtractDataPath = rpmPromoExtractDataPath;
         this.rpmPromoDescExtractDataPath = rpmPromoDescExtractDataPath;
         this.dbFactory = dbFactory;
-        this.dataGridResource = dataGridResource;
+        this.couchbaseConnectionManager = couchbaseConnectionManager;
     }
 
     @Override
@@ -102,9 +113,7 @@ public class ImportJob implements Runnable {
             logger.info("Renaming Promotion collection....");
             tempPromotionCollection.rename(PROMOTION_COLLECTION, true);
 
-            logger.info("Swapping Price and Promotion Caches...");
-            dataGridResource.replaceCurrentWithRefresh();
-
+            couchbaseConnectionManager.replaceCurrentWithRefresh();
             logger.info("Successfully imported data for " + new Date());
 
         } catch (Exception exception) {
@@ -120,7 +129,7 @@ public class ImportJob implements Runnable {
         }
     }
 
-    private void fetchAndSavePriceDetails(DBCollection priceCollection, DBCollection storeCollection, DBCollection promotionCollection) throws IOException, ParserConfigurationException, ConfigurationException, JAXBException, ColumnNotFoundException, SAXException {
+    private void fetchAndSavePriceDetails(DBCollection priceCollection, DBCollection storeCollection, DBCollection promotionCollection) throws IOException, ParserConfigurationException, ConfigurationException, JAXBException, ColumnNotFoundException, SAXException, URISyntaxException, InterruptedException {
         indexMongo(priceCollection, storeCollection, promotionCollection);
         logger.info("Importing data from RPM....");
         RPMPriceZoneCSVFileReader rpmPriceZoneCSVFileReader = new RPMPriceZoneCSVFileReader(rpmPriceZoneCsvFilePath);
@@ -131,9 +140,12 @@ public class ImportJob implements Runnable {
         SonettoPromotionXMLReader sonettoPromotionXMLReader = new SonettoPromotionXMLReader(new SonettoPromotionWriter(promotionCollection), sonettoShelfImageUrl, sonettoPromotionXSDDataPath);
 
         UUIDGenerator uuidGenerator = new UUIDGenerator();
-        PromotionRepository promotionRepository = new PromotionRepository(uuidGenerator, dataGridResource.getPromotionRefreshCache());
-        ProductRepository productRepository = new ProductRepository(dataGridResource.getProductPriceRefreshCache());
-        StoreRepository storeRepository = new StoreRepository(dataGridResource.getStoreRefreshCache());
+
+        final CouchbaseClient couchbaseClient = couchbaseConnectionManager.getReplacementBucketClient();
+        PromotionRepository promotionRepository = new PromotionRepository(uuidGenerator, couchbaseClient);
+        ProductRepository productRepository = new ProductRepository(couchbaseClient);
+
+        StoreRepository storeRepository = new StoreRepository(couchbaseClient);
 
         PriceServiceCSVReader rpmPriceReader = new PriceServiceCSVReaderImpl(rpmPriceZoneDataPath, CSVHeaders.Price.PRICE_ZONE_HEADERS);
         PriceServiceCSVReader rpmPromoPriceReader = new PriceServiceCSVReaderImpl(rpmPromoZoneDataPath, CSVHeaders.Price.PROMO_ZONE_HEADERS);

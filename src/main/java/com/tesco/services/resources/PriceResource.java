@@ -7,7 +7,7 @@ import com.tesco.services.core.ProductPriceBuilder;
 import com.tesco.services.core.Store;
 import com.tesco.services.dao.PriceDAO;
 import com.tesco.services.exceptions.ItemNotFoundException;
-import com.tesco.services.repositories.DataGridResource;
+import com.tesco.services.repositories.CouchbaseConnectionManager;
 import com.tesco.services.repositories.ProductRepository;
 import com.tesco.services.repositories.StoreRepository;
 import com.wordnik.swagger.annotations.Api;
@@ -28,6 +28,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -52,11 +53,11 @@ public class PriceResource {
 
 
     private PriceDAO priceDAO;
-    private DataGridResource dataGridResource;
+    private CouchbaseConnectionManager couchbaseConnectionManager;
 
-    public PriceResource(PriceDAO priceDAO, DataGridResource dataGridResource) {
+    public PriceResource(PriceDAO priceDAO, CouchbaseConnectionManager couchbaseConnectionManager) {
         this.priceDAO = priceDAO;
-        this.dataGridResource = dataGridResource;
+        this.couchbaseConnectionManager = couchbaseConnectionManager;
     }
 
     @GET
@@ -98,11 +99,11 @@ public class PriceResource {
             @ApiParam(value = "Type of identifier(B => TPNB, C => TPNC)", required = true) @PathParam("tpnIdentifier") String tpnIdentifier,
             @ApiParam(value = "TPNB/TPNC of Product", required = true) @PathParam("tpn") String tpn,
             @ApiParam(value = "ID of Store if a store-specific price is desired", required = false) @QueryParam("store") String storeId,
-            @Context UriInfo uriInfo) {
+            @Context UriInfo uriInfo) throws IOException {
 
         if (storeQueryParamWasSentWithoutAStoreID(storeId, uriInfo.getQueryParameters())) return badRequest();
 
-        ProductRepository productRepository = new ProductRepository(dataGridResource.getProductPriceCache());
+        ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
         Optional<Product> productContainer = productRepository.getByTPNB(tpn);
 
         if (!productContainer.isPresent()) return notFound(PRODUCT_NOT_FOUND);
@@ -114,8 +115,8 @@ public class PriceResource {
         return getPriceResponse(storeId, productContainer);
     }
 
-    private Response getPriceResponse(String storeIdValue, Optional<Product> productContainer) {
-        StoreRepository storeRepository = new StoreRepository(dataGridResource.getStoreCache());
+    private Response getPriceResponse(String storeIdValue, Optional<Product> productContainer) throws IOException {
+        StoreRepository storeRepository = new StoreRepository(couchbaseConnectionManager.getCouchbaseClient());
         int storeId;
 
         try {
@@ -124,7 +125,7 @@ public class PriceResource {
             return notFound(STORE_NOT_FOUND);
         }
 
-        Optional<Store> storeContainer = storeRepository.getByStoreId(storeId);
+        Optional<Store> storeContainer = storeRepository.getByStoreId(String.valueOf(storeId));
 
         if (!storeContainer.isPresent()) return notFound(STORE_NOT_FOUND);
 

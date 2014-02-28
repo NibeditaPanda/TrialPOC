@@ -8,12 +8,15 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.tesco.services.Configuration;
 import com.tesco.services.builder.PromotionBuilder;
-import com.tesco.services.core.*;
+import com.tesco.services.core.Product;
+import com.tesco.services.core.ProductVariant;
+import com.tesco.services.core.Promotion;
+import com.tesco.services.core.SaleInfo;
+import com.tesco.services.core.Store;
 import com.tesco.services.dao.DBFactory;
 import com.tesco.services.dao.PriceDAO;
 import com.tesco.services.exceptions.ItemNotFoundException;
-import com.tesco.services.repositories.DataGridResource;
-import com.tesco.services.repositories.DataGridResourceForTest;
+import com.tesco.services.repositories.CouchbaseConnectionManager;
 import com.tesco.services.repositories.ProductRepository;
 import com.tesco.services.repositories.StoreRepository;
 import com.tesco.services.resources.fixtures.TestProductPriceDBObject;
@@ -38,13 +41,12 @@ public class PriceResourceTest extends ResourceTest {
     private PriceDAO priceDAO;
     private static DBCollection priceCollection;
     private static DBCollection storeCollection;
-    private DataGridResource dataGridResource;
+    private CouchbaseConnectionManager couchbaseConnectionManager;
 
     @Override
     protected void setUpResources() throws Exception {
         priceDAO = new PriceDAO(testConfiguration);
-        dataGridResource = new DataGridResourceForTest(testConfiguration);
-        PriceResource priceResource = new PriceResource(priceDAO, dataGridResource);
+        PriceResource priceResource = new PriceResource(priceDAO, couchbaseConnectionManager);
         addResource(priceResource);
     }
 
@@ -306,7 +308,7 @@ public class PriceResourceTest extends ResourceTest {
     // ==============
     @Test
     public void shouldReturnNationalPricesForMultipleItemsWhenStoreIdIsNotSpecified() throws IOException, ItemNotFoundException {
-        ProductRepository productRepository = new ProductRepository(dataGridResource.getProductPriceCache());
+        ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
         String tpnb = "050925811";
         String tpnc1 = "266072275";
         String tpnc2 = "266072276";
@@ -323,8 +325,8 @@ public class PriceResourceTest extends ResourceTest {
 
     @Test
     public void shouldReturnPricesWhenStoreIdIsSpecified() throws IOException, ItemNotFoundException {
-        ProductRepository productRepository = new ProductRepository(dataGridResource.getProductPriceCache());
-        StoreRepository storeRepository = new StoreRepository(dataGridResource.getStoreCache());
+        ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
+        StoreRepository storeRepository = new StoreRepository(couchbaseConnectionManager.getCouchbaseClient());
 
         String tpnb = "050925811";
         String tpnc1 = "266072275";
@@ -332,7 +334,7 @@ public class PriceResourceTest extends ResourceTest {
         Product product = createProductWithVariants(tpnb, tpnc1, tpnc2);
         productRepository.put(product);
 
-        int storeId = 2002;
+        String storeId = "2002";
         storeRepository.put(new Store(storeId, Optional.of(6), Optional.of(14), "EUR"));
 
         WebResource resource = client().resource(String.format("/price/B/%s?store=%s", tpnb, storeId));
@@ -359,7 +361,7 @@ public class PriceResourceTest extends ResourceTest {
 
     @Test
     public void shouldReturn404WhenStoreIsNotFound() throws Exception {
-        ProductRepository productRepository = new ProductRepository(dataGridResource.getProductPriceCache());
+        ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
         productRepository.put(createProductWithVariants("050925811", "266072275", "266072276"));
 
         WebResource resource = client().resource("/price/B/050925811?store=2002");
@@ -371,7 +373,7 @@ public class PriceResourceTest extends ResourceTest {
 
     @Test
     public void shouldReturn404WhenStoreIsInvalid() throws Exception {
-        ProductRepository productRepository = new ProductRepository(dataGridResource.getProductPriceCache());
+        ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
         productRepository.put(createProductWithVariants("050925811", "266072275", "266072276"));
 
         WebResource resource = client().resource("/price/B/050925811?store=invalidstore");

@@ -1,23 +1,23 @@
 package com.tesco.services.repositories;
 
+import com.couchbase.client.CouchbaseClient;
 import com.google.common.base.Optional;
 import com.tesco.services.core.Product;
-import org.infinispan.Cache;
 
 public class ProductRepository {
 
-    private Cache<String, Product> productPriceCache;
+    private CouchbaseClient couchbaseClient;
 
-    public ProductRepository(Cache<String, Product> productPriceCache) {
-        this.productPriceCache = productPriceCache;
+    public ProductRepository(CouchbaseClient couchbaseClient) {
+        this.couchbaseClient = couchbaseClient;
     }
 
     public Optional<Product> getByTPNB(String tpnb) {
-        Product product = productPriceCache.get(tpnb);
+        Product product = (Product) couchbaseClient.get(tpnb);
         return (product != null) ? Optional.of(product) : Optional.<Product>absent();
     }
 
     public void put(Product product) {
-        productPriceCache.put(product.getTPNB(), product);
+        couchbaseClient.set(product.getTPNB(), product);
     }
 }

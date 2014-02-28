@@ -2,14 +2,28 @@ package com.tesco.services.adapters.core;
 
 import com.mongodb.DBObject;
 import com.tesco.services.builder.PromotionBuilder;
-import com.tesco.services.core.*;
+import com.tesco.services.core.Product;
+import com.tesco.services.core.ProductVariant;
+import com.tesco.services.core.Promotion;
+import com.tesco.services.core.SaleInfo;
+import com.tesco.services.repositories.CouchbaseConnectionManager;
 import com.tesco.services.repositories.ProductRepository;
 import com.tesco.services.resources.TestConfiguration;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
-import static com.tesco.services.adapters.core.TestFiles.*;
+import static com.tesco.services.adapters.core.TestFiles.RPM_PRICE_ZONE_PRICE_CSV_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.RPM_PRICE_ZONE_TO_UPDATE_CSV_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.RPM_PROMOTION_CSV_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.RPM_PROMOTION_DESC_CSV_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.RPM_PROMO_DESC_EXTRACT_CSV_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.RPM_PROMO_EXTRACT_CSV_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.RPM_PROMO_ZONE_PRICE_CSV_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.RPM_STORE_ZONE_CSV_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.SONETTO_PROMOTIONS_XML_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.SONETTO_PROMOTIONS_XSD_FILE_PATH;
 import static com.tesco.services.core.PriceKeys.PRICE;
 import static com.tesco.services.core.PriceKeys.PROMO_PRICE;
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -20,7 +34,7 @@ public class PriceImportIntegrationTest extends ImportJobIntegrationTestBase {
     @Override
     protected void preImportCallBack() {
         oldTpnb = "01212323";
-        dataGridResource.getProductPriceCache().put(oldTpnb, new Product(oldTpnb));
+//        importCouchbaseConnectionManager.getProductPriceCache().put(oldTpnb, new Product(oldTpnb));
     }
 
     @Test
@@ -58,7 +72,8 @@ public class PriceImportIntegrationTest extends ImportJobIntegrationTestBase {
                 RPM_PROMO_ZONE_PRICE_CSV_FILE_PATH,
                 RPM_PROMO_EXTRACT_CSV_FILE_PATH,
                 RPM_PROMO_DESC_EXTRACT_CSV_FILE_PATH,
-                dbFactory, dataGridResource);
+                dbFactory,
+                importCouchbaseConnectionManager);
         importJob.run();
 
         DBObject prices = findPricesFromZone("050925811", "5");
@@ -71,7 +86,7 @@ public class PriceImportIntegrationTest extends ImportJobIntegrationTestBase {
     // DataGrid
     // =========
     @Test
-    public void shouldUpdatePriceZonePricesToReplacedCache() {
+    public void shouldUpdatePriceZonePricesToReplacedCache() throws URISyntaxException, IOException, InterruptedException {
         String tpnb,tpnc1,tpnc2;
         tpnb = tpnc1 = "050925811";
         tpnc2 = "050925811-001";
@@ -114,7 +129,7 @@ public class PriceImportIntegrationTest extends ImportJobIntegrationTestBase {
         product.addProductVariant(productVariant1);
         product.addProductVariant(productVariant2);
 
-        ProductRepository productRepository = new ProductRepository(dataGridResource.getProductPriceCache());
+        ProductRepository productRepository = new ProductRepository(new CouchbaseConnectionManager(null).getCouchbaseClient());
         assertThat(productRepository.getByTPNB(tpnb).get()).isEqualTo(product);
         assertThat(productRepository.getByTPNB(oldTpnb).isPresent()).isFalse();
     }

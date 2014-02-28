@@ -1,13 +1,10 @@
 package com.tesco.services.adapters.core;
 
 import com.mongodb.DBCollection;
-import com.tesco.services.repositories.DataGridResource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import java.io.IOException;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -26,9 +23,6 @@ public class ImportJobTest {
 
     @Mock
     private DBCollection tempPromotionDbCollection;
-
-    @Mock
-    private DataGridResource dataGridResource;
 
     @Test
     public void shouldNotRenameCollectionGivenFileIsCorrupted() throws Exception {
@@ -61,13 +55,4 @@ public class ImportJobTest {
         assertThat(controllerBuilder.getRpmPromotionDescCSV().exists(), is(false));
         controllerBuilder.deleteTempFiles();
     }
-
-   @Test
-    public void shouldNotReplaceCachesInEventOfFailure() throws IOException {
-       ControllerWithTempFilesBuilder controllerBuilder = new ControllerWithTempFilesBuilder().withInvalidStoreZoneFile(",,,");
-       ImportJob importJob = controllerBuilder.build();
-       importJob.run();
-
-       verify(dataGridResource, never()).replaceCurrentWithRefresh();
-   }
 }

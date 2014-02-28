@@ -3,9 +3,13 @@ package com.tesco.services.adapters.core;
 import com.google.common.base.Optional;
 import com.mongodb.DBObject;
 import com.tesco.services.core.Store;
+import com.tesco.services.repositories.CouchbaseConnectionManager;
 import com.tesco.services.repositories.StoreRepository;
 import com.tesco.services.resources.TestConfiguration;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 import static com.mongodb.QueryBuilder.start;
 import static com.tesco.services.adapters.core.TestFiles.*;
@@ -13,11 +17,10 @@ import static com.tesco.services.core.PriceKeys.*;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class StoreImportIntegrationTest extends ImportJobIntegrationTestBase {
-    private int oldStoreId = 4002;
+    private String oldStoreId = "4002";
 
     @Override
     protected void preImportCallBack() {
-        dataGridResource.getStoreCache().put(oldStoreId, new Store(oldStoreId, Optional.of(1), Optional.of(2), "GBP"));
     }
 
     @Test
@@ -50,7 +53,8 @@ public class StoreImportIntegrationTest extends ImportJobIntegrationTestBase {
                 RPM_PROMO_ZONE_PRICE_CSV_FILE_PATH,
                 RPM_PROMO_EXTRACT_CSV_FILE_PATH,
                 RPM_PROMO_DESC_EXTRACT_CSV_FILE_PATH,
-                dbFactory, dataGridResource);
+                dbFactory,
+                importCouchbaseConnectionManager);
 
         importJob.processData(priceCollection, storeCollection, promotionCollection, false);
 
@@ -63,11 +67,12 @@ public class StoreImportIntegrationTest extends ImportJobIntegrationTestBase {
     }
 
     @Test
-    public void shouldImportStoreZonesToReplacedCache(){
-        int storeId = 2002;
+    public void shouldImportStoreZonesToReplacedCache() throws InterruptedException, IOException, URISyntaxException {
+        String storeId = "2002";
         Store store = new Store(storeId, Optional.of(1), Optional.of(5), "GBP");
 
-        StoreRepository storeRepository = new StoreRepository(dataGridResource.getStoreCache());
+        CouchbaseConnectionManager couchbaseConnectionManager = new CouchbaseConnectionManager(null);
+        StoreRepository storeRepository = new StoreRepository(couchbaseConnectionManager.getCouchbaseClient());
         assertThat(storeRepository.getByStoreId(storeId).get()).isEqualTo(store);
         assertThat(storeRepository.getByStoreId(oldStoreId).isPresent()).isFalse();
     }

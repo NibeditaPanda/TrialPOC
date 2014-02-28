@@ -1,22 +1,22 @@
 package com.tesco.services.repositories;
 
+import com.couchbase.client.CouchbaseClient;
 import com.google.common.base.Optional;
 import com.tesco.services.core.Store;
-import org.infinispan.Cache;
 
 public class StoreRepository {
-    private Cache<Integer, Store> storeCache;
+    private CouchbaseClient couchbaseClient;
 
-    public StoreRepository(Cache<Integer, Store> storeCache) {
-        this.storeCache = storeCache;
+    public StoreRepository(CouchbaseClient couchbaseClient) {
+        this.couchbaseClient = couchbaseClient;
     }
 
     public void put(Store store) {
-        storeCache.put(store.getStoreId(), store);
+        couchbaseClient.set(store.getStoreId(), store);
     }
 
-    public Optional<Store> getByStoreId(int storeId) {
-        Store store = storeCache.get(storeId);
+    public Optional<Store> getByStoreId(String storeId) {
+        final Store store = (Store)couchbaseClient.get(storeId);
         return (store != null) ? Optional.of(store) : Optional.<Store>absent();
     }
 }

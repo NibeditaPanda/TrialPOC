@@ -1,12 +1,8 @@
 package com.tesco.services.adapters.core;
 
 
-import com.tesco.services.core.Product;
-import com.tesco.services.core.Promotion;
 import com.tesco.services.dao.DBFactory;
 import com.tesco.services.resources.TestConfiguration;
-import org.infinispan.Cache;
-import org.mockito.Mock;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -21,12 +17,6 @@ public class ControllerWithTempFilesBuilder {
     private String rpmPromotionCsvFilePath = TestFiles.RPM_PROMOTION_CSV_FILE_PATH;
     private String sonettoPromotionsXMLFilePath = TestFiles.SONETTO_PROMOTIONS_XML_FILE_PATH;
     private String rpmPromotionDescCSVPath = TestFiles.RPM_PROMOTION_DESC_CSV_FILE_PATH;
-
-    @Mock
-    private Cache<String, Promotion> promotionCache;
-
-    @Mock
-    private Cache<String, Product> productPriceCache;
 
     private File rpmPriceZoneCsvFile;
     private File rpmStoreZoneCsvFile;

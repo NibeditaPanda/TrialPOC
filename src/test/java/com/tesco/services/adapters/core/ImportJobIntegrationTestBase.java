@@ -4,20 +4,28 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.tesco.services.adapters.core.exceptions.ColumnNotFoundException;
 import com.tesco.services.dao.DBFactory;
-import com.tesco.services.repositories.DataGridResource;
-import com.tesco.services.repositories.DataGridResourceForTest;
+import com.tesco.services.repositories.ImportCouchbaseConnectionManager;
 import com.tesco.services.resources.TestConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
-import org.junit.After;
 import org.junit.Before;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import static com.mongodb.QueryBuilder.start;
-import static com.tesco.services.adapters.core.TestFiles.*;
+import static com.tesco.services.adapters.core.TestFiles.RPM_PRICE_ZONE_CSV_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.RPM_PRICE_ZONE_PRICE_CSV_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.RPM_PROMOTION_CSV_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.RPM_PROMOTION_DESC_CSV_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.RPM_PROMO_DESC_EXTRACT_CSV_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.RPM_PROMO_EXTRACT_CSV_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.RPM_PROMO_ZONE_PRICE_CSV_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.RPM_STORE_ZONE_CSV_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.SONETTO_PROMOTIONS_XML_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.SONETTO_PROMOTIONS_XSD_FILE_PATH;
 import static com.tesco.services.core.PriceKeys.ITEM_NUMBER;
 import static com.tesco.services.core.PriceKeys.PRICE_COLLECTION;
 import static com.tesco.services.core.PriceKeys.PROMOTION_COLLECTION;
@@ -29,17 +37,15 @@ public abstract class ImportJobIntegrationTestBase {
     protected DBCollection storeCollection;
     protected DBCollection promotionCollection;
 
-    protected DataGridResource dataGridResource;
+    protected ImportCouchbaseConnectionManager importCouchbaseConnectionManager;
     protected DBFactory dbFactory;
 
 
     @Before
-    public void setUp() throws IOException, ParserConfigurationException, SAXException, ConfigurationException, JAXBException, ColumnNotFoundException {
+    public void setUp() throws IOException, ParserConfigurationException, SAXException, ConfigurationException, JAXBException, ColumnNotFoundException, URISyntaxException, InterruptedException {
         System.out.println("ImportJobTestBase setup");
         TestConfiguration configuration = new TestConfiguration();
-        dataGridResource = new DataGridResourceForTest(configuration);
-
-        initCaches();
+        importCouchbaseConnectionManager = new ImportCouchbaseConnectionManager(configuration);
 
         dbFactory = new DBFactory(configuration);
 
@@ -67,23 +73,11 @@ public abstract class ImportJobIntegrationTestBase {
                 RPM_PROMO_EXTRACT_CSV_FILE_PATH,
                 RPM_PROMO_DESC_EXTRACT_CSV_FILE_PATH,
                 dbFactory,
-                dataGridResource);
+                importCouchbaseConnectionManager);
         importJob.run();
     }
 
     protected void preImportCallBack() {
-
-    }
-
-    private void initCaches() {
-        dataGridResource.getProductPriceCache();
-        dataGridResource.getPromotionCache();
-        dataGridResource.getStoreCache();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        dataGridResource.stop();
 
     }
 

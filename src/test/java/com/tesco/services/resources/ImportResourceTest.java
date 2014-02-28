@@ -3,7 +3,7 @@ package com.tesco.services.resources;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.tesco.services.Configuration;
-import com.tesco.services.repositories.DataGridResource;
+import com.tesco.services.repositories.ImportCouchbaseConnectionManager;
 import com.yammer.dropwizard.testing.ResourceTest;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -23,13 +23,13 @@ public class ImportResourceTest extends ResourceTest {
     private Configuration mockConfiguration;
 
     @Mock
-    private DataGridResource dataGridResource;
+    private ImportCouchbaseConnectionManager importCouchbaseConnectionManager;
 
     @Override
     protected void setUpResources() throws Exception {
         when(mockConfiguration.getImportScript()).thenReturn("import.sh");
 
-        addResource(new ImportResource(mockConfiguration, dataGridResource));
+        addResource(new ImportResource(mockConfiguration, importCouchbaseConnectionManager));
     }
 
     // TODO : Vyv this needs to actually verify that the import completed successfully (maybe async Servlet?)

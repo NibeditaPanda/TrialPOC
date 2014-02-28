@@ -5,19 +5,19 @@ import com.google.common.base.Optional;
 import java.io.Serializable;
 
 public class Store implements Serializable {
-    private int storeId;
+    private String storeId;
     private int priceZoneId;
     private int promoZoneId;
     private String currency;
 
-    public Store(int storeId, Optional<Integer> priceZoneId, Optional<Integer> promoZoneId, String currency) {
+    public Store(String storeId, Optional<Integer> priceZoneId, Optional<Integer> promoZoneId, String currency) {
         this.storeId = storeId;
         setPriceZoneId(priceZoneId);
         setPromoZoneId(promoZoneId);
         this.currency = currency;
     }
 
-    public Store(int storeId, String currency) {
+    public Store(String storeId, String currency) {
         this(storeId, Optional.<Integer>absent(), Optional.<Integer>absent(), currency);
     }
 
@@ -37,8 +37,8 @@ public class Store implements Serializable {
         return (promoZoneId == -1) ? Optional.<Integer>absent() : Optional.of(promoZoneId) ;
     }
 
-    public int getStoreId() {
-        return storeId;
+    public String getStoreId() {
+        return String.valueOf(storeId); //TODO: Change the store Id to String type across application.
     }
 
     @Override
@@ -58,7 +58,7 @@ public class Store implements Serializable {
 
     @Override
     public int hashCode() {
-        int result = storeId;
+        int result = storeId.hashCode();
         result = 31 * result + priceZoneId;
         result = 31 * result + promoZoneId;
         result = 31 * result + currency.hashCode();

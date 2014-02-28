@@ -18,9 +18,9 @@ public class StoreMapper {
     }
 
     public Store map(Map<String, String> storeInfoMap) {
-        int storeId = Integer.parseInt(storeInfoMap.get(CSVHeaders.StoreZone.STORE_ID));
+        String storeId = storeInfoMap.get(CSVHeaders.StoreZone.STORE_ID);
 
-        Store store = storeRepository.getByStoreId(storeId).or(new Store(storeId, storeInfoMap.get(CSVHeaders.StoreZone.CURRENCY_CODE)));
+        Store store = storeRepository.getByStoreId(String.valueOf(storeId)).or(new Store(storeId, storeInfoMap.get(CSVHeaders.StoreZone.CURRENCY_CODE)));
 
         int zoneId = Integer.parseInt(storeInfoMap.get(CSVHeaders.StoreZone.ZONE_ID));
         int zoneType = Integer.parseInt(storeInfoMap.get(CSVHeaders.StoreZone.ZONE_TYPE));

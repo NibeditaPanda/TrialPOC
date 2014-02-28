@@ -1,13 +1,28 @@
 package com.tesco.services;
 
-import com.tesco.services.mappers.*;
-import com.tesco.services.repositories.DataGridResource;
-import com.tesco.services.repositories.UUIDGenerator;
 import com.tesco.services.dao.PriceDAO;
 import com.tesco.services.healthChecks.ServiceHealthCheck;
+import com.tesco.services.mappers.InvalidUrlMapper;
+import com.tesco.services.mappers.ServerErrorMapper;
 import com.tesco.services.metrics.ResourceMetricsListener;
+import com.tesco.services.repositories.CouchbaseConnectionManager;
+import com.tesco.services.repositories.ImportCouchbaseConnectionManager;
 import com.tesco.services.repositories.PromotionRepository;
-import com.tesco.services.resources.*;
+import com.tesco.services.repositories.UUIDGenerator;
+import com.tesco.services.resources.ImportResource;
+import com.tesco.services.resources.MongoUnavailableProvider;
+import com.tesco.services.resources.PriceResource;
+import com.tesco.services.resources.PromotionResource;
+import com.tesco.services.resources.VersionResource;
+import com.wordnik.swagger.config.ConfigFactory;
+import com.wordnik.swagger.config.ScannerFactory;
+import com.wordnik.swagger.config.SwaggerConfig;
+import com.wordnik.swagger.jaxrs.config.DefaultJaxrsScanner;
+import com.wordnik.swagger.jaxrs.listing.ApiDeclarationProvider;
+import com.wordnik.swagger.jaxrs.listing.ApiListingResourceJSON;
+import com.wordnik.swagger.jaxrs.listing.ResourceListingProvider;
+import com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader;
+import com.wordnik.swagger.reader.ClassReaders;
 import com.yammer.dropwizard.Service;
 import com.yammer.dropwizard.assets.AssetsBundle;
 import com.yammer.dropwizard.config.Bootstrap;
@@ -15,19 +30,14 @@ import com.yammer.dropwizard.config.Environment;
 import com.yammer.dropwizard.config.HttpConfiguration;
 import com.yammer.metrics.Metrics;
 import com.yammer.metrics.reporting.GraphiteReporter;
-
-import com.wordnik.swagger.jaxrs.config.*;
-import com.wordnik.swagger.jaxrs.listing.ApiListingResourceJSON;
-import com.wordnik.swagger.jaxrs.listing.ApiDeclarationProvider;
-import com.wordnik.swagger.jaxrs.listing.ResourceListingProvider;
-import com.wordnik.swagger.config.*;
-import com.wordnik.swagger.reader.*;
-import com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
 
-import java.net.*;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.concurrent.TimeUnit;
 
@@ -47,10 +57,10 @@ public class PriceService extends Service<Configuration> {
     public void run(Configuration configuration, Environment environment) throws Exception {
         MutablePicoContainer container = configureDependencies(configuration);
 
-        environment.addResource(new PriceResource(new PriceDAO(configuration), container.getComponent(DataGridResource.class)));
+        environment.addResource(new PriceResource(new PriceDAO(configuration), new CouchbaseConnectionManager(configuration)));
         environment.addResource(new PromotionResource(container.getComponent(PromotionRepository.class)));
         environment.addResource(new VersionResource());
-        environment.addResource(new ImportResource(configuration, container.getComponent(DataGridResource.class)));
+        environment.addResource(new ImportResource(configuration, new ImportCouchbaseConnectionManager(configuration)));
 
         environment.addProvider(new MongoUnavailableProvider());
         environment.addProvider(new InvalidUrlMapper());
@@ -65,12 +75,10 @@ public class PriceService extends Service<Configuration> {
         configureSwagger(environment, configuration);
     }
 
-    private MutablePicoContainer configureDependencies(Configuration configuration) {
+    private MutablePicoContainer configureDependencies(Configuration configuration)  {
         MutablePicoContainer container = new DefaultPicoContainer();
-        container.addComponent(new DataGridResource(configuration));
         container.addComponent(new UUIDGenerator());
-        container.addComponent(new PromotionRepository(container.getComponent(UUIDGenerator.class),
-                container.getComponent(DataGridResource.class).getPromotionCache()));
+        container.addComponent(new PromotionRepository(container.getComponent(UUIDGenerator.class), null));
         return container;
     }
 
@@ -100,7 +108,7 @@ public class PriceService extends Service<Configuration> {
         config.setApiVersion("1.0.1");
 
         HttpConfiguration httpConfiguration = configuration.getHttpConfiguration();
-        config.setBasePath("http://" + getNonLoopbackIPv4AddressForThisHost() + ":" + httpConfiguration.getPort());
+        config.setBasePath("http://" + "localhost" + ":" + httpConfiguration.getPort());
 
         environment.addFilter(CrossOriginFilter.class, "/*");
     }

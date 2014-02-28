@@ -4,20 +4,14 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wordnik.swagger.annotations.ApiModel;
-import org.hibernate.search.annotations.*;
 
-import javax.persistence.Entity;
 import java.io.Serializable;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
-@Entity
-@ProvidedId
-@Indexed
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 @ApiModel(value = "A promotion is special pricing for a product")
-
 public class Promotion implements Serializable {
 
     @JsonIgnore
@@ -27,15 +21,12 @@ public class Promotion implements Serializable {
     private String shelfTalkerImage;
 
     @JsonProperty
-    @Field(index = Index.YES, analyze = Analyze.NO, store = org.hibernate.search.annotations.Store.YES)
     private String offerId;
 
     @JsonProperty
-    @Field(index = Index.YES, analyze = Analyze.NO, store = org.hibernate.search.annotations.Store.YES)
     private String itemNumber;
 
     @JsonProperty
-    @Field(index = Index.YES, analyze = Analyze.NO, store = org.hibernate.search.annotations.Store.YES)
     private int zoneId;
     @JsonProperty
     private String CFDescription1;

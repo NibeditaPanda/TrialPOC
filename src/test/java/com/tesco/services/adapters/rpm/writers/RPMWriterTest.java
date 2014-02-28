@@ -10,7 +10,6 @@ import com.tesco.services.adapters.rpm.readers.PriceServiceCSVReader;
 import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
 import com.tesco.services.builder.PromotionBuilder;
 import com.tesco.services.core.*;
-import com.tesco.services.repositories.DataGridResource;
 import com.tesco.services.repositories.ProductRepository;
 import com.tesco.services.repositories.PromotionRepository;
 import com.tesco.services.repositories.StoreRepository;
@@ -80,9 +79,6 @@ public class RPMWriterTest {
 
     @Mock
     private DBCursor dbCursor;
-
-    @Mock
-    private DataGridResource dataGridResource;
 
     @Mock
     private UUIDGenerator uuidGenerator;
@@ -361,12 +357,12 @@ public class RPMWriterTest {
 
     @Test
     public void shouldInsertStorePriceZones() throws Exception {
-        int firstStoreId = 2002;
-        int secondStoreId = 2003;
+        String firstStoreId = "2002";
+        String secondStoreId = "2003";
 
         when(storeZoneReader.getNext()).thenReturn(getStoreInfoMap(firstStoreId, 1, 1, "GBP")).thenReturn(getStoreInfoMap(secondStoreId, 2, 1, "EUR")).thenReturn(null);
-        when(storeRepository.getByStoreId(firstStoreId)).thenReturn(Optional.<Store>absent());
-        when(storeRepository.getByStoreId(secondStoreId)).thenReturn(Optional.<Store>absent());
+        when(storeRepository.getByStoreId(String.valueOf(firstStoreId))).thenReturn(Optional.<Store>absent());
+        when(storeRepository.getByStoreId(String.valueOf(secondStoreId))).thenReturn(Optional.<Store>absent());
         this.rpmWriter.write();
 
         InOrder inOrder = inOrder(storeRepository);
@@ -376,11 +372,11 @@ public class RPMWriterTest {
 
     @Test
     public void shouldInsertStorePriceAndPromoZones() throws Exception {
-        int storeId = 2002;
+        String storeId = "2002";
 
         when(storeZoneReader.getNext()).thenReturn(getStoreInfoMap(storeId, 1, 1, "GBP")).thenReturn(getStoreInfoMap(storeId, 5, 2, "GBP")).thenReturn(null);
         Store store = new Store(storeId, Optional.of(1), Optional.<Integer>absent(), "GBP");
-        when(storeRepository.getByStoreId(storeId)).thenReturn(Optional.<Store>absent()).thenReturn(Optional.of(store));
+        when(storeRepository.getByStoreId(String.valueOf(storeId))).thenReturn(Optional.<Store>absent()).thenReturn(Optional.of(store));
 
         this.rpmWriter.write();
 
@@ -389,9 +385,9 @@ public class RPMWriterTest {
         inOrder.verify(storeRepository).put(new Store(storeId, Optional.of(1), Optional.of(5), "GBP"));
     }
 
-    private Map<String, String> getStoreInfoMap(int firstStoreId, int zoneId, int zoneType, String currency) {
+    private Map<String, String> getStoreInfoMap(String firstStoreId, int zoneId, int zoneType, String currency) {
         Map<String, String> storeInfoMap = new HashMap<>();
-        storeInfoMap.put(CSVHeaders.StoreZone.STORE_ID, String.valueOf(firstStoreId));
+        storeInfoMap.put(CSVHeaders.StoreZone.STORE_ID, firstStoreId);
         storeInfoMap.put(CSVHeaders.StoreZone.ZONE_ID, String.valueOf(zoneId));
         storeInfoMap.put(CSVHeaders.StoreZone.ZONE_TYPE, String.valueOf(zoneType));
         storeInfoMap.put(CSVHeaders.StoreZone.CURRENCY_CODE, currency);

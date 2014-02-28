@@ -3,7 +3,7 @@ package com.tesco.services.resources;
 import com.tesco.services.Configuration;
 import com.tesco.services.adapters.core.ImportJob;
 import com.tesco.services.dao.DBFactory;
-import com.tesco.services.repositories.DataGridResource;
+import com.tesco.services.repositories.ImportCouchbaseConnectionManager;
 import com.yammer.metrics.annotation.ExceptionMetered;
 import com.yammer.metrics.annotation.Metered;
 import com.yammer.metrics.annotation.Timed;
@@ -20,11 +20,11 @@ import static javax.ws.rs.core.Response.ok;
 @Produces(ResourceResponse.RESPONSE_TYPE)
 public class ImportResource {
     private Configuration configuration;
-    private DataGridResource dataGridResource;
+    private ImportCouchbaseConnectionManager importCouchbaseConnectionManager;
 
-    public ImportResource(Configuration configuration, DataGridResource dataGridResource) {
+    public ImportResource(Configuration configuration, ImportCouchbaseConnectionManager importCouchbaseConnectionManager) {
         this.configuration = configuration;
-        this.dataGridResource = dataGridResource;
+        this.importCouchbaseConnectionManager = importCouchbaseConnectionManager;
     }
 
     @POST
@@ -35,9 +35,6 @@ public class ImportResource {
     public Response importData() {
         try {
             DBFactory dbFactory = new DBFactory(configuration);
-
-            //TODO Vyv is this a memory leak?
-            initializeCaches();
 
             final ImportJob importJob = new ImportJob(configuration.getRPMPriceDataPath(),
                     configuration.getRPMStoreDataPath(),
@@ -51,7 +48,7 @@ public class ImportResource {
                     configuration.getRPMPromoExtractDataPath(),
                     configuration.getRPMPromoDescExtractDataPath(),
                     dbFactory,
-                    dataGridResource);
+                    importCouchbaseConnectionManager);
 
             Thread thread = new Thread(importJob);
             thread.start();
@@ -60,11 +57,5 @@ public class ImportResource {
         }
 
         return ok("{\"message\":\"Import Started.\"}").build();
-    }
-
-    private void initializeCaches() {
-        dataGridResource.getPromotionCache();
-        dataGridResource.getProductPriceCache();
-        dataGridResource.getStoreCache();
     }
 }

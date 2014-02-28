@@ -5,8 +5,12 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
 import com.tesco.services.adapters.core.exceptions.ColumnNotFoundException;
-import com.tesco.services.adapters.rpm.readers.*;
 import com.tesco.services.adapters.rpm.readers.PriceServiceCSVReader;
+import com.tesco.services.adapters.rpm.readers.RPMCSVFileReader;
+import com.tesco.services.adapters.rpm.readers.RPMPriceZoneCSVFileReader;
+import com.tesco.services.adapters.rpm.readers.RPMPromotionCSVFileReader;
+import com.tesco.services.adapters.rpm.readers.RPMPromotionDescriptionCSVFileReader;
+import com.tesco.services.adapters.rpm.readers.RPMStoreZoneCSVFileReader;
 import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
 import com.tesco.services.core.Product;
 import com.tesco.services.core.Promotion;
@@ -24,7 +28,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static com.google.common.collect.Iterables.getFirst;
 import static com.tesco.services.adapters.rpm.readers.RPMPriceZoneCSVFileReader.PRICE_ZONE_FORMAT;
 import static com.tesco.services.core.PriceKeys.ITEM_NUMBER;
 import static com.tesco.services.core.PriceKeys.PROMOTIONS;
@@ -175,7 +178,6 @@ public class RPMWriter {
             final Product product = productMapper.mapPromotionDescription(promotionDescInfoMap);
             productRepository.put(product);
         }
-
     }
 
 
@@ -197,15 +199,7 @@ public class RPMWriter {
         Promotion next;
 
         while ((next = rpmPromotionDescriptionCSVFileReader.getNextDG()) != null) {
-            List<Promotion> promotions = this.promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber(next.getOfferId(), next.getItemNumber(), next.getZoneId());
-            // TODO: Need to talk to Shiraz if this is ok.
-
-            Promotion promotion = getFirst(promotions, null);
-            if (promotion != null) {
-                promotion.setCFDescription1(next.getCFDescription1());
-                promotion.setCFDescription2(next.getCFDescription2());
-                this.promotionRepository.updatePromotion(promotion.getUniqueKey(), promotion);
-            }
+            //TODO: Write logic.
         }
     }
 
@@ -237,7 +231,7 @@ public class RPMWriter {
     }
 
     private void addPromotion(Promotion nextPromotion) {
-        this.promotionRepository.addPromotion(nextPromotion);
+        //this.promotionRepository.addPromotion(nextPromotion);
     }
 
     private void appendPromotionToPrice(DBObject nextPromotion) {

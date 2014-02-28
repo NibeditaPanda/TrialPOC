@@ -7,12 +7,10 @@ import com.mongodb.util.JSON;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.tesco.services.Configuration;
-import com.tesco.services.dao.DBFactory;
-import com.tesco.services.repositories.DataGridResource;
-import com.tesco.services.repositories.DataGridResourceForTest;
-import com.tesco.services.repositories.UUIDGenerator;
 import com.tesco.services.core.Promotion;
+import com.tesco.services.dao.DBFactory;
 import com.tesco.services.repositories.PromotionRepository;
+import com.tesco.services.repositories.UUIDGenerator;
 import com.tesco.services.resources.fixtures.TestStoreDBObject;
 import com.tesco.services.resources.model.PromotionRequest;
 import com.tesco.services.resources.model.PromotionRequestList;
@@ -23,12 +21,11 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
-import static com.tesco.services.core.PriceKeys.PROMOTION_COLLECTION;
-import static com.tesco.services.core.PriceKeys.STORE_COLLECTION;
 import static com.tesco.services.builder.PromotionBuilder.aPromotion;
 import static com.tesco.services.builder.PromotionRequestBuilder.aPromotionRequest;
+import static com.tesco.services.core.PriceKeys.PROMOTION_COLLECTION;
+import static com.tesco.services.core.PriceKeys.STORE_COLLECTION;
 import static com.yammer.dropwizard.testing.JsonHelpers.asJson;
 import static com.yammer.dropwizard.testing.JsonHelpers.fromJson;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -39,11 +36,10 @@ public class PromotionResourceTest extends ResourceTest {
 
     private static final String PROMOTION_FIND_ENDPOINT = "/promotion/find";
     private static Configuration testConfiguration = new TestConfiguration();
-    private static DataGridResource dataGridResource;
 
     @Override
     protected void setUpResources() throws Exception {
-        PromotionResource offerResource = new PromotionResource(new PromotionRepository(new UUIDGenerator(), dataGridResource.getPromotionCache()));
+        PromotionResource offerResource = new PromotionResource(new PromotionRepository(new UUIDGenerator(), null));
         addResource(offerResource);
     }
 
@@ -95,16 +91,10 @@ public class PromotionResourceTest extends ResourceTest {
 
         Promotion promotion3 = aPromotion().offerId("345").build();
 
-        dataGridResource = new DataGridResourceForTest(testConfiguration);
-        dataGridResource.getPromotionCache().put(UUID.randomUUID().toString(), promotion);
-        dataGridResource.getPromotionCache().put(UUID.randomUUID().toString(), promotion1);
-        dataGridResource.getPromotionCache().put(UUID.randomUUID().toString(), promotion2);
-        dataGridResource.getPromotionCache().put(UUID.randomUUID().toString(), promotion3);
     }
 
     @AfterClass
     public static void tearDown() throws Exception {
-        dataGridResource.stop();
     }
 
     @Test
