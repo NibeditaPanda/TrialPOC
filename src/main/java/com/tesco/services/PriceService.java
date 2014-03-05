@@ -30,8 +30,6 @@ import com.yammer.dropwizard.config.HttpConfiguration;
 import com.yammer.metrics.Metrics;
 import com.yammer.metrics.reporting.GraphiteReporter;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
-import org.picocontainer.DefaultPicoContainer;
-import org.picocontainer.MutablePicoContainer;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -54,12 +52,13 @@ public class PriceService extends Service<Configuration> {
 
     @Override
     public void run(Configuration configuration, Environment environment) throws Exception {
-        MutablePicoContainer container = configureDependencies(configuration);
 
-        environment.addResource(new PriceResource(new PriceDAO(configuration), new CouchbaseConnectionManager(configuration)));
-        environment.addResource(new PromotionResource(container.getComponent(PromotionRepository.class)));
+        final CouchbaseConnectionManager couchbaseConnectionManager = new CouchbaseConnectionManager(configuration);
+        environment.addResource(new PriceResource(new PriceDAO(configuration), couchbaseConnectionManager));
+        final PromotionRepository promotionRepository = new PromotionRepository(new UUIDGenerator(), null);
+        environment.addResource(new PromotionResource(promotionRepository));
         environment.addResource(new VersionResource());
-        environment.addResource(new ImportResource(configuration, new CouchbaseConnectionManager(configuration)));
+        environment.addResource(new ImportResource(configuration, couchbaseConnectionManager));
 
         environment.addProvider(new MongoUnavailableProvider());
         environment.addProvider(new InvalidUrlMapper());
@@ -72,13 +71,6 @@ public class PriceService extends Service<Configuration> {
 
         environment.addHealthCheck(new ServiceHealthCheck(configuration));
         configureSwagger(environment, configuration);
-    }
-
-    private MutablePicoContainer configureDependencies(Configuration configuration)  {
-        MutablePicoContainer container = new DefaultPicoContainer();
-        container.addComponent(new UUIDGenerator());
-        container.addComponent(new PromotionRepository(container.getComponent(UUIDGenerator.class), null));
-        return container;
     }
 
     private void configureMetrics(Configuration configuration) {

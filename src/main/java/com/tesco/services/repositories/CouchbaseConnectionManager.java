@@ -26,7 +26,13 @@ public class CouchbaseConnectionManager {
 
         bucketName = configuration.getDBBucketName();
         bucketPassword = configuration.getDBBucketPassword();
-        couchbaseClient = new CouchbaseClient(hosts, bucketName, bucketPassword);
+        try {
+            couchbaseClient = new CouchbaseClient(hosts, bucketName, bucketPassword);
+        } catch (Exception e) {
+            final String errorMsg = String.format("Could not connect to the Couchbase bucket '%s' @ nodes : %s", bucketName, configuration.getDBServerUrl());
+            logger.error(errorMsg, e);
+            throw e;
+        }
     }
 
     public CouchbaseClient getCouchbaseClient() throws IOException {
