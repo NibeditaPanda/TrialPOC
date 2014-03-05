@@ -6,32 +6,43 @@ import com.tesco.services.core.Product;
 import com.tesco.services.resources.TestConfiguration;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 
 public class ProductRepositoryTest extends IntegrationTest {
-    private CouchbaseConnectionManager couchbaseConnectionManager;
-    private CouchbaseClient couchbaseClient;
+    private String tpnb = "123455";
+    private Product product;
+    private ProductRepository productRepository;
 
     @Before
     public void setUp() throws Exception {
-        couchbaseConnectionManager = new CouchbaseConnectionManager(new TestConfiguration());
-        couchbaseClient = couchbaseConnectionManager.getCouchbaseClient();
+        productRepository = new ProductRepository(new CouchbaseConnectionManager(new TestConfiguration()).getCouchbaseClient());
+        product = new Product(tpnb);
     }
 
     @Test
     public void shouldCacheProductByTPNB() throws Exception {
-        ProductRepository productRepository = new ProductRepository(couchbaseClient);
-        String tpnb = "123455";
-        Product product = new Product(tpnb);
         productRepository.put(product);
         assertThat(productRepository.getByTPNB(tpnb).get()).isEqualTo(product);
     }
 
     @Test
     public void shouldReturnNullObjectWhenProductIsNotFound() throws Exception {
-        ProductRepository productRepository = new ProductRepository(couchbaseClient);
-        String tpnb = "12345";
-        assertThat(productRepository.getByTPNB(tpnb).isPresent()).isFalse();
+        assertThat(productRepository.getByTPNB("12345").isPresent()).isFalse();
+    }
+
+    @Test
+    public void shouldNamespacePrefixKey() {
+        final CouchbaseClient couchbaseClientMock = mock(CouchbaseClient.class);
+        productRepository = new ProductRepository(couchbaseClientMock);
+        final InOrder inOrder = inOrder(couchbaseClientMock);
+
+        productRepository.put(product);
+        productRepository.getByTPNB(tpnb);
+        inOrder.verify(couchbaseClientMock).set("PRODUCT_" + tpnb, product);
+        inOrder.verify(couchbaseClientMock).get("PRODUCT_" + tpnb);
     }
 }

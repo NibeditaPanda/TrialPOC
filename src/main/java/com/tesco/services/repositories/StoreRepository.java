@@ -12,11 +12,16 @@ public class StoreRepository {
     }
 
     public void put(Store store) {
-        couchbaseClient.set(store.getStoreId(), store);
+        final String storeId = store.getStoreId();
+        couchbaseClient.set(getStoreKey(storeId), store);
+    }
+
+    private String getStoreKey(String storeId) {
+        return String.format("STORE_%s", storeId);
     }
 
     public Optional<Store> getByStoreId(String storeId) {
-        final Store store = (Store)couchbaseClient.get(storeId);
+        final Store store = (Store)couchbaseClient.get(getStoreKey(storeId));
         return (store != null) ? Optional.of(store) : Optional.<Store>absent();
     }
 }

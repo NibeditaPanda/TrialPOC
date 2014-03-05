@@ -13,11 +13,15 @@ public class ProductRepository {
     }
 
     public Optional<Product> getByTPNB(String tpnb) {
-        Product product = (Product) couchbaseClient.get(tpnb);
+        Product product = (Product) couchbaseClient.get(getProductKey(tpnb));
         return (product != null) ? Optional.of(product) : Optional.<Product>absent();
     }
 
+    private String getProductKey(String tpnb) {
+        return String.format("PRODUCT_%s", tpnb);
+    }
+
     public void put(Product product) {
-        couchbaseClient.set(product.getTPNB(), product);
+        couchbaseClient.set(getProductKey(product.getTPNB()), product);
     }
 }
