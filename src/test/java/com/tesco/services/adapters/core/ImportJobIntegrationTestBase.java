@@ -2,9 +2,10 @@ package com.tesco.services.adapters.core;
 
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import com.tesco.services.IntegrationTest;
 import com.tesco.services.adapters.core.exceptions.ColumnNotFoundException;
 import com.tesco.services.dao.DBFactory;
-import com.tesco.services.repositories.ImportCouchbaseConnectionManager;
+import com.tesco.services.repositories.CouchbaseConnectionManager;
 import com.tesco.services.resources.TestConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.junit.Before;
@@ -32,12 +33,12 @@ import static com.tesco.services.core.PriceKeys.PROMOTION_COLLECTION;
 import static com.tesco.services.core.PriceKeys.STORE_COLLECTION;
 import static com.tesco.services.core.PriceKeys.ZONES;
 
-public abstract class ImportJobIntegrationTestBase {
+public abstract class ImportJobIntegrationTestBase extends IntegrationTest {
     protected DBCollection priceCollection;
     protected DBCollection storeCollection;
     protected DBCollection promotionCollection;
 
-    protected ImportCouchbaseConnectionManager importCouchbaseConnectionManager;
+    protected CouchbaseConnectionManager couchbaseConnectionManager;
     protected DBFactory dbFactory;
 
 
@@ -45,7 +46,7 @@ public abstract class ImportJobIntegrationTestBase {
     public void setUp() throws IOException, ParserConfigurationException, SAXException, ConfigurationException, JAXBException, ColumnNotFoundException, URISyntaxException, InterruptedException {
         System.out.println("ImportJobTestBase setup");
         TestConfiguration configuration = new TestConfiguration();
-        importCouchbaseConnectionManager = new ImportCouchbaseConnectionManager(configuration);
+        couchbaseConnectionManager = new CouchbaseConnectionManager(configuration);
 
         dbFactory = new DBFactory(configuration);
 
@@ -73,7 +74,7 @@ public abstract class ImportJobIntegrationTestBase {
                 RPM_PROMO_EXTRACT_CSV_FILE_PATH,
                 RPM_PROMO_DESC_EXTRACT_CSV_FILE_PATH,
                 dbFactory,
-                importCouchbaseConnectionManager);
+                couchbaseConnectionManager);
         importJob.run();
     }
 

@@ -119,9 +119,9 @@ public class RPMWriter {
         logger.info("Update Promotions with Shelf Talker Image...");
         updatePromotionsWithShelfTalker();
 
-        // Using DataGrid
+        // Using Couchbase
         // ===============
-        logger.info("Importing price zone prices into DataGrid");
+        logger.info("Importing price zone prices into Couchbase");
         writePriceZonePrices();
         writePromoZonePrices();
         writePromotions();

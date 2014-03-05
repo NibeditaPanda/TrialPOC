@@ -127,7 +127,7 @@ public class ProductPriceBuilderTest {
                     endDate("20130819").
                     description1("Test Description 1 " + offerId).
                     description2("Test Description 2 " + offerId).
-                    buildForDataGrid();
+                createPromotion();
     }
 
     private Map<String, String> createPromotionInfo(String offerId) {

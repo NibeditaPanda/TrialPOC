@@ -3,7 +3,7 @@ package com.tesco.services.resources;
 import com.tesco.services.Configuration;
 import com.tesco.services.adapters.core.ImportJob;
 import com.tesco.services.dao.DBFactory;
-import com.tesco.services.repositories.ImportCouchbaseConnectionManager;
+import com.tesco.services.repositories.CouchbaseConnectionManager;
 import com.yammer.metrics.annotation.ExceptionMetered;
 import com.yammer.metrics.annotation.Metered;
 import com.yammer.metrics.annotation.Timed;
@@ -20,11 +20,11 @@ import static javax.ws.rs.core.Response.ok;
 @Produces(ResourceResponse.RESPONSE_TYPE)
 public class ImportResource {
     private Configuration configuration;
-    private ImportCouchbaseConnectionManager importCouchbaseConnectionManager;
+    private CouchbaseConnectionManager couchbaseConnectionManager;
 
-    public ImportResource(Configuration configuration, ImportCouchbaseConnectionManager importCouchbaseConnectionManager) {
+    public ImportResource(Configuration configuration, CouchbaseConnectionManager couchbaseConnectionManager) {
         this.configuration = configuration;
-        this.importCouchbaseConnectionManager = importCouchbaseConnectionManager;
+        this.couchbaseConnectionManager = couchbaseConnectionManager;
     }
 
     @POST
@@ -48,7 +48,7 @@ public class ImportResource {
                     configuration.getRPMPromoExtractDataPath(),
                     configuration.getRPMPromoDescExtractDataPath(),
                     dbFactory,
-                    importCouchbaseConnectionManager);
+                    couchbaseConnectionManager);
 
             Thread thread = new Thread(importJob);
             thread.start();

@@ -85,7 +85,7 @@ public class PromotionBuilder {
         return promotion;
     }
 
-    public Promotion buildForDataGrid() {
+    public Promotion createPromotion() {
         Promotion promotion = new Promotion();
         promotion.setOfferId(this.offerId);
         promotion.setEffectiveDate(this.effectiveDate);

@@ -4,6 +4,10 @@ DBPort: 27017
 Username:
 Password:
 
+db.bucket.name: PriceService
+db.bucket.password: tesco
+db.server.url: http://127.0.0.1:8091/pools
+
 rpm.price.data.dump : src/main/resources/com/tesco/services/adapters/rpm/CSVFiles/PRICE_ZONE.csv
 rpm.store.data.dump : src/main/resources/com/tesco/services/adapters/rpm/CSVFiles/latest/STORE_ZONE.csv
 rpm.promotion.data.dump : src/main/resources/com/tesco/services/adapters/rpm/CSVFiles/PROM_EXTRACT.csv

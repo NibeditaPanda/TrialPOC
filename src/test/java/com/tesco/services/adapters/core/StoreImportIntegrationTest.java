@@ -54,7 +54,7 @@ public class StoreImportIntegrationTest extends ImportJobIntegrationTestBase {
                 RPM_PROMO_EXTRACT_CSV_FILE_PATH,
                 RPM_PROMO_DESC_EXTRACT_CSV_FILE_PATH,
                 dbFactory,
-                importCouchbaseConnectionManager);
+                couchbaseConnectionManager);
 
         importJob.processData(priceCollection, storeCollection, promotionCollection, false);
 
@@ -71,7 +71,7 @@ public class StoreImportIntegrationTest extends ImportJobIntegrationTestBase {
         String storeId = "2002";
         Store store = new Store(storeId, Optional.of(1), Optional.of(5), "GBP");
 
-        CouchbaseConnectionManager couchbaseConnectionManager = new CouchbaseConnectionManager(null);
+        CouchbaseConnectionManager couchbaseConnectionManager = new CouchbaseConnectionManager(new TestConfiguration());
         StoreRepository storeRepository = new StoreRepository(couchbaseConnectionManager.getCouchbaseClient());
         assertThat(storeRepository.getByStoreId(storeId).get()).isEqualTo(store);
         assertThat(storeRepository.getByStoreId(oldStoreId).isPresent()).isFalse();

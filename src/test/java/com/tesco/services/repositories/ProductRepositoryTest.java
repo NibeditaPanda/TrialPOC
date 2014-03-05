@@ -1,6 +1,7 @@
 package com.tesco.services.repositories;
 
 import com.couchbase.client.CouchbaseClient;
+import com.tesco.services.IntegrationTest;
 import com.tesco.services.core.Product;
 import com.tesco.services.resources.TestConfiguration;
 import org.junit.Before;
@@ -8,7 +9,7 @@ import org.junit.Test;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class ProductRepositoryTest {
+public class ProductRepositoryTest extends IntegrationTest {
     private CouchbaseConnectionManager couchbaseConnectionManager;
     private CouchbaseClient couchbaseClient;
 
@@ -16,7 +17,6 @@ public class ProductRepositoryTest {
     public void setUp() throws Exception {
         couchbaseConnectionManager = new CouchbaseConnectionManager(new TestConfiguration());
         couchbaseClient = couchbaseConnectionManager.getCouchbaseClient();
-        couchbaseClient.flush();
     }
 
     @Test

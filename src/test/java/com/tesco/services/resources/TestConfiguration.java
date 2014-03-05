@@ -41,6 +41,29 @@ public class TestConfiguration extends Configuration {
     }
 
     @Override
+    public String getDBBucketName() {
+        return (String) configuration.get("db.bucket.name");
+    }
+
+    @Override
+    public String getDBBucketPassword() {
+        return (String) configuration.get("db.bucket.password");
+    }
+
+    @Override
+    public String getDBServerUrl() {
+        return (String) configuration.get("db.server.url");
+    }
+
+    public String getDBAdminUsername() {
+        return (String) configuration.get("db.server.admin.username");
+    }
+
+    public String getDBAdminPassword() {
+        return (String) configuration.get("db.server.admin.password");
+    }
+
+    @Override
     public String getUsername() {
         String username = (String) configuration.get("Username");
         return username == null ? "" : username;

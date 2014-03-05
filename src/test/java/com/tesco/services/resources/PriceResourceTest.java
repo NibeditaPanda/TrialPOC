@@ -7,8 +7,10 @@ import com.mongodb.util.JSON;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.tesco.services.Configuration;
+import com.tesco.services.IntegrationTest;
 import com.tesco.services.builder.PromotionBuilder;
 import com.tesco.services.core.Product;
+import com.tesco.services.core.ProductPriceBuilder;
 import com.tesco.services.core.ProductVariant;
 import com.tesco.services.core.Promotion;
 import com.tesco.services.core.SaleInfo;
@@ -23,15 +25,20 @@ import com.tesco.services.resources.fixtures.TestProductPriceDBObject;
 import com.tesco.services.resources.fixtures.TestPromotionDBObject;
 import com.tesco.services.resources.fixtures.TestStoreDBObject;
 import com.yammer.dropwizard.testing.ResourceTest;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -46,21 +53,28 @@ public class PriceResourceTest extends ResourceTest {
     @Override
     protected void setUpResources() throws Exception {
         priceDAO = new PriceDAO(testConfiguration);
+        couchbaseConnectionManager = new CouchbaseConnectionManager(testConfiguration);
         PriceResource priceResource = new PriceResource(priceDAO, couchbaseConnectionManager);
         addResource(priceResource);
     }
 
     @BeforeClass
-    public static void setUp() throws IOException {
+    public static void setUp() throws IOException, URISyntaxException, InterruptedException {
         DBFactory dbFactory = new DBFactory(testConfiguration);
         priceCollection = dbFactory.getCollection("prices");
         storeCollection = dbFactory.getCollection("stores");
+        IntegrationTest.init();
     }
 
     @Before
-    public void beforeEachTest() {
+    public void beforeEachTest() throws IOException {
         priceCollection.drop();
         storeCollection.drop();
+    }
+
+    @After
+    public void tearDown() throws IOException {
+        IntegrationTest.destroy();
     }
 
     @Test
@@ -304,7 +318,7 @@ public class PriceResourceTest extends ResourceTest {
         assertThat(response.getEntity(String.class)).contains("Invalid request");
     }
 
-    // DataGrid tests
+    // Couchbase tests
     // ==============
     @Test
     public void shouldReturnNationalPricesForMultipleItemsWhenStoreIdIsNotSpecified() throws IOException, ItemNotFoundException {
@@ -320,7 +334,17 @@ public class PriceResourceTest extends ResourceTest {
         ClientResponse response = resource.get(ClientResponse.class);
         assertThat(response.getStatus()).isEqualTo(200);
         Map actualProductPriceInfo = resource.get(Map.class);
-        assertThat(actualProductPriceInfo).isEqualTo(expectedProductPriceInfo(tpnb, tpnc1, tpnc2));
+
+        compareResponseMaps(actualProductPriceInfo, expectedProductPriceInfo(tpnb, tpnc1, tpnc2));
+    }
+
+    private void compareResponseMaps(Map actualProductPriceInfo, Map<String, Object> expectedProductPriceInfo) {
+        assertThat(actualProductPriceInfo.size()).isEqualTo(expectedProductPriceInfo.size());
+        assertThat(actualProductPriceInfo.get(ProductPriceBuilder.TPNB)).isEqualTo(expectedProductPriceInfo.get(ProductPriceBuilder.TPNB));
+
+        final Set actualVariants = new HashSet((Collection) actualProductPriceInfo.get(ProductPriceBuilder.VARIANTS));
+        final Set expectedVariants = new HashSet((Collection) expectedProductPriceInfo.get(ProductPriceBuilder.VARIANTS));
+        assertThat(actualVariants).isEqualTo(expectedVariants);
     }
 
     @Test
@@ -347,7 +371,7 @@ public class PriceResourceTest extends ResourceTest {
         variants.add(getVariantInfo(tpnc1, "EUR", null, "1.10", false));
         variants.add(getVariantInfo(tpnc2, "EUR", "1.38", null, false));
 
-        assertThat(actualProductPriceInfo).isEqualTo(getProductPriceMap(tpnb, variants));
+        compareResponseMaps(actualProductPriceInfo, getProductPriceMap(tpnb, variants));
     }
 
     @Test
@@ -419,7 +443,7 @@ public class PriceResourceTest extends ResourceTest {
                 endDate("20130819").
                 description1("Test Description 1 " + offerId).
                 description2("Test Description 2 " + offerId).
-                buildForDataGrid();
+                createPromotion();
     }
 
     private Map<String, Object> expectedProductPriceInfo(String tpnb, String tpnc1, String tpnc2) {

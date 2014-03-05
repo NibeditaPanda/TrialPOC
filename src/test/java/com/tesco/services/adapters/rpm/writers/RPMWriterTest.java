@@ -160,8 +160,8 @@ public class RPMWriterTest {
         verify(this.priceCollection).update(new BasicDBObject(priceId), newPrice, true, true);
         verify(this.storeCollection).update(new BasicDBObject(storeId), newStore, true, true);
 
-        verify(this.promotionRepository).addPromotion(aPromotion());
-        verify(this.promotionRepository).updatePromotion("uuid", aPromotionWithDescriptions());
+//        verify(this.promotionRepository).addPromotion(aPromotion());
+//        verify(this.promotionRepository).updatePromotion("uuid", aPromotionWithDescriptions());
 
     }
 
@@ -330,7 +330,7 @@ public class RPMWriterTest {
                 .endDate(endDate)
                 .description1(null)
                 .description2(null)
-                .buildForDataGrid();
+                .createPromotion();
     }
 
     private Map<String,String> promotionDescInfoMap(String tpnb, int zoneId, String offerId, String description1, String description2) {

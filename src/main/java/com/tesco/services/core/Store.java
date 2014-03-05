@@ -38,7 +38,7 @@ public class Store implements Serializable {
     }
 
     public String getStoreId() {
-        return String.valueOf(storeId); //TODO: Change the store Id to String type across application.
+        return storeId;
     }
 
     @Override
@@ -49,7 +49,7 @@ public class Store implements Serializable {
         Store store = (Store) o;
 
         if (!currency.equals(store.currency)) return false;
-        if (storeId != store.storeId) return false;
+        if (!storeId.equals(store.storeId)) return false;
         if (priceZoneId != store.priceZoneId) return false;
         if (promoZoneId != store.promoZoneId) return false;
 

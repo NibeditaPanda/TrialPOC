@@ -15,7 +15,7 @@ import com.tesco.services.adapters.rpm.writers.RPMWriter;
 import com.tesco.services.adapters.sonetto.SonettoPromotionWriter;
 import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
 import com.tesco.services.dao.DBFactory;
-import com.tesco.services.repositories.ImportCouchbaseConnectionManager;
+import com.tesco.services.repositories.CouchbaseConnectionManager;
 import com.tesco.services.repositories.ProductRepository;
 import com.tesco.services.repositories.PromotionRepository;
 import com.tesco.services.repositories.StoreRepository;
@@ -53,7 +53,7 @@ public class ImportJob implements Runnable {
     private String rpmPromoExtractDataPath;
     private String rpmPromoDescExtractDataPath;
     private com.tesco.services.dao.DBFactory dbFactory;
-    private ImportCouchbaseConnectionManager couchbaseConnectionManager;
+    private CouchbaseConnectionManager couchbaseConnectionManager;
     private String sonettoPromotionsXMLFilePath;
     private String sonettoShelfImageUrl;
 
@@ -69,7 +69,7 @@ public class ImportJob implements Runnable {
                       String rpmPromoExtractDataPath,
                       String rpmPromoDescExtractDataPath,
                       DBFactory dbFactory,
-                      ImportCouchbaseConnectionManager couchbaseConnectionManager) {
+                      CouchbaseConnectionManager couchbaseConnectionManager) {
         this.rpmPriceZoneCsvFilePath = rpmPriceZoneCsvFilePath;
         this.rpmStoreZoneCsvFilePath = rpmStoreZoneCsvFilePath;
         this.rpmPromotionCsvFilePath = rpmPromotionCsvFilePath;
@@ -113,7 +113,6 @@ public class ImportJob implements Runnable {
             logger.info("Renaming Promotion collection....");
             tempPromotionCollection.rename(PROMOTION_COLLECTION, true);
 
-            couchbaseConnectionManager.replaceCurrentWithRefresh();
             logger.info("Successfully imported data for " + new Date());
 
         } catch (Exception exception) {
@@ -141,7 +140,7 @@ public class ImportJob implements Runnable {
 
         UUIDGenerator uuidGenerator = new UUIDGenerator();
 
-        final CouchbaseClient couchbaseClient = couchbaseConnectionManager.getReplacementBucketClient();
+        final CouchbaseClient couchbaseClient = couchbaseConnectionManager.getCouchbaseClient();
         PromotionRepository promotionRepository = new PromotionRepository(uuidGenerator, couchbaseClient);
         ProductRepository productRepository = new ProductRepository(couchbaseClient);
 

@@ -42,8 +42,13 @@ public class Configuration extends com.yammer.dropwizard.config.Configuration {
     private String rpmPromoExtractDataPath;
     @JsonProperty("rpm.promo.desc.extract.data.dump")
     private String rpmPromoDescExtractDataPath;
-    @JsonProperty("datagrid.cache.location")
-    private String cacheLocation;
+
+    @JsonProperty("db.bucket.name")
+    private String dbBucketName;
+    @JsonProperty("db.bucket.password")
+    private String dbBucketPassword;
+    @JsonProperty("db.server.url")
+    private String dbServerUrl;
 
 
     public String getUsername() {
@@ -60,6 +65,18 @@ public class Configuration extends com.yammer.dropwizard.config.Configuration {
 
     public String getDBName() {
         return DBName;
+    }
+
+    public String getDBBucketName() {
+        return dbBucketName;
+    }
+
+    public String getDBBucketPassword() {
+        return dbBucketPassword;
+    }
+
+    public String getDBServerUrl() {
+        return dbServerUrl;
     }
 
     public int getDBPort() {
@@ -103,10 +120,6 @@ public class Configuration extends com.yammer.dropwizard.config.Configuration {
 
     public String getRPMPriceZoneDataPath() {
         return rpmPriceZoneDataPath;
-    }
-
-    public String getCacheLocation() {
-        return cacheLocation;
     }
 
     public String getRPMPromoZoneDataPath() {

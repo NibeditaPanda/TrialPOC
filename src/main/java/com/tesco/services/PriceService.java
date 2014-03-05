@@ -6,7 +6,6 @@ import com.tesco.services.mappers.InvalidUrlMapper;
 import com.tesco.services.mappers.ServerErrorMapper;
 import com.tesco.services.metrics.ResourceMetricsListener;
 import com.tesco.services.repositories.CouchbaseConnectionManager;
-import com.tesco.services.repositories.ImportCouchbaseConnectionManager;
 import com.tesco.services.repositories.PromotionRepository;
 import com.tesco.services.repositories.UUIDGenerator;
 import com.tesco.services.resources.ImportResource;
@@ -60,7 +59,7 @@ public class PriceService extends Service<Configuration> {
         environment.addResource(new PriceResource(new PriceDAO(configuration), new CouchbaseConnectionManager(configuration)));
         environment.addResource(new PromotionResource(container.getComponent(PromotionRepository.class)));
         environment.addResource(new VersionResource());
-        environment.addResource(new ImportResource(configuration, new ImportCouchbaseConnectionManager(configuration)));
+        environment.addResource(new ImportResource(configuration, new CouchbaseConnectionManager(configuration)));
 
         environment.addProvider(new MongoUnavailableProvider());
         environment.addProvider(new InvalidUrlMapper());

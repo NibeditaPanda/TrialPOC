@@ -73,7 +73,7 @@ public class PriceImportIntegrationTest extends ImportJobIntegrationTestBase {
                 RPM_PROMO_EXTRACT_CSV_FILE_PATH,
                 RPM_PROMO_DESC_EXTRACT_CSV_FILE_PATH,
                 dbFactory,
-                importCouchbaseConnectionManager);
+                couchbaseConnectionManager);
         importJob.run();
 
         DBObject prices = findPricesFromZone("050925811", "5");
@@ -83,7 +83,7 @@ public class PriceImportIntegrationTest extends ImportJobIntegrationTestBase {
     }
 
     // =========
-    // DataGrid
+    // Couchbase
     // =========
     @Test
     public void shouldUpdatePriceZonePricesToReplacedCache() throws URISyntaxException, IOException, InterruptedException {
@@ -98,7 +98,7 @@ public class PriceImportIntegrationTest extends ImportJobIntegrationTestBase {
                 endDate("20130819").
                 description1("Test Description 1").
                 description2("Test Description 2").
-                buildForDataGrid();
+                createPromotion();
 
         SaleInfo saleInfo1 = new SaleInfo(5, "0.30");
         saleInfo1.addPromotion(promotion1);
@@ -114,7 +114,7 @@ public class PriceImportIntegrationTest extends ImportJobIntegrationTestBase {
                 endDate("20130919").
                 description1("Test Description 3").
                 description2("Test Description 4").
-                buildForDataGrid();
+                createPromotion();
 
         SaleInfo saleInfo2 = new SaleInfo(14, "0.35");
         saleInfo2.addPromotion(promotion2);
@@ -129,7 +129,7 @@ public class PriceImportIntegrationTest extends ImportJobIntegrationTestBase {
         product.addProductVariant(productVariant1);
         product.addProductVariant(productVariant2);
 
-        ProductRepository productRepository = new ProductRepository(new CouchbaseConnectionManager(null).getCouchbaseClient());
+        ProductRepository productRepository = new ProductRepository(new CouchbaseConnectionManager(new TestConfiguration()).getCouchbaseClient());
         assertThat(productRepository.getByTPNB(tpnb).get()).isEqualTo(product);
         assertThat(productRepository.getByTPNB(oldTpnb).isPresent()).isFalse();
     }
