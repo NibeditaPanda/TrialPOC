@@ -2,7 +2,6 @@ package com.tesco.services.resources;
 
 import com.tesco.services.Configuration;
 import com.tesco.services.adapters.core.ImportJob;
-import com.tesco.services.dao.DBFactory;
 import com.tesco.services.repositories.CouchbaseConnectionManager;
 import com.yammer.metrics.annotation.ExceptionMetered;
 import com.yammer.metrics.annotation.Metered;
@@ -34,20 +33,14 @@ public class ImportResource {
     @ExceptionMetered(name = "postImport-Failures", group = "PriceServices")
     public Response importData() {
         try {
-            DBFactory dbFactory = new DBFactory(configuration);
-
-            final ImportJob importJob = new ImportJob(configuration.getRPMPriceDataPath(),
-                    configuration.getRPMStoreDataPath(),
-                    configuration.getRPMPromotionDataPath(),
+            final ImportJob importJob = new ImportJob(configuration.getRPMStoreDataPath(),
                     configuration.getSonettoPromotionsXMLDataPath(),
-                    configuration.getRPMPromotionDescCSVUrl(),
                     configuration.getSonettoPromotionXSDDataPath(),
                     configuration.getSonettoShelfImageUrl(),
                     configuration.getRPMPriceZoneDataPath(),
                     configuration.getRPMPromoZoneDataPath(),
                     configuration.getRPMPromoExtractDataPath(),
                     configuration.getRPMPromoDescExtractDataPath(),
-                    dbFactory,
                     couchbaseConnectionManager);
 
             Thread thread = new Thread(importJob);

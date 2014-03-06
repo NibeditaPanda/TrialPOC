@@ -1,6 +1,5 @@
 package com.tesco.services;
 
-import com.tesco.services.dao.PriceDAO;
 import com.tesco.services.healthChecks.ServiceHealthCheck;
 import com.tesco.services.mappers.InvalidUrlMapper;
 import com.tesco.services.mappers.ServerErrorMapper;
@@ -9,7 +8,6 @@ import com.tesco.services.repositories.CouchbaseConnectionManager;
 import com.tesco.services.repositories.PromotionRepository;
 import com.tesco.services.repositories.UUIDGenerator;
 import com.tesco.services.resources.ImportResource;
-import com.tesco.services.resources.MongoUnavailableProvider;
 import com.tesco.services.resources.PriceResource;
 import com.tesco.services.resources.PromotionResource;
 import com.tesco.services.resources.VersionResource;
@@ -54,13 +52,12 @@ public class PriceService extends Service<Configuration> {
     public void run(Configuration configuration, Environment environment) throws Exception {
 
         final CouchbaseConnectionManager couchbaseConnectionManager = new CouchbaseConnectionManager(configuration);
-        environment.addResource(new PriceResource(new PriceDAO(configuration), couchbaseConnectionManager));
+        environment.addResource(new PriceResource(couchbaseConnectionManager));
         final PromotionRepository promotionRepository = new PromotionRepository(new UUIDGenerator(), null);
         environment.addResource(new PromotionResource(promotionRepository));
         environment.addResource(new VersionResource());
         environment.addResource(new ImportResource(configuration, couchbaseConnectionManager));
 
-        environment.addProvider(new MongoUnavailableProvider());
         environment.addProvider(new InvalidUrlMapper());
         environment.addProvider(new ServerErrorMapper());
 
@@ -69,7 +66,7 @@ public class PriceService extends Service<Configuration> {
          */
 //        configureMetrics(configuration);
 
-        environment.addHealthCheck(new ServiceHealthCheck(configuration));
+        environment.addHealthCheck(new ServiceHealthCheck(couchbaseConnectionManager));
         configureSwagger(environment, configuration);
     }
 
@@ -99,7 +96,7 @@ public class PriceService extends Service<Configuration> {
         config.setApiVersion("1.0.1");
 
         HttpConfiguration httpConfiguration = configuration.getHttpConfiguration();
-        config.setBasePath("http://" + "localhost" + ":" + httpConfiguration.getPort());
+        config.setBasePath("http://" + getNonLoopbackIPv4AddressForThisHost() + ":" + httpConfiguration.getPort());
 
         environment.addFilter(CrossOriginFilter.class, "/*");
     }

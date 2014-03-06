@@ -1,12 +1,10 @@
 package com.tesco.services.adapters.sonetto.Elements;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
-
-import javax.xml.bind.annotation.*;
-
-import static com.tesco.services.core.PriceKeys.*;
-import static java.lang.String.format;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "Promotion")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -44,23 +42,6 @@ public class Promotion {
 
     public boolean isInternetExclusive() {
         return internetExclusive;
-    }
-
-    public DBObject buildInternetDBObject() {
-        BasicDBObject promotionDBObject = new BasicDBObject();
-        promotionDBObject.put(PROMOTION_OFFER_ID, sonettoID);
-        promotionDBObject.put(PROMOTION_OFFER_TEXT, offetText);
-        promotionDBObject.put(PROMOTION_START_DATE, availability.getStartDate());
-        promotionDBObject.put(PROMOTION_END_DATE, availability.getEndDate());
-
-        return promotionDBObject;
-    }
-
-    public DBObject buildStoreDBObject(String shelfTalkerImagePath) {
-        BasicDBObject promotionDBObject = new BasicDBObject();
-        promotionDBObject.put(PROMOTION_OFFER_ID, sonettoID);
-        promotionDBObject.put(SHELF_TALKER_IMAGE, format(shelfTalkerImagePath, shelfTalkerImage));
-        return promotionDBObject;
     }
 
 }

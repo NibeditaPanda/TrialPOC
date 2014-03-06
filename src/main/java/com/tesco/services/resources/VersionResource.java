@@ -12,12 +12,16 @@ import com.yammer.metrics.annotation.Timed;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.io.File;
 import java.io.IOException;
 
 import static com.google.common.io.Files.readLines;
-import static com.tesco.services.resources.HTTPResponses.*;
+import static com.tesco.services.resources.HTTPResponses.notFound;
+import static com.tesco.services.resources.HTTPResponses.ok;
 import static com.tesco.services.resources.ResourceResponse.RESPONSE_TYPE;
 import static java.nio.charset.Charset.defaultCharset;
 

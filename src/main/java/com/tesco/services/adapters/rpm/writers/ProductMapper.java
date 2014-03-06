@@ -1,6 +1,9 @@
 package com.tesco.services.adapters.rpm.writers;
 
-import com.tesco.services.core.*;
+import com.tesco.services.core.Product;
+import com.tesco.services.core.ProductVariant;
+import com.tesco.services.core.Promotion;
+import com.tesco.services.core.SaleInfo;
 import com.tesco.services.repositories.ProductRepository;
 
 import java.util.Map;

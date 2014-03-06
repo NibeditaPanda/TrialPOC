@@ -1,7 +1,6 @@
 import static org.gradle.api.JavaVersion.VERSION_1_7
 
 apply plugin: 'java'
-//apply plugin: 'cobertura'
 apply plugin: 'idea'
 apply plugin: 'fatjar'
 apply plugin: 'application'
@@ -21,17 +20,11 @@ buildscript {
     dependencies {
         classpath fileTree(dir: 'lib',
                 includes: [
-                        'gradle-cobertura-plugin-1.0.jar',
                         'gradle-fatjar-plugin-0.2-rc1.jar'
                 ]
         )
     }
 }
-
-
-
-sourceCompatibility = VERSION_1_7
-targetCompatibility = VERSION_1_7
 
 allprojects {
     def versionNumber = System.getenv("BUILD_NUMBER")

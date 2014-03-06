@@ -10,6 +10,8 @@ import java.io.Serializable;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
+//TODO: This domain class needs refactoring to suit couchbase
+
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 @ApiModel(value = "A promotion is special pricing for a product")
 public class Promotion implements Serializable {

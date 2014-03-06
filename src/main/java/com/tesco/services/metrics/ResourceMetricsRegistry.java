@@ -9,7 +9,4 @@ public class ResourceMetricsRegistry extends MetricsRegistry{
     public void addMetric (MetricName name, Metric metric){
         super.getOrAdd(name,metric);
     }
-
-
-
 }

@@ -6,40 +6,31 @@ import org.apache.commons.configuration.ConfigurationException;
 public class Configuration extends com.yammer.dropwizard.config.Configuration {
 
     @JsonProperty
-    private String DBHost;
-    @JsonProperty
-    private String DBName;
-    @JsonProperty
-    private String DBPort;
-    @JsonProperty
-    private String Password;
-    @JsonProperty
-    private String Username;
-    @JsonProperty
     private String ImportScript;
     @JsonProperty
     private HostedGraphiteConfiguration hostedGraphite = new HostedGraphiteConfiguration();
 
-    @JsonProperty("rpm.price.data.dump")
-    private String rpmPriceDataPath ;
-    @JsonProperty("rpm.promotion.data.dump")
-    private String rpmPromotionDataPath;
     @JsonProperty("rpm.store.data.dump")
     private String rpmStoreDataPath;
+
     @JsonProperty("sonetto.promotions.data.dump")
     private String sonettoPromotionXMLDataPath;
+
     @JsonProperty("sonetto.promotions.xsd")
     private String sonettoPromotionXSDDataPath;
+
     @JsonProperty("sonetto.shelfUrl")
     private String sonettoShelfImageUrl;
-    @JsonProperty("rpm.promotion_desc.data.dump")
-    private String rpmPromotionDescCSVUrl;
+
     @JsonProperty("rpm.price.zone.data.dump")
     private String rpmPriceZoneDataPath;
+
     @JsonProperty("rpm.promo.zone.data.dump")
     private String rpmPromoZoneDataPath;
+
     @JsonProperty("rpm.promo.extract.data.dump")
     private String rpmPromoExtractDataPath;
+
     @JsonProperty("rpm.promo.desc.extract.data.dump")
     private String rpmPromoDescExtractDataPath;
 
@@ -49,23 +40,6 @@ public class Configuration extends com.yammer.dropwizard.config.Configuration {
     private String dbBucketPassword;
     @JsonProperty("db.server.url")
     private String dbServerUrl;
-
-
-    public String getUsername() {
-        return Username;
-    }
-
-    public String getPassword() {
-        return Password;
-    }
-
-    public String getDBHost() {
-        return DBHost;
-    }
-
-    public String getDBName() {
-        return DBName;
-    }
 
     public String getDBBucketName() {
         return dbBucketName;
@@ -79,23 +53,12 @@ public class Configuration extends com.yammer.dropwizard.config.Configuration {
         return dbServerUrl;
     }
 
-    public int getDBPort() {
-        return Integer.parseInt(DBPort);
-    }
-
     public String getImportScript() {
         return ImportScript;
     }
+
     public HostedGraphiteConfiguration getHostedGraphiteConfig() {
         return hostedGraphite;
-    }
-
-    public String getRPMPriceDataPath() throws ConfigurationException {
-        return rpmPriceDataPath;
-    }
-
-    public String getRPMPromotionDataPath() throws ConfigurationException {
-        return rpmPromotionDataPath;
     }
 
     public String getRPMStoreDataPath() throws ConfigurationException {
@@ -112,10 +75,6 @@ public class Configuration extends com.yammer.dropwizard.config.Configuration {
 
     public String getSonettoShelfImageUrl() throws ConfigurationException {
         return sonettoShelfImageUrl;
-    }
-
-    public String getRPMPromotionDescCSVUrl() throws ConfigurationException {
-        return rpmPromotionDescCSVUrl;
     }
 
     public String getRPMPriceZoneDataPath() {

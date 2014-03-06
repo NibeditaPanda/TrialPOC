@@ -26,21 +26,6 @@ public class TestConfiguration extends Configuration {
     }
 
     @Override
-    public int getDBPort() {
-        return (Integer) configuration.get("DBPort");
-    }
-
-    @Override
-    public String getDBName() {
-        return (String) configuration.get("DBName");
-    }
-
-    @Override
-    public String getDBHost() {
-        return (String) configuration.get("DBHost");
-    }
-
-    @Override
     public String getDBBucketName() {
         return (String) configuration.get("db.bucket.name");
     }
@@ -61,18 +46,6 @@ public class TestConfiguration extends Configuration {
 
     public String getDBAdminPassword() {
         return (String) configuration.get("db.server.admin.password");
-    }
-
-    @Override
-    public String getUsername() {
-        String username = (String) configuration.get("Username");
-        return username == null ? "" : username;
-    }
-
-    @Override
-    public String getPassword() {
-        String password = (String) configuration.get("Password");
-        return password == null ? "" : password;
     }
 
     @Override

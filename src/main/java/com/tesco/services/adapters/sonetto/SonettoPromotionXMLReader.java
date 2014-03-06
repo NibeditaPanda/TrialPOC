@@ -1,6 +1,5 @@
 package com.tesco.services.adapters.sonetto;
 
-import com.mongodb.DBObject;
 import com.tesco.services.adapters.sonetto.Elements.Promotion;
 import com.tesco.services.adapters.sonetto.Elements.Promotions;
 import org.xml.sax.SAXException;
@@ -11,13 +10,12 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 
+//TODO: Add tests / test drive and implement functionality for couchbase
 public class SonettoPromotionXMLReader {
-    private SonettoPromotionWriter writer;
     private String shelfURL;
     private String promotionsDataExportXsd;
 
-    public SonettoPromotionXMLReader(SonettoPromotionWriter writer, String shelfURL, String promotionsDataExportXsd) {
-        this.writer = writer;
+    public SonettoPromotionXMLReader(String shelfURL, String promotionsDataExportXsd) {
         this.shelfURL = shelfURL;
         this.promotionsDataExportXsd = promotionsDataExportXsd;
     }
@@ -29,12 +27,11 @@ public class SonettoPromotionXMLReader {
         Promotions promotions = u.unmarshal(source, Promotions.class).getValue();
 
         for (Promotion promotion : promotions.getStorePromotions()) {
-            DBObject promotionDBObject = promotion.buildStoreDBObject(shelfURL);
-            writer.updatePromotion(promotionDBObject);
+            //TODO: Write to db
         }
 
         for (Promotion promotion : promotions.getInternetPromotions()) {
-            writer.createPromotion(promotion.buildInternetDBObject());
+            // TODO: Write to db
         }
     }
 }

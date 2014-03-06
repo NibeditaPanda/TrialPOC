@@ -1,19 +1,11 @@
-DBHost: ds027668.mongolab.com
-DBName: priceservice
-DBPort: 27668
-Username: ci
-Password: Services123
-
 db.bucket.name: PriceServiceTest
 db.bucket.password: tesco
 db.server.url: http://127.0.0.1:8091/pools
 db.server.admin.username: admin
 db.server.admin.password: password
 
-rpm.price.data.dump : src/main/resources/com/tesco/adapters/rpm/CSVFiles/PRICE_ZONE.csv
-rpm.store.data.dump : src/main/resources/com/tesco/adapters/rpm/CSVFiles/latest/STORE_ZONE.csv
-rpm.promotion.data.dump : src/main/resources/com/tesco/adapters/rpm/CSVFiles/PROM_EXTRACT.csv
-rpm.promotion_desc.data.dump : src/main/resources/com/tesco/adapters/rpm/CSVFiles/PROM_DESC_EXTRACT.csv
+
+rpm.store.data.dump : src/main/resources/com/tesco/services/adapters/rpm/CSVFiles/latest/STORE_ZONE.csv
 sonetto.shelfUrl : http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/Superstore/Online/Product/pos/%s.png
 sonetto.promotions.data.dump : src/test/resources/com/tesco/services/adapters/sonetto/PromotionsDataExport.xml
 sonetto.promotions.xsd : templates/Promotions.xsd

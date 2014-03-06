@@ -2,10 +2,15 @@ package com.tesco.services.core;
 
 import com.google.common.base.Optional;
 import com.tesco.services.builder.PromotionBuilder;
+import com.tesco.services.resources.model.ProductPriceBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
