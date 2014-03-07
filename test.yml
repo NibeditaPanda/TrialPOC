@@ -4,6 +4,7 @@ DBPort: 27017
 Username:
 Password:
 
+
 rpm.price.data.dump : src/main/resources/com/tesco/adapters/rpm/CSVFiles/PRICE_ZONE.csv
 rpm.store.data.dump : src/main/resources/com/tesco/adapters/rpm/CSVFiles/STORE_ZONE.csv
 rpm.promotion.data.dump : src/main/resources/com/tesco/adapters/rpm/CSVFiles/PROM_EXTRACT.csv
