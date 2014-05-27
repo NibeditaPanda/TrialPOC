@@ -124,7 +124,7 @@ public class PriceResourceTest extends ResourceTest {
         ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
         productRepository.put(createProductWithVariants("050925811", "266072275", "266072276"));
 
-        WebResource resource = client().resource("/price/B/050925811?store=2002");
+        WebResource resource = client().resource("/price/B/050925811?store=2099");
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(404);

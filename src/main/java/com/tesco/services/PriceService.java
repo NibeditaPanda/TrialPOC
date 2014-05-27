@@ -96,7 +96,7 @@ public class PriceService extends Service<Configuration> {
         config.setApiVersion("1.0.1");
 
         HttpConfiguration httpConfiguration = configuration.getHttpConfiguration();
-        config.setBasePath("http://" + getNonLoopbackIPv4AddressForThisHost() + ":" + httpConfiguration.getPort());
+        //config.setBasePath("http://" + getNonLoopbackIPv4AddressForThisHost() + ":" + httpConfiguration.getPort());
 
         environment.addFilter(CrossOriginFilter.class, "/*");
     }
