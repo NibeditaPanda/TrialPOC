@@ -1,15 +1,15 @@
 db.bucket.name: PriceServiceTest
 db.bucket.password: tesco
-db.server.url: http://188.226.184.77:8091/pools
-db.server.admin.username: xd18
-db.server.admin.password: PriceService
+db.server.url: http://127.0.0.1:8091/pools
+db.server.admin.username: admin
+db.server.admin.password: password
 
 sonetto.shelfUrl : http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/Superstore/Online/Product/pos/%s.png
 sonetto.promotions.data.dump : src/test/resources/com/tesco/services/adapters/sonetto/PromotionsDataExport.xml
 
 http:
-  port: 8081
-  adminPort: 9081
+  port: 8080
+  adminPort: 9080
 
 logging:
   level: INFO
