@@ -1,15 +1,18 @@
 package com.tesco.services.adapters.rpm.writers;
 
-import com.tesco.services.core.Product;
-import com.tesco.services.core.ProductVariant;
-import com.tesco.services.core.Promotion;
-import com.tesco.services.core.SaleInfo;
+import com.tesco.couchbase.listeners.Listener;
+import com.tesco.services.core.*;
+import com.tesco.services.repositories.AsyncReadWriteProductRepository;
 import com.tesco.services.repositories.ProductRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
 public class ProductMapper {
     private ProductRepository productRepository;
+    private AsyncReadWriteProductRepository asyncReadWriteProductRepository;
+    private Logger logger = LoggerFactory.getLogger("RPM Import");
 
     public ProductMapper(ProductRepository productRepository) {
         this.productRepository = productRepository;
@@ -27,19 +30,22 @@ public class ProductMapper {
         String tpncHeader = CSVHeaders.Price.TPNB;// Todo: to be changed to tpnc when we get tpnc
         String tpnc = headerToValueMap.get(tpncHeader);
         Product product = getProduct(tpnc.split("-")[0]);//TODO: Remove the splitting logic once TPNC is given in the CSV extracts
+       // Product product = getProductIdentified(tpnc.split("-")[0]);//TODO: Remove the splitting logic once TPNC is given in the CSV extracts
 
         ProductVariant productVariant = getProductVariant(product, tpnc);
 
         final int zoneId = Integer.parseInt(headerToValueMap.get(zoneIdHeader));
         productVariant.addSaleInfo(new SaleInfo(zoneId, headerToValueMap.get(priceHeader)));
-
         return product;
     }
+
 
     public Product mapPromotion(Map<String, String> promotionInfoMap) {
         String tpncHeader = CSVHeaders.PromoExtract.TPNB; // Todo: to be changed to tpnc when we get tpnc
         String tpnc = promotionInfoMap.get(tpncHeader);
         Product product = getProduct(tpnc.split("-")[0]);//TODO: Remove the splitting logic once TPNC is given in the CSV extracts
+        //Product product = getProductIdentified(tpnc.split("-")[0]);//TODO: Remove the splitting logic once TPNC is given in the CSV extracts
+
         ProductVariant productVariant = getProductVariant(product, tpnc);
 
         final int zoneId = Integer.parseInt(promotionInfoMap.get(CSVHeaders.PromoExtract.ZONE_ID));
@@ -64,6 +70,8 @@ public class ProductMapper {
         String tpncHeader = CSVHeaders.PromoDescExtract.TPNB; // Todo: to be changed to tpnc when we get tpnc
         String tpnc = promotionDescInfoMap.get(tpncHeader);
         Product product = getProduct(tpnc.split("-")[0]);//TODO: Remove the splitting logic once TPNC is given in the CSV extracts
+       // Product product = getProductIdentified(tpnc.split("-")[0]);//TODO: Remove the splitting logic once TPNC is given in the CSV extracts
+
         ProductVariant productVariant = getProductVariant(product, tpnc);
 
         final int zoneId = Integer.parseInt(promotionDescInfoMap.get(CSVHeaders.PromoDescExtract.ZONE_ID));
@@ -91,6 +99,30 @@ public class ProductMapper {
 
     private Product getProduct(String tpnb) {
         return productRepository.getByTPNB(tpnb).or(new Product(tpnb));
+    }
+
+    private Product getProductIdentified(String tpnb) {
+        Product productToBeInserted;
+        productRepository.getProductByTPNB(tpnb, new Listener<Product, Exception>() {
+            @Override
+            public void onComplete(Product product) {
+                if(product == null){
+                    //Use Phaser or any future methods that is required
+                }
+                else{
+                }
+            }
+            @Override
+            public void onException(Exception e) {
+            }
+        }) ;
+        if(productRepository.getProductIdentified()==null){
+            productToBeInserted = new Product(tpnb);
+        }
+        else{
+            productToBeInserted = productRepository.getProductIdentified();
+        }
+        return productToBeInserted;
     }
 
     private ProductVariant getProductVariant(Product product, String tpnc) {

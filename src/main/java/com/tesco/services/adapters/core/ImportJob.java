@@ -1,17 +1,16 @@
 package com.tesco.services.adapters.core;
 
 import com.couchbase.client.CouchbaseClient;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tesco.couchbase.AsyncCouchbaseWrapper;
+import com.tesco.couchbase.CouchbaseWrapper;
 import com.tesco.services.adapters.core.exceptions.ColumnNotFoundException;
 import com.tesco.services.adapters.rpm.readers.PriceServiceCSVReader;
 import com.tesco.services.adapters.rpm.readers.PriceServiceCSVReaderImpl;
 import com.tesco.services.adapters.rpm.writers.CSVHeaders;
 import com.tesco.services.adapters.rpm.writers.RPMWriter;
 import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
-import com.tesco.services.repositories.CouchbaseConnectionManager;
-import com.tesco.services.repositories.ProductRepository;
-import com.tesco.services.repositories.PromotionRepository;
-import com.tesco.services.repositories.StoreRepository;
-import com.tesco.services.repositories.UUIDGenerator;
+import com.tesco.services.repositories.*;
 import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 import org.xml.sax.SAXException;
@@ -35,6 +34,9 @@ public class ImportJob implements Runnable {
     private String rpmPromoExtractDataPath;
     private String rpmPromoDescExtractDataPath;
     private CouchbaseConnectionManager couchbaseConnectionManager;
+    private CouchbaseWrapper couchbaseWrapper;
+    private AsyncCouchbaseWrapper asyncCouchbaseWrapper;
+
     private String sonettoPromotionsXMLFilePath;
     private String sonettoShelfImageUrl;
 
@@ -57,6 +59,27 @@ public class ImportJob implements Runnable {
         this.rpmPromoDescExtractDataPath = rpmPromoDescExtractDataPath;
         this.couchbaseConnectionManager = couchbaseConnectionManager;
     }
+    public  ImportJob(String rpmStoreZoneCsvFilePath,
+                      String sonettoPromotionsXMLFilePath,
+                      String sonettoPromotionXSDDataPath,
+                      String sonettoShelfImageUrl,
+                      String rpmPriceZoneDataPath,
+                      String rpmPromZoneDataPath,
+                      String rpmPromoExtractDataPath,
+                      String rpmPromoDescExtractDataPath,
+                      CouchbaseWrapper couchbaseWrapper,
+                      AsyncCouchbaseWrapper asyncCouchbaseWrapper) {
+        this.rpmStoreZoneCsvFilePath = rpmStoreZoneCsvFilePath;
+        this.sonettoPromotionsXMLFilePath = sonettoPromotionsXMLFilePath;
+        this.sonettoPromotionXSDDataPath = sonettoPromotionXSDDataPath;
+        this.sonettoShelfImageUrl = sonettoShelfImageUrl;
+        this.rpmPriceZoneDataPath = rpmPriceZoneDataPath;
+        this.rpmPromoZoneDataPath = rpmPromZoneDataPath;
+        this.rpmPromoExtractDataPath = rpmPromoExtractDataPath;
+        this.rpmPromoDescExtractDataPath = rpmPromoDescExtractDataPath;
+        this.couchbaseWrapper = couchbaseWrapper;
+        this.asyncCouchbaseWrapper = asyncCouchbaseWrapper;
+    }
 
     @Override
     public void run() {
@@ -78,12 +101,19 @@ public class ImportJob implements Runnable {
         SonettoPromotionXMLReader sonettoPromotionXMLReader = new SonettoPromotionXMLReader(sonettoShelfImageUrl, sonettoPromotionXSDDataPath);
 
         UUIDGenerator uuidGenerator = new UUIDGenerator();
+        ObjectMapper mapper = new ObjectMapper();
 
-        final CouchbaseClient couchbaseClient = couchbaseConnectionManager.getCouchbaseClient();
+       /* final CouchbaseClient couchbaseClient = couchbaseConnectionManager.getCouchbaseClient();
         PromotionRepository promotionRepository = new PromotionRepository(uuidGenerator, couchbaseClient);
         ProductRepository productRepository = new ProductRepository(couchbaseClient);
+         StoreRepository storeRepository = new StoreRepository(couchbaseClient);*/
+        //AsyncReadWriteProductRepository asyncReadWriteProductRepository = new AsyncReadWriteProductRepository(couchbaseClient);
+        //final CouchbaseClient couchbaseClient = couchbaseConnectionManager.getCouchbaseClient();
 
-        StoreRepository storeRepository = new StoreRepository(couchbaseClient);
+        PromotionRepository promotionRepository = new PromotionRepository(uuidGenerator, couchbaseWrapper);
+        ProductRepository productRepository = new ProductRepository(couchbaseWrapper,asyncCouchbaseWrapper,mapper);
+       // AsyncReadWriteProductRepository asyncReadWriteProductRepository = new AsyncReadWriteProductRepository(asyncCouchbaseWrapper,mapper);
+        StoreRepository storeRepository = new StoreRepository(couchbaseWrapper,asyncCouchbaseWrapper,mapper);
 
         PriceServiceCSVReader rpmPriceReader = new PriceServiceCSVReaderImpl(rpmPriceZoneDataPath, CSVHeaders.Price.PRICE_ZONE_HEADERS);
         PriceServiceCSVReader rpmPromoPriceReader = new PriceServiceCSVReaderImpl(rpmPromoZoneDataPath, CSVHeaders.Price.PROMO_ZONE_HEADERS);

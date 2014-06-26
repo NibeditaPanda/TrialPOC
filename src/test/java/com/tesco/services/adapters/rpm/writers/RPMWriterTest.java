@@ -1,6 +1,8 @@
 package com.tesco.services.adapters.rpm.writers;
 
 import com.google.common.base.Optional;
+import com.tesco.couchbase.AsyncCouchbaseWrapper;
+import com.tesco.couchbase.CouchbaseWrapper;
 import com.tesco.services.adapters.rpm.readers.PriceServiceCSVReader;
 import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
 import com.tesco.services.builder.PromotionBuilder;
@@ -65,6 +67,12 @@ public class RPMWriterTest {
 
     @Mock
     private StoreRepository storeRepository;
+
+    @Mock
+    private AsyncCouchbaseWrapper asyncCouchbaseWrapper;
+
+    @Mock
+    private CouchbaseWrapper couchbaseWrapper;
     private int zoneId = 1;
 
     @Before

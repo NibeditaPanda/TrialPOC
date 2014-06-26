@@ -15,6 +15,19 @@ rpm.promo.zone.data.dump : src/main/resources/com/tesco/services/adapters/rpm/CS
 rpm.promo.extract.data.dump : src/main/resources/com/tesco/services/adapters/rpm/CSVFiles/latest/PROM_EXTRACT.csv
 rpm.promo.desc.extract.data.dump : src/main/resources/com/tesco/services/adapters/rpm/CSVFiles/latest/PROM_DESC_EXTRACT_full_dump.csv
 
+couchbase.nodes:
+  - http://localhost:8091/pools
+couchbase.bucket: PriceService
+couchbase.username: "PriceService"
+couchbase.password: "tesco"
+couchbase.admin.username: "Administrator"
+couchbase.admin.password: "Tesco123"
+
+importEnabled: true
+dummyCouchbaseMode: false
+batchSize: 10
+viewPageSize: 10
+queryParamLimit: 20
 hostedGraphite:
   hostname: carbon.hostedgraphite.com
   port: 2003

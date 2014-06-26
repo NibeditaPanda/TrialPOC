@@ -1,6 +1,7 @@
 package com.tesco.services.adapters.rpm.writers;
 
 import com.google.common.base.Optional;
+import com.tesco.couchbase.listeners.Listener;
 import com.tesco.services.core.Store;
 import com.tesco.services.repositories.StoreRepository;
 
@@ -30,4 +31,37 @@ public class StoreMapper {
 
         return store;
     }
-}
+
+    public Store mapStore(final Map<String, String> storeInfoMap) {
+        final String storeId = storeInfoMap.get(CSVHeaders.StoreZone.STORE_ID);
+        Store storeToBeInserted;
+        storeRepository.getStoreByStoreId(String.valueOf(storeId), new Listener<Store, Exception>() {
+            @Override
+            public void onComplete(Store store) {
+                if(store == null){
+                    //Use Phaser or any future methods that is required
+                }
+                else{
+                }
+            }
+            @Override
+            public void onException(Exception e) {
+            }
+        }) ;
+        if(storeRepository.getStoreIdentified() == null){
+            storeToBeInserted = new Store(storeId, storeInfoMap.get(CSVHeaders.StoreZone.CURRENCY_CODE));
+            int zoneId = Integer.parseInt(storeInfoMap.get(CSVHeaders.StoreZone.ZONE_ID));
+            int zoneType = Integer.parseInt(storeInfoMap.get(CSVHeaders.StoreZone.ZONE_TYPE));
+
+            if (zoneType == PRICE_ZONE_TYPE)  storeToBeInserted.setPriceZoneId(Optional.of(zoneId));
+            if (zoneType == PROMO_ZONE_TYPE)  storeToBeInserted.setPromoZoneId(Optional.of(zoneId));
+        }else{
+            storeToBeInserted = storeRepository.getStoreIdentified();
+            int zoneId = Integer.parseInt(storeInfoMap.get(CSVHeaders.StoreZone.ZONE_ID));
+            int zoneType = Integer.parseInt(storeInfoMap.get(CSVHeaders.StoreZone.ZONE_TYPE));
+
+            if (zoneType == PRICE_ZONE_TYPE)  storeToBeInserted.setPriceZoneId(Optional.of(zoneId));
+            if (zoneType == PROMO_ZONE_TYPE)  storeToBeInserted.setPromoZoneId(Optional.of(zoneId));
+    }
+        return storeToBeInserted;
+    }}

@@ -1,6 +1,9 @@
 package com.tesco.services.resources;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
+import com.tesco.couchbase.AsyncCouchbaseWrapper;
+import com.tesco.couchbase.CouchbaseWrapper;
 import com.tesco.services.core.Product;
 import com.tesco.services.resources.model.ProductPriceBuilder;
 import com.tesco.services.core.Store;
@@ -45,9 +48,17 @@ public class PriceResource {
 
 
     private CouchbaseConnectionManager couchbaseConnectionManager;
+    private CouchbaseWrapper couchbaseWrapper;
+    private ObjectMapper mapper;
+    private AsyncCouchbaseWrapper asyncCouchbaseWrapper;
 
     public PriceResource(CouchbaseConnectionManager couchbaseConnectionManager) {
         this.couchbaseConnectionManager = couchbaseConnectionManager;
+    }
+    public PriceResource(CouchbaseWrapper couchbaseWrapper,AsyncCouchbaseWrapper asyncCouchbaseWrapper,ObjectMapper mapper) {
+        this.couchbaseWrapper = couchbaseWrapper;
+        this.asyncCouchbaseWrapper = asyncCouchbaseWrapper;
+        this.mapper = mapper;
     }
 
     @GET
@@ -66,7 +77,12 @@ public class PriceResource {
 
         if (storeQueryParamWasSentWithoutAStoreID(storeId, uriInfo.getQueryParameters())) return badRequest();
 
+/*
         ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
+*/
+
+        ProductRepository productRepository = new ProductRepository(couchbaseWrapper,asyncCouchbaseWrapper,mapper);
+
         Optional<Product> productContainer = productRepository.getByTPNB(tpn);
 
         if (!productContainer.isPresent()) return notFound(PRODUCT_NOT_FOUND);
@@ -79,7 +95,8 @@ public class PriceResource {
     }
 
     private Response getPriceResponse(String storeIdValue, Optional<Product> productContainer) throws IOException {
-        StoreRepository storeRepository = new StoreRepository(couchbaseConnectionManager.getCouchbaseClient());
+
+        StoreRepository storeRepository = new StoreRepository(couchbaseWrapper,asyncCouchbaseWrapper,mapper);
         int storeId;
 
         try {

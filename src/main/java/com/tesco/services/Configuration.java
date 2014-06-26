@@ -41,6 +41,54 @@ public class Configuration extends com.yammer.dropwizard.config.Configuration {
     @JsonProperty("db.server.url")
     private String dbServerUrl;
 
+    @JsonProperty("couchbase.nodes")
+    private String[] couchbaseNodes;
+
+    @JsonProperty("couchbase.bucket")
+    private String couchbaseBucket;
+
+    @JsonProperty("couchbase.admin.username")
+    private String couchbaseAdminUsername;
+
+    @JsonProperty("couchbase.admin.password")
+    private String couchbaseAdminPassword;
+
+    @JsonProperty("couchbase.username")
+    private String couchbaseUsername;
+
+    @JsonProperty("couchbase.password")
+    private String couchbasePassword;
+
+    public boolean isDummyCouchbaseMode() {
+        return dummyCouchbaseMode;
+    }
+
+    @JsonProperty("dummyCouchbaseMode")
+    private boolean dummyCouchbaseMode;
+    public String[] getCouchbaseNodes() {
+        return couchbaseNodes;
+    }
+
+    public String getCouchbaseBucket() {
+        return couchbaseBucket;
+    }
+
+    public String getCouchbaseAdminUsername() {
+        return couchbaseAdminUsername;
+    }
+
+    public String getCouchbaseAdminPassword() {
+        return couchbaseAdminPassword;
+    }
+
+    public String getCouchbaseUsername() {
+        return couchbaseUsername;
+    }
+
+    public String getCouchbasePassword() {
+        return couchbasePassword;
+    }
+
     public String getDBBucketName() {
         return dbBucketName;
     }
@@ -91,5 +139,9 @@ public class Configuration extends com.yammer.dropwizard.config.Configuration {
 
     public String getRPMPromoDescExtractDataPath() {
         return rpmPromoDescExtractDataPath;
+    }
+
+    protected void setCouchbaseBucket(String couchbaseBucket){
+        this.couchbaseBucket = couchbaseBucket;
     }
 }

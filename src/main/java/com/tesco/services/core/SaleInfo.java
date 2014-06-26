@@ -1,18 +1,33 @@
 package com.tesco.services.core;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 public class SaleInfo implements Serializable {
+    @JsonProperty
     private int zoneId;
+    @JsonProperty
     private String price;
+    @JsonProperty
     private Map<String, Promotion> promotions = new HashMap<>();
 
     public SaleInfo(int zoneId, String price) {
         this.zoneId = zoneId;
         this.price = price;
+    }
+    public SaleInfo() {
+
     }
 
     public void addPromotion(Promotion promotion) {

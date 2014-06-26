@@ -1,17 +1,30 @@
 package com.tesco.services.core;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 public class ProductVariant implements PriceVisitable, Serializable {
+    @JsonProperty
     private String tpnc;
+    @JsonProperty
     private Map<Integer, SaleInfo> zoneIdToSaleInfo = new HashMap<>();
 
     public ProductVariant(String tpnc) {
         this.tpnc = tpnc;
     }
+    public ProductVariant(){
 
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

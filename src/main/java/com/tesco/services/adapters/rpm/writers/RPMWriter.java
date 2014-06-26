@@ -1,10 +1,13 @@
 package com.tesco.services.adapters.rpm.writers;
 
+import com.tesco.couchbase.AsyncCouchbaseWrapper;
+import com.tesco.couchbase.listeners.Listener;
 import com.tesco.services.adapters.core.exceptions.ColumnNotFoundException;
 import com.tesco.services.adapters.rpm.readers.PriceServiceCSVReader;
 import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
 import com.tesco.services.core.Product;
 import com.tesco.services.core.Store;
+import com.tesco.services.repositories.AsyncReadWriteProductRepository;
 import com.tesco.services.repositories.ProductRepository;
 import com.tesco.services.repositories.PromotionRepository;
 import com.tesco.services.repositories.StoreRepository;
@@ -24,6 +27,7 @@ public class RPMWriter {
     private String sonettoPromotionsXMLFilePath;
 
     private ProductRepository productRepository;
+    private AsyncReadWriteProductRepository asyncReadWriteProductRepository;
     private StoreRepository storeRepository;
     private PriceServiceCSVReader rpmPriceReader;
     private PriceServiceCSVReader rpmPromoPriceReader;
@@ -33,6 +37,7 @@ public class RPMWriter {
 
     private SonettoPromotionXMLReader sonettoPromotionXMLReader;
     private PromotionRepository promotionRepository;
+
 
     public RPMWriter(String sonettoPromotionsXMLFilePath,
                      SonettoPromotionXMLReader sonettoPromotionXMLReader,
@@ -56,7 +61,6 @@ public class RPMWriter {
         this.rpmPromotionReader = rpmPromotionReader;
         this.rpmPromotionDescReader = rpmPromotionDescReader;
     }
-
     public void write() throws IOException, ParserConfigurationException, JAXBException, ColumnNotFoundException, SAXException {
         // Using Couchbase
         // ===============
@@ -71,10 +75,16 @@ public class RPMWriter {
     private void writeStoreZones() throws IOException {
         Map<String, String> storeInfoMap;
         StoreMapper storeMapper = new StoreMapper(storeRepository);
-
         while((storeInfoMap = storeZoneReader.getNext()) !=  null) {
             final Store store = storeMapper.map(storeInfoMap);
-            storeRepository.put(store);
+            storeRepository.insertStore(store,new Listener<Void, Exception>() {
+                @Override
+                public void onComplete(Void aVoid) {
+                }
+                @Override
+                public void onException(Exception e) {
+                }
+            });
         }
     }
 
@@ -84,7 +94,14 @@ public class RPMWriter {
 
         while((productInfoMap = rpmPriceReader.getNext()) !=  null) {
             final Product product = productMapper.mapPriceZonePrice(productInfoMap);
-            productRepository.put(product);
+            productRepository.insertProduct(product,new Listener<Void, Exception>() {
+                @Override
+                public void onComplete(Void aVoid) {
+                }
+                @Override
+                public void onException(Exception e) {
+                }
+            });
         }
     }
 
@@ -94,7 +111,14 @@ public class RPMWriter {
 
         while((productInfoMap = rpmPromoPriceReader.getNext()) !=  null) {
             final Product product = productMapper.mapPromoZonePrice(productInfoMap);
-            productRepository.put(product);
+            productRepository.insertProduct(product,new Listener<Void, Exception>() {
+                @Override
+                public void onComplete(Void aVoid) {
+                }
+                @Override
+                public void onException(Exception e) {
+                }
+            });
         }
     }
 
@@ -104,7 +128,14 @@ public class RPMWriter {
 
         while((promotionInfoMap = rpmPromotionReader.getNext()) !=  null) {
             final Product product = productMapper.mapPromotion(promotionInfoMap);
-            productRepository.put(product);
+            productRepository.insertProduct(product,new Listener<Void, Exception>() {
+                @Override
+                public void onComplete(Void aVoid) {
+                }
+                @Override
+                public void onException(Exception e) {
+                }
+            });
         }
 
     }
@@ -115,7 +146,14 @@ public class RPMWriter {
 
         while((promotionDescInfoMap = rpmPromotionDescReader.getNext()) !=  null) {
             final Product product = productMapper.mapPromotionDescription(promotionDescInfoMap);
-            productRepository.put(product);
+            productRepository.insertProduct(product,new Listener<Void, Exception>() {
+                @Override
+                public void onComplete(Void aVoid) {
+                }
+                @Override
+                public void onException(Exception e) {
+                }
+            });
         }
     }
 }

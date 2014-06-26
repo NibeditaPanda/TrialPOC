@@ -1,13 +1,25 @@
 package com.tesco.services.core;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Optional;
 
 import java.io.Serializable;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 public class Store implements Serializable {
+    @JsonProperty
     private String storeId;
+    @JsonProperty
     private int priceZoneId;
+    @JsonProperty
     private int promoZoneId;
+    @JsonProperty
     private String currency;
 
     public Store(String storeId, Optional<Integer> priceZoneId, Optional<Integer> promoZoneId, String currency) {
@@ -19,6 +31,10 @@ public class Store implements Serializable {
 
     public Store(String storeId, String currency) {
         this(storeId, Optional.<Integer>absent(), Optional.<Integer>absent(), currency);
+    }
+
+    public Store() {
+
     }
 
     public void setPriceZoneId(Optional<Integer> priceZoneId) {

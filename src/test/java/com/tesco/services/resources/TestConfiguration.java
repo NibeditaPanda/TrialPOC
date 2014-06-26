@@ -1,10 +1,14 @@
 package com.tesco.services.resources;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.snakeyaml.Yaml;
 import com.tesco.services.Configuration;
 import com.tesco.services.HostedGraphiteConfiguration;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -22,6 +26,28 @@ public class TestConfiguration extends Configuration {
             configuration = (Map<String,Object>) yamlConfiguration.load(new String(Files.readAllBytes(Paths.get(filename))));
         } catch (IOException exception) {
             LoggerFactory.getLogger(TestConfiguration.class).error(exception.getMessage());
+        }
+    }
+
+    public TestConfiguration withBucketName(String bucketName){
+        this.setCouchbaseBucket(bucketName);
+        return this;
+    }
+
+    public static TestConfiguration load() {
+        ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
+        try {
+            String config;
+            String environment = System.getProperty("environment");
+            if(StringUtils.isEmpty(environment)) {
+                config = "local.yml";
+            } else {
+                config = environment + ".yml";
+            }
+            return objectMapper.readValue(new File(config), TestConfiguration.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
