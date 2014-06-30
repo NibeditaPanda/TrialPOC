@@ -17,8 +17,8 @@ rpm.promo.desc.extract.data.dump : src/main/resources/com/tesco/services/adapter
 
 couchbase.nodes:
   - http://localhost:8091/pools
-couchbase.bucket: PriceService
-couchbase.username: "PriceService"
+couchbase.bucket: PriceServiceTest
+couchbase.username: "PriceServiceTest"
 couchbase.password: "tesco"
 couchbase.admin.username: "Administrator"
 couchbase.admin.password: "Tesco123"

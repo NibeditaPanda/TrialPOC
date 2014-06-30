@@ -1,8 +1,16 @@
 package com.tesco.services.adapters.rpm.writers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 import com.tesco.couchbase.AsyncCouchbaseWrapper;
 import com.tesco.couchbase.CouchbaseWrapper;
+import com.tesco.couchbase.listeners.Listener;
+import com.tesco.couchbase.testutils.AsyncCouchbaseWrapperStub;
+import com.tesco.couchbase.testutils.BucketTool;
+import com.tesco.couchbase.testutils.CouchbaseTestManager;
+import com.tesco.couchbase.testutils.CouchbaseWrapperStub;
+import com.tesco.services.Configuration;
+import com.tesco.services.adapters.rpm.comparators.RPMComparator;
 import com.tesco.services.adapters.rpm.readers.PriceServiceCSVReader;
 import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
 import com.tesco.services.builder.PromotionBuilder;
@@ -11,17 +19,20 @@ import com.tesco.services.core.ProductVariant;
 import com.tesco.services.core.Promotion;
 import com.tesco.services.core.SaleInfo;
 import com.tesco.services.core.Store;
-import com.tesco.services.repositories.ProductRepository;
-import com.tesco.services.repositories.PromotionRepository;
-import com.tesco.services.repositories.StoreRepository;
-import com.tesco.services.repositories.UUIDGenerator;
+import com.tesco.services.repositories.*;
+import com.tesco.services.resources.TestConfiguration;
+import net.spy.memcached.internal.OperationFuture;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.internal.matchers.CapturingMatcher;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,10 +40,7 @@ import java.util.Map;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.fest.util.Lists.newArrayList;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RPMWriterTest {
@@ -60,19 +68,24 @@ public class RPMWriterTest {
     private UUIDGenerator uuidGenerator;
 
     @Mock
-    private PromotionRepository promotionRepository;
+    public PromotionRepository promotionRepository;
 
     @Mock
-    private ProductRepository productRepository;
+    public ProductRepository productRepository;
 
     @Mock
-    private StoreRepository storeRepository;
+    public StoreRepository storeRepository;
 
     @Mock
-    private AsyncCouchbaseWrapper asyncCouchbaseWrapper;
+    public AsyncCouchbaseWrapper asyncCouchbaseWrapper;
 
     @Mock
-    private CouchbaseWrapper couchbaseWrapper;
+    public CouchbaseWrapper couchbaseWrapper;
+
+    @Mock
+    public OperationFuture<?> operationFuture;
+    @Mock
+    private ObjectMapper mapper;
     private int zoneId = 1;
 
     @Before
@@ -106,15 +119,19 @@ public class RPMWriterTest {
         String price = "2.4";
         productVariant.addSaleInfo(new SaleInfo(zoneId, price));
 
-        Product product = createProduct(tpnb, productVariant);
-
+       final Product product = createProduct(tpnb, productVariant);
+        mockAsyncProductInsert();
         Map<String, String> productInfoMap = productInfoMap(tpnb, zoneId, price);
         when(rpmPriceReader.getNext()).thenReturn(productInfoMap).thenReturn(null);
-
         when(productRepository.getByTPNB(tpnb)).thenReturn(Optional.<Product>absent());
         this.rpmWriter.write();
-
-        verify(productRepository).put(product);
+        verify(productRepository).insertProduct(argThat(new CapturingMatcher<Product>() {
+            @Override
+            public boolean matches(Object o) {
+                Product prod = (Product) o;
+                return new RPMComparator().compare(prod,product);
+            }
+        }),any(Listener.class));
     }
 
     @Test
@@ -126,21 +143,35 @@ public class RPMWriterTest {
                 .thenReturn(null);
 
         Product product = createProductWithVariant(itemNumber, itemNumber);
+        mockAsyncProductInsert();
 
         when(productRepository.getByTPNB(itemNumber)).thenReturn(Optional.<Product>absent()).thenReturn(Optional.of(product));
-
+        mockAsyncProductInsert();
         this.rpmWriter.write();
 
         InOrder inOrder = inOrder(productRepository);
 
         ProductVariant expectedProductVariant = createProductVariant(itemNumber, 2, "2.4", null);
-        Product expectedProduct = createProduct(itemNumber, expectedProductVariant);
+       final Product expectedProduct = createProduct(itemNumber, expectedProductVariant);
 
-        inOrder.verify(productRepository).put(expectedProduct);
+        inOrder.verify(productRepository).insertProduct(argThat(new CapturingMatcher<Product>() {
+            @Override
+            public boolean matches(Object o) {
+                Product prod = (Product) o;
+                return new RPMComparator().compare(prod,expectedProduct);
+            }
+        }),any(Listener.class));
+      //  inOrder.verify(productRepository).put(expectedProduct);
 
         expectedProductVariant.addSaleInfo(new SaleInfo(4, "4.4"));
-
-        inOrder.verify(productRepository).put(expectedProduct);
+        inOrder.verify(productRepository).insertProduct(argThat(new CapturingMatcher<Product>() {
+            @Override
+            public boolean matches(Object o) {
+                Product prod = (Product) o;
+                return new RPMComparator().compare(prod,expectedProduct);
+            }
+        }),any(Listener.class));
+       // inOrder.verify(productRepository).put(expectedProduct);
     }
 
     @Test
@@ -148,6 +179,7 @@ public class RPMWriterTest {
         String tpnb = "1123";
         String itemNumber = String.format("%s-001", tpnb);
         String itemNumber2 = String.format("%s-002", tpnb);
+        mockAsyncProductInsert();
 
         when(rpmPriceReader.getNext()).thenReturn(productInfoMap(itemNumber, 2, "2.4"))
                 .thenReturn(productInfoMap(itemNumber2, 3, "3.0"))
@@ -161,14 +193,26 @@ public class RPMWriterTest {
 
         InOrder inOrder = inOrder(productRepository);
 
-        Product expectedProduct = createProductWithVariant(tpnb, itemNumber);
-
-        inOrder.verify(productRepository).put(expectedProduct);
+      final  Product expectedProduct = createProductWithVariant(tpnb, itemNumber);
+        inOrder.verify(productRepository).insertProduct(argThat(new CapturingMatcher<Product>() {
+            @Override
+            public boolean matches(Object o) {
+                Product prod = (Product) o;
+                return new RPMComparator().compare(prod,expectedProduct);
+            }
+        }),any(Listener.class));
+       // inOrder.verify(productRepository).put(expectedProduct);
 
         ProductVariant expectedProductVariant2 = createProductVariant(itemNumber2, 3, "3.0", null);
         expectedProduct.addProductVariant(expectedProductVariant2);
-
-        inOrder.verify(productRepository).put(expectedProduct);
+        inOrder.verify(productRepository).insertProduct(argThat(new CapturingMatcher<Product>() {
+            @Override
+            public boolean matches(Object o) {
+                Product prod = (Product) o;
+                return new RPMComparator().compare(prod,expectedProduct);
+            }
+        }),any(Listener.class));
+        //inOrder.verify(productRepository).put(expectedProduct);
     }
 
     private Map<String, String> productInfoMap(String itemNumber, int zoneId, String price) {
@@ -202,6 +246,7 @@ public class RPMWriterTest {
         int promoZoneId = 5;
         String promoPrice = "2.0";
         Map<String, String> productInfoMap = productPromoInfoMap(tpnc, promoZoneId, promoPrice);
+        mockAsyncProductInsert();
 
         when(productRepository.getByTPNB(tpnb)).thenReturn(Optional.of(product));
         when(rpmPromoPriceReader.getNext()).thenReturn(productInfoMap).thenReturn(null);
@@ -211,9 +256,15 @@ public class RPMWriterTest {
         ProductVariant expectedProductVariant = createProductVariant(tpnc, priceZoneId, price, null);
         expectedProductVariant.addSaleInfo(new SaleInfo(promoZoneId, promoPrice));
 
-        Product expectedProduct = createProduct(tpnb, expectedProductVariant);
-
-        verify(productRepository).put(expectedProduct);
+       final Product expectedProduct = createProduct(tpnb, expectedProductVariant);
+        verify(productRepository).insertProduct(argThat(new CapturingMatcher<Product>() {
+            @Override
+            public boolean matches(Object o) {
+                Product prod = (Product) o;
+                return new RPMComparator().compare(prod,expectedProduct);
+            }
+        }),any(Listener.class));
+       // verify(productRepository).put(expectedProduct);
     }
 
     @Test
@@ -232,6 +283,7 @@ public class RPMWriterTest {
 
         when(rpmPromotionReader.getNext()).thenReturn(promotionInfoMap(tpnc, zoneId, offerId, offerName, startDate, endDate)).thenReturn(null);
         when(rpmPromotionDescReader.getNext()).thenReturn(promotionDescInfoMap(tpnc, zoneId, offerId, description1, description2)).thenReturn(null);
+        mockAsyncProductInsert();
 
         ProductVariant productVariant = createProductVariant(tpnc, zoneId, price, null);
         ProductVariant productVariant2 = createProductVariant(tpnc, zoneId, price, createPromotion(offerId, offerName, startDate, endDate));
@@ -239,8 +291,8 @@ public class RPMWriterTest {
 
         this.rpmWriter.write();
 
-        ArgumentCaptor<Product> arguments = ArgumentCaptor.forClass(Product.class);
-        verify(productRepository, atLeastOnce()).put(arguments.capture());
+         ArgumentCaptor<Product> arguments = ArgumentCaptor.forClass(Product.class);
+         verify(productRepository, atLeastOnce()).insertProduct(arguments.capture(),any(Listener.class));
 
         Promotion expectedPromotion = createPromotion(offerId, offerName, startDate, endDate);
         ProductVariant expectedProductVariant = createProductVariant(tpnc, zoneId, price, expectedPromotion);
@@ -292,15 +344,32 @@ public class RPMWriterTest {
     public void shouldInsertStorePriceZones() throws Exception {
         String firstStoreId = "2002";
         String secondStoreId = "2003";
-
+        mockAsyncStoreInsert();
         when(storeZoneReader.getNext()).thenReturn(getStoreInfoMap(firstStoreId, 1, 1, "GBP")).thenReturn(getStoreInfoMap(secondStoreId, 2, 1, "EUR")).thenReturn(null);
         when(storeRepository.getByStoreId(String.valueOf(firstStoreId))).thenReturn(Optional.<Store>absent());
         when(storeRepository.getByStoreId(String.valueOf(secondStoreId))).thenReturn(Optional.<Store>absent());
         this.rpmWriter.write();
 
+      final  Store firstStore = new Store(firstStoreId, Optional.of(1), Optional.<Integer>absent(), "GBP");
+      final  Store secondStore = new Store(secondStoreId, Optional.of(2), Optional.<Integer>absent(), "EUR");
+
         InOrder inOrder = inOrder(storeRepository);
-        inOrder.verify(storeRepository).put(new Store(firstStoreId, Optional.of(1), Optional.<Integer>absent(), "GBP"));
-        inOrder.verify(storeRepository).put(new Store(secondStoreId, Optional.of(2), Optional.<Integer>absent(), "EUR"));
+        inOrder.verify(storeRepository).insertStore(argThat(new CapturingMatcher<Store>() {
+            @Override
+            public boolean matches(Object o) {
+                Store store = (Store) o;
+                return new RPMComparator().compare(store,firstStore);
+            }
+        }),any(Listener.class));
+        inOrder.verify(storeRepository).insertStore(argThat(new CapturingMatcher<Store>() {
+            @Override
+            public boolean matches(Object o) {
+                Store store = (Store) o;
+                return new RPMComparator().compare(store,secondStore);
+            }
+        }),any(Listener.class));
+       // inOrder.verify(storeRepository).put(new Store(firstStoreId, Optional.of(1), Optional.<Integer>absent(), "GBP"));
+        //inOrder.verify(storeRepository).put(new Store(secondStoreId, Optional.of(2), Optional.<Integer>absent(), "EUR"));
     }
 
     @Test
@@ -309,13 +378,29 @@ public class RPMWriterTest {
 
         when(storeZoneReader.getNext()).thenReturn(getStoreInfoMap(storeId, 1, 1, "GBP")).thenReturn(getStoreInfoMap(storeId, 5, 2, "GBP")).thenReturn(null);
         Store store = new Store(storeId, Optional.of(1), Optional.<Integer>absent(), "GBP");
+        mockAsyncStoreInsert();
         when(storeRepository.getByStoreId(String.valueOf(storeId))).thenReturn(Optional.<Store>absent()).thenReturn(Optional.of(store));
-
+        final  Store firstStore = new Store(storeId, Optional.of(1), Optional.<Integer>absent(), "GBP");
+        final  Store secondStore = new Store(storeId, Optional.of(1), Optional.of(5), "GBP");
         this.rpmWriter.write();
 
         InOrder inOrder = inOrder(storeRepository);
-        inOrder.verify(storeRepository).put(new Store(storeId, Optional.of(1), Optional.<Integer>absent(), "GBP"));
-        inOrder.verify(storeRepository).put(new Store(storeId, Optional.of(1), Optional.of(5), "GBP"));
+        inOrder.verify(storeRepository).insertStore(argThat(new CapturingMatcher<Store>() {
+            @Override
+            public boolean matches(Object o) {
+                Store store = (Store) o;
+                return new RPMComparator().compare(store,firstStore);
+            }
+        }),any(Listener.class));
+        inOrder.verify(storeRepository).insertStore(argThat(new CapturingMatcher<Store>() {
+            @Override
+            public boolean matches(Object o) {
+                Store store = (Store) o;
+                return new RPMComparator().compare(store,secondStore);
+            }
+        }),any(Listener.class));
+      //  inOrder.verify(storeRepository).put(new Store(storeId, Optional.of(1), Optional.<Integer>absent(), "GBP"));
+       // inOrder.verify(storeRepository).put(new Store(storeId, Optional.of(1), Optional.of(5), "GBP"));
     }
 
     private Map<String, String> getStoreInfoMap(String firstStoreId, int zoneId, int zoneType, String currency) {
@@ -361,6 +446,24 @@ public class RPMWriterTest {
         promotion.setCFDescription1("promotionCfDesc1");
         promotion.setCFDescription2("promotionCfDesc2");
         return promotion;
+    }
+    private void mockAsyncProductInsert() {
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                ((Listener<Void,Exception>) invocation.getArguments()[1]).onComplete(null);
+                return null;
+            }
+        }).when(productRepository).insertProduct(any(Product.class), any(Listener.class));
+    }
+    private void mockAsyncStoreInsert() {
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                ((Listener<Void,Exception>) invocation.getArguments()[1]).onComplete(null);
+                return null;
+            }
+        }).when(storeRepository).insertStore(any(Store.class), any(Listener.class));
     }
 
 }

@@ -1,6 +1,7 @@
 package com.tesco.services.repositories;
 
 import com.couchbase.client.CouchbaseClient;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 import com.tesco.couchbase.AsyncCouchbaseWrapper;
@@ -41,11 +42,11 @@ public class ProductRepositoryTest {
 
     @Before
     public void setUp() throws Exception {
-       // productRepository = new ProductRepository(new CouchbaseConnectionManager(new TestConfiguration()).getCouchbaseClient());
+      //  productRepository = new ProductRepository(new CouchbaseConnectionManager(new TestConfiguration()).getCouchbaseClient());
         product = new Product(tpnb);
 
-        String bucketName = "PriceService";//should be name.getMethodName();
-        Configuration testConfiguration = TestConfiguration.load().withBucketName(bucketName);
+       // String bucketName = "PriceService";//should be name.getMethodName();
+        Configuration testConfiguration = TestConfiguration.load();
 
         if (testConfiguration.isDummyCouchbaseMode()){
             HashMap<String, ImmutablePair<Long, String>> fakeBase = new HashMap<>();
@@ -84,16 +85,22 @@ public class ProductRepositoryTest {
         assertThat(productRepository.getByTPNB("12345").isPresent()).isFalse();
     }
 
-   // @Test
+    @Test
     public void shouldNamespacePrefixKey() {
-        final CouchbaseClient couchbaseClientMock = mock(CouchbaseClient.class);
-        productRepository = new ProductRepository(couchbaseClientMock);
+        final CouchbaseWrapper couchbaseClientMock = mock(CouchbaseWrapper.class);
+        productRepository = new ProductRepository(couchbaseClientMock,asyncCouchbaseWrapper,mapper);
         final InOrder inOrder = inOrder(couchbaseClientMock);
 
         productRepository.put(product);
         productRepository.getByTPNB(tpnb);
-        inOrder.verify(couchbaseClientMock).set("PRODUCT_" + tpnb, product);
-        inOrder.verify(couchbaseClientMock).get("PRODUCT_" + tpnb);
+        try {
+            String productJson = mapper.writeValueAsString(product);
+            inOrder.verify(couchbaseClientMock).set("PRODUCT_" + tpnb, productJson);
+            inOrder.verify(couchbaseClientMock).get("PRODUCT_" + tpnb);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
     }
 
    @Test

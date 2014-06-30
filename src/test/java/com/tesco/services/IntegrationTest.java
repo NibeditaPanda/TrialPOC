@@ -23,15 +23,15 @@ public class IntegrationTest {
                 new URI(testConfiguration.getDBServerUrl())
         );
 
-        clusterManager = new ClusterManager(hosts, testConfiguration.getDBAdminUsername(), testConfiguration.getDBAdminPassword());
-        if (!clusterManager.listBuckets().contains(testConfiguration.getDBBucketName())) {
-            clusterManager.createNamedBucket(BucketType.COUCHBASE, testConfiguration.getDBBucketName(), 100, 0, testConfiguration.getDBBucketPassword(), true);
+        clusterManager = new ClusterManager(hosts, testConfiguration.getCouchbaseAdminUsername(), testConfiguration.getCouchbaseAdminPassword());
+        if (!clusterManager.listBuckets().contains(testConfiguration.getCouchbaseBucket())) {
+            clusterManager.createNamedBucket(BucketType.COUCHBASE, testConfiguration.getCouchbaseBucket(), 100, 0, testConfiguration.getCouchbasePassword(), true);
             Thread.sleep(5000); // Given sometime for couchbase bucket to be created.
         }
     }
 
     @AfterClass
     public static void destroy() {
-        clusterManager.flushBucket(testConfiguration.getDBBucketName());
+        clusterManager.flushBucket(testConfiguration.getCouchbaseBucket());
     }
 }

@@ -1,49 +1,37 @@
 package com.tesco.services.adapters.rpm.comparators;
 
-import com.tesco.adapters.core.models.Product;
+
+import com.tesco.services.core.Product;
+import com.tesco.services.core.Store;
 
 public class RPMComparator {
     public boolean compare(Product product1, Product product2) {
         if (product1 == null || product2 == null)
             return false;
 
-        if (compareField(product1.getItemNumber(), product2.getItemNumber()))
+        if (compareField(product1.getTPNB(), product2.getTPNB()))
             return false;
 
-        if (compareField(product1.getTpnc(), product2.getTpnc()))
+        if (compareField(product1.toString(), product2.toString()))
             return false;
 
-        if (compareField(product1.getTpna(), product2.getTpna()))
+        return true;
+    }
+
+    public boolean compare(Store store1, Store store2) {
+        if (store1 == null || store2 == null)
             return false;
 
-        if (compareField(product1.getDescription(), product2.getDescription()))
+        if (compareField(store1.getStoreId(), store2.getStoreId()))
             return false;
 
-        if (compareField(product1.getCustomerFriendlyDescription(), product2.getCustomerFriendlyDescription()))
+        if (compareField(store1.getCurrency(), store2.getCurrency()))
             return false;
 
-        if (compareField(product1.getTpnb(), product2.getTpnb()))
+        if (compareField(store1.getPriceZoneId(), store2.getPriceZoneId()))
             return false;
 
-        if (compareField(product1.getSellingByUnitOfMeasure(), product2.getSellingByUnitOfMeasure()))
-            return false;
-
-        if (compareField(product1.getSellByType(), product2.getSellByType()))
-            return false;
-
-        if (compareField(product1.getUkEPWIndicator(), product2.getUkEPWIndicator()))
-            return false;
-
-        if (compareField(product1.getRoiEPWIndicator(), product2.getRoiEPWIndicator()))
-            return false;
-
-        if (compareField(product1.getStatus(), product2.getStatus()))
-            return false;
-
-        if (compareField(product1.getBrand(), product2.getBrand()))
-            return false;
-
-        if (compareField(product1.getTillDescription(), product2.getTillDescription()))
+        if (compareField(store1.getPromoZoneId(), store2.getPromoZoneId()))
             return false;
 
         return true;

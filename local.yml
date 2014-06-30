@@ -21,7 +21,7 @@ couchbase.password: "tesco"
 couchbase.admin.username: "Administrator"
 couchbase.admin.password: "Tesco123"
 
-dummyCouchbaseMode: false
+dummyCouchbaseMode: true
 
 hostedGraphite:
   hostname: carbon.hostedgraphite.com

@@ -40,9 +40,9 @@ public class TestConfiguration extends Configuration {
             String config;
             String environment = System.getProperty("environment");
             if(StringUtils.isEmpty(environment)) {
-                config = "local.yml";
+                config = "test.yml";
             } else {
-                config = environment + ".yml";
+                config = "ci.yml";
             }
             return objectMapper.readValue(new File(config), TestConfiguration.class);
         } catch (IOException e) {

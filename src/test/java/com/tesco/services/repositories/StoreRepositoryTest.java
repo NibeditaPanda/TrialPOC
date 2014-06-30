@@ -59,8 +59,8 @@ public class StoreRepositoryTest /*extends IntegrationTest*/ {
 
     @Before
     public void setUp() throws Exception {
-        String bucketName = "PriceService";///should be name.getMethodName();
-        Configuration testConfiguration = TestConfiguration.load().withBucketName(bucketName);
+       // String bucketName = "PriceService";///should be name.getMethodName();
+        Configuration testConfiguration = TestConfiguration.load();
 
         if (testConfiguration.isDummyCouchbaseMode()){
             HashMap<String, ImmutablePair<Long, String>> fakeBase = new HashMap<>();
@@ -100,11 +100,11 @@ public class StoreRepositoryTest /*extends IntegrationTest*/ {
         assertThat(storeRepository.getByStoreId(String.valueOf(storeId)).isPresent()).isFalse();
     }
 
-   // @Test
+    @Test
     public void shouldNamespacePrefixKey() {
         store = new Store(storeId,"GBP");
        final CouchbaseWrapper couchbaseWrapperMock = mock(CouchbaseWrapper.class);
-        //storeRepository = new StoreRepository(couchbaseWrapperMock);
+        storeRepository = new StoreRepository(couchbaseWrapperMock,asyncCouchbaseWrapper,mapper);
         final InOrder inOrder = inOrder(couchbaseWrapperMock);
 
         storeRepository.put(store);
