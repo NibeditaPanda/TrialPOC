@@ -130,7 +130,6 @@ public class StoreRepositoryTest extends IntegrationTest {
             if(listener.getResult()== null){
                 System.out.println("Store not Found");
             }
-            //assertThat(listener.getResult().getStoreId().isEmpty());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -164,15 +163,6 @@ public class StoreRepositoryTest extends IntegrationTest {
 
     }
 
-    public void mockAsyncSet() {
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                ((SetListener) invocation.getArguments()[2]).onComplete(operationFuture);
-                return null;
-            }
-        }).when(asyncCouchbaseWrapper).set(any(String.class), any(String.class), any(SetListener.class));
-    }
     private Map<String, String> getStoreInfoMap(String firstStoreId, int zoneId, int zoneType, String currency) {
         Map<String, String> storeInfoMap = new HashMap<>();
         storeInfoMap.put(CSVHeaders.StoreZone.STORE_ID, firstStoreId);
