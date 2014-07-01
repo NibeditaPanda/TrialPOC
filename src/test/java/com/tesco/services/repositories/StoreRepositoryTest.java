@@ -1,6 +1,5 @@
 package com.tesco.services.repositories;
 
-import com.couchbase.client.CouchbaseClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
@@ -24,9 +23,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.junit.runner.RunWith;
-import java.io.IOException;
-import java.util.Collections;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,9 +47,6 @@ public class StoreRepositoryTest extends IntegrationTest {
     private CouchbaseWrapper couchbaseWrapper;
     @Mock
     private OperationFuture<?> operationFuture;
-    private ProductRepository productRepository;
-    private AsyncReadWriteProductRepository readWriteProductRepository;
-    private Optional<Integer> absent;
     @Mock
     private AsyncCouchbaseWrapper asyncCouchbaseWrapper;
     private ObjectMapper mapper;
@@ -81,10 +75,6 @@ public class StoreRepositoryTest extends IntegrationTest {
 
         mapper = new ObjectMapper();
         storeRepository = new StoreRepository(this.couchbaseWrapper,asyncCouchbaseWrapper, mapper);
-       readWriteProductRepository = new AsyncReadWriteProductRepository(this.asyncCouchbaseWrapper, mapper);
-
-        absent = Optional.absent();
-
     }
 
     @Test
@@ -122,10 +112,9 @@ public class StoreRepositoryTest extends IntegrationTest {
         store = new Store(storeId,"GBP");
         storeRepository.put(store);
         TestListener<Store, Exception> listener = new TestListener<>();
-        storeRepository.getStoreByStoreId("storeId",listener);
+        storeRepository.getStoreByStoreId(storeId,listener);
         try {
-            assertThat(listener.getResult().equals(store));
-
+             assertThat(storeRepository.getStoreIdentified().equals(store));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -174,7 +163,7 @@ public class StoreRepositoryTest extends IntegrationTest {
         }
 
     }
-    //@Test
+
     public void mockAsyncSet() {
         doAnswer(new Answer() {
             @Override
