@@ -66,12 +66,24 @@ public class TestConfiguration extends Configuration {
         return (String) configuration.get("db.server.url");
     }
 
-    public String getDBAdminUsername() {
+    /*public String getDBAdminUsername() {
         return (String) configuration.get("db.server.admin.username");
-    }
-
-    public String getDBAdminPassword() {
+      public String getDBAdminPassword() {
         return (String) configuration.get("db.server.admin.password");
+    }
+    }*/
+    //rohan
+    public String getCouchbaseAdminUsername() {
+        return (String) configuration.get("couchbase.admin.username");
+    }
+    public String getCouchbaseAdminPassword() {
+        return (String) configuration.get("couchbase.admin.password");
+    }
+    public String getCouchbaseBucket() {
+        return (String) configuration.get("couchbase.bucket");
+    }
+    public String getCouchbasePassword() {
+        return (String) configuration.get("couchbase.password");
     }
 
     @Override

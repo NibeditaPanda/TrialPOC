@@ -15,7 +15,7 @@ import java.util.List;
 public class IntegrationTest {
 
     private static ClusterManager clusterManager;
-    final static TestConfiguration testConfiguration = new TestConfiguration();
+    final static TestConfiguration testConfiguration = TestConfiguration.load();
 
     @BeforeClass
     public static void init() throws URISyntaxException, InterruptedException, IOException {

@@ -1,8 +1,15 @@
 package com.tesco.services.resources;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import com.tesco.couchbase.AsyncCouchbaseWrapper;
+import com.tesco.couchbase.CouchbaseWrapper;
+import com.tesco.couchbase.testutils.AsyncCouchbaseWrapperStub;
+import com.tesco.couchbase.testutils.BucketTool;
+import com.tesco.couchbase.testutils.CouchbaseTestManager;
+import com.tesco.couchbase.testutils.CouchbaseWrapperStub;
 import com.tesco.services.Configuration;
 import com.tesco.services.IntegrationTest;
 import com.tesco.services.builder.PromotionBuilder;
@@ -17,40 +24,63 @@ import com.tesco.services.repositories.CouchbaseConnectionManager;
 import com.tesco.services.repositories.ProductRepository;
 import com.tesco.services.repositories.StoreRepository;
 import com.yammer.dropwizard.testing.ResourceTest;
-import org.junit.After;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.junit.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class PriceResourceTest extends ResourceTest {
 
-    private static Configuration testConfiguration = new TestConfiguration();
+    private static Configuration testConfiguration ;
     private CouchbaseConnectionManager couchbaseConnectionManager;
+    private CouchbaseTestManager couchbaseTestManager;
+   private CouchbaseWrapper couchbaseWrapper;
+    private AsyncCouchbaseWrapper asyncCouchbaseWrapper;
+    private ObjectMapper mapper ;
+    private ProductRepository productRepository;
+    private StoreRepository storeRepository;
 
     @Override
     protected void setUpResources() throws Exception {
-        couchbaseConnectionManager = new CouchbaseConnectionManager(testConfiguration);
-        PriceResource priceResource = new PriceResource(couchbaseConnectionManager);
+       // couchbaseConnectionManager = new CouchbaseConnectionManager(testConfiguration);
+        testConfiguration = TestConfiguration.load();
+
+        if (testConfiguration.isDummyCouchbaseMode()){
+            HashMap<String, ImmutablePair<Long, String>> fakeBase = new HashMap<>();
+            couchbaseTestManager = new CouchbaseTestManager(new CouchbaseWrapperStub(fakeBase),
+                    new AsyncCouchbaseWrapperStub(fakeBase),
+                    mock(BucketTool.class));
+        } else {
+            couchbaseTestManager = new CouchbaseTestManager(testConfiguration.getCouchbaseBucket(),
+                    testConfiguration.getCouchbaseUsername(),
+                    testConfiguration.getCouchbasePassword(),
+                    testConfiguration.getCouchbaseNodes(),
+                    testConfiguration.getCouchbaseAdminUsername(),
+                    testConfiguration.getCouchbaseAdminPassword());
+        }
+
+        couchbaseWrapper = couchbaseTestManager.getCouchbaseWrapper();
+        asyncCouchbaseWrapper = couchbaseTestManager.getAsyncCouchbaseWrapper();
+        mapper = new ObjectMapper();
+        productRepository = new ProductRepository(this.couchbaseWrapper,asyncCouchbaseWrapper, mapper);
+        storeRepository = new StoreRepository(this.couchbaseWrapper,asyncCouchbaseWrapper, mapper);
+
+        PriceResource priceResource = new PriceResource(couchbaseWrapper,asyncCouchbaseWrapper,mapper);
         addResource(priceResource);
     }
 
     @BeforeClass
     public static void setUp() throws IOException, URISyntaxException, InterruptedException {
-        IntegrationTest.init();
+      IntegrationTest.init();
     }
 
-    @After
-    public void tearDown() throws IOException {
+    @AfterClass
+    public static void tearDown() throws IOException {
         IntegrationTest.destroy();
     }
 
@@ -58,7 +88,8 @@ public class PriceResourceTest extends ResourceTest {
     // ==============
     @Test
     public void shouldReturnNationalPricesForMultipleItemsWhenStoreIdIsNotSpecified() throws IOException, ItemNotFoundException {
-        ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
+        /*ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());*/
+        //ProductRepository productRepository = getProductRepository();
         String tpnb = "050925811";
         String tpnc1 = "266072275";
         String tpnc2 = "266072276";
@@ -85,8 +116,7 @@ public class PriceResourceTest extends ResourceTest {
 
     @Test
     public void shouldReturnPricesWhenStoreIdIsSpecified() throws IOException, ItemNotFoundException {
-        ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
-        StoreRepository storeRepository = new StoreRepository(couchbaseConnectionManager.getCouchbaseClient());
+      //  ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
 
         String tpnb = "050925811";
         String tpnc1 = "266072275";
@@ -121,7 +151,7 @@ public class PriceResourceTest extends ResourceTest {
 
     @Test
     public void shouldReturn404WhenStoreIsNotFound() throws Exception {
-        ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
+       // ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
         productRepository.put(createProductWithVariants("050925811", "266072275", "266072276"));
 
         WebResource resource = client().resource("/price/B/050925811?store=2099");
@@ -133,7 +163,7 @@ public class PriceResourceTest extends ResourceTest {
 
     @Test
     public void shouldReturn404WhenStoreIsInvalid() throws Exception {
-        ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
+      //  ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
         productRepository.put(createProductWithVariants("050925811", "266072275", "266072276"));
 
         WebResource resource = client().resource("/price/B/050925811?store=invalidstore");
@@ -223,5 +253,6 @@ public class PriceResourceTest extends ResourceTest {
         promotionInfo.put("customerFriendlyDescription2", promotion.getCFDescription2());
         return promotionInfo;
     }
+
 
 }

@@ -24,7 +24,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
-public class ProductRepositoryTest {
+public class ProductRepositoryTest extends IntegrationTest{
     private String tpnb = "123455";
     private Product product;
     private ProductRepository productRepository;

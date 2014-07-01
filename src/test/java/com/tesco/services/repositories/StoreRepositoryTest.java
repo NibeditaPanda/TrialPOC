@@ -36,7 +36,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
-public class StoreRepositoryTest /*extends IntegrationTest*/ {
+public class StoreRepositoryTest extends IntegrationTest {
     @Rule
     public TestName name = new TestName();
 
