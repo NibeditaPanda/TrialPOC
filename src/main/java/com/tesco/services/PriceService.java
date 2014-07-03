@@ -229,7 +229,7 @@ public class PriceService extends Service<Configuration> {
         config.setApiVersion("1.0.1");
 
         HttpConfiguration httpConfiguration = configuration.getHttpConfiguration();
-        //config.setBasePath("http://" + getNonLoopbackIPv4AddressForThisHost() + ":" + httpConfiguration.getPort());
+        config.setBasePath("http://" + getNonLoopbackIPv4AddressForThisHost() + ":" + httpConfiguration.getPort());
 
         environment.addFilter(CrossOriginFilter.class, "/*");
     }
@@ -238,11 +238,12 @@ public class PriceService extends Service<Configuration> {
         Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
         while (networkInterfaces.hasMoreElements()) {
             NetworkInterface networkInterface = networkInterfaces.nextElement();
-            if (!networkInterface.isLoopback()) {
+            if (!networkInterface.isLoopback() && networkInterface.isUp()) {
                 return getIPv4InetAddressFrom(networkInterface);
             }
         }
-        throw new RuntimeException("Can't find a non-loopback IP address");
+        //throw new RuntimeException("Can't find a non-loopback IP address");
+        return "localhost";
     }
 
     private String getIPv4InetAddressFrom(NetworkInterface networkInterface) {
