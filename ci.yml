@@ -18,8 +18,8 @@ couchbase.nodes:
 couchbase.bucket: PriceServiceTest
 couchbase.username: "PriceServiceTest"
 couchbase.password: "tesco"
-couchbase.admin.username: "Administrator"
-couchbase.admin.password: "Tesco123"
+couchbase.admin.username: "xd18"
+couchbase.admin.password: "PriceService"
 
 dummyCouchbaseMode: true
 
