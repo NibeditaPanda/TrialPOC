@@ -74,7 +74,7 @@ public class PriceResourceTest extends ResourceTest {
         addResource(priceResource);
     }
 
-    @BeforeClass
+    /*@BeforeClass
     public static void setUp() throws IOException, URISyntaxException, InterruptedException {
       IntegrationTest.init();
     }
@@ -82,7 +82,7 @@ public class PriceResourceTest extends ResourceTest {
     @AfterClass
     public static void tearDown() throws IOException {
         IntegrationTest.destroy();
-    }
+    }*/
 
     // Couchbase tests
     // ==============

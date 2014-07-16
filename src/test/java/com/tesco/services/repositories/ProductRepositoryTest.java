@@ -24,7 +24,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
-public class ProductRepositoryTest extends IntegrationTest{
+public class ProductRepositoryTest /*extends IntegrationTest*/{
     private String tpnb = "123455";
     private Product product;
     private ProductRepository productRepository;
@@ -122,6 +122,15 @@ public class ProductRepositoryTest extends IntegrationTest{
         if(product == null){
             System.out.println("Product not found");
         }
+    }
+    @Test
+    public void mapTPNCtpTPNB(){
+        String TPNC = "271871871";
+        String TPNB = "056428171";
+        couchbaseWrapper.set(TPNC, TPNB);
+        String mappedTPNCtoTPNB = (String) couchbaseWrapper.get(TPNC);
+        assertThat(mappedTPNCtoTPNB.equals(TPNB));
+
     }
 
 }
