@@ -19,63 +19,12 @@ usage() {
   echo " importTarget - 'rpm'"
 }
 
-if [ "$#" -ne 3 ]; then
-  usage
-  exit 1
-fi
-
-SERVER=$1
-DEST=$2
-
-case "$3" in
-  rpm) doRpm ;;
-  *) usage && exit 1 ;;
-esac
-
-
-doRpm() {
-  srcFiles=(
-    "tsl_rpm_price_srvc_price_zone_*.csv.gz" 
-    "tsl_rpm_price_srvc_prom_zone_*.csv.gz"
-	"tsl_rpm_price_srvc_store_zone_*.csv.gz"
-	"tsl_rpm_price_srvc_prom_extract_*.csv.gz"
-	"CH_offers_*.csv.gz"
-  )
-  destFiles=( 
-   "PRICE_ZONE.csv"
-   "PROM_ZONE.csv"
-   "STORE_ZONE.csv"
-   "PROM_EXTRACT.csv"
-   "PROM_DESC_EXTRACT_full_dump.csv"
-  )
-
-  trigger "rpm"
+doScp() {
+  local from=$1
+  local to=$2
+  scp -o StrictHostKeyChecking=no $SERVER:$from $to
 }
 
-trigger() {
-  target=$1
-
-  numFiles=${#srcFiles[@]} 
-
-  echo "Triggering $target ($numFiles files)"
-
-  for ((i = 0; i < $numFiles; i++))
-  do
-    from="${srcFiles[$i]}"
-    to="${destFiles[$i]}"
-    copyFile $from $to
-  done
-
-  echo "Triggering $target import"
-  status=$(curl -X POST -s -o /dev/null -w "%{http_code}" $SERVICES/admin/import)
-
-  if [ "$status" -ne "200" ];
-  then
-    echo "Failed with http code $status - aborting"
-    exit 1
-  fi
-
-}
 
 copyFile() {
   from=$1
@@ -106,8 +55,59 @@ copyFile() {
   fi
 }
 
-doScp() {
-  local from=$1
-  local to=$2
-  scp -o StrictHostKeyChecking=no $SERVER:$from $to
+trigger() {
+  target=$1
+
+  numFiles=${#srcFiles[@]} 
+
+  echo "Triggering $target ($numFiles files)"
+
+  for ((i = 0; i < $numFiles; i++))
+  do
+    from="${srcFiles[$i]}"
+    to="${destFiles[$i]}"
+    copyFile $from $to
+  done
+
+  echo "Triggering $target import"
+  status=$(curl -X POST -s -o /dev/null -w "%{http_code}" $SERVICES/admin/import)
+
+  if [ "$status" -ne "200" ];
+  then
+    echo "Failed with http code $status - aborting"
+    exit 1
+  fi
+
 }
+
+doRpm() {
+  srcFiles=(
+    "tsl_rpm_price_srvc_price_zone_*.csv.gz" 
+    "tsl_rpm_price_srvc_prom_zone_*.csv.gz"
+	"tsl_rpm_price_srvc_store_zone_*.csv.gz"
+	"tsl_rpm_price_srvc_prom_extract_*.csv.gz"
+	"CH_offers_*.csv.gz"
+  )
+  destFiles=( 
+   "PRICE_ZONE.csv"
+   "PROM_ZONE.csv"
+   "STORE_ZONE.csv"
+   "PROM_EXTRACT.csv"
+   "PROM_DESC_EXTRACT_full_dump.csv"
+  )
+
+  trigger "rpm"
+}
+
+if [ "$#" -ne 3 ]; then
+  usage
+  exit 1
+fi
+
+SERVER=$1
+DEST=$2
+
+case "$3" in
+  rpm) doRpm ;;
+  *) usage && exit 1 ;;
+esac
