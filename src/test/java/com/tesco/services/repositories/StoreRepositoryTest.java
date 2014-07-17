@@ -23,17 +23,15 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-
 import java.util.HashMap;
 import java.util.Map;
-
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
-public class StoreRepositoryTest extends IntegrationTest {
+public class StoreRepositoryTest/* extends IntegrationTest*/ {
     @Rule
     public TestName name = new TestName();
 
