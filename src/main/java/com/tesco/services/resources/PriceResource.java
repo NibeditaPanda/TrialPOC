@@ -93,7 +93,7 @@ public class PriceResource {
                 return notFound(PRODUCT_NOT_FOUND);
             }
             String tpnb = (String) couchbaseWrapper.get(tpn);
-            if(tpnb.length()==12)
+            if(tpnb.length()==11)
                 tpnb = productRepository.isSpaceOrNull(tpnb)?"":tpnb.substring(1,10);
             productContainer = productRepository.getByTPNB(tpnb,tpn);
 
