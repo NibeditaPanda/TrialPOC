@@ -183,20 +183,26 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     private Product createProductWithVariants(String tpnb, String tpnc1, String tpnc2) {
-        ProductVariant productVariant1 = new ProductVariant(tpnc1);
-        productVariant1.addSaleInfo(new SaleInfo(1, "1.40"));
-        SaleInfo promoSaleInfo = new SaleInfo(5, "1.20");
-        promoSaleInfo.addPromotion(createPromotion("A30718670"));
-        productVariant1.addSaleInfo(promoSaleInfo);
-        productVariant1.addSaleInfo(new SaleInfo(14, "1.10"));
-
-        ProductVariant productVariant2 = new ProductVariant(tpnc2);
-        productVariant2.addSaleInfo(new SaleInfo(1, "1.39"));
-        productVariant2.addSaleInfo(new SaleInfo(6, "1.38"));
-
+        ProductVariant productVariant1 = null;
+        ProductVariant productVariant2 = null;
+        if(!productRepository.isSpaceOrNull(tpnc1)) {
+            productVariant1 = new ProductVariant(tpnc1);
+            productVariant1.addSaleInfo(new SaleInfo(1, "1.40"));
+            SaleInfo promoSaleInfo = new SaleInfo(5, "1.20");
+            promoSaleInfo.addPromotion(createPromotion("A30718670"));
+            productVariant1.addSaleInfo(promoSaleInfo);
+            productVariant1.addSaleInfo(new SaleInfo(14, "1.10"));
+        }
+        if(!productRepository.isSpaceOrNull(tpnc2)) {
+            productVariant2 = new ProductVariant(tpnc2);
+            productVariant2.addSaleInfo(new SaleInfo(1, "1.39"));
+            productVariant2.addSaleInfo(new SaleInfo(6, "1.38"));
+        }
         Product product = new Product(tpnb);
-        product.addProductVariant(productVariant1);
-        product.addProductVariant(productVariant2);
+        if(!productRepository.isSpaceOrNull(productVariant1))
+            product.addProductVariant(productVariant1);
+        if(!productRepository.isSpaceOrNull(productVariant2))
+            product.addProductVariant(productVariant2);
 
         return product;
     }
@@ -214,8 +220,10 @@ public class PriceResourceTest extends ResourceTest {
 
     private Map<String, Object> expectedProductPriceInfo(String tpnb, String tpnc1, String tpnc2) {
         ArrayList<Map<String, Object>> variants = new ArrayList<>();
-        variants.add(getVariantInfo(tpnc1, "GBP", "1.40", "1.20", true));
-        variants.add(getVariantInfo(tpnc2, "GBP", "1.39", null, true));
+        if(!productRepository.isSpaceOrNull(tpnc1))
+            variants.add(getVariantInfo(tpnc1, "GBP", "1.40", "1.20", true));
+        if(!productRepository.isSpaceOrNull(tpnc2))
+            variants.add(getVariantInfo(tpnc2, "GBP", "1.39", null, true));
 
         return getProductPriceMap(tpnb, variants);
     }
@@ -254,5 +262,124 @@ public class PriceResourceTest extends ResourceTest {
         return promotionInfo;
     }
 
+    @Test
+    public void shouldReturnNationalPricesForMultipleItemsWhenStoreIdIsNotSpecifiedwithTPNC() throws IOException, ItemNotFoundException {
+//        ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
+        String tpnb = "070461113";
+        String tpnc = "284347092";
+        String tpnc2 = null;
+        Product product = createProductWithVariants(tpnb, tpnc, tpnc2);
+        productRepository.put(product);
+        if(!productRepository.isSpaceOrNull(tpnb) && !productRepository.isSpaceOrNull(tpnc)) {
+            couchbaseWrapper.set(tpnb, tpnc);
+            couchbaseWrapper.set(tpnc, tpnb);
+        }
+        if(!productRepository.isSpaceOrNull(tpnb) && !productRepository.isSpaceOrNull(tpnc2)) {
+            couchbaseWrapper.set(tpnb, tpnc2);
+            couchbaseWrapper.set(tpnc2, tpnb);
+        }
+        WebResource resource = client().resource(String.format("/price/C/%s", tpnc));
 
+        ClientResponse response = resource.get(ClientResponse.class);
+        assertThat(response.getStatus()).isEqualTo(200);
+        Map actualProductPriceInfo = resource.get(Map.class);
+
+        compareResponseMaps(actualProductPriceInfo, expectedProductPriceInfo(tpnb, tpnc, tpnc2));
+    }
+    @Test
+    public void shouldReturnNationalPricesForMultipleItemsWhenStoreIdIsNotSpecifiedwithTPNC_STORE() throws IOException, ItemNotFoundException {
+//        ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
+        String tpnb = "070461113";
+        String tpnc1 = "284347092";
+        String tpnc2 = null;
+        Product product = createProductWithVariants(tpnb, tpnc1, tpnc2);
+        productRepository.put(product);
+
+        String storeId = "2002";
+        storeRepository.put(new Store(storeId, Optional.of(5), Optional.of(14), "EUR"));
+
+        if(!productRepository.isSpaceOrNull(tpnb) && !productRepository.isSpaceOrNull(tpnc1)) {
+            couchbaseWrapper.set(tpnb, tpnc1);
+            couchbaseWrapper.set(tpnc1, tpnb);
+        }
+        if(!productRepository.isSpaceOrNull(tpnb) && !productRepository.isSpaceOrNull(tpnc2)) {
+            couchbaseWrapper.set(tpnb, tpnc2);
+            couchbaseWrapper.set(tpnc2, tpnb);
+        }
+        WebResource resource = client().resource(String.format("/price/C/%s?store=%s", tpnc1, storeId));
+
+        ClientResponse response = resource.get(ClientResponse.class);
+        assertThat(response.getStatus()).isEqualTo(200);
+        Map actualProductPriceInfo = resource.get(Map.class);
+
+        ArrayList<Map<String, Object>> variants = new ArrayList<>();
+        if(!productRepository.isSpaceOrNull(tpnc1))
+            variants.add(getVariantInfo(tpnc1, "EUR", "1.20" ,"1.10", false));
+        if(!productRepository.isSpaceOrNull(tpnc2))
+            variants.add(getVariantInfo(tpnc2, "EUR", "1.38", null, false));
+
+        compareResponseMaps(actualProductPriceInfo, getProductPriceMap(tpnb, variants));
+    }
+    @Test
+    public void shouldReturn404WhenItemIsNotFoundGivenTPNC() throws ItemNotFoundException {
+
+        WebResource resource = client().resource("/price/C/non_existent_item");
+
+        ClientResponse response = resource.get(ClientResponse.class);
+
+        assertThat(response.getStatus()).isEqualTo(404);
+        assertThat(response.getEntity(String.class)).contains("Product not found");
+    }
+
+    @Test
+    public void shouldReturn404WhenStoreIsNotFoundGivenTPNC() throws Exception {
+        String tpnb = "070461113";
+        String tpnc1 = "284347092";
+        String tpnc2 = null;
+        productRepository.put(createProductWithVariants(tpnb,tpnc1,tpnc2));
+        if(!productRepository.isSpaceOrNull(tpnb) && !productRepository.isSpaceOrNull(tpnc1)) {
+            couchbaseWrapper.set(tpnb, tpnc1);
+            couchbaseWrapper.set(tpnc1, tpnb);
+        }
+        if(!productRepository.isSpaceOrNull(tpnb) && !productRepository.isSpaceOrNull(tpnc2)) {
+            couchbaseWrapper.set(tpnb, tpnc2);
+            couchbaseWrapper.set(tpnc2, tpnb);
+        }
+        WebResource resource = client().resource("/price/C/070461113?store=2099");
+        ClientResponse response = resource.get(ClientResponse.class);
+
+        assertThat(response.getStatus()).isEqualTo(404);
+        assertThat(response.getEntity(String.class)).contains("Store not found");
+    }
+
+    @Test
+    public void shouldReturn404WhenStoreIsInvalidGivenTPNC() throws Exception {
+        //  ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
+        String tpnb = "070461113";
+        String tpnc1 = "284347092";
+        String tpnc2 = null;
+        productRepository.put(createProductWithVariants(tpnb,tpnc1,tpnc2));
+        if(!productRepository.isSpaceOrNull(tpnb) && !productRepository.isSpaceOrNull(tpnc1)) {
+            couchbaseWrapper.set(tpnb, tpnc1);
+            couchbaseWrapper.set(tpnc1, tpnb);
+        }
+        if(!productRepository.isSpaceOrNull(tpnb) && !productRepository.isSpaceOrNull(tpnc2)) {
+            couchbaseWrapper.set(tpnb, tpnc2);
+            couchbaseWrapper.set(tpnc2, tpnb);
+        }
+        WebResource resource = client().resource("/price/C/070461113?store=invalidstore");
+        ClientResponse response = resource.get(ClientResponse.class);
+
+        assertThat(response.getStatus()).isEqualTo(404);
+        assertThat(response.getEntity(String.class)).contains("Store not found");
+    }
+
+    @Test
+    public void shouldReturn400WhenIncorrectQueryParamIsGivenTPNC() throws Exception {
+        WebResource resource = client().resource("/price/C/070461113?storee=store");
+        ClientResponse response = resource.get(ClientResponse.class);
+
+        assertThat(response.getStatus()).isEqualTo(400);
+        assertThat(response.getEntity(String.class)).contains("Invalid request");
+    }
 }

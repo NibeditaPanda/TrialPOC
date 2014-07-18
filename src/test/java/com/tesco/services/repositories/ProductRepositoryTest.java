@@ -132,5 +132,18 @@ public class ProductRepositoryTest /*extends IntegrationTest*/{
         assertThat(mappedTPNCtoTPNB.equals(TPNB));
 
     }
+    @Test
+    public void mapTPNC_TPNB(){
+        String TPNC = "271871871";
+        String TPNB = "056428171";
+        couchbaseWrapper.set(TPNC, TPNB);
+        String mappedTPNCtoTPNB = (String) couchbaseWrapper.get(TPNC);
+        assertThat(mappedTPNCtoTPNB.equals(TPNB));
+
+        couchbaseWrapper.set(TPNB, TPNC);
+        String mappedTPNBtoTPNC = (String) couchbaseWrapper.get(TPNB);
+        assertThat(mappedTPNCtoTPNB.equals(TPNC));
+
+    }
 
 }

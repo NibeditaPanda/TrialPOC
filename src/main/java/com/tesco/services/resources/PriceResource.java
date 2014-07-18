@@ -83,7 +83,26 @@ public class PriceResource {
 
         ProductRepository productRepository = new ProductRepository(couchbaseWrapper,asyncCouchbaseWrapper,mapper);
 
-        Optional<Product> productContainer = productRepository.getByTPNB(tpn);
+        Optional<Product> productContainer ;
+        if(tpnIdentifier.equals("C")){
+            try {
+                int item = Integer.parseInt(tpn);
+            }
+            catch(NumberFormatException ne)
+            {
+                return notFound(PRODUCT_NOT_FOUND);
+            }
+            String tpnb = (String) couchbaseWrapper.get(tpn);
+            if(tpnb.length()==12)
+                tpnb = productRepository.isSpaceOrNull(tpnb)?"":tpnb.substring(1,10);
+            productContainer = productRepository.getByTPNB(tpnb,tpn);
+
+        }
+        else
+        {
+            productContainer = productRepository.getByTPNB(tpn);
+
+        }
 
         if (!productContainer.isPresent()) return notFound(PRODUCT_NOT_FOUND);
 
