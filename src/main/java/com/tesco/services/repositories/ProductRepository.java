@@ -11,6 +11,7 @@ import com.tesco.couchbase.listeners.GetListener;
 import com.tesco.couchbase.listeners.Listener;
 import com.tesco.couchbase.listeners.SetListener;
 import com.tesco.services.core.Product;
+import com.tesco.services.core.ProductVariant;
 import com.tesco.services.core.Store;
 import com.tesco.services.exceptions.InvalidDataException;
 import org.slf4j.Logger;
@@ -120,6 +121,50 @@ public class ProductRepository {
         } catch (IOException e) {
             listener.onException(e);
         }
+    }
+    public void mapTPNC_TPNB(String TPNC , String ITEM){
+        try {
+            String itemJson = mapper.writeValueAsString(ITEM);
+            String tpncJson = mapper.writeValueAsString(TPNC);
+            if(isSpaceOrNull(couchbaseWrapper.get(TPNC)))
+                couchbaseWrapper.set(TPNC, itemJson);
+            if(isSpaceOrNull(couchbaseWrapper.get(ITEM)))
+                couchbaseWrapper.set(ITEM, tpncJson);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+    }
+    public String getProductTPNC(String item) {
+        return (String)couchbaseWrapper.get(item);
+    }
+
+    public Optional<Product> getByTPNB(String tpnb,String tpnc) {
+        Product product = new Product();
+        Product productvar = new Product(tpnb);
+        String productJson = (String) couchbaseWrapper.get(getProductKey(tpnb));
+        ProductVariant productVariant = new ProductVariant();
+        if(productJson == null){
+            product = null;
+        }
+        else{
+            try {
+                product = mapper.readValue(productJson,Product.class);
+                productVariant = product.getProductVariantByTPNC(tpnc);
+                productvar.addProductVariant(productVariant);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return (productvar != null) ? Optional.of(productvar) : Optional.<Product>absent();
+    }
+
+    public  boolean isSpaceOrNull(Object obj)
+    {
+        if(obj == " " || obj == null)
+            return true;
+        else
+            return false;
     }
 
 }

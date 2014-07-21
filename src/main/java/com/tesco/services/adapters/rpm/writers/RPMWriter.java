@@ -94,6 +94,7 @@ public class RPMWriter {
 
         while((productInfoMap = rpmPriceReader.getNext()) !=  null) {
             final Product product = productMapper.mapPriceZonePrice(productInfoMap);
+            productRepository.mapTPNC_TPNB(productInfoMap.get("TPNC"),productInfoMap.get("ITEM"));
             productRepository.insertProduct(product,new Listener<Void, Exception>() {
                 @Override
                 public void onComplete(Void aVoid) {
