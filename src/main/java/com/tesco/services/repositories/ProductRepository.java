@@ -122,6 +122,7 @@ public class ProductRepository {
             listener.onException(e);
         }
     }
+    /*Added By Nibedita - PS 78 - Store ITEM and TPNC key value - Start*/
     public void mapTPNC_TPNB(String TPNC , String ITEM){
         try {
             String itemJson = mapper.writeValueAsString(ITEM);
@@ -134,9 +135,14 @@ public class ProductRepository {
             e.printStackTrace();
         }
     }
+
     public String getProductTPNC(String item) {
-        return (String)couchbaseWrapper.get(item);
+
+        String tpnc = (String)couchbaseWrapper.get(item);
+        tpnc = replaceOldValCharWithNewVal(tpnc,"\"","");
+        return tpnc;
     }
+    /*Added By Nibedita - PS 78 - Store ITEM and TPNC key value - End*/
 
     public Optional<Product> getByTPNB(String tpnb,String tpnc) {
         Product product = new Product();
@@ -158,7 +164,7 @@ public class ProductRepository {
         }
         return (productvar != null) ? Optional.of(productvar) : Optional.<Product>absent();
     }
-
+    /*Added By Nibedita - Null/space check - start*/
     public  boolean isSpaceOrNull(Object obj)
     {
         if(obj == " " || obj == null)
@@ -166,5 +172,27 @@ public class ProductRepository {
         else
             return false;
     }
+    /*Added By Nibedita - Null/space check - end*/
+    /*Added By Nibedita - PS 78 - fetch item/tpnc based on tpnc/item input  - Start*/
+    public String getMappedTPNCorTPNB(String tpn){
+        String tpnVal = null;
+        try {
+              tpnVal = (String)couchbaseWrapper.get(tpn);
+            tpnVal = tpnVal.replace("\"","");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return tpnVal;
+    }
+    /*Added By Nibedita - PS 78 - fetch item/tpnc based on tpnc/item input  - Start*/
+    /*Added By Nibedita - Null check and replace old char with new - Start*/
+    public String replaceOldValCharWithNewVal(String value, String oldChar, String newChar)
+    {
+        if(!isSpaceOrNull(value) && value.contains(oldChar))
+            return(value.replace(oldChar,newChar));
+        else
+            return value;
 
+    }
+    /*Added By Nibedita -  Null check and replace old char with new - Start*/
 }
