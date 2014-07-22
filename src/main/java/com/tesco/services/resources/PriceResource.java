@@ -94,9 +94,11 @@ public class PriceResource {
         ProductRepository productRepository = new ProductRepository(couchbaseWrapper,asyncCouchbaseWrapper,mapper);
 
         Optional<Product> productContainer ;
-        if(tpnIdentifier.equals("C")){
+       /*Added By Nibedita - PS 37 - fetch info based on TPNC - Start*/
+        if(tpnIdentifier.equalsIgnoreCase("C")){
+            String tpnc = tpn;
             try {
-                int item = Integer.parseInt(tpn);
+                int item = Integer.parseInt(tpnc);
             }
             catch(NumberFormatException ne)
             {
@@ -104,21 +106,25 @@ public class PriceResource {
                 logger.info(""+response.getEntity());
                 return response;
             }
-            String tpnb = (String) couchbaseWrapper.get(tpn);
+            String tpnb = productRepository.getMappedTPNCorTPNB(tpnc);
             if(tpnb.contains("-")) {
-                tpnb = tpnb.split("-")[0].concat("\"");
+                tpnb = tpnb.split("-")[0];
             }
-            if(tpnb.length()==11)
-                tpnb = productRepository.isSpaceOrNull(tpnb)?"":tpnb.substring(1,10);
-            productContainer = productRepository.getByTPNB(tpnb,tpn);
+            productContainer = productRepository.getByTPNB(tpnb,tpnc);
 
         }
-        else
+        else if(tpnIdentifier.equalsIgnoreCase("B"))
         {
             productContainer = productRepository.getByTPNB(tpn);
 
         }
-
+        else
+        {
+            Response response = badRequest();
+            logger.info(""+response.getEntity());
+            return response;
+        }
+         /*Added By Nibedita - PS 37 - fetch info based on TPNC - End*/
         if (!productContainer.isPresent())
         {
             Response response = notFound(PRODUCT_NOT_FOUND);
