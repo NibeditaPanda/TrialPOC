@@ -273,15 +273,15 @@ public class PriceResourceTest extends ResourceTest {
         String tpnc2 = null;
         Product product = createProductWithVariants(tpnb, tpnc, tpnc2);
         productRepository.put(product);
-      /*  if(!productRepository.isSpaceOrNull(tpnb) && !productRepository.isSpaceOrNull(tpnc)) {
+       if(!productRepository.isSpaceOrNull(tpnb) && !productRepository.isSpaceOrNull(tpnc)) {
             couchbaseWrapper.set(tpnb, tpnc);
             couchbaseWrapper.set(tpnc, tpnb);
         }
         if(!productRepository.isSpaceOrNull(tpnb) && !productRepository.isSpaceOrNull(tpnc2)) {
             couchbaseWrapper.set(tpnb, tpnc2);
             couchbaseWrapper.set(tpnc2, tpnb);
-        }*/
-        when(productRepository.getMappedTPNCorTPNB(tpnc)).thenReturn(getTPNBForTPNC(tpnb));
+        }
+        //when(productRepository.getMappedTPNCorTPNB(tpnc)).thenReturn(getTPNBForTPNC(tpnb));
         WebResource resource = client().resource(String.format("/price/C/%s", tpnc));
 
         ClientResponse response = resource.get(ClientResponse.class);
@@ -371,7 +371,7 @@ public class PriceResourceTest extends ResourceTest {
             couchbaseWrapper.set(tpnb, tpnc2);
             couchbaseWrapper.set(tpnc2, tpnb);
         }
-        WebResource resource = client().resource("/price/C/070461113?store=invalidstore");
+        WebResource resource = client().resource("/price/C/284347092?store=invalidstore");
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(404);
@@ -380,10 +380,14 @@ public class PriceResourceTest extends ResourceTest {
 
     @Test
     public void shouldReturn400WhenIncorrectQueryParamIsGivenTPNC() throws Exception {
-        WebResource resource = client().resource("/price/C/070461113?storee=store");
+        WebResource resource = client().resource("/price/C/284347092?storee=store");
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(400);
         assertThat(response.getEntity(String.class)).contains("Invalid request");
     }
+    public String getTPNBForTPNC(String tpnb) {
+        return tpnb;
+    }
+
 }

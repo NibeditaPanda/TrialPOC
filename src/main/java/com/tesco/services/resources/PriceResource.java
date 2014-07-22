@@ -85,7 +85,7 @@ public class PriceResource {
 
         Optional<Product> productContainer ;
         /*Added By Nibedita - PS 37 - fetch info based on TPNC - Start*/
-        if(tpnIdentifier.equals("C")){
+        if(tpnIdentifier.equalsIgnoreCase("C")){
             String tpnc = tpn;
             try {
                 int item = Integer.parseInt(tpnc);
@@ -101,10 +101,14 @@ public class PriceResource {
             productContainer = productRepository.getByTPNB(tpnb,tpnc);
 
         }
-        else
+        else if(tpnIdentifier.equalsIgnoreCase("B"))
         {
             productContainer = productRepository.getByTPNB(tpn);
 
+        }
+        else
+        {
+            return badRequest();
         }
          /*Added By Nibedita - PS 37 - fetch info based on TPNC - Start*/
         if (!productContainer.isPresent()) return notFound(PRODUCT_NOT_FOUND);
