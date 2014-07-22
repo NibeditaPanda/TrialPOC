@@ -94,7 +94,9 @@ public class RPMWriter {
 
         while((productInfoMap = rpmPriceReader.getNext()) !=  null) {
             final Product product = productMapper.mapPriceZonePrice(productInfoMap);
+            /*Added by Nibedita - PS 78 - Store ITEM and TPNC key value - Start*/
             productRepository.mapTPNC_TPNB(productInfoMap.get("TPNC"),productInfoMap.get("ITEM"));
+            /*Added by Nibedita - PS 78 - Store ITEM and TPNC key value - End*/
             productRepository.insertProduct(product,new Listener<Void, Exception>() {
                 @Override
                 public void onComplete(Void aVoid) {

@@ -84,21 +84,21 @@ public class PriceResource {
         ProductRepository productRepository = new ProductRepository(couchbaseWrapper,asyncCouchbaseWrapper,mapper);
 
         Optional<Product> productContainer ;
+        /*Added By Nibedita - PS 37 - fetch info based on TPNC - Start*/
         if(tpnIdentifier.equals("C")){
+            String tpnc = tpn;
             try {
-                int item = Integer.parseInt(tpn);
+                int item = Integer.parseInt(tpnc);
             }
             catch(NumberFormatException ne)
             {
                 return notFound(PRODUCT_NOT_FOUND);
             }
-            String tpnb = (String) couchbaseWrapper.get(tpn);
+            String tpnb = productRepository.getMappedTPNCorTPNB(tpnc);
             if(tpnb.contains("-")) {
-                tpnb = tpnb.split("-")[0].concat("\"");
+                tpnb = tpnb.split("-")[0];
             }
-            if(tpnb.length()==11)
-                tpnb = productRepository.isSpaceOrNull(tpnb)?"":tpnb.substring(1,10);
-            productContainer = productRepository.getByTPNB(tpnb,tpn);
+            productContainer = productRepository.getByTPNB(tpnb,tpnc);
 
         }
         else
@@ -106,7 +106,7 @@ public class PriceResource {
             productContainer = productRepository.getByTPNB(tpn);
 
         }
-
+         /*Added By Nibedita - PS 37 - fetch info based on TPNC - Start*/
         if (!productContainer.isPresent()) return notFound(PRODUCT_NOT_FOUND);
 
         if (storeId == null) {

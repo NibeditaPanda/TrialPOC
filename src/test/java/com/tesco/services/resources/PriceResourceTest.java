@@ -26,6 +26,8 @@ import com.tesco.services.repositories.StoreRepository;
 import com.yammer.dropwizard.testing.ResourceTest;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.*;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -33,7 +35,8 @@ import java.util.*;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-
+import static org.mockito.Mockito.when;
+@RunWith(MockitoJUnitRunner.class)
 public class PriceResourceTest extends ResourceTest {
 
     private static Configuration testConfiguration ;
@@ -270,14 +273,15 @@ public class PriceResourceTest extends ResourceTest {
         String tpnc2 = null;
         Product product = createProductWithVariants(tpnb, tpnc, tpnc2);
         productRepository.put(product);
-        if(!productRepository.isSpaceOrNull(tpnb) && !productRepository.isSpaceOrNull(tpnc)) {
+      /*  if(!productRepository.isSpaceOrNull(tpnb) && !productRepository.isSpaceOrNull(tpnc)) {
             couchbaseWrapper.set(tpnb, tpnc);
             couchbaseWrapper.set(tpnc, tpnb);
         }
         if(!productRepository.isSpaceOrNull(tpnb) && !productRepository.isSpaceOrNull(tpnc2)) {
             couchbaseWrapper.set(tpnb, tpnc2);
             couchbaseWrapper.set(tpnc2, tpnb);
-        }
+        }*/
+        when(productRepository.getMappedTPNCorTPNB(tpnc)).thenReturn(getTPNBForTPNC(tpnb));
         WebResource resource = client().resource(String.format("/price/C/%s", tpnc));
 
         ClientResponse response = resource.get(ClientResponse.class);
@@ -345,7 +349,7 @@ public class PriceResourceTest extends ResourceTest {
             couchbaseWrapper.set(tpnb, tpnc2);
             couchbaseWrapper.set(tpnc2, tpnb);
         }
-        WebResource resource = client().resource("/price/C/070461113?store=2099");
+        WebResource resource = client().resource("/price/C/284347092?store=2099");
         ClientResponse response = resource.get(ClientResponse.class);
 
         assertThat(response.getStatus()).isEqualTo(404);

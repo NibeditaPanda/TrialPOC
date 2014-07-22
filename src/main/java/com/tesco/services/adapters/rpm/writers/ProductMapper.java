@@ -83,10 +83,9 @@ public class ProductMapper {
         String item = promotionDescInfoMap.get(itemHeader);
         Product product = getProduct(item.split("-")[0]);
         // Product product = getProductIdentified(tpnc.split("-")[0]);//TODO: Remove the splitting logic once TPNC is given in the CSV extracts
-
+        /*Added by Nibedita - for PS 78 -  fetch tpnc based on item - Start*/
         String tpnc = productRepository.getProductTPNC(item);
-        if (!productRepository.isSpaceOrNull(tpnc) && tpnc.length()==11)
-             tpnc = productRepository.isSpaceOrNull(tpnc)?"":tpnc.substring(1,10);
+        /*Added by Nibedita - for PS 78 -  fetch tpnc based on item - End*/
         ProductVariant productVariant = getProductVariant(product, tpnc);
         final int zoneId = Integer.parseInt(promotionDescInfoMap.get(CSVHeaders.PromoDescExtract.ZONE_ID));
         SaleInfo saleInfo = productVariant.getSaleInfo(zoneId);
