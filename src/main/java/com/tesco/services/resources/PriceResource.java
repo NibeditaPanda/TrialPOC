@@ -16,6 +16,8 @@ import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
 import com.yammer.metrics.annotation.ExceptionMetered;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -37,6 +39,8 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 @Api(value = "/price", description = "Price API")
 @Produces(ResourceResponse.RESPONSE_TYPE)
 public class PriceResource {
+
+    private Logger logger = LoggerFactory.getLogger("Get Price");
 
     public static final int NATIONAL_PRICE_ZONE_ID = 1;
     public static final String NATIONAL_ZONE_CURRENCY = "GBP";
@@ -75,7 +79,13 @@ public class PriceResource {
             @ApiParam(value = "ID of Store if a store-specific price is desired", required = false) @QueryParam("store") String storeId,
             @Context UriInfo uriInfo) throws IOException {
 
-        if (storeQueryParamWasSentWithoutAStoreID(storeId, uriInfo.getQueryParameters())) return badRequest();
+        if (storeQueryParamWasSentWithoutAStoreID(storeId, uriInfo.getQueryParameters()))
+        {
+            Response response = badRequest();
+            logger.info(""+response.getEntity());
+            return response;
+
+        }
 
 /*
         ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
@@ -90,7 +100,9 @@ public class PriceResource {
             }
             catch(NumberFormatException ne)
             {
-                return notFound(PRODUCT_NOT_FOUND);
+                Response response = notFound(PRODUCT_NOT_FOUND);
+                logger.info(""+response.getEntity());
+                return response;
             }
             String tpnb = (String) couchbaseWrapper.get(tpn);
             if(tpnb.contains("-")) {
@@ -107,7 +119,12 @@ public class PriceResource {
 
         }
 
-        if (!productContainer.isPresent()) return notFound(PRODUCT_NOT_FOUND);
+        if (!productContainer.isPresent())
+        {
+            Response response = notFound(PRODUCT_NOT_FOUND);
+            logger.info(""+response.getEntity());
+            return response;
+        }
 
         if (storeId == null) {
             return getPriceResponse(productContainer, Optional.of(NATIONAL_PRICE_ZONE_ID), Optional.of(NATIONAL_PROMO_ZONE_ID), NATIONAL_ZONE_CURRENCY);
@@ -124,12 +141,19 @@ public class PriceResource {
         try {
             storeId = Integer.parseInt(storeIdValue);
         } catch (NumberFormatException e) {
-            return notFound(STORE_NOT_FOUND);
+            Response response = notFound(STORE_NOT_FOUND);
+            logger.info(""+response.getEntity());
+            return response;
         }
 
         Optional<Store> storeContainer = storeRepository.getByStoreId(String.valueOf(storeId));
 
-        if (!storeContainer.isPresent()) return notFound(STORE_NOT_FOUND);
+        if (!storeContainer.isPresent())
+        {
+            Response response = notFound(STORE_NOT_FOUND);
+            logger.info(""+response.getEntity());
+            return response;
+        }
 
         Store store = storeContainer.get();
         return getPriceResponse(productContainer, store.getPriceZoneId(), store.getPromoZoneId(), store.getCurrency());
@@ -145,13 +169,17 @@ public class PriceResource {
     @Path("/{tpnIdentifier}/{tpn}/{path: .*}")
     @ExceptionMetered(name = "getPriceItemNumber-Failures", group = "PriceServices")
     public Response getItem() {
-        return badRequest();
+        Response response = badRequest();
+        logger.info(""+response.getEntity());
+        return response;
     }
 
     @GET
     @Path("/")
     public Response getRoot() {
-        return badRequest();
+        Response response = badRequest();
+        logger.info(""+response.getEntity());
+        return response;
     }
 
     private boolean storeQueryParamWasSentWithoutAStoreID(String storeId, MultivaluedMap<String, String> queryParameters) {

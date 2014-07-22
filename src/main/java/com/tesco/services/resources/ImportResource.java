@@ -9,6 +9,8 @@ import com.yammer.metrics.annotation.ExceptionMetered;
 import com.yammer.metrics.annotation.Metered;
 import com.yammer.metrics.annotation.Timed;
 import org.apache.commons.configuration.ConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -25,6 +27,8 @@ import static javax.ws.rs.core.Response.ok;
 @Consumes(MediaType.APPLICATION_JSON)
 //@Produces(ResourceResponse.RESPONSE_TYPE)
 public class ImportResource {
+    private Logger logger = LoggerFactory.getLogger("Import Resource");
+
     private Configuration configuration;
     private CouchbaseConnectionManager couchbaseConnectionManager;
     private CouchbaseWrapper couchbaseWrapper;
@@ -60,6 +64,7 @@ public class ImportResource {
             Thread thread = new Thread(importJob);
             thread.start();
         } catch (ConfigurationException e) {
+            logger.info(""+Response.serverError().entity(String.class));
             Response.serverError();
         }
 
