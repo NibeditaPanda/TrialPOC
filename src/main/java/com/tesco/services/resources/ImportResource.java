@@ -28,7 +28,8 @@ import static javax.ws.rs.core.Response.ok;
 @Consumes(MediaType.APPLICATION_JSON)
 //@Produces(ResourceResponse.RESPONSE_TYPE)
 public class ImportResource {
-    private Logger logger = LoggerFactory.getLogger("Import Resource");
+    /*Added by Sushil - PS-83 added logger to log exceptions -Start*/
+    private Logger logger = LoggerFactory.getLogger(getClass().getName());
 
     private Configuration configuration;
     private CouchbaseConnectionManager couchbaseConnectionManager;
@@ -65,10 +66,11 @@ public class ImportResource {
             Thread thread = new Thread(importJob);
             thread.start();
         } catch (ConfigurationException e) {
-            logger.info(""+Response.serverError().entity(String.class));
+            logger.info("error : Import Failed - "+((ResponseImpl)Response.serverError().build()).getStatusType().getStatusCode()+"-{"
+                    +((ResponseImpl)Response.serverError().build()).getStatusType().getReasonPhrase()+"}");
             Response.serverError();
         }
-
+        /*Added by Sushil - PS-83 added logger to log exceptions -End*/
         return ok("{\"message\":\"Import Started.\"}").build();
     }
 }

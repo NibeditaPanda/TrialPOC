@@ -41,7 +41,8 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 @Produces(ResourceResponse.RESPONSE_TYPE)
 public class PriceResource {
 
-    private Logger logger = LoggerFactory.getLogger("Get Price");
+    /*Added by Sushil - PS-83 added logger to log exceptions -Start*/
+    private Logger logger = LoggerFactory.getLogger(getClass().getName());
 
     public static final int NATIONAL_PRICE_ZONE_ID = 1;
     public static final String NATIONAL_ZONE_CURRENCY = "GBP";
@@ -50,7 +51,7 @@ public class PriceResource {
     public static final String STORE_NOT_FOUND = "Store not found";
     public static final String PRODUCT_NOT_FOUND = "Product not found";
     private static final String PRODUCT_OR_STORE_NOT_FOUND = PRODUCT_NOT_FOUND + " / " + STORE_NOT_FOUND;
-
+    private String uriPath = "";
 
     private CouchbaseConnectionManager couchbaseConnectionManager;
     private CouchbaseWrapper couchbaseWrapper;
@@ -82,9 +83,8 @@ public class PriceResource {
 
         if (storeQueryParamWasSentWithoutAStoreID(storeId, uriInfo.getQueryParameters()))
         {
-            Response response = badRequest();
-            logger.info(""+response.getEntity());
-            return response;
+            logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_BAD_REQUEST+"- {"+HTTPResponses.INVALID_REQUEST+"}");
+            return badRequest();
 
         }
 
@@ -103,9 +103,8 @@ public class PriceResource {
             }
             catch(NumberFormatException ne)
             {
-                Response response = notFound(PRODUCT_NOT_FOUND);
-                logger.info(""+response.getEntity());
-                return response;
+                logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_NOT_FOUND+"- {"+PRODUCT_NOT_FOUND+"} -> ("+tpn+")");
+                return notFound(PRODUCT_NOT_FOUND);
             }
             String tpnb = productRepository.getMappedTPNCorTPNB(tpnc);
             if(tpnb.contains("-")) {
@@ -121,16 +120,14 @@ public class PriceResource {
         }
         else
         {
-            Response response = badRequest();
-            logger.info(""+response.getEntity());
-            return response;
+            logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_BAD_REQUEST+"- {"+HTTPResponses.INVALID_REQUEST+"}");
+            return badRequest();
         }
          /*Added By Nibedita - PS 37 - fetch info based on TPNC - End*/
         if (!productContainer.isPresent())
         {
-            Response response = notFound(PRODUCT_NOT_FOUND);
-            logger.info(""+response.getEntity());
-            return response;
+            logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_NOT_FOUND+"- {"+PRODUCT_NOT_FOUND+"} -> ("+tpn+")");
+            return notFound(PRODUCT_NOT_FOUND);
         }
 
         if (storeId == null) {
@@ -148,18 +145,16 @@ public class PriceResource {
         try {
             storeId = Integer.parseInt(storeIdValue);
         } catch (NumberFormatException e) {
-            Response response = notFound(STORE_NOT_FOUND);
-            logger.info(""+response.getEntity());
-            return response;
+            logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_NOT_FOUND+"- {"+STORE_NOT_FOUND+"} -> ("+storeIdValue+")");
+            return notFound(STORE_NOT_FOUND);
         }
 
         Optional<Store> storeContainer = storeRepository.getByStoreId(String.valueOf(storeId));
 
         if (!storeContainer.isPresent())
         {
-            Response response = notFound(STORE_NOT_FOUND);
-            logger.info(""+response.getEntity());
-            return response;
+            logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_NOT_FOUND+"- {"+STORE_NOT_FOUND+"} -> ("+storeIdValue+")");
+            return notFound(STORE_NOT_FOUND);
         }
 
         Store store = storeContainer.get();
@@ -176,19 +171,17 @@ public class PriceResource {
     @Path("/{tpnIdentifier}/{tpn}/{path: .*}")
     @ExceptionMetered(name = "getPriceItemNumber-Failures", group = "PriceServices")
     public Response getItem() {
-        Response response = badRequest();
-        logger.info(""+response.getEntity());
-        return response;
+        logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_BAD_REQUEST+"- {"+HTTPResponses.INVALID_REQUEST+"}");
+        return badRequest();
     }
 
     @GET
     @Path("/")
-    public Response getRoot() {
-        Response response = badRequest();
-        logger.info(""+response.getEntity());
-        return response;
+    public Response getRoot(@Context UriInfo uriInfo) {
+        logger.info("message : {"+uriInfo.getRequestUri().toString()+"} "+ HttpServletResponse.SC_BAD_REQUEST+"- {"+HTTPResponses.INVALID_REQUEST+"}");
+        return badRequest();
     }
-
+    /*Added by Sushil - PS-83 added logger to log exceptions -End*/
     private boolean storeQueryParamWasSentWithoutAStoreID(String storeId, MultivaluedMap<String, String> queryParameters) {
         return (queryParameters.size() > 0) && isBlank(storeId);
     }
