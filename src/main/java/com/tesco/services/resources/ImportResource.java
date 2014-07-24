@@ -1,5 +1,6 @@
 package com.tesco.services.resources;
 
+import com.sun.jersey.core.spi.factory.ResponseImpl;
 import com.tesco.couchbase.AsyncCouchbaseWrapper;
 import com.tesco.couchbase.CouchbaseWrapper;
 import com.tesco.services.Configuration;
