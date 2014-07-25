@@ -307,7 +307,7 @@ public class RPMWriterTest {
          ArgumentCaptor<Product> arguments = ArgumentCaptor.forClass(Product.class);
          verify(productRepository, atLeastOnce()).insertProduct(arguments.capture(),any(Listener.class));
 
-        Promotion expectedPromotion = createPromotion(offerId, offerName, startDate, endDate);
+        Promotion expectedPromotion = createPromotion(offerId,zoneId, offerName, startDate, endDate);
         ProductVariant expectedProductVariant = createProductVariant(tpnc, zoneId, price, expectedPromotion);
 
         Product expectedProduct = createProduct(tpnb, expectedProductVariant);
