@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 import com.tesco.couchbase.AsyncCouchbaseWrapper;
 import com.tesco.couchbase.CouchbaseWrapper;
+import com.tesco.couchbase.exceptions.CouchbaseOperationException;
 import com.tesco.services.core.Product;
 import com.tesco.services.resources.model.ProductPriceBuilder;
 import com.tesco.services.core.Store;
@@ -79,6 +80,7 @@ public class PriceResource {
             @ApiParam(value = "ID of Store if a store-specific price is desired", required = false) @QueryParam("store") String storeId,
             @Context UriInfo uriInfo) throws IOException {
 
+        uriPath = uriInfo.getRequestUri().toString();
         if (storeQueryParamWasSentWithoutAStoreID(storeId, uriInfo.getQueryParameters()))
         {
             logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_BAD_REQUEST+"- {"+HTTPResponses.INVALID_REQUEST+"}");
@@ -137,6 +139,10 @@ public class PriceResource {
 
         if (storeId == null) {
             return getPriceResponse(productContainer, Optional.of(NATIONAL_PRICE_ZONE_ID), Optional.of(NATIONAL_PROMO_ZONE_ID), NATIONAL_ZONE_CURRENCY);
+        }
+        }catch(CouchbaseOperationException e){
+            logger.error("error : {} -> {}", HTTPResponses.INTERNAL_SERVER_ERROR, e.getMessage());
+            return serverError();
         }
 
         return getPriceResponse(storeId, productContainer);
