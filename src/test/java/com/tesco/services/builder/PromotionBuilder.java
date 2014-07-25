@@ -88,6 +88,7 @@ public class PromotionBuilder {
     public Promotion createPromotion() {
         Promotion promotion = new Promotion();
         promotion.setOfferId(this.offerId);
+        promotion.setZoneId(this.zoneId);
         promotion.setEffectiveDate(this.effectiveDate);
         promotion.setEndDate(this.endDate);
         promotion.setOfferName(this.offerName);

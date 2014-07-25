@@ -295,7 +295,7 @@ public class RPMWriterTest {
         mockAsyncProductInsert();
 
         ProductVariant productVariant = createProductVariant(tpnc, zoneId, price, null);
-        ProductVariant productVariant2 = createProductVariant(tpnc, zoneId, price, createPromotion(offerId, offerName, startDate, endDate));
+        ProductVariant productVariant2 = createProductVariant(tpnc, zoneId, price, createPromotion(offerId,zoneId, offerName, startDate, endDate));
         when(productRepository.getByTPNB(tpnb)).thenReturn(Optional.of(createProduct(tpnb, productVariant)), Optional.of(createProduct(tpnb, productVariant2)));
         when(productRepository.getProductTPNC(tpnb)).thenReturn(getTPNCForTPNB(tpnc));
        /* if(!productRepository.isSpaceOrNull(tpnb))
