@@ -96,6 +96,7 @@ public class PriceResource {
 
         Optional<Product> productContainer ;
        /*Added By Nibedita - PS 37 - fetch info based on TPNC - Start*/
+        try {
         if(tpnIdentifier.equalsIgnoreCase("C")){
             String tpnc = tpn;
             try {
