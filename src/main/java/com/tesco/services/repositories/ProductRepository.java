@@ -177,8 +177,10 @@ public class ProductRepository {
     public String getMappedTPNCorTPNB(String tpn){
         String tpnVal = null;
         try {
-              tpnVal = (String)couchbaseWrapper.get(tpn);
-            tpnVal = tpnVal.replace("\"","");
+            if(!isSpaceOrNull(tpn)) {
+                tpnVal = (String) couchbaseWrapper.get(tpn);
+                tpnVal = tpnVal.replace("\"", "");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

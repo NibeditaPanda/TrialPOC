@@ -106,9 +106,15 @@ public class PriceResource {
                 logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_NOT_FOUND+"- {"+PRODUCT_NOT_FOUND+"} -> ("+tpn+")");
                 return notFound(PRODUCT_NOT_FOUND);
             }
+
             String tpnb = productRepository.getMappedTPNCorTPNB(tpnc);
-            if(tpnb.contains("-")) {
+            if(!productRepository.isSpaceOrNull(tpnb)&&tpnb.contains("-")) {
                 tpnb = tpnb.split("-")[0];
+            }
+            if(productRepository.isSpaceOrNull(tpnb))
+            {
+                logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_NOT_FOUND+"- {"+PRODUCT_NOT_FOUND+"} -> ("+tpnc+")");
+                return notFound(PRODUCT_NOT_FOUND);
             }
             productContainer = productRepository.getByTPNB(tpnb,tpnc);
 

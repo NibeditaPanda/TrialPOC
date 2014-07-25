@@ -61,6 +61,7 @@ public class ProductMapper {
         {
             Promotion promotion = new Promotion();
             promotion.setOfferId(promotionInfoMap.get(CSVHeaders.PromoExtract.OFFER_ID));
+            promotion.setZoneId(Integer.parseInt(promotionInfoMap.get(CSVHeaders.PromoExtract.ZONE_ID)));
             promotion.setOfferName(promotionInfoMap.get(CSVHeaders.PromoExtract.OFFER_NAME));
             promotion.setEffectiveDate(promotionInfoMap.get(CSVHeaders.PromoExtract.START_DATE));
             promotion.setEndDate(promotionInfoMap.get(CSVHeaders.PromoExtract.END_DATE));
