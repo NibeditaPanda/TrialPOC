@@ -31,9 +31,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 
-import static com.tesco.services.resources.HTTPResponses.badRequest;
-import static com.tesco.services.resources.HTTPResponses.notFound;
-import static com.tesco.services.resources.HTTPResponses.ok;
+import static com.tesco.services.resources.HTTPResponses.*;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 @Path("/price")
