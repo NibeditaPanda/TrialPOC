@@ -51,10 +51,12 @@ public class PriceServiceCSVReaderImplTest {
 
     @Test
     public void shouldCloseReaderAfterReading() throws Exception {
+        String filePath = "";
         CSVReader csvReaderMock = mock(CSVReader.class);
         when(csvReaderMock.readNext()).thenReturn(new String[]{}).thenReturn(null);
-        PriceServiceCSVReaderImpl csvPriceReader = new PriceServiceCSVReaderImpl(csvReaderMock, new String[]{});
-
+        //Modified By sushil - Added new parameter for filePath - Start
+        PriceServiceCSVReaderImpl csvPriceReader = new PriceServiceCSVReaderImpl(csvReaderMock,filePath, new String[]{});
+        //Modified By sushil - Added new parameter for filePath - End
         csvPriceReader.getNext();
 
         verify(csvReaderMock).close();
