@@ -320,9 +320,10 @@ public class RPMWriterTest {
         assertThat(actualProducts.get(1)).isEqualTo(expectedProduct);
     }
 
-    private Promotion createPromotion(String offerId, String offerName, String startDate, String endDate) {
+    private Promotion createPromotion(String offerId,int zoneId, String offerName, String startDate, String endDate) {
         return new PromotionBuilder()
                 .offerId(offerId)
+                .zoneId(zoneId)
                 .offerName(offerName)
                 .startDate(startDate)
                 .endDate(endDate)
