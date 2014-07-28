@@ -168,7 +168,7 @@ public class PriceResource {
             return getPriceResponse(productContainer, Optional.of(NATIONAL_PRICE_ZONE_ID), Optional.of(NATIONAL_PROMO_ZONE_ID), NATIONAL_ZONE_CURRENCY);
         }
         }catch(CouchbaseOperationException e){
-            logger.error("error : {} -> {}", HTTPResponses.INTERNAL_SERVER_ERROR, e.getMessage());
+            logger.error("error : {}- {} -> {}",serverError().getStatus(), HTTPResponses.INTERNAL_SERVER_ERROR, e.getMessage());
             return serverError();
         }
 
