@@ -49,6 +49,9 @@ public class PriceResource {
 
     public static final String STORE_NOT_FOUND = "Store not found";
     public static final String PRODUCT_NOT_FOUND = "Product not found";
+    /*Added By Surya - PS 30 - Request handling for TPN identifier and value Mismatch  - Start*/
+    public static final String REQUEST_NOT_ALLOWED = "TPN Identifier and Value Mismatch - Invalid Request";
+    /*Added By Surya - PS 30 - Request handling for TPN identifier and value Mismatch  - Start*/
     private static final String PRODUCT_OR_STORE_NOT_FOUND = PRODUCT_NOT_FOUND + " / " + STORE_NOT_FOUND;
     private String uriPath = "";
 
@@ -107,6 +110,14 @@ public class PriceResource {
                 logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_NOT_FOUND+"- {"+PRODUCT_NOT_FOUND+"} -> ("+tpn+")");
                 return notFound(PRODUCT_NOT_FOUND);
             }
+   /*Added By Surya - PS 30 - Request handling for TPN identifier and value Mismatch  - Start*/
+
+            if(tpnc.startsWith("0")){
+                logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_NOT_ACCEPTABLE+"- {"+REQUEST_NOT_ALLOWED+"} -> ("+tpn+")");
+
+            return requestNotAllowed(REQUEST_NOT_ALLOWED);
+            }
+   /*Added By Surya - PS 30 - Request handling for TPN identifier and value Mismatch  - End*/
 
             String tpnb = productRepository.getMappedTPNCorTPNB(tpnc);
             if(!productRepository.isSpaceOrNull(tpnb)&&tpnb.contains("-")) {
@@ -122,6 +133,15 @@ public class PriceResource {
         }
         else if(tpnIdentifier.equalsIgnoreCase("B"))
         {
+    /*Added By Surya - PS 30 - Request handling for TPN identifier and value Mismatch  - Start*/
+
+            if(!tpn.startsWith("0")){
+                logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_NOT_ACCEPTABLE+"- {"+REQUEST_NOT_ALLOWED+"} -> ("+tpn+")");
+
+                return requestNotAllowed(REQUEST_NOT_ALLOWED);
+            }
+   /*Added By Surya - PS 30 - Request handling for TPN identifier and value Mismatch  - End*/
+
             productContainer = productRepository.getByTPNB(tpn);
 
         }

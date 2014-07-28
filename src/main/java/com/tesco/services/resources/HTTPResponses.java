@@ -22,4 +22,10 @@ public class HTTPResponses {
     public static Response serverError() {
         return Response.serverError().entity(String.format("{\"message\":\"%s\"}", INTERNAL_SERVER_ERROR)).build();
     }
+   /*Added By Surya - PS 30 - Request handling for TPN identifier and value Mismatch  - Start*/
+    public static Response requestNotAllowed(String message) {
+        return Response.status(HttpServletResponse.SC_NOT_ACCEPTABLE).entity("{\"message\":\"" + message + "\"}").build();
+    }
+   /*Added By Surya - PS 30 - Request handling for TPN identifier and value Mismatch  - End*/
+
 }

@@ -37,7 +37,7 @@ public class PriceServiceCSVReaderImpl implements PriceServiceCSVReader {
         for (String header : headers) {
             heardersRequiredForServices.add(header);
         }
-        logger.info("Headers Required by the Services are "+heardersRequiredForServices);
+        logger.info("Headers Required by the Services for the extract "+filePath.substring(filePath.lastIndexOf("/")+1)+" are "+heardersRequiredForServices);
         for (String header : headers) {
             headerIndex.put(header, getHeaderIndex(headersInCSVFile, header));
         }
