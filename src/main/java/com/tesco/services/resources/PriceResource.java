@@ -134,7 +134,14 @@ public class PriceResource {
         else if(tpnIdentifier.equalsIgnoreCase("B"))
         {
     /*Added By Surya - PS 30 - Request handling for TPN identifier and value Mismatch  - Start*/
-
+            try {
+                int item = Integer.parseInt(tpn);
+            }
+            catch(NumberFormatException ne)
+            {
+                logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_NOT_FOUND+"- {"+PRODUCT_NOT_FOUND+"} -> ("+tpn+")");
+                return notFound(PRODUCT_NOT_FOUND);
+            }
             if(!tpn.startsWith("0")){
                 logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_NOT_ACCEPTABLE+"- {"+REQUEST_NOT_ALLOWED+"} -> ("+tpn+")");
 
