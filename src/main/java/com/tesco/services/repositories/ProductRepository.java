@@ -167,25 +167,24 @@ public class ProductRepository {
     /*Added By Nibedita - Null/space check - start*/
     public  boolean isSpaceOrNull(Object obj)
     {
-        if(obj == " " || obj == null)
+        if(obj == " " || obj == null || obj == "")
             return true;
         else
             return false;
     }
     /*Added By Nibedita - Null/space check - end*/
     /*Added By Nibedita - PS 78 - fetch item/tpnc based on tpnc/item input  - Start*/
-    public String getMappedTPNCorTPNB(String tpn){
+    /*Modified by Sushil PS-30 Modified method parameter to throw exception -Start */
+    public String getMappedTPNCorTPNB(String tpn) throws CouchbaseOperationException {
         String tpnVal = null;
-        try {
             if(!isSpaceOrNull(tpn)) {
                 tpnVal = (String) couchbaseWrapper.get(tpn);
-                tpnVal = tpnVal.replace("\"", "");
+                if(!isSpaceOrNull(tpnVal))
+                    tpnVal = tpnVal.replace("\"", "");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         return tpnVal;
     }
+    /*Modified by Sushil PS-30 Modified method parameter to throw exception -End */
     /*Added By Nibedita - PS 78 - fetch item/tpnc based on tpnc/item input  - Start*/
     /*Added By Nibedita - Null check and replace old char with new - Start*/
     public String replaceOldValCharWithNewVal(String value, String oldChar, String newChar)
