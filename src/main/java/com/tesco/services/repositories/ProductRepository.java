@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 import com.tesco.couchbase.AsyncCouchbaseWrapper;
 import com.tesco.couchbase.CouchbaseWrapper;
+import com.tesco.couchbase.exceptions.CouchbaseOperationException;
 import com.tesco.couchbase.listeners.GetListener;
 import com.tesco.couchbase.listeners.Listener;
 import com.tesco.couchbase.listeners.SetListener;
