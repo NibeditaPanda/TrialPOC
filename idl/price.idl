@@ -4,7 +4,7 @@ interface Price exposes PriceService {
 
 	@description
 "# Overview
-API to interact with Tesco's base product management processes & product details.
+API to interact with Tesco's base price and promotion details.
 
 ## Purpose
 Price Api can be used for price information.
@@ -13,54 +13,97 @@ Price Api can be used for price information.
 http://api.example.com/v1/price/...
 ``` ";
 
-    @owner "Product and Price Services Team", "Product and Price Services team email", "1.0.0";
-	@author "Maria Gomez / Minno Dang", "Maria.Gomez@uk.tesco.com / Minno.Dang@uk.tesco.com", "1.0.0";
+    @owner "Price Service Team", "Price Service team email", "2.0.0";
+	@author "Mark Nichols", "mark.nichols@uk.tesco.com", "2.0.0";
 	@reviewer "", "","", "";
 
 	@organisation "Tesco";
-	@organisationDomainName "example.com";
-	@namespacePrefix "example.com.services";
-	@version 1.0.0, "draft","2013/6/25","first draft of version 1.0";
+	@organisationDomainName "tesco.com";
+	@namespacePrefix "tesco.com.services";
+	@version 1.0.0, "draft","2014/8/01","first draft of version 2.0";
 
-    list<Price> get(mandatory string itemNumber, string store, string callback) throws PriceUnavailableException {
-    	@description
-        "
+    Price get(mandatory string tpnIdentifier, mandatory string tpn, string store) throws ProductNotFoundException, StoreNotFoundException, InvalidRequestException, InternalServerErrorException {
+    	@description "Find price of product variants by product's base TPNB or variants' TPNC
+
         #Overview
           End point to retrieve information about price for a product by product item number
         ##Example
-          $ curl -I http://productsvc-qa.cloudapp.net/price/059310015
+          $ curl -I http://188.226.184.77/price/B/050017786
             HTTP/1.1 200 OK
             Content-Type: application/json
             
-          $ curl http://productsvc-qa.cloudapp.net/price/059310015
-            [{\"itemNumber\":\"059310015\",\"price\":\"5\",\"promoPrice\":\"5\",\"currency\":\"GBP\"}]
+          $ curl http://188.226.184.77/price/B/050017786
+            [{"tpnb":"050017786","variants":[{"tpnc":"050017786","currency":"GBP","price":"0.29"}]}]
 
        	  Get price for a product with store id
-          $ curl http://productsvc-qa.cloudapp.net/price/059310015?store=2031
+          $ curl http://188.226.184.77/price/B/050017786?store=2031
        "  ;
 
-        @parameter itemNumber, "the identifier for the product to fetch price of";
-        @parameter store, "Store from where to fetch the price for the product";
-        @parameter callback, "optional callback to be executed";
+        @parameter tpnIdentifier, "Type of identifier(B => TPNB, C => TPNC)";
+	    @parameter tpn, "TPNB/TPNC of Product";
+        @parameter store, "ID of Store if a store-specific price is desired";
         @return "Price information for a product";
         @since 1.0.0;
     }
 
-    type Price(string itemNumber, string price, string promoPrice, string currency) {
-        @description "";
-        @parameter itemNumber, "";
-        @parameter price, "";
-        @parameter promoPrice, "";
-        @parameter currency, "";
+    type Price(string tpnb, list<Variant> variants, list<Promotion> promotions) {
+        @description "Current effective price and promotion information for TPNB";
+        @parameter tpnb, "TPNB of the product";
+        @parameter variants, "List of price information by TPNC";
+		@parameter promotions, "List of promotion information by offer";
     }
 
-	exception PriceUnavailableException(
+	type Variant(string tpnc, string price, string promoprice) {
+        @description "Current effective prices for TPNC";
+        @parameter tpnc, "TPNC of the product";
+		@parameter currency, "Currency of prices";
+        @parameter price, "Regular price of the TPNC for UK national zone if no store specified, or specified store";
+		@parameter promoprice, "Promotion price of the TPNC for UK national zone if no store specified, or specified store: null if no effective promotion price";
+	}
+
+	type Promotion(string offerName, string effectiveDate, string endDate) {
+        @description "Promotion information for offer currently effective on the TPNB";
+        @parameter offerName, "Offer id of the promotion";
+		@parameter effectiveDate, "Effective date of the promotion";
+		@parameter endDate, "End date of the promotion";
+        @parameter customerFriendlyDescription1, "1st customer friendly Promotion Description, as set up for labels and POS";
+		@parameter customerFriendlyDescription2, "2st customer friendly Promotion Description, as set up for labels and POS";
+	}
+
+	exception ProductNotFoundException(
 		string message,
 		HttpStatusCode statusCode)
 	{
-		@description "Exception indicating that no price for the item was found.";
-		@parameter message, "No price for the item was found";
-		@parameter statusCode, "Http status code.";
+		@description "Exception indicating that no price for the item was found for the specified product";
+		@parameter message, "message: Product not found";
+		@parameter statusCode, "404";
+	}
+
+	exception StoreNotFoundException(
+		string message,
+		HttpStatusCode statusCode)
+	{
+		@description "Exception indicating that the specified store number was not found";
+		@parameter message, "message: Store not found";
+		@parameter statusCode, "404";
+	}
+
+	exception InvalidRequestException(
+		string message,
+		HttpStatusCode statusCode)
+	{
+		@description "Exception indicating that the request is not understood by the service";
+		@parameter message, "error: Invalid request";
+		@parameter statusCode, "400";
+	}
+
+	exception InternalServerErrorException(
+		string message,
+		HttpStatusCode statusCode)
+	{
+		@description "Exception indicating that an internal server error occurred";
+		@parameter message, "error: Internal server error";
+		@parameter statusCode, "500";
 	}
 
 }
