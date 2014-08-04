@@ -106,7 +106,7 @@ public class RPMWriter {
             DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
             Date date = new Date();
             String updated_date = dateFormat.format(date);
-            product.setLast_updated_dateTime(updated_date);
+            //product.setLast_updated_dateTime(updated_date);
             /*Modified by Nibedita - for adding last_updated_dateTime field in Product JSON document while import - Story 114 -End*/
             productRepository.insertProduct(product,new Listener<Void, Exception>() {
                 @Override

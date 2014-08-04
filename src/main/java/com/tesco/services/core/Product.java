@@ -53,7 +53,7 @@ public class Product implements PriceVisitable, Serializable {
 
         if (!tpnb.equals(product.tpnb)) return false;
         /*Modified by Nibedita - for adding last_updated_dateTime field in Product JSON document while import - Story 114 -Start*/
-        if (!last_updated_dateTime.equals(product.last_updated_dateTime)) return false;
+        //if (!last_updated_dateTime.equals(product.last_updated_dateTime)) return false;
         /*Modified by Nibedita - for adding last_updated_dateTime field in Product JSON document while import - Story 114 -End*/
         if (!tpncToProductVariant.equals(product.tpncToProductVariant)) return false;
 
