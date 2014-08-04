@@ -20,6 +20,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.Map;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+
 public class RPMWriter {
     //TODO: More logging statements
     private Logger logger = LoggerFactory.getLogger("RPM Import");
@@ -97,6 +102,12 @@ public class RPMWriter {
             /*Added by Nibedita - PS 78 - Store ITEM and TPNC key value - Start*/
             productRepository.mapTPNC_TPNB(productInfoMap.get("TPNC"),productInfoMap.get("ITEM"));
             /*Added by Nibedita - PS 78 - Store ITEM and TPNC key value - End*/
+            /*Modified by Nibedita - for adding last_updated_dateTime field in Product JSON document while import - Story 114 -Start*/
+            DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
+            Date date = new Date();
+            String updated_date = dateFormat.format(date);
+            product.setLast_updated_dateTime(updated_date);
+            /*Modified by Nibedita - for adding last_updated_dateTime field in Product JSON document while import - Story 114 -End*/
             productRepository.insertProduct(product,new Listener<Void, Exception>() {
                 @Override
                 public void onComplete(Void aVoid) {

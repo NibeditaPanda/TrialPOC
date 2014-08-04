@@ -19,6 +19,17 @@ public class Product implements PriceVisitable, Serializable {
     @JsonProperty
     private String tpnb;
 
+    public String getLast_updated_dateTime() {
+        return last_updated_dateTime;
+    }
+
+    public void setLast_updated_dateTime(String last_updated_dateTime) {
+        this.last_updated_dateTime = last_updated_dateTime;
+    }
+    /*Modified by Nibedita - for adding last_updated_dateTime field in Product JSON document while import - Story 114 -Start*/
+    @JsonProperty
+     private String last_updated_dateTime;
+    /*Modified by Nibedita - for adding last_updated_dateTime field in Product JSON document while import - Story 114 -End*/
     @JsonProperty
     private Map<String, ProductVariant> tpncToProductVariant = new HashMap<>();
 
@@ -41,6 +52,9 @@ public class Product implements PriceVisitable, Serializable {
         Product product = (Product) o;
 
         if (!tpnb.equals(product.tpnb)) return false;
+        /*Modified by Nibedita - for adding last_updated_dateTime field in Product JSON document while import - Story 114 -Start*/
+        if (!last_updated_dateTime.equals(product.last_updated_dateTime)) return false;
+        /*Modified by Nibedita - for adding last_updated_dateTime field in Product JSON document while import - Story 114 -End*/
         if (!tpncToProductVariant.equals(product.tpncToProductVariant)) return false;
 
         return true;
@@ -52,15 +66,16 @@ public class Product implements PriceVisitable, Serializable {
         result = 31 * result + tpncToProductVariant.hashCode();
         return result;
     }
-
+/*Modified by Nibedita - for adding last_updated_dateTime field in Product JSON document while import - Story 114 -Start*/
     @Override
     public String toString() {
         return "Product{" +
                 "tpnb='" + tpnb + '\'' +
+                "last_updated_dateTime='" + last_updated_dateTime + '\'' +
                 ", tpncToProductVariant=" + tpncToProductVariant +
                 '}';
     }
-
+ /*Modified by Nibedita - for adding last_updated_dateTime field in Product JSON document while import - Story 114 -End*/
     public ProductVariant getProductVariantByTPNC(String tpnc) {
         return tpncToProductVariant.get(tpnc);
     }
