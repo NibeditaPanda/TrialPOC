@@ -7,6 +7,8 @@ import com.tesco.services.repositories.ProductRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class ProductMapper {
@@ -14,19 +16,47 @@ public class ProductMapper {
     private AsyncReadWriteProductRepository asyncReadWriteProductRepository;
     private Logger logger = LoggerFactory.getLogger("RPM Import");
 
+   /* Added by Salman,Rohan and Surya for PS-120 - Start   */
+    private static List<String> priceExtractDataList = new ArrayList<String>();
+   /* Added by Salman,Rohan and Surya for PS-120 - End   */
+
     public ProductMapper(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
-
+   /* Modified by Salman,Rohan and Surya for PS-120 - Start   */
     public Product mapPriceZonePrice(Map<String, String> headerToValueMap) {
-        return mapToProduct(headerToValueMap, CSVHeaders.Price.PRICE_ZONE_ID, CSVHeaders.Price.PRICE_ZONE_PRICE);
+        return mapToProductForPriceZone(headerToValueMap, CSVHeaders.Price.PRICE_ZONE_ID, CSVHeaders.Price.PRICE_ZONE_PRICE);
     }
 
     public Product mapPromoZonePrice(Map<String, String> headerToValueMap) {
-        return mapToProduct(headerToValueMap, CSVHeaders.Price.PROMO_ZONE_ID, CSVHeaders.Price.PROMO_ZONE_PRICE);
+        return mapToProductForPromoZone(headerToValueMap, CSVHeaders.Price.PROMO_ZONE_ID, CSVHeaders.Price.PROMO_ZONE_PRICE);
     }
 
-    private Product mapToProduct(Map<String, String> headerToValueMap, String zoneIdHeader, String priceHeader) {
+    private Product mapToProductForPriceZone(Map<String, String> headerToValueMap, String zoneIdHeader, String priceHeader) {
+        String itemHeader = CSVHeaders.Price.ITEM;
+        String item = headerToValueMap.get(itemHeader);
+        String tpnb = item.split("-")[0];
+        String tpncHeader = CSVHeaders.Price.TPNC;
+        String tpnc = headerToValueMap.get(tpncHeader);
+        Product product;
+       /* Modified by Salman,Rohan and Surya -This check is to Create a new Product from the Price Extracts Even though Promotions Exit as a part of Promotion Purge - Start*/
+        if(priceExtractDataList.contains(tpnb)){
+            product = getProduct(tpnb);
+        }
+        else{
+            priceExtractDataList.add(tpnb);
+            product = new Product(tpnb);
+        }
+       /* Modified by Salman,Rohan and Surya -This check is to Create a new Product from the Price Extracts Even though Promotions Exit as a part of Promotion Purge - End*/
+
+        ProductVariant productVariant = getProductVariant(product, tpnc);
+        final int zoneId = Integer.parseInt(headerToValueMap.get(zoneIdHeader));
+        productVariant.addSaleInfo(new SaleInfo(zoneId, headerToValueMap.get(priceHeader)));
+        return product;
+    }
+
+    private Product mapToProductForPromoZone(Map<String, String> headerToValueMap, String zoneIdHeader, String priceHeader) {
+        priceExtractDataList.clear();
         String itemHeader = CSVHeaders.Price.ITEM;
         String item = headerToValueMap.get(itemHeader);
         String tpncHeader = CSVHeaders.Price.TPNC;
@@ -38,6 +68,7 @@ public class ProductMapper {
         productVariant.addSaleInfo(new SaleInfo(zoneId, headerToValueMap.get(priceHeader)));
         return product;
     }
+   /* Modified by Salman,Rohan and Surya for PS-120 - End   */
 
 
     public Product mapPromotion(Map<String, String> promotionInfoMap) {
