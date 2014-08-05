@@ -10,6 +10,7 @@ import com.tesco.couchbase.testutils.BucketTool;
 import com.tesco.couchbase.testutils.CouchbaseTestManager;
 import com.tesco.couchbase.testutils.CouchbaseWrapperStub;
 import com.tesco.services.Configuration;
+import com.tesco.services.adapters.core.exceptions.ColumnNotFoundException;
 import com.tesco.services.adapters.rpm.comparators.RPMComparator;
 import com.tesco.services.adapters.rpm.readers.PriceServiceCSVReader;
 import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
@@ -34,7 +35,11 @@ import org.mockito.internal.matchers.CapturingMatcher;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
+import org.xml.sax.SAXException;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -148,8 +153,11 @@ public class RPMWriterTest {
 
         Product product = createProductWithVariant(itemNumber, tpnc);
         mockAsyncProductInsert();
+//Changes made By Surya for PS-120 . The JUnit should pass for the Code which will Create a new Product for the first time and then amend Multiple Price zones- Start
+       // when(productRepository.getByTPNB(itemNumber)).thenReturn(Optional.<Product>absent()).thenReturn(Optional.of(product));
+        when(productRepository.getByTPNB(itemNumber)).thenReturn(Optional.of(product));
+ //Changes made By Surya for PS-120 . The JUnit should pass for the Code which will Create a new Product for the first time and then amend Multiple Price zones - End
 
-        when(productRepository.getByTPNB(itemNumber)).thenReturn(Optional.<Product>absent()).thenReturn(Optional.of(product));
         mockAsyncProductInsert();
         this.rpmWriter.write();
 
