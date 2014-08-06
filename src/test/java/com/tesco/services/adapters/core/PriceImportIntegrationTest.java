@@ -106,7 +106,7 @@ public class PriceImportIntegrationTest extends ImportJobIntegrationTestBase {
         product.addProductVariant(productVariant2);
         ProductRepository productRepository = new ProductRepository(couchbaseWrapper,asyncCouchbaseWrapper,new ObjectMapper());
         TestListener<Void, Exception> listener = new TestListener<>();
-
+        product.setLast_updated_date("20140806");
         productRepository.insertProduct(product,listener);
         assertThat(productRepository.getByTPNB(tpnb).get()).isEqualTo(product);
         assertThat(productRepository.getByTPNB(oldTpnb).isPresent()).isFalse();

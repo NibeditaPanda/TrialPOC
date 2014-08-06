@@ -15,6 +15,7 @@ import com.tesco.services.core.Product;
 import com.tesco.services.core.ProductVariant;
 import com.tesco.services.core.Store;
 import com.tesco.services.exceptions.InvalidDataException;
+import com.tesco.services.utility.Dockyard;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -128,9 +129,9 @@ public class ProductRepository {
         try {
             String itemJson = mapper.writeValueAsString(ITEM);
             String tpncJson = mapper.writeValueAsString(TPNC);
-            if(isSpaceOrNull(couchbaseWrapper.get(TPNC)))
+            if(Dockyard.isSpaceOrNull(couchbaseWrapper.get(TPNC)))
                 couchbaseWrapper.set(TPNC, itemJson);
-            if(isSpaceOrNull(couchbaseWrapper.get(ITEM)))
+            if(Dockyard.isSpaceOrNull(couchbaseWrapper.get(ITEM)))
                 couchbaseWrapper.set(ITEM, tpncJson);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -140,7 +141,7 @@ public class ProductRepository {
     public String getProductTPNC(String item) {
 
         String tpnc = (String)couchbaseWrapper.get(item);
-        tpnc = replaceOldValCharWithNewVal(tpnc,"\"","");
+        tpnc = Dockyard.replaceOldValCharWithNewVal(tpnc,"\"","");
         return tpnc;
     }
     /*Added By Nibedita - PS 78 - Store ITEM and TPNC key value - End*/
@@ -165,36 +166,19 @@ public class ProductRepository {
         }
         return (productvar != null) ? Optional.of(productvar) : Optional.<Product>absent();
     }
-    /*Added By Nibedita - Null/space check - start*/
-    public  boolean isSpaceOrNull(Object obj)
-    {
-        if(obj == " " || obj == null || obj == "")
-            return true;
-        else
-            return false;
-    }
-    /*Added By Nibedita - Null/space check - end*/
+
     /*Added By Nibedita - PS 78 - fetch item/tpnc based on tpnc/item input  - Start*/
     /*Modified by Sushil PS-30 Modified method parameter to throw exception -Start */
     public String getMappedTPNCorTPNB(String tpn) throws CouchbaseOperationException {
         String tpnVal = null;
-            if(!isSpaceOrNull(tpn)) {
+            if(!Dockyard.isSpaceOrNull(tpn)) {
                 tpnVal = (String) couchbaseWrapper.get(tpn);
-                if(!isSpaceOrNull(tpnVal))
+                if(!Dockyard.isSpaceOrNull(tpnVal))
                     tpnVal = tpnVal.replace("\"", "");
             }
         return tpnVal;
     }
     /*Modified by Sushil PS-30 Modified method parameter to throw exception -End */
-    /*Added By Nibedita - PS 78 - fetch item/tpnc based on tpnc/item input  - Start*/
-    /*Added By Nibedita - Null check and replace old char with new - Start*/
-    public String replaceOldValCharWithNewVal(String value, String oldChar, String newChar)
-    {
-        if(!isSpaceOrNull(value) && value.contains(oldChar))
-            return(value.replace(oldChar,newChar));
-        else
-            return value;
+    /*Added By Nibedita - PS 78 - fetch item/tpnc based on tpnc/item input  - End*/
 
-    }
-    /*Added By Nibedita -  Null check and replace old char with new - Start*/
 }

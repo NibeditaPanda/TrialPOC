@@ -11,6 +11,7 @@ import com.tesco.services.repositories.AsyncReadWriteProductRepository;
 import com.tesco.services.repositories.ProductRepository;
 import com.tesco.services.repositories.PromotionRepository;
 import com.tesco.services.repositories.StoreRepository;
+import com.tesco.services.utility.Dockyard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -102,12 +103,12 @@ public class RPMWriter {
             /*Added by Nibedita - PS 78 - Store ITEM and TPNC key value - Start*/
             productRepository.mapTPNC_TPNB(productInfoMap.get("TPNC"),productInfoMap.get("ITEM"));
             /*Added by Nibedita - PS 78 - Store ITEM and TPNC key value - End*/
-            /*Modified by Nibedita - for adding last_updated_dateTime field in Product JSON document while import - Story 114 -Start*/
-            DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
+            /*Modified by Nibedita - for adding last_updated_date field in Product JSON document while import - Story 114 -Start*/
+           /* DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
             Date date = new Date();
-            String updated_date = dateFormat.format(date);
-            //product.setLast_updated_dateTime(updated_date);
-            /*Modified by Nibedita - for adding last_updated_dateTime field in Product JSON document while import - Story 114 -End*/
+            String updated_date = dateFormat.format(date);*/
+            product.setLast_updated_date(Dockyard.getSysDate("yyyyMMdd"));
+            /*Modified by Nibedita - for adding last_updated_date field in Product JSON document while import - Story 114 -End*/
             productRepository.insertProduct(product,new Listener<Void, Exception>() {
                 @Override
                 public void onComplete(Void aVoid) {

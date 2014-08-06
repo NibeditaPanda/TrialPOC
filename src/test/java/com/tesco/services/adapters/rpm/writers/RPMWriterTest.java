@@ -454,6 +454,7 @@ public class RPMWriterTest {
     private Product createProduct(String tpnb, ProductVariant productVariant) {
         Product product = new Product(tpnb);
         product.addProductVariant(productVariant);
+        product.setLast_updated_date("20140806");
         return product;
     }
 

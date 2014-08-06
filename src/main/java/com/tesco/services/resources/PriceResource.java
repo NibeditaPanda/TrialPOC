@@ -11,6 +11,7 @@ import com.tesco.services.core.Store;
 import com.tesco.services.repositories.CouchbaseConnectionManager;
 import com.tesco.services.repositories.ProductRepository;
 import com.tesco.services.repositories.StoreRepository;
+import com.tesco.services.utility.Dockyard;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -120,10 +121,10 @@ public class PriceResource {
    /*Added By Surya - PS 30 - Request handling for TPN identifier and value Mismatch  - End*/
 
             String tpnb = productRepository.getMappedTPNCorTPNB(tpnc);
-            if(!productRepository.isSpaceOrNull(tpnb)&&tpnb.contains("-")) {
+            if(!Dockyard.isSpaceOrNull(tpnb)&&tpnb.contains("-")) {
                 tpnb = tpnb.split("-")[0];
             }
-            if(productRepository.isSpaceOrNull(tpnb))
+            if(Dockyard.isSpaceOrNull(tpnb))
             {
                 logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_NOT_FOUND+"- {"+PRODUCT_NOT_FOUND+"} -> ("+tpnc+")");
                 return notFound(PRODUCT_NOT_FOUND);
