@@ -21,6 +21,11 @@ couchbase.password: "tesco"
 couchbase.admin.username: "xd18"
 couchbase.admin.password: "PriceService"
 
+couchbase.designdoc.design.name: "dev_test"
+couchbase.designdoc.view.name: "testView"
+couchbase.designdoc.view.pageno: 10
+priceservice.price.last_updated_days: 2
+
 dummyCouchbaseMode: true
 
 hostedGraphite:

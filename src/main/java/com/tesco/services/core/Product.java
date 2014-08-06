@@ -92,4 +92,8 @@ public class Product implements PriceVisitable, Serializable {
             productVariant.accept(productPriceVisitor);
         }
     }
+/*Added by salman for PS-114*/
+    public Map<String,ProductVariant> getTpncToProductVariant() {
+        return tpncToProductVariant;
+    }
 }

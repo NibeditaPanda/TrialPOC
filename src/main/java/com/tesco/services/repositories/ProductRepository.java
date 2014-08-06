@@ -12,10 +12,7 @@ import com.google.common.base.Optional;
 import com.tesco.couchbase.AsyncCouchbaseWrapper;
 import com.tesco.couchbase.CouchbaseWrapper;
 import com.tesco.couchbase.exceptions.CouchbaseOperationException;
-import com.tesco.couchbase.listeners.GetListener;
-import com.tesco.couchbase.listeners.GetViewListener;
-import com.tesco.couchbase.listeners.Listener;
-import com.tesco.couchbase.listeners.SetListener;
+import com.tesco.couchbase.listeners.*;
 import com.tesco.services.Configuration;
 import com.tesco.services.core.Product;
 import com.tesco.services.core.ProductVariant;
@@ -29,6 +26,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Iterator;
+import java.util.Set;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -207,7 +205,7 @@ public class ProductRepository {
                         } catch (JsonProcessingException e) {
                             logger.error("error : Error in querying view : "+e.getMessage());
                         }
-                        logger.info("message : Successfully completed delete operation for products");
+
                     }
 
                     @Override
@@ -236,14 +234,47 @@ public class ProductRepository {
         query.setKey(last_update_date_key);
         final Iterator<ViewResponse> paginator = asyncCouchbaseWrapper.paginatedQuery(view, query, configuration.getPaginationCount());
         while(paginator.hasNext()){
-
             ViewResponse response = paginator.next();
             for(ViewRow row : response) {
-                logger.info("message : initializing delete operation....");
-                System.out.println("view data : id : " + row.getId() + " key : " + row.getKey() + " value : " + row.getValue());
+                logger.info("message : Initializing delete operation for Products Last Updated on "+last_update_date_key);
+                logger.info("view data : id : " + row.getId() + " key : " + row.getKey() + " value : " + row.getValue());
+                delete_TPNB_TPNC_VAR(row.getId());
             }
         }
 
     }
     /*Added by Sushil PS-114 to get view information from couchbase and process those products which are not update for more than 2 days- end*/
+
+        /*Added by Salman for PS-114 to delete the results return from the view - Start*/
+    public void delete_TPNB_TPNC_VAR(String product_key){
+        Product product= getByTPNB(product_key.split("_")[1]).or(new Product());
+        Set<String> tpncList=product.getTpncToProductVariant().keySet();
+
+        Iterator tpnciterator =tpncList.iterator();
+        while (tpnciterator.hasNext()) {
+            String tpnc=tpnciterator.next().toString();
+            String tpnborvar=getMappedTPNCorTPNB(tpnc);
+            deleteProduct(tpnborvar);
+            deleteProduct(tpnc);
+        }
+        deleteProduct(product_key);
+
+    }
+    public void deleteProduct(String product_key){
+       final String productKey = product_key;
+        asyncCouchbaseWrapper.delete(product_key, new DeleteListener(asyncCouchbaseWrapper, product_key) {
+            @Override
+            public void process() {
+                logger.info("Product : "+productKey +": is deleted");
+            }
+
+            @Override
+            public void onException(Exception e) {
+
+            }
+        });
+    }
+        /*Added by Salman for PS-114 to delete the results return from the view - End*/
+
 }
+
