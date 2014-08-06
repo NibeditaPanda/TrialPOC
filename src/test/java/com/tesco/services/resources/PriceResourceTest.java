@@ -23,6 +23,7 @@ import com.tesco.services.exceptions.ItemNotFoundException;
 import com.tesco.services.repositories.CouchbaseConnectionManager;
 import com.tesco.services.repositories.ProductRepository;
 import com.tesco.services.repositories.StoreRepository;
+import com.tesco.services.utility.Dockyard;
 import com.yammer.dropwizard.testing.ResourceTest;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.*;
@@ -188,7 +189,7 @@ public class PriceResourceTest extends ResourceTest {
     private Product createProductWithVariants(String tpnb, String tpnc1, String tpnc2) {
         ProductVariant productVariant1 = null;
         ProductVariant productVariant2 = null;
-        if(!productRepository.isSpaceOrNull(tpnc1)) {
+        if(!Dockyard.isSpaceOrNull(tpnc1)) {
             productVariant1 = new ProductVariant(tpnc1);
             productVariant1.addSaleInfo(new SaleInfo(1, "1.40"));
             SaleInfo promoSaleInfo = new SaleInfo(5, "1.20");
@@ -196,15 +197,15 @@ public class PriceResourceTest extends ResourceTest {
             productVariant1.addSaleInfo(promoSaleInfo);
             productVariant1.addSaleInfo(new SaleInfo(14, "1.10"));
         }
-        if(!productRepository.isSpaceOrNull(tpnc2)) {
+        if(!Dockyard.isSpaceOrNull(tpnc2)) {
             productVariant2 = new ProductVariant(tpnc2);
             productVariant2.addSaleInfo(new SaleInfo(1, "1.39"));
             productVariant2.addSaleInfo(new SaleInfo(6, "1.38"));
         }
         Product product = new Product(tpnb);
-        if(!productRepository.isSpaceOrNull(productVariant1))
+        if(!Dockyard.isSpaceOrNull(productVariant1))
             product.addProductVariant(productVariant1);
-        if(!productRepository.isSpaceOrNull(productVariant2))
+        if(!Dockyard.isSpaceOrNull(productVariant2))
             product.addProductVariant(productVariant2);
 
         return product;
@@ -223,9 +224,9 @@ public class PriceResourceTest extends ResourceTest {
 
     private Map<String, Object> expectedProductPriceInfo(String tpnb, String tpnc1, String tpnc2) {
         ArrayList<Map<String, Object>> variants = new ArrayList<>();
-        if(!productRepository.isSpaceOrNull(tpnc1))
+        if(!Dockyard.isSpaceOrNull(tpnc1))
             variants.add(getVariantInfo(tpnc1, "GBP", "1.40", "1.20", true));
-        if(!productRepository.isSpaceOrNull(tpnc2))
+        if(!Dockyard.isSpaceOrNull(tpnc2))
             variants.add(getVariantInfo(tpnc2, "GBP", "1.39", null, true));
 
         return getProductPriceMap(tpnb, variants);
@@ -273,11 +274,11 @@ public class PriceResourceTest extends ResourceTest {
         String tpnc2 = null;
         Product product = createProductWithVariants(tpnb, tpnc, tpnc2);
         productRepository.put(product);
-       if(!productRepository.isSpaceOrNull(tpnb) && !productRepository.isSpaceOrNull(tpnc)) {
+       if(!Dockyard.isSpaceOrNull(tpnb) && !Dockyard.isSpaceOrNull(tpnc)) {
             couchbaseWrapper.set(tpnb, tpnc);
             couchbaseWrapper.set(tpnc, tpnb);
         }
-        if(!productRepository.isSpaceOrNull(tpnb) && !productRepository.isSpaceOrNull(tpnc2)) {
+        if(!Dockyard.isSpaceOrNull(tpnb) && !Dockyard.isSpaceOrNull(tpnc2)) {
             couchbaseWrapper.set(tpnb, tpnc2);
             couchbaseWrapper.set(tpnc2, tpnb);
         }
@@ -302,11 +303,11 @@ public class PriceResourceTest extends ResourceTest {
         String storeId = "2002";
         storeRepository.put(new Store(storeId, Optional.of(5), Optional.of(14), "EUR"));
 
-        if(!productRepository.isSpaceOrNull(tpnb) && !productRepository.isSpaceOrNull(tpnc1)) {
+        if(!Dockyard.isSpaceOrNull(tpnb) && !Dockyard.isSpaceOrNull(tpnc1)) {
             couchbaseWrapper.set(tpnb, tpnc1);
             couchbaseWrapper.set(tpnc1, tpnb);
         }
-        if(!productRepository.isSpaceOrNull(tpnb) && !productRepository.isSpaceOrNull(tpnc2)) {
+        if(!Dockyard.isSpaceOrNull(tpnb) && !Dockyard.isSpaceOrNull(tpnc2)) {
             couchbaseWrapper.set(tpnb, tpnc2);
             couchbaseWrapper.set(tpnc2, tpnb);
         }
@@ -317,9 +318,9 @@ public class PriceResourceTest extends ResourceTest {
         Map actualProductPriceInfo = resource.get(Map.class);
 
         ArrayList<Map<String, Object>> variants = new ArrayList<>();
-        if(!productRepository.isSpaceOrNull(tpnc1))
+        if(!Dockyard.isSpaceOrNull(tpnc1))
             variants.add(getVariantInfo(tpnc1, "EUR", "1.20" ,"1.10", false));
-        if(!productRepository.isSpaceOrNull(tpnc2))
+        if(!Dockyard.isSpaceOrNull(tpnc2))
             variants.add(getVariantInfo(tpnc2, "EUR", "1.38", null, false));
 
         compareResponseMaps(actualProductPriceInfo, getProductPriceMap(tpnb, variants));
@@ -341,11 +342,11 @@ public class PriceResourceTest extends ResourceTest {
         String tpnc1 = "284347092";
         String tpnc2 = null;
         productRepository.put(createProductWithVariants(tpnb,tpnc1,tpnc2));
-        if(!productRepository.isSpaceOrNull(tpnb) && !productRepository.isSpaceOrNull(tpnc1)) {
+        if(!Dockyard.isSpaceOrNull(tpnb) && !Dockyard.isSpaceOrNull(tpnc1)) {
             couchbaseWrapper.set(tpnb, tpnc1);
             couchbaseWrapper.set(tpnc1, tpnb);
         }
-        if(!productRepository.isSpaceOrNull(tpnb) && !productRepository.isSpaceOrNull(tpnc2)) {
+        if(!Dockyard.isSpaceOrNull(tpnb) && !Dockyard.isSpaceOrNull(tpnc2)) {
             couchbaseWrapper.set(tpnb, tpnc2);
             couchbaseWrapper.set(tpnc2, tpnb);
         }
@@ -363,11 +364,11 @@ public class PriceResourceTest extends ResourceTest {
         String tpnc1 = "284347092";
         String tpnc2 = null;
         productRepository.put(createProductWithVariants(tpnb,tpnc1,tpnc2));
-        if(!productRepository.isSpaceOrNull(tpnb) && !productRepository.isSpaceOrNull(tpnc1)) {
+        if(!Dockyard.isSpaceOrNull(tpnb) && !Dockyard.isSpaceOrNull(tpnc1)) {
             couchbaseWrapper.set(tpnb, tpnc1);
             couchbaseWrapper.set(tpnc1, tpnb);
         }
-        if(!productRepository.isSpaceOrNull(tpnb) && !productRepository.isSpaceOrNull(tpnc2)) {
+        if(!Dockyard.isSpaceOrNull(tpnb) && !Dockyard.isSpaceOrNull(tpnc2)) {
             couchbaseWrapper.set(tpnb, tpnc2);
             couchbaseWrapper.set(tpnc2, tpnb);
         }

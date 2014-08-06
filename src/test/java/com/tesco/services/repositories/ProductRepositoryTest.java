@@ -76,6 +76,7 @@ public class ProductRepositoryTest /*extends IntegrationTest*/{
 
     @Test
     public void shouldCacheProductByTPNB() throws Exception {
+        product.setLast_updated_date("20140806");
         productRepository.put(product);
         assertThat(productRepository.getByTPNB(tpnb).get()).isEqualTo(product);
     }
