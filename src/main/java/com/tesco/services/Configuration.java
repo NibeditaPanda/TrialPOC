@@ -144,4 +144,23 @@ public class Configuration extends com.yammer.dropwizard.config.Configuration {
     protected void setCouchbaseBucket(String couchbaseBucket){
         this.couchbaseBucket = couchbaseBucket;
     }
+
+    /*Added by Sushil PS-114 to configure couchbase's design doc and view name- Start*/
+    @JsonProperty("couchbase.designdoc.design.name")
+    private String couchBaseDesignDocName;
+
+    @JsonProperty("couchbase.designdoc.view.name")
+    private String couchBaseViewName;
+
+    @JsonProperty("couchbase.designdoc.view.pageno")
+    private Integer paginationCount;
+
+    @JsonProperty("priceservice.price.last_updated_days")
+    private Integer lastUpdatedPurgeDays;
+
+    public String getCouchBaseDesignDocName(){return couchBaseDesignDocName;}
+    public String getCouchBaseViewName(){return couchBaseViewName;}
+    public Integer getPaginationCount(){return paginationCount;}
+    public Integer getLastUpdatedPurgeDays(){return lastUpdatedPurgeDays;}
+    /*Added by Sushil PS-114 to configure couchbase's design doc and view name- Start*/
 }

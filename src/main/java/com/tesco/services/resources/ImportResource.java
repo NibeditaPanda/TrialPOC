@@ -6,6 +6,7 @@ import com.tesco.couchbase.CouchbaseWrapper;
 import com.tesco.services.Configuration;
 import com.tesco.services.adapters.core.ImportJob;
 import com.tesco.services.repositories.CouchbaseConnectionManager;
+import com.tesco.services.repositories.ProductRepository;
 import com.yammer.metrics.annotation.ExceptionMetered;
 import com.yammer.metrics.annotation.Metered;
 import com.yammer.metrics.annotation.Timed;
@@ -64,6 +65,9 @@ public class ImportResource {
                     couchbaseWrapper,
                     asyncCouchbaseWrapper);
             Thread thread = new Thread(importJob);
+            /*Added by Sushil PS-114 to initialize configuration information for products- Start*/
+            ProductRepository productRepository  = new ProductRepository(configuration);
+            /*Added by Sushil PS-114 to initialize configuration information for products- End*/
             thread.start();
         } catch (ConfigurationException e) {
             logger.info("error : Import Failed - "+((ResponseImpl)Response.serverError().build()).getStatusType().getStatusCode()+"-{"
