@@ -28,6 +28,8 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -85,7 +87,6 @@ public class ProductRepositoryTest /*extends IntegrationTest*/{
 
         mapper = new ObjectMapper();
         productRepository = new ProductRepository(this.couchbaseWrapper,asyncCouchbaseWrapper, mapper);
-        productRepository1 = new ProductRepository(testConfiguration);
         //readWriteProductRepository = new AsyncReadWriteProductRepository(this.asyncCouchbaseWrapper, mapper);
 
         absent = Optional.absent();
@@ -128,9 +129,9 @@ public class ProductRepositoryTest /*extends IntegrationTest*/{
         TestListener<Void, Exception> listener = new TestListener<>();
         TestListener<Product, Exception> productListner = new TestListener<>();
 
-        productRepository.insertProduct(product,listener);
+        productRepository.insertProduct(product, listener);
        // productRepository.put(product);
-        productRepository.getProductByTPNB(tpnb,productListner);
+        productRepository.getProductByTPNB(tpnb, productListner);
         assertThat(productRepository.getProductIdentified().getTPNB()).isEqualTo(product.getTPNB());
     }
 
@@ -249,10 +250,10 @@ public class ProductRepositoryTest /*extends IntegrationTest*/{
 /*Added by Surya for PS-114. This Junit will Delete the elements from CB -  End*/
       @Ignore
        @Test
-       public void testView() throws JsonProcessingException {
+       public void testView() throws Exception {
             TestListener<Void, Exception> listener = new TestListener<>();
              createView(listener);
-
+            CouchbaseClient couchbaseClient = new CouchbaseConnectionManager(new TestConfiguration()).getCouchbaseClient();
            String last_update_date_key ="";
            DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
            Calendar cal = Calendar.getInstance();
@@ -261,7 +262,7 @@ public class ProductRepositoryTest /*extends IntegrationTest*/{
            Product product = new Product(tpnb);
            product.setLast_updated_date(last_update_date_key);
            couchbaseWrapper.set(getProductKey(tpnb),mapper.writeValueAsString(product));
-           productRepository.getViewResult(listener);
+           productRepository.getViewResult(couchbaseClient,testConfiguration);
            assertThat(productRepository.getByTPNB(tpnb).isPresent()).isFalse();
 
 

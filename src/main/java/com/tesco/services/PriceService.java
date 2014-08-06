@@ -1,5 +1,6 @@
 package com.tesco.services;
 
+import com.couchbase.client.CouchbaseClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import com.tesco.couchbase.AsyncCouchbaseWrapper;
@@ -15,10 +16,7 @@ import com.tesco.services.mappers.InvalidUrlMapper;
 import com.tesco.services.mappers.ServerErrorMapper;
 import com.tesco.services.metrics.ResourceMetricsListener;
 import com.tesco.services.repositories.*;
-import com.tesco.services.resources.ImportResource;
-import com.tesco.services.resources.PriceResource;
-import com.tesco.services.resources.PromotionResource;
-import com.tesco.services.resources.VersionResource;
+import com.tesco.services.resources.*;
 import com.wordnik.swagger.config.ConfigFactory;
 import com.wordnik.swagger.config.ScannerFactory;
 import com.wordnik.swagger.config.SwaggerConfig;
@@ -41,12 +39,10 @@ import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.PicoContainer;
 import org.picocontainer.injectors.FactoryInjector;
 
+import java.io.IOException;
 import java.lang.management.MemoryUsage;
 import java.lang.reflect.Type;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -96,12 +92,14 @@ public class PriceService extends Service<Configuration> {
         resourceAdaptors.put(ImportResource.class, importResourceInjector());
         resourceAdaptors.put(PriceResource.class, priceResourceInjector());
         resourceAdaptors.put(PromotionResource.class, promotionResourceInjector());
+        resourceAdaptors.put(ItemPurgeResource.class, itemPurgeResourceInjector());
 
 
         HashSet<Class> resourceList = new HashSet<>();
         resourceList.add(ImportResource.class);
         resourceList.add(PriceResource.class);
         resourceList.add(PromotionResource.class);
+        resourceList.add(ItemPurgeResource.class);
 
         // Lets actually add the resources. We have to do it in two places.
         // 1 is in the environment to let jersey know about them
@@ -152,6 +150,23 @@ public class PriceService extends Service<Configuration> {
                 //ObjectMapper mapper = picoContainer.getComponent(ObjectMapper.class);
                 PromotionRepository promotionRepository = picoContainer.getComponent(PromotionRepository.class);
                 return new PromotionResource(promotionRepository);
+            }
+        };
+    }
+    private FactoryInjector<ItemPurgeResource> itemPurgeResourceInjector() {
+        return new FactoryInjector<ItemPurgeResource>() {
+            @Override
+            public ItemPurgeResource getComponentInstance(PicoContainer picoContainer, Type type) {
+                CouchbaseWrapper couchbaseWrapper = picoContainer.getComponent(CouchbaseWrapper.class);
+                AsyncCouchbaseWrapper asyncCouchbaseWrapper = picoContainer.getComponent(AsyncCouchbaseWrapper.class);
+                ObjectMapper mapper = picoContainer.getComponent(ObjectMapper.class);
+                Configuration configuration = picoContainer.getComponent(Configuration.class);
+                CouchbaseClient couchbaseClient = null;
+                try {
+                    couchbaseClient = new CouchbaseConnectionManager(configuration).getCouchbaseClient();
+                } catch (Exception e){
+                }
+                return new ItemPurgeResource(configuration, couchbaseWrapper,asyncCouchbaseWrapper,mapper,couchbaseClient);
             }
         };
     }

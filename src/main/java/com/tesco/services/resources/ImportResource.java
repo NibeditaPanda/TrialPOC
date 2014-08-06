@@ -65,9 +65,6 @@ public class ImportResource {
                     couchbaseWrapper,
                     asyncCouchbaseWrapper);
             Thread thread = new Thread(importJob);
-            /*Added by Sushil PS-114 to initialize configuration information for products- Start*/
-            ProductRepository productRepository  = new ProductRepository(configuration);
-            /*Added by Sushil PS-114 to initialize configuration information for products- End*/
             thread.start();
         } catch (ConfigurationException e) {
             logger.info("error : Import Failed - "+((ResponseImpl)Response.serverError().build()).getStatusType().getStatusCode()+"-{"

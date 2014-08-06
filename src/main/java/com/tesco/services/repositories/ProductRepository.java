@@ -43,17 +43,9 @@ public class ProductRepository {
     }
 
     private Product productIdentified;
-    /*Added by Sushil PS-114 to initialize configuration information- start*/
-    private static Configuration configuration;
-    /*Added by Sushil PS-114 to initialize configuration information- end*/
     public ProductRepository(CouchbaseClient couchbaseClient) {
         this.couchbaseClient = couchbaseClient;
     }
-    /*Added by Sushil PS-114 to initialize configuration information- start*/
-    public ProductRepository(Configuration configuration) {
-        this.configuration = configuration;
-    }
-    /*Added by Sushil PS-114 initialize configuration information- end*/
     public ProductRepository(CouchbaseWrapper couchbaseWrapper,AsyncCouchbaseWrapper asyncCouchbaseWrapper,ObjectMapper mapper) {
         this.couchbaseWrapper = couchbaseWrapper;
         this.asyncCouchbaseWrapper = asyncCouchbaseWrapper;
@@ -194,35 +186,12 @@ public class ProductRepository {
     /*Modified by Sushil PS-30 Modified method parameter to throw exception -End */
     /*Added By Nibedita - PS 78 - fetch item/tpnc based on tpnc/item input  - End*/
  /*Added by Sushil PS-114 to get view information from couchbase and process those products which are not update for more than 2 days- start*/
-    public void getViewResult(final Listener<Void, Exception> listener){
-        asyncCouchbaseWrapper.getView(configuration.getCouchBaseDesignDocName(), configuration.getCouchBaseViewName(),
-                new GetViewListener(asyncCouchbaseWrapper, configuration.getCouchBaseDesignDocName(), configuration.getCouchBaseViewName()) {
-                    @Override
-                    public void process(View view){
-                        logger.info("Executing view to get products which are not updated");
-                        try {
-                            runView(view);
-                        } catch (JsonProcessingException e) {
-                            logger.error("error : Error in querying view : "+e.getMessage());
-                        }
-
-                    }
-
-                    @Override
-                    public void notFound() {
-
-                    }
-
-                    @Override
-                    public void onException(Exception e) {
-                        logger.info("Failed to get view", e);
-                        listener.onException(e);
-                    }
-                });
-
+    public void getViewResult(CouchbaseClient couchbaseClient, Configuration configuration) throws Exception {
+       View view =  couchbaseClient.getView(configuration.getCouchBaseDesignDocName(), configuration.getCouchBaseViewName());
+         runView(view, couchbaseClient, configuration);
     }
 
-    private void runView(View view) throws JsonProcessingException{
+    private void runView(View view, CouchbaseClient couchbaseClient,Configuration configuration) throws Exception{
         String last_update_date_key ="";
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Calendar cal = Calendar.getInstance();
@@ -232,16 +201,14 @@ public class ProductRepository {
 
         Query query = new Query();
         query.setKey(last_update_date_key);
-        final Iterator<ViewResponse> paginator = asyncCouchbaseWrapper.paginatedQuery(view, query, configuration.getPaginationCount());
-        while(paginator.hasNext()){
-            ViewResponse response = paginator.next();
-            for(ViewRow row : response) {
-                logger.info("message : Initializing delete operation for Products Last Updated on "+last_update_date_key);
-                logger.info("view data : id : " + row.getId() + " key : " + row.getKey() + " value : " + row.getValue());
-                delete_TPNB_TPNC_VAR(row.getId());
-            }
-        }
 
+        ViewResponse response = couchbaseClient.query(view, query);
+        logger.info("message : Initializing purge operation for Products Last Updated on "+last_update_date_key);
+        for(ViewRow row : response) {
+            logger.info("view data : id : " + row.getId() + " key : " + row.getKey() + " value : " + row.getValue());
+            delete_TPNB_TPNC_VAR(row.getId());
+        }
+        logger.info("message : Purge operation completed");
     }
     /*Added by Sushil PS-114 to get view information from couchbase and process those products which are not update for more than 2 days- end*/
 
@@ -265,7 +232,7 @@ public class ProductRepository {
         asyncCouchbaseWrapper.delete(product_key, new DeleteListener(asyncCouchbaseWrapper, product_key) {
             @Override
             public void process() {
-                logger.info("Product : "+productKey +": is deleted");
+                logger.info("message : Product : "+productKey +": is deleted");
             }
 
             @Override

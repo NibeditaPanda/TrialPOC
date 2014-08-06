@@ -76,9 +76,6 @@ public class RPMWriter {
         writePromotions();
         writePromotionsDesc();
         writeStoreZones();
-        /*Added by Sushil PS-114 to access view created in couchbase- Start*/
-        getCouchBaseView();
-        /*Added by Sushil PS-114 to access view created in couchbase- End*/
     }
 
     private void writeStoreZones() throws IOException {
@@ -174,20 +171,4 @@ public class RPMWriter {
             });
         }
     }
-    /*Added by Sushil PS-114 - Start*/
-    /**
-     * This will get view information from couchbase and process those products which are not update for more than 2 days
-     * @throws IOException
-     */
-    private void getCouchBaseView() throws IOException {
-        productRepository.getViewResult(new Listener<Void, Exception>(){
-            @Override
-            public void onComplete(Void aVoid) {
-            }
-            @Override
-            public void onException(Exception e) {
-            }
-        });
-    }
-    /*Added by Sushil PS-114 - End*/
 }
