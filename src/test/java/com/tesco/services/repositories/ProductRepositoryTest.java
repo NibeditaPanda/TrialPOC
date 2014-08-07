@@ -59,6 +59,7 @@ public class ProductRepositoryTest /*extends IntegrationTest*/{
 
    private Configuration testConfiguration;
    private ProductRepository productRepository1;
+    private CouchbaseClient couchbaseClient;
 
     @Before
     public void setUp() throws Exception {
@@ -87,6 +88,7 @@ public class ProductRepositoryTest /*extends IntegrationTest*/{
 
         mapper = new ObjectMapper();
         productRepository = new ProductRepository(this.couchbaseWrapper,asyncCouchbaseWrapper, mapper);
+        couchbaseClient = new CouchbaseConnectionManager(testConfiguration).getCouchbaseClient();
         //readWriteProductRepository = new AsyncReadWriteProductRepository(this.asyncCouchbaseWrapper, mapper);
 
         absent = Optional.absent();
@@ -198,7 +200,7 @@ public class ProductRepositoryTest /*extends IntegrationTest*/{
         couchbaseWrapper.set(TPNCForVar2, variant2);
         couchbaseWrapper.set(variant2, TPNCForVar2);
 
-        productRepository.delete_TPNB_TPNC_VAR(getProductKey(TPNB));
+        productRepository.delete_TPNB_TPNC_VAR(getProductKey(TPNB), couchbaseClient);
 
         assertThat(productRepository.getByTPNB(TPNB).isPresent()).isFalse();
 
@@ -252,8 +254,8 @@ public class ProductRepositoryTest /*extends IntegrationTest*/{
        @Test
        public void testView() throws Exception {
             TestListener<Void, Exception> listener = new TestListener<>();
-             createView(listener);
-            CouchbaseClient couchbaseClient = new CouchbaseConnectionManager(new TestConfiguration()).getCouchbaseClient();
+            createView(listener);
+           // CouchbaseClient couchbaseClient = new CouchbaseConnectionManager(new TestConfiguration()).getCouchbaseClient();
            String last_update_date_key ="";
            DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
            Calendar cal = Calendar.getInstance();

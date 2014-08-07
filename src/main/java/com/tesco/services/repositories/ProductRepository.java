@@ -1,10 +1,7 @@
 package com.tesco.services.repositories;
 
 import com.couchbase.client.CouchbaseClient;
-import com.couchbase.client.protocol.views.Query;
-import com.couchbase.client.protocol.views.View;
-import com.couchbase.client.protocol.views.ViewResponse;
-import com.couchbase.client.protocol.views.ViewRow;
+import com.couchbase.client.protocol.views.*;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -186,11 +183,53 @@ public class ProductRepository {
     /*Modified by Sushil PS-30 Modified method parameter to throw exception -End */
     /*Added By Nibedita - PS 78 - fetch item/tpnc based on tpnc/item input  - End*/
  /*Added by Sushil PS-114 to get view information from couchbase and process those products which are not update for more than 2 days- start*/
-    public void getViewResult(CouchbaseClient couchbaseClient, Configuration configuration) throws Exception {
-       View view =  couchbaseClient.getView(configuration.getCouchBaseDesignDocName(), configuration.getCouchBaseViewName());
-         runView(view, couchbaseClient, configuration);
+
+    /**
+     * @param configuration - Pass configuration values
+     * @param couchbaseClient - to get the couch base connection
+     * @throws Exception - can throw RuntimeException: Failed to access the view
+     * @description This will create the view.
+     */
+    private void createView(Configuration configuration, CouchbaseClient couchbaseClient)throws Exception{
+        final DesignDocument designDoc = new DesignDocument(configuration.getCouchBaseDesignDocName());
+        designDoc.setView(new ViewDesign(configuration.getCouchBaseViewName(),
+                "function (doc, meta) {\n" +
+                        "  if (doc.last_updated_date && meta.type == \"json\" ) {\n" +
+                        "    emit(doc.last_updated_date, {KEY: meta.id});\n" +
+                        "  }\n" +
+                        "}"
+        ));
+
+        couchbaseClient.createDesignDoc(designDoc);
     }
 
+    /**
+     * @param configuration - Pass configuration values
+     * @param couchbaseClient - to get the couch base connection
+     * @throws Exception - can throw RuntimeException, InvalidViewException
+     * @description This will get view information from couchbase and process those
+     * products which are not update for more than n days
+     */
+    public void getViewResult(CouchbaseClient couchbaseClient, Configuration configuration) throws Exception {
+       try {
+           this.couchbaseClient = couchbaseClient;
+           View view = couchbaseClient.getView(configuration.getCouchBaseDesignDocName(), configuration.getCouchBaseViewName());
+           runView(view, couchbaseClient, configuration);
+       }catch(InvalidViewException e){
+           logger.info("message : View not found.. Creating view now");
+           createView(configuration, couchbaseClient);
+           logger.info("message : View created");
+           getViewResult(couchbaseClient, configuration);
+       }
+    }
+
+    /**
+     * @param view - View parameter is required
+     * @param configuration - Pass configuration values
+     * @param couchbaseClient - to get the couch base connection
+     * @throws Exception - can throw RuntimeException, InvalidViewException
+     * @description
+     */
     private void runView(View view, CouchbaseClient couchbaseClient,Configuration configuration) throws Exception{
         String last_update_date_key ="";
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
@@ -200,20 +239,25 @@ public class ProductRepository {
         last_update_date_key =  mapper.writeValueAsString(last_update_date_key);
 
         Query query = new Query();
-        query.setKey(last_update_date_key);
+        query.setRangeEnd(last_update_date_key);
+        query.setStale(Stale.FALSE);
 
         ViewResponse response = couchbaseClient.query(view, query);
         logger.info("message : Initializing purge operation for Products Last Updated on "+last_update_date_key);
         for(ViewRow row : response) {
             logger.info("view data : id : " + row.getId() + " key : " + row.getKey() + " value : " + row.getValue());
-            delete_TPNB_TPNC_VAR(row.getId());
+            delete_TPNB_TPNC_VAR(row.getId(), couchbaseClient);
         }
-        logger.info("message : Purge operation completed");
     }
     /*Added by Sushil PS-114 to get view information from couchbase and process those products which are not update for more than 2 days- end*/
 
         /*Added by Salman for PS-114 to delete the results return from the view - Start*/
-    public void delete_TPNB_TPNC_VAR(String product_key){
+
+    /**
+     * @param product_key - This key is JSON document key for couchbase database to get the documents
+     * @param couchbaseClient - to get the couch base connection
+     */
+    public void delete_TPNB_TPNC_VAR(String product_key, CouchbaseClient couchbaseClient){
         Product product= getByTPNB(product_key.split("_")[1]).or(new Product());
         Set<String> tpncList=product.getTpncToProductVariant().keySet();
 
@@ -221,25 +265,22 @@ public class ProductRepository {
         while (tpnciterator.hasNext()) {
             String tpnc=tpnciterator.next().toString();
             String tpnborvar=getMappedTPNCorTPNB(tpnc);
-            deleteProduct(tpnborvar);
-            deleteProduct(tpnc);
+            deleteProduct(tpnborvar, couchbaseClient);
+            deleteProduct(tpnc, couchbaseClient);
         }
-        deleteProduct(product_key);
+        deleteProduct(product_key, couchbaseClient);
 
     }
-    public void deleteProduct(String product_key){
+
+    /**
+     * @param product_key - This key is JSON document key for couchbase database to get the documents
+     * @param couchbaseClient - to get the couch base connection
+     */
+    public void deleteProduct(String product_key, CouchbaseClient couchbaseClient){
        final String productKey = product_key;
-        asyncCouchbaseWrapper.delete(product_key, new DeleteListener(asyncCouchbaseWrapper, product_key) {
-            @Override
-            public void process() {
-                logger.info("message : Product : "+productKey +": is deleted");
-            }
 
-            @Override
-            public void onException(Exception e) {
-
-            }
-        });
+        couchbaseClient.delete(product_key);
+        logger.info("message : Product : " + productKey + ": is deleted");
     }
         /*Added by Salman for PS-114 to delete the results return from the view - End*/
 
