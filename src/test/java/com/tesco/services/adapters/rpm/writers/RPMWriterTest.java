@@ -22,6 +22,7 @@ import com.tesco.services.core.SaleInfo;
 import com.tesco.services.core.Store;
 import com.tesco.services.repositories.*;
 import com.tesco.services.resources.TestConfiguration;
+import com.tesco.services.utility.Dockyard;
 import net.spy.memcached.internal.OperationFuture;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.Before;
@@ -454,7 +455,7 @@ public class RPMWriterTest {
     private Product createProduct(String tpnb, ProductVariant productVariant) {
         Product product = new Product(tpnb);
         product.addProductVariant(productVariant);
-        product.setLast_updated_date("20140806");
+        product.setLast_updated_date(Dockyard.getSysDate("yyyyMMdd"));
         return product;
     }
 

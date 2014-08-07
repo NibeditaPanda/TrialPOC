@@ -13,6 +13,7 @@ import com.tesco.services.core.SaleInfo;
 import com.tesco.services.repositories.CouchbaseConnectionManager;
 import com.tesco.services.repositories.ProductRepository;
 import com.tesco.services.resources.TestConfiguration;
+import com.tesco.services.utility.Dockyard;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.Before;
@@ -106,7 +107,7 @@ public class PriceImportIntegrationTest extends ImportJobIntegrationTestBase {
         product.addProductVariant(productVariant2);
         ProductRepository productRepository = new ProductRepository(couchbaseWrapper,asyncCouchbaseWrapper,new ObjectMapper());
         TestListener<Void, Exception> listener = new TestListener<>();
-        product.setLast_updated_date("20140806");
+        product.setLast_updated_date(Dockyard.getSysDate("yyyyMMdd"));
         productRepository.insertProduct(product,listener);
         assertThat(productRepository.getByTPNB(tpnb).get()).isEqualTo(product);
         assertThat(productRepository.getByTPNB(oldTpnb).isPresent()).isFalse();
