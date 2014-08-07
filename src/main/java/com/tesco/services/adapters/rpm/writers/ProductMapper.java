@@ -83,11 +83,24 @@ public class ProductMapper {
 
         final int zoneId = Integer.parseInt(promotionInfoMap.get(CSVHeaders.PromoExtract.ZONE_ID));
         SaleInfo saleInfo = productVariant.getSaleInfo(zoneId);
-
-        if (saleInfo == null) {
+/*Modified by Nibedita - to process the promotion construct for the product if the data is available in RPM and not in promo zone extract - PS-116 - Start*/
+        if (saleInfo == null && promotionInfoMap.get(CSVHeaders.PromoExtract.OFFER_ID) == null) {
             saleInfo = new SaleInfo(zoneId, null);
             productVariant.addSaleInfo(saleInfo);
     }
+       else  if (saleInfo == null && promotionInfoMap.get(CSVHeaders.PromoExtract.OFFER_ID) != null )
+        {
+            Promotion promotion = new Promotion();
+            saleInfo = new SaleInfo(zoneId, null);
+            promotion.setOfferId(promotionInfoMap.get(CSVHeaders.PromoExtract.OFFER_ID));
+            promotion.setZoneId(Integer.parseInt(promotionInfoMap.get(CSVHeaders.PromoExtract.ZONE_ID)));
+            promotion.setOfferName(promotionInfoMap.get(CSVHeaders.PromoExtract.OFFER_NAME));
+            promotion.setEffectiveDate(promotionInfoMap.get(CSVHeaders.PromoExtract.START_DATE));
+            promotion.setEndDate(promotionInfoMap.get(CSVHeaders.PromoExtract.END_DATE));
+            saleInfo.addPromotion(promotion);
+            productVariant.addSaleInfo(saleInfo);
+        }
+/*Modified by Nibedita - to process the promotion construct for the product if the data is available in RPM and not in promo zone extract - PS-116 - End*/
         else if (saleInfo != null && saleInfo.getPromotions().size()==0)
         {
             Promotion promotion = new Promotion();
@@ -102,6 +115,9 @@ public class ProductMapper {
         else {
             Promotion promotion = new Promotion();
             promotion.setOfferId(promotionInfoMap.get(CSVHeaders.PromoExtract.OFFER_ID));
+            /*Added by Nibedita - to reflect zone id in JSON document for promotions - PS-116 -Start*/
+            promotion.setZoneId(Integer.parseInt(promotionInfoMap.get(CSVHeaders.PromoExtract.ZONE_ID)));
+            /*Added by Nibedita - to reflect zone id in JSON document for promotions - PS-116 -End*/
             promotion.setOfferName(promotionInfoMap.get(CSVHeaders.PromoExtract.OFFER_NAME));
             promotion.setEffectiveDate(promotionInfoMap.get(CSVHeaders.PromoExtract.START_DATE));
             promotion.setEndDate(promotionInfoMap.get(CSVHeaders.PromoExtract.END_DATE));
@@ -121,24 +137,19 @@ public class ProductMapper {
         ProductVariant productVariant = getProductVariant(product, tpnc);
         final int zoneId = Integer.parseInt(promotionDescInfoMap.get(CSVHeaders.PromoDescExtract.ZONE_ID));
         SaleInfo saleInfo = productVariant.getSaleInfo(zoneId);
-
-        if (saleInfo == null) {
-            saleInfo = new SaleInfo(zoneId, null);
-            productVariant.addSaleInfo(saleInfo);
-        }
-
+    /*Modified by Nibedita - to process the promotion construct for the product if the data is available in RPM extract only - PS-116 - Start*/
+     if(saleInfo != null) {
         String offerId = promotionDescInfoMap.get(CSVHeaders.PromoDescExtract.OFFER_ID);
         Promotion promotion = saleInfo.getPromotionByOfferId(offerId);
-
-        if(promotion == null) {
-            promotion = new Promotion();
-            promotion.setOfferId(offerId);
-            saleInfo.addPromotion(promotion);
+        if(promotion!=null) {
+            promotion.setCFDescription1(promotionDescInfoMap.get(CSVHeaders.PromoDescExtract.DESC1));
+            promotion.setCFDescription2(promotionDescInfoMap.get(CSVHeaders.PromoDescExtract.DESC2));
         }
-
-        promotion.setCFDescription1(promotionDescInfoMap.get(CSVHeaders.PromoDescExtract.DESC1));
-        promotion.setCFDescription2(promotionDescInfoMap.get(CSVHeaders.PromoDescExtract.DESC2));
-
+        else{
+            saleInfo = null;
+        }
+     }
+        /*Modified by Nibedita - to process the promotion construct for the product if the data is available in RPM extract only - PS-116 - End*/
         return product;
     }
 
