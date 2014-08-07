@@ -185,10 +185,11 @@ public class ProductRepository {
  /*Added by Sushil PS-114 to get view information from couchbase and process those products which are not update for more than 2 days- start*/
 
     /**
+     * This will create the view.
+     *
      * @param configuration - Pass configuration values
      * @param couchbaseClient - to get the couch base connection
      * @throws Exception - can throw RuntimeException: Failed to access the view
-     * @description This will create the view.
      */
     private void createView(Configuration configuration, CouchbaseClient couchbaseClient)throws Exception{
         final DesignDocument designDoc = new DesignDocument(configuration.getCouchBaseDesignDocName());
@@ -204,11 +205,12 @@ public class ProductRepository {
     }
 
     /**
+     * This will get view information from couchbase and process those
+     * products which are not update for more than n days
+     *
      * @param configuration - Pass configuration values
      * @param couchbaseClient - to get the couch base connection
      * @throws Exception - can throw RuntimeException, InvalidViewException
-     * @description This will get view information from couchbase and process those
-     * products which are not update for more than n days
      */
     public void getViewResult(CouchbaseClient couchbaseClient, Configuration configuration) throws Exception {
        try {
@@ -224,11 +226,12 @@ public class ProductRepository {
     }
 
     /**
+     * This is to query from the view based on query parameters
+     *
      * @param view - View parameter is required
      * @param configuration - Pass configuration values
      * @param couchbaseClient - to get the couch base connection
      * @throws Exception - can throw RuntimeException, InvalidViewException
-     * @description
      */
     private void runView(View view, CouchbaseClient couchbaseClient,Configuration configuration) throws Exception{
         String last_update_date_key ="";
@@ -254,6 +257,7 @@ public class ProductRepository {
         /*Added by Salman for PS-114 to delete the results return from the view - Start*/
 
     /**
+     * This will delete the documents matching with product_key from couchbase.
      * @param product_key - This key is JSON document key for couchbase database to get the documents
      * @param couchbaseClient - to get the couch base connection
      */

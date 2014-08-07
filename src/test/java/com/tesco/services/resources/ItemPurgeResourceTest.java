@@ -75,7 +75,7 @@ public class ItemPurgeResourceTest extends ResourceTest {
     }
 
     @Test
-    public void shouldStartImportScript() throws IOException {
+    public void shouldStartItemPurge() throws IOException {
         WebResource resource = client().resource("/itempurge/purge");
         ClientResponse response = resource.post(ClientResponse.class);
         String responseText = response.getEntity(String.class);
