@@ -262,13 +262,13 @@ public class ProductRepository {
      * @param couchbaseClient - to get the couch base connection
      */
     public void delete_TPNB_TPNC_VAR(String product_key, CouchbaseClient couchbaseClient){
-        Product product= getByTPNB(product_key.split("_")[1]).or(new Product());
+        Product product= getByTPNBWithCouchBaseClient(product_key.split("_")[1],couchbaseClient).or(new Product());
         Set<String> tpncList=product.getTpncToProductVariant().keySet();
 
         Iterator tpnciterator =tpncList.iterator();
         while (tpnciterator.hasNext()) {
             String tpnc=tpnciterator.next().toString();
-            String tpnborvar=getMappedTPNCorTPNB(tpnc);
+            String tpnborvar=getMappedTPNCorTPNBWithCouchBaseClient(tpnc,couchbaseClient);
             deleteProduct(tpnborvar, couchbaseClient);
             deleteProduct(tpnc, couchbaseClient);
         }
@@ -287,6 +287,37 @@ public class ProductRepository {
         logger.info("message : Product : " + productKey + ": is deleted");
     }
         /*Added by Salman for PS-114 to delete the results return from the view - End*/
+
+
+        /*Added by Surya for PS-114 to fetch the Product using CouchBase client - Start*/
+
+    public Optional<Product> getByTPNBWithCouchBaseClient(String tpnb,CouchbaseClient couchbaseClient) {
+        Product product = new Product();
+        String productJson = (String) couchbaseClient.get(getProductKey(tpnb));
+
+        if(productJson == null){
+            product = null;
+        }
+        else{
+            try {
+                product = mapper.readValue(productJson,Product.class);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return (product != null) ? Optional.of(product) : Optional.<Product>absent();
+    }
+
+    public String getMappedTPNCorTPNBWithCouchBaseClient(String tpn,CouchbaseClient couchbaseClient) throws CouchbaseOperationException {
+        String tpnVal = null;
+        if(!Dockyard.isSpaceOrNull(tpn)) {
+            tpnVal = (String) couchbaseClient.get(tpn);
+            if(!Dockyard.isSpaceOrNull(tpnVal))
+                tpnVal = tpnVal.replace("\"", "");
+        }
+        return tpnVal;
+    }
+            /*Added by Surya for PS-114 to fetch the Product using CouchBase client - End*/
 
 }
 

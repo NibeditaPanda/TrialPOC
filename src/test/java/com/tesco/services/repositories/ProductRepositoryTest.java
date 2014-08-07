@@ -170,7 +170,10 @@ public class ProductRepositoryTest /*extends IntegrationTest*/{
     }
 /*Added by Surya for PS-114. This Junit will Delete the elements from CB -  Start*/
     @Test
-    public void deleteTPNBToTPNCToVaraintDependencies() throws JsonProcessingException {
+    public void deleteTPNBToTPNCToVaraintDependencies() throws Exception {
+
+       // final CouchbaseClient couchbaseClient = mock(CouchbaseClient.class);
+
         String TPNC = "271871871";
         String TPNB = "056428171";
         String variant = "056428171-001";
@@ -188,55 +191,70 @@ public class ProductRepositoryTest /*extends IntegrationTest*/{
         product.addProductVariant(productVariant2);
         product.addProductVariant(productVariant3);
 
+        String last_update_date_key ="";
+        DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE,-(testConfiguration.getLastUpdatedPurgeDays()));
+        last_update_date_key = dateFormat.format(cal.getTime());
+        product.setLast_updated_date(last_update_date_key);
+
         String productJson = mapper.writeValueAsString(product);
-        couchbaseWrapper.set(getProductKey(TPNB), productJson);
+        couchbaseClient.set(getProductKey(TPNB), productJson);
 
-        couchbaseWrapper.set(TPNC, TPNB);
-        couchbaseWrapper.set(TPNB, TPNC);
+        couchbaseClient.set(TPNC, mapper.writeValueAsString(TPNB));
+        couchbaseClient.set(TPNB, mapper.writeValueAsString(TPNC));
 
-        couchbaseWrapper.set(TPNCForVar, variant);
-        couchbaseWrapper.set(variant, TPNCForVar);
+        couchbaseClient.set(TPNCForVar, mapper.writeValueAsString(variant));
+        couchbaseClient.set(variant, mapper.writeValueAsString(TPNCForVar));
 
-        couchbaseWrapper.set(TPNCForVar2, variant2);
-        couchbaseWrapper.set(variant2, TPNCForVar2);
+        couchbaseClient.set(TPNCForVar2, mapper.writeValueAsString(variant2));
+        couchbaseClient.set(variant2, mapper.writeValueAsString(TPNCForVar2));
 
-        productRepository.delete_TPNB_TPNC_VAR(getProductKey(TPNB), couchbaseClient);
+       // System.out.println(couchbaseClient.get(getProductKey(TPNB)));
 
-        assertThat(productRepository.getByTPNB(TPNB).isPresent()).isFalse();
+        productRepository.getViewResult(couchbaseClient,testConfiguration);
+      // productRepository.delete_TPNB_TPNC_VAR(getProductKey(TPNB), couchbaseClient);
 
-        if(productRepository.getMappedTPNCorTPNB(TPNC) == null) {
-            assertThat(productRepository.getMappedTPNCorTPNB(TPNC));
+      //  System.out.println(couchbaseClient.get(getProductKey(TPNB)));
+
+        //assertThat(productRepository.getByTPNBWithCouchBaseClient(TPNB,couchbaseClient).isPresent()).isFalse();
+
+
+        if(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNC,couchbaseClient) == null) {
+            assertThat(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNC,couchbaseClient));
         }else{
-            assertThat(productRepository.getMappedTPNCorTPNB(TPNC).isEmpty());
+            assert productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNC,couchbaseClient)==null:false;
+
         }
-        if(productRepository.getMappedTPNCorTPNB(TPNB) == null) {
-            assertThat(productRepository.getMappedTPNCorTPNB(TPNB));
+        if(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNB,couchbaseClient) == null) {
+            assertThat(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNB,couchbaseClient));
         }else{
-            assertThat(productRepository.getMappedTPNCorTPNB(TPNB).isEmpty());
+            assertThat(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNB,couchbaseClient).isEmpty());
         }
-        if(productRepository.getMappedTPNCorTPNB(TPNCForVar) == null) {
-            assertThat(productRepository.getMappedTPNCorTPNB(TPNCForVar));
+        if(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNCForVar,couchbaseClient) == null) {
+            assertThat(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNCForVar,couchbaseClient));
         }else{
-            assertThat(productRepository.getMappedTPNCorTPNB(TPNCForVar).isEmpty());
+            assertThat(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNCForVar,couchbaseClient).isEmpty());
         }
-        if(productRepository.getMappedTPNCorTPNB(variant) == null) {
-            assertThat(productRepository.getMappedTPNCorTPNB(variant));
+        if(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(variant,couchbaseClient) == null) {
+            assertThat(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(variant,couchbaseClient));
         }else{
-            assertThat(productRepository.getMappedTPNCorTPNB(variant).isEmpty());
+            assertThat(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(variant,couchbaseClient).isEmpty());
         }
-        if(productRepository.getMappedTPNCorTPNB(TPNCForVar2) == null) {
-            assertThat(productRepository.getMappedTPNCorTPNB(TPNCForVar2));
+        if(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNCForVar2,couchbaseClient) == null) {
+            assertThat(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNCForVar2,couchbaseClient));
         }else{
-            assertThat(productRepository.getMappedTPNCorTPNB(TPNCForVar2).isEmpty());
+            assertThat(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNCForVar2,couchbaseClient).isEmpty());
         }
-        if(productRepository.getMappedTPNCorTPNB(variant2) == null) {
-            assertThat(productRepository.getMappedTPNCorTPNB(variant2));
+        if(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(variant2,couchbaseClient) == null) {
+            assertThat(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(variant2,couchbaseClient));
         }else{
-            assertThat(productRepository.getMappedTPNCorTPNB(variant2).isEmpty());
+            assertThat(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(variant2,couchbaseClient).isEmpty());
         }
 
 
     }
+
 
     private ProductVariant createProductVariant(String tpnc, int zoneId, String price, Promotion promotion) {
         ProductVariant productVariant = new ProductVariant(tpnc);
