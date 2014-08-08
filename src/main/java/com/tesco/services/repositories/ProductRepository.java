@@ -262,15 +262,18 @@ public class ProductRepository {
      * @param couchbaseClient - to get the couch base connection
      */
     public void delete_TPNB_TPNC_VAR(String product_key, CouchbaseClient couchbaseClient){
-        Product product= getByTPNBWithCouchBaseClient(product_key.split("_")[1],couchbaseClient).or(new Product());
+        Product product= getByTPNBWithCouchBaseClient(product_key.split("_")[1], couchbaseClient).or(new Product());
         Set<String> tpncList=product.getTpncToProductVariant().keySet();
 
         Iterator tpnciterator =tpncList.iterator();
         while (tpnciterator.hasNext()) {
             String tpnc=tpnciterator.next().toString();
-            String tpnborvar=getMappedTPNCorTPNBWithCouchBaseClient(tpnc,couchbaseClient);
-            deleteProduct(tpnborvar, couchbaseClient);
-            deleteProduct(tpnc, couchbaseClient);
+            String tpnborvar=getMappedTPNCorTPNBWithCouchBaseClient(tpnc, couchbaseClient);
+            //check if mapping is not present then skip the tpnc mapping documents deletion
+            if(!Dockyard.isSpaceOrNull(tpnborvar)) {
+                deleteProduct(tpnborvar, couchbaseClient);
+                deleteProduct(tpnc, couchbaseClient);
+            }
         }
         deleteProduct(product_key, couchbaseClient);
 
