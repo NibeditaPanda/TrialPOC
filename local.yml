@@ -21,8 +21,8 @@ couchbase.password: "tesco"
 couchbase.admin.username: "Administrator"
 couchbase.admin.password: "Tesco123"
 
-couchbase.designdoc.design.name: "dev_test"
-couchbase.designdoc.view.name: "testView"
+couchbase.designdoc.design.name: "prod_designdoc_item"
+couchbase.designdoc.view.name: "prod_v_itempurge"
 couchbase.designdoc.view.pageno: 10
 priceservice.price.last_updated_days: 2
 

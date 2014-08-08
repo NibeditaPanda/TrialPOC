@@ -220,6 +220,7 @@ public class ProductRepository {
        }catch(InvalidViewException e){
            logger.info("message : View not found.. Creating view now");
            createView(configuration, couchbaseClient);
+           Thread.sleep(50);
            logger.info("message : View created");
            getViewResult(couchbaseClient, configuration);
        }
