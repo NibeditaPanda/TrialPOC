@@ -495,5 +495,75 @@ public class RPMWriterTest {
             }
         }).when(storeRepository).insertStore(any(Store.class), any(Listener.class));
     }
+    /*Added By Nibedita - PS-116 - Not to insert CMHOPS data if not same promotion is not available in RPM extract*/
+    @Test
+    public void shouldNotInsertCFDescWhenPromoExtractNotPresent() throws IOException, ParserConfigurationException, ColumnNotFoundException, SAXException, JAXBException {
+        String tpnb = "09098000";
+        Product product = new Product(tpnb);
+        ProductVariant productVariant = createProductVariant("23232323", 1, "1", null);
+        productVariant.addSaleInfo(new SaleInfo(5, "2"));
+        product.addProductVariant(productVariant);
+
+        String offerId = "A01";
+        String description1 = "description1";
+        String description2 = "description2";
+
+        when(rpmPromotionDescReader.getNext()).thenReturn(promotionDescInfoMap(tpnb, zoneId, offerId, description1, description2)).thenReturn(null);
+        mockAsyncProductInsert();
+
+        when(productRepository.getByTPNB(tpnb)).thenReturn(Optional.of(product));
+        when(productRepository.getProductTPNC(tpnb)).thenReturn(getTPNCForTPNB("23232323"));
+        this.rpmWriter.write();
+        final Product expectedProduct = product;
+        verify(productRepository).insertProduct(argThat(new CapturingMatcher<Product>() {
+            @Override
+            public boolean matches(Object o) {
+                Product prod = (Product) o;
+                return new RPMComparator().compare(prod, expectedProduct);
+            }
+        }), any(Listener.class));
+    }
+    /*Added By Nibedita - PS-116 - Insert promotion without promo price as data is not available in promo zone extract but available in RPM and CMHOPOS extracts*/
+
+    @Test
+    public void shouldInsertCFDescWhenPromoZoneNotPresent() throws Exception {
+        final String tpnc = "284347092";
+        int zoneId = 5;
+        String price = null;
+        String tpnb = "070461113";
+        String offerId = "A01";
+        String offerId2 = "A02";
+        String offerName = "Test Offer Name";
+        String startDate = "20130729";
+        String endDate = "20130819";
+        String description1 = "description1";
+        String description2 = "description2";
+
+        when(rpmPromotionReader.getNext()).thenReturn(promotionInfoMap(tpnb, tpnc, zoneId, offerId, offerName, startDate, endDate)).thenReturn(null);
+        when(rpmPromotionDescReader.getNext()).thenReturn(promotionDescInfoMap(tpnb, zoneId, offerId, description1, description2)).thenReturn(null);
+        mockAsyncProductInsert();
+
+        ProductVariant productVariant = createProductVariant(tpnc, zoneId, price, null);
+        ProductVariant productVariant2 = createProductVariant(tpnc, zoneId, price, createPromotion(offerId, zoneId, offerName, startDate, endDate));
+        when(productRepository.getByTPNB(tpnb)).thenReturn(Optional.of(createProduct(tpnb, productVariant)), Optional.of(createProduct(tpnb, productVariant2)));
+        when(productRepository.getProductTPNC(tpnb)).thenReturn(getTPNCForTPNB(tpnc));
+
+        this.rpmWriter.write();
+
+        ArgumentCaptor<Product> arguments = ArgumentCaptor.forClass(Product.class);
+        verify(productRepository, atLeastOnce()).insertProduct(arguments.capture(), any(Listener.class));
+
+        Promotion expectedPromotion = createPromotion(offerId, zoneId, offerName, startDate, endDate);
+        ProductVariant expectedProductVariant = createProductVariant(tpnc, zoneId, price, expectedPromotion);
+
+        Product expectedProduct = createProduct(tpnb, expectedProductVariant);
+
+        List<Product> actualProducts = arguments.getAllValues();
+        assertThat(actualProducts.get(0)).isEqualTo(expectedProduct);
+
+        expectedPromotion.setCFDescription1(description1);
+        expectedPromotion.setCFDescription2(description2);
+        assertThat(actualProducts.get(1)).isEqualTo(expectedProduct);
+    }
 
 }
