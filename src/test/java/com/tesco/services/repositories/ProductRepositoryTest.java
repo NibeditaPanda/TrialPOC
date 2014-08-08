@@ -9,17 +9,14 @@ import com.google.common.base.Optional;
 import com.tesco.couchbase.AsyncCouchbaseWrapper;
 import com.tesco.couchbase.CouchbaseWrapper;
 import com.tesco.couchbase.listeners.CreateDesignDocListener;
-import com.tesco.couchbase.listeners.DeleteListener;
 import com.tesco.couchbase.listeners.Listener;
 import com.tesco.couchbase.testutils.*;
 import com.tesco.services.Configuration;
-import com.tesco.services.IntegrationTest;
 import com.tesco.services.core.Product;
 import com.tesco.services.core.ProductVariant;
 import com.tesco.services.core.Promotion;
 import com.tesco.services.core.SaleInfo;
 import com.tesco.services.resources.TestConfiguration;
-import com.tesco.services.utility.Dockyard;
 import net.spy.memcached.internal.OperationFuture;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.Before;
@@ -28,16 +25,13 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
@@ -57,16 +51,16 @@ public class ProductRepositoryTest /*extends IntegrationTest*/{
     private AsyncCouchbaseWrapper asyncCouchbaseWrapper;
     private ObjectMapper mapper;
 
-   private Configuration testConfiguration;
-   private ProductRepository productRepository1;
+    private Configuration testConfiguration;
+    private ProductRepository productRepository1;
     private CouchbaseClient couchbaseClient;
 
     @Before
     public void setUp() throws Exception {
-      //  productRepository = new ProductRepository(new CouchbaseConnectionManager(new TestConfiguration()).getCouchbaseClient());
+        //  productRepository = new ProductRepository(new CouchbaseConnectionManager(new TestConfiguration()).getCouchbaseClient());
         product = new Product(tpnb);
 
-       // String bucketName = "PriceService";//should be name.getMethodName();
+        // String bucketName = "PriceService";//should be name.getMethodName();
         testConfiguration = TestConfiguration.load();
 
         if (testConfiguration.isDummyCouchbaseMode()){
@@ -126,13 +120,13 @@ public class ProductRepositoryTest /*extends IntegrationTest*/{
 
     }
 
-   @Test
+    @Test
     public void shouldCacheProductByTPNBUsingAsynCode() throws Exception {
         TestListener<Void, Exception> listener = new TestListener<>();
         TestListener<Product, Exception> productListner = new TestListener<>();
 
         productRepository.insertProduct(product, listener);
-       // productRepository.put(product);
+        // productRepository.put(product);
         productRepository.getProductByTPNB(tpnb, productListner);
         assertThat(productRepository.getProductIdentified().getTPNB()).isEqualTo(product.getTPNB());
     }
@@ -168,11 +162,11 @@ public class ProductRepositoryTest /*extends IntegrationTest*/{
         assertThat(mappedTPNCtoTPNB.equals(TPNC));
 
     }
-/*Added by Surya for PS-114. This Junit will Delete the elements from CB -  Start*/
+    /*Added by Surya for PS-114. This Junit will Delete the elements from CB -  Start*/
     @Test
     public void deleteTPNBToTPNCToVaraintDependencies() throws Exception {
 
-       // final CouchbaseClient couchbaseClient = mock(CouchbaseClient.class);
+        // final CouchbaseClient couchbaseClient = mock(CouchbaseClient.class);
 
         String TPNC = "271871871";
         String TPNB = "056428171";
@@ -209,52 +203,19 @@ public class ProductRepositoryTest /*extends IntegrationTest*/{
 
         couchbaseClient.set(TPNCForVar2, mapper.writeValueAsString(variant2));
         couchbaseClient.set(variant2, mapper.writeValueAsString(TPNCForVar2));
-
-       // System.out.println(couchbaseClient.get(getProductKey(TPNB)));
-
         productRepository.getViewResult(couchbaseClient,testConfiguration);
-      // productRepository.delete_TPNB_TPNC_VAR(getProductKey(TPNB), couchbaseClient);
 
-      //  System.out.println(couchbaseClient.get(getProductKey(TPNB)));
+        /* assertNull function checks if the object is null;
+        In this case if the object is null then the document is deleted and the test passes*/
 
-        //assertThat(productRepository.getByTPNBWithCouchBaseClient(TPNB,couchbaseClient).isPresent()).isFalse();
-
-
-        if(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNC,couchbaseClient) == null) {
-            assertThat(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNC,couchbaseClient));
-        }else{
-            assert productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNC,couchbaseClient)==null:false;
-
-        }
-        if(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNB,couchbaseClient) == null) {
-            assertThat(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNB,couchbaseClient));
-        }else{
-            assertThat(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNB,couchbaseClient).isEmpty());
-        }
-        if(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNCForVar,couchbaseClient) == null) {
-            assertThat(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNCForVar,couchbaseClient));
-        }else{
-            assertThat(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNCForVar,couchbaseClient).isEmpty());
-        }
-        if(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(variant,couchbaseClient) == null) {
-            assertThat(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(variant,couchbaseClient));
-        }else{
-            assertThat(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(variant,couchbaseClient).isEmpty());
-        }
-        if(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNCForVar2,couchbaseClient) == null) {
-            assertThat(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNCForVar2,couchbaseClient));
-        }else{
-            assertThat(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNCForVar2,couchbaseClient).isEmpty());
-        }
-        if(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(variant2,couchbaseClient) == null) {
-            assertThat(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(variant2,couchbaseClient));
-        }else{
-            assertThat(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(variant2,couchbaseClient).isEmpty());
-        }
-
+        assertNull(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNC,couchbaseClient));
+        assertNull(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNB,couchbaseClient));
+        assertNull(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNCForVar,couchbaseClient));
+        assertNull(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(variant,couchbaseClient));
+        assertNull(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(TPNCForVar2,couchbaseClient));
+        assertNull(productRepository.getMappedTPNCorTPNBWithCouchBaseClient(variant2,couchbaseClient));
 
     }
-
 
     private ProductVariant createProductVariant(String tpnc, int zoneId, String price, Promotion promotion) {
         ProductVariant productVariant = new ProductVariant(tpnc);
@@ -267,26 +228,26 @@ public class ProductRepositoryTest /*extends IntegrationTest*/{
         return String.format("PRODUCT_%s", tpnb);
     }
 
-/*Added by Surya for PS-114. This Junit will Delete the elements from CB -  End*/
-      @Ignore
-       @Test
-       public void testView() throws Exception {
-            TestListener<Void, Exception> listener = new TestListener<>();
-            createView(listener);
-           // CouchbaseClient couchbaseClient = new CouchbaseConnectionManager(new TestConfiguration()).getCouchbaseClient();
-           String last_update_date_key ="";
-           DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-           Calendar cal = Calendar.getInstance();
-           cal.add(Calendar.DATE,-(testConfiguration.getLastUpdatedPurgeDays()));
-           last_update_date_key = dateFormat.format(cal.getTime());
-           Product product = new Product(tpnb);
-           product.setLast_updated_date(last_update_date_key);
-           couchbaseWrapper.set(getProductKey(tpnb),mapper.writeValueAsString(product));
-           productRepository.getViewResult(couchbaseClient,testConfiguration);
-           assertThat(productRepository.getByTPNB(tpnb).isPresent()).isFalse();
+    /*Added by Surya for PS-114. This Junit will Delete the elements from CB -  End*/
+    @Ignore
+    @Test
+    public void testView() throws Exception {
+        TestListener<Void, Exception> listener = new TestListener<>();
+        createView(listener);
+        // CouchbaseClient couchbaseClient = new CouchbaseConnectionManager(new TestConfiguration()).getCouchbaseClient();
+        String last_update_date_key ="";
+        DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE,-(testConfiguration.getLastUpdatedPurgeDays()));
+        last_update_date_key = dateFormat.format(cal.getTime());
+        Product product = new Product(tpnb);
+        product.setLast_updated_date(last_update_date_key);
+        couchbaseWrapper.set(getProductKey(tpnb),mapper.writeValueAsString(product));
+        productRepository.getViewResult(couchbaseClient,testConfiguration);
+        assertThat(productRepository.getByTPNB(tpnb).isPresent()).isFalse();
 
 
-       }
+    }
     private void createView(final Listener<Void, Exception> listener) {
         final DesignDocument designDoc = new DesignDocument(testConfiguration.getCouchBaseDesignDocName());
         designDoc.setView(new ViewDesign(testConfiguration.getCouchBaseViewName(),
