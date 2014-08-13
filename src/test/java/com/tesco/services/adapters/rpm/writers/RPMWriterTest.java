@@ -495,7 +495,12 @@ public class RPMWriterTest {
             }
         }).when(storeRepository).insertStore(any(Store.class), any(Listener.class));
     }
-    /*Added By Nibedita - PS-116 - Not to insert CMHOPS data if not same promotion is not available in RPM extract*/
+
+    /**
+     * Added By Nibedita - PS-116 - Positive Scenario
+     * Given the Prom_extract(RPM - promotion) and prom_desc_extract(CMHOPOS) extract file ,
+     * When the Prom_extract file doesn't have data for the item and CMHOPOS file has data and import rest call is triggered
+     * then the constructed product shouldn't contain CF descriptions in the promotion information block */
     @Test
     public void shouldNotInsertCFDescWhenPromoExtractNotPresent() throws IOException, ParserConfigurationException, ColumnNotFoundException, SAXException, JAXBException {
         String tpnb = "09098000";
@@ -523,7 +528,11 @@ public class RPMWriterTest {
             }
         }), any(Listener.class));
     }
-    /*Added By Nibedita - PS-116 - Insert promotion without promo price as data is not available in promo zone extract but available in RPM and CMHOPOS extracts*/
+    /**
+     * Added By Nibedita - PS-116 - Negetive Scenario
+     * Given the Prom_zone, Prom_extract(RPM - promotion) and prom_desc_extract(CMHOPOS) extract ,
+     * When the prom_zone extract doesn't have data for a item and other 2 extracts contains data and import rest call is triggered
+     * then the constructed product should contain promotion information with no price information */
 
     @Test
     public void shouldInsertCFDescWhenPromoZoneNotPresent() throws Exception {
