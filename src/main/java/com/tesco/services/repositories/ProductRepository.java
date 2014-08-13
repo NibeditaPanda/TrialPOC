@@ -185,26 +185,6 @@ public class ProductRepository {
  /*Added by Sushil PS-114 to get view information from couchbase and process those products which are not update for more than 2 days- start*/
 
     /**
-     * This will create the view.
-     *
-     * @param configuration - Pass configuration values
-     * @param couchbaseClient - to get the couch base connection
-     * @throws Exception - can throw RuntimeException: Failed to access the view
-     */
-    private void createView(Configuration configuration, CouchbaseClient couchbaseClient)throws Exception{
-        final DesignDocument designDoc = new DesignDocument(configuration.getCouchBaseDesignDocName());
-        designDoc.setView(new ViewDesign(configuration.getCouchBaseViewName(),
-                "function (doc, meta) {\n" +
-                        "  if (doc.last_updated_date && meta.type == \"json\" ) {\n" +
-                        "    emit(doc.last_updated_date, {KEY: meta.id});\n" +
-                        "  }\n" +
-                        "}"
-        ));
-
-        couchbaseClient.createDesignDoc(designDoc);
-    }
-
-    /**
      * This will get view information from couchbase and process those
      * products which are not update for more than n days
      *
@@ -212,18 +192,10 @@ public class ProductRepository {
      * @param couchbaseClient - to get the couch base connection
      * @throws Exception - can throw RuntimeException, InvalidViewException
      */
-    public void getViewResult(CouchbaseClient couchbaseClient, Configuration configuration) throws Exception {
-       try {
+    public void purgeUnUpdatedItems(CouchbaseClient couchbaseClient, Configuration configuration) throws Exception {
            this.couchbaseClient = couchbaseClient;
            View view = couchbaseClient.getView(configuration.getCouchBaseDesignDocName(), configuration.getCouchBaseViewName());
            runView(view, couchbaseClient, configuration);
-       }catch(InvalidViewException e){
-           logger.info("message : View not found.. Creating view now");
-           createView(configuration, couchbaseClient);
-           Thread.sleep(50);
-           logger.info("message : View created");
-           getViewResult(couchbaseClient, configuration);
-       }
     }
 
     /**
@@ -249,7 +221,6 @@ public class ProductRepository {
         ViewResponse response = couchbaseClient.query(view, query);
         logger.info("message : Initializing purge operation for Products Last Updated on "+last_update_date_key);
         for(ViewRow row : response) {
-            logger.info("view data : id : " + row.getId() + " key : " + row.getKey() + " value : " + row.getValue());
             delete_TPNB_TPNC_VAR(row.getId(), couchbaseClient);
         }
     }
@@ -288,7 +259,6 @@ public class ProductRepository {
        final String productKey = product_key;
 
         couchbaseClient.delete(product_key);
-        logger.info("message : Product : " + productKey + ": is deleted");
     }
         /*Added by Salman for PS-114 to delete the results return from the view - End*/
 

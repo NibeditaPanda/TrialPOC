@@ -203,7 +203,7 @@ public class ProductRepositoryTest /*extends IntegrationTest*/{
 
         couchbaseClient.set(TPNCForVar2, mapper.writeValueAsString(variant2));
         couchbaseClient.set(variant2, mapper.writeValueAsString(TPNCForVar2));
-        productRepository.getViewResult(couchbaseClient,testConfiguration);
+        productRepository.purgeUnUpdatedItems(couchbaseClient,testConfiguration);
 
         /* assertNull function checks if the object is null;
         In this case if the object is null then the document is deleted and the test passes*/
@@ -243,7 +243,7 @@ public class ProductRepositoryTest /*extends IntegrationTest*/{
         Product product = new Product(tpnb);
         product.setLast_updated_date(last_update_date_key);
         couchbaseWrapper.set(getProductKey(tpnb),mapper.writeValueAsString(product));
-        productRepository.getViewResult(couchbaseClient,testConfiguration);
+        productRepository.purgeUnUpdatedItems(couchbaseClient,testConfiguration);
         assertThat(productRepository.getByTPNB(tpnb).isPresent()).isFalse();
 
 
