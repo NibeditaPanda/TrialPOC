@@ -185,26 +185,6 @@ public class ProductRepository {
  /*Added by Sushil PS-114 to get view information from couchbase and process those products which are not update for more than 2 days- start*/
 
     /**
-     * This will create the view.
-     *
-     * @param configuration - Pass configuration values
-     * @param couchbaseClient - to get the couch base connection
-     * @throws Exception - can throw RuntimeException: Failed to access the view
-     */
-    private void createView(Configuration configuration, CouchbaseClient couchbaseClient)throws Exception{
-        final DesignDocument designDoc = new DesignDocument(configuration.getCouchBaseDesignDocName());
-        designDoc.setView(new ViewDesign(configuration.getCouchBaseViewName(),
-                "function (doc, meta) {\n" +
-                        "  if (doc.last_updated_date && meta.type == \"json\" ) {\n" +
-                        "    emit(doc.last_updated_date, {KEY: meta.id});\n" +
-                        "  }\n" +
-                        "}"
-        ));
-
-        couchbaseClient.createDesignDoc(designDoc);
-    }
-
-    /**
      * This will get view information from couchbase and process those
      * products which are not update for more than n days
      *
@@ -212,18 +192,10 @@ public class ProductRepository {
      * @param couchbaseClient - to get the couch base connection
      * @throws Exception - can throw RuntimeException, InvalidViewException
      */
-    public void getViewResult(CouchbaseClient couchbaseClient, Configuration configuration) throws Exception {
-       try {
+    public void purgeUnUpdatedItems(CouchbaseClient couchbaseClient, Configuration configuration) throws Exception {
            this.couchbaseClient = couchbaseClient;
            View view = couchbaseClient.getView(configuration.getCouchBaseDesignDocName(), configuration.getCouchBaseViewName());
            runView(view, couchbaseClient, configuration);
-       }catch(InvalidViewException e){
-           logger.info("message : View not found.. Creating view now");
-           createView(configuration, couchbaseClient);
-           Thread.sleep(50);
-           logger.info("message : View created");
-           getViewResult(couchbaseClient, configuration);
-       }
     }
 
     /**
