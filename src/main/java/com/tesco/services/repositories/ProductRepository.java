@@ -221,7 +221,6 @@ public class ProductRepository {
         ViewResponse response = couchbaseClient.query(view, query);
         logger.info("message : Initializing purge operation for Products Last Updated on "+last_update_date_key);
         for(ViewRow row : response) {
-            logger.info("view data : id : " + row.getId() + " key : " + row.getKey() + " value : " + row.getValue());
             delete_TPNB_TPNC_VAR(row.getId(), couchbaseClient);
         }
     }
@@ -260,7 +259,6 @@ public class ProductRepository {
        final String productKey = product_key;
 
         couchbaseClient.delete(product_key);
-        logger.info("message : Product : " + productKey + ": is deleted");
     }
         /*Added by Salman for PS-114 to delete the results return from the view - End*/
 
