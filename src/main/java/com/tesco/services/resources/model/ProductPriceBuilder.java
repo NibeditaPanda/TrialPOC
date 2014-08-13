@@ -18,7 +18,13 @@ public class ProductPriceBuilder implements ProductPriceVisitor {
     public static final String TPNB = "tpnb";
     public static final String TPNC = "tpnc";
     public static final String PRICE = "price";
-    public static final String PROMO_PRICE = "promoPrice";
+    /**
+     * Modified By Nibedita - PS-118- Positive Scenario
+     * Given the  price IDL ,
+     * When the price rest calls are requested
+     * then the response JSON should be as per format mentioned in IDL */
+    public static final String PROMO_PRICE = "promoprice";
+
     public static final String PROMOTION_INFO = "promotions";
     public static final String CURRENCY = "currency";
     public static final String OFFER_NAME = "offerName";
@@ -42,11 +48,18 @@ public class ProductPriceBuilder implements ProductPriceVisitor {
     public void visit(Product product) {
         priceInfo.put(TPNB, product.getTPNB());
         priceInfo.put(VARIANTS, new ArrayList<Map<String, Object>>());
+        /**
+         * Added By Nibedita - PS-118- Positive Scenario
+         * Given the  price IDL ,
+         * When the price rest calls are requested
+         * then the response JSON should be as per format mentioned in IDL */
+        priceInfo.put(PROMOTION_INFO, new ArrayList<Map<String, String>>());
     }
 
     @Override
     public void visit(ProductVariant productVariant) {
         List<Map<String, Object>> variants = (List<Map<String, Object>>) priceInfo.get(VARIANTS);
+        List<Map<String, String>> promotions = (List<Map<String, String>>) priceInfo.get(PROMOTION_INFO);
 
         SaleInfo priceZoneSaleInfo = priceZoneId.isPresent() ? productVariant.getSaleInfo(priceZoneId.get()) : null;
         SaleInfo promoZoneSaleInfo = promoZoneId.isPresent() ? productVariant.getSaleInfo(promoZoneId.get()) : null;
@@ -54,26 +67,37 @@ public class ProductPriceBuilder implements ProductPriceVisitor {
         if (priceZoneSaleInfo == null && promoZoneSaleInfo == null) return;
 
         Map<String, Object> variantInfo = new LinkedHashMap<>();
+        Map<String, Object> variantInfo_promo = new LinkedHashMap<>();
         variantInfo.put(TPNC, productVariant.getTPNC());
         variantInfo.put(CURRENCY, currency);
         variants.add(variantInfo);
 
+
         if (priceZoneSaleInfo != null ) {
             variantInfo.put(PRICE, priceZoneSaleInfo.getPrice());
         }
-
+        /**
+         * Modified By Nibedita - PS-118- Positive Scenario
+         * Given the  price IDL ,
+         * When the price rest calls are requested
+         * then the response JSON should be as per format mentioned in IDL  */
         if (promoZoneSaleInfo != null) {
-            addPromotionInfo(promoZoneSaleInfo, variantInfo);
+            variantInfo.put(PROMO_PRICE, promoZoneSaleInfo.getPrice());
+        }
+       if (promoZoneSaleInfo != null && promotions.size()==0) {
+            addPromotionInfo(promoZoneSaleInfo,variantInfo_promo,promotions);
         }
     }
 
-    private void addPromotionInfo(SaleInfo promoZoneSaleInfo, Map<String, Object> variantInfo) {
-        variantInfo.put(PROMO_PRICE, promoZoneSaleInfo.getPrice());
+    /**
+     * Modified By Nibedita - PS-118- Positive Scenario
+     * Given the  price IDL ,
+     * When the price rest calls are requested
+     * then the response JSON should be as per format mentioned in IDL */
+    private void addPromotionInfo(SaleInfo promoZoneSaleInfo, Map<String, Object> variantInfo_promo,List<Map<String, String>> promotion_info) {
         Collection<Promotion> promotions = promoZoneSaleInfo.getPromotions();
 
         if (promotions.isEmpty()) return;
-
-        List<Map<String, String>> promotionMaps = new ArrayList<>();
 
         for (Promotion promotion : promotions) {
             Map<String, String> promotionInfoMap = new LinkedHashMap<>();
@@ -82,10 +106,9 @@ public class ProductPriceBuilder implements ProductPriceVisitor {
             promotionInfoMap.put(END_DATE, promotion.getEndDate());
             promotionInfoMap.put(CUSTOMER_FRIENDLY_DESCRIPTION_1, promotion.getCFDescription1());
             promotionInfoMap.put(CUSTOMER_FRIENDLY_DESCRIPTION_2, promotion.getCFDescription2());
-            promotionMaps.add(promotionInfoMap);
+            promotion_info.add(promotionInfoMap);
         }
 
-        variantInfo.put(PROMOTION_INFO, promotionMaps);
     }
 
     public Map<String, Object> getPriceInfo() {
