@@ -18,11 +18,8 @@ public class ProductPriceBuilder implements ProductPriceVisitor {
     public static final String TPNB = "tpnb";
     public static final String TPNC = "tpnc";
     public static final String PRICE = "price";
-    /**
-     * Modified By Nibedita - PS-118- Positive Scenario
-     * Given the  price IDL ,
-     * When the price rest calls are requested
-     * then the response JSON should be as per format mentioned in IDL */
+    /**Modified By Nibedita - PS-118- Positive Scenario
+     * Given the  price IDL ,When the price rest calls are requested, then the response JSON should be as per format mentioned in IDL  */
     public static final String PROMO_PRICE = "promoprice";
 
     public static final String PROMOTION_INFO = "promotions";
@@ -48,11 +45,8 @@ public class ProductPriceBuilder implements ProductPriceVisitor {
     public void visit(Product product) {
         priceInfo.put(TPNB, product.getTPNB());
         priceInfo.put(VARIANTS, new ArrayList<Map<String, Object>>());
-        /**
-         * Added By Nibedita - PS-118- Positive Scenario
-         * Given the  price IDL ,
-         * When the price rest calls are requested
-         * then the response JSON should be as per format mentioned in IDL */
+        /**Modified By Nibedita - PS-118- Positive Scenario
+         * Given the  price IDL ,When the price rest calls are requested, then the response JSON should be as per format mentioned in IDL  */
         priceInfo.put(PROMOTION_INFO, new ArrayList<Map<String, String>>());
     }
 
@@ -76,24 +70,23 @@ public class ProductPriceBuilder implements ProductPriceVisitor {
         if (priceZoneSaleInfo != null ) {
             variantInfo.put(PRICE, priceZoneSaleInfo.getPrice());
         }
-        /**
-         * Modified By Nibedita - PS-118- Positive Scenario
-         * Given the  price IDL ,
-         * When the price rest calls are requested
-         * then the response JSON should be as per format mentioned in IDL  */
+        /**Modified By Nibedita - PS-118- Positive Scenario
+         * Given the  price IDL ,When the price rest calls are requested, then the response JSON should be as per format mentioned in IDL  */
         if (promoZoneSaleInfo != null) {
             variantInfo.put(PROMO_PRICE, promoZoneSaleInfo.getPrice());
+        }
+        /**Modified By Nibedita - PS-118- Positive Scenario
+         * Given the  price IDL ,When the price rest calls are requested, then the response JSON should be as per format mentioned in IDL  */
+        if (promoZoneSaleInfo == null) {
+            variantInfo.put(PROMO_PRICE, null);
         }
        if (promoZoneSaleInfo != null && promotions.size()==0) {
             addPromotionInfo(promoZoneSaleInfo,variantInfo_promo,promotions);
         }
     }
 
-    /**
-     * Modified By Nibedita - PS-118- Positive Scenario
-     * Given the  price IDL ,
-     * When the price rest calls are requested
-     * then the response JSON should be as per format mentioned in IDL */
+    /**Modified By Nibedita - PS-118- Positive Scenario
+     * Given the  price IDL ,When the price rest calls are requested, then the response JSON should be as per format mentioned in IDL  */
     private void addPromotionInfo(SaleInfo promoZoneSaleInfo, Map<String, Object> variantInfo_promo,List<Map<String, String>> promotion_info) {
         Collection<Promotion> promotions = promoZoneSaleInfo.getPromotions();
 
