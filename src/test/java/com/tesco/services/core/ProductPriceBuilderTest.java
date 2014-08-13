@@ -74,22 +74,30 @@ public class ProductPriceBuilderTest {
         assertThat(productPriceBuilder.getPriceInfo()).isEqualTo(expectedProductPriceMap(true, false));
     }
 
+    /**
+     * @modified by Sushil for PS-118
+     * Test case modify to accommodate new change as per IDL to construct tpnb, variants and promotions JSON data.
+     */
     private Map<String, Object> expectedProductPriceMap(boolean includePrice, boolean includePromoPrice) {
         Map<String, Object> variantInfo1 = new LinkedHashMap<>();
+        List<Map<String, String>> promotions = new ArrayList<>();
         variantInfo1.put("tpnc", tpnc1);
         variantInfo1.put("currency", "GBP");
         if (includePrice) variantInfo1.put("price", "1.40");
         if (includePromoPrice) {
-            variantInfo1.put("promoPrice", "1.30");
-            List<Map<String, String>> promotions = Arrays.asList(createPromotionInfo("A30718669"), createPromotionInfo("A30718670"));
-            variantInfo1.put("promotions", promotions);
+            variantInfo1.put("promoprice", "1.30");
+            promotions = Arrays.asList(createPromotionInfo("A30718669"), createPromotionInfo("A30718670"));
+            //variantInfo1.put("promotions", promotions);
+        }else if(includePromoPrice == false){
+            variantInfo1.put("promoprice", null);
+            promotions =  Arrays.asList();
         }
 
         Map<String, Object> variantInfo2 = new LinkedHashMap<>();
         variantInfo2.put("tpnc", tpnc2);
         variantInfo2.put("currency", "GBP");
         if (includePrice) variantInfo2.put("price", "1.39");
-        if (includePromoPrice) variantInfo2.put("promoPrice", "1.20");
+        if (includePromoPrice) variantInfo2.put("promoprice", "1.20");
 
         ArrayList<Map<String, Object>> variants = new ArrayList<>();
         variants.add(variantInfo1);
@@ -98,6 +106,7 @@ public class ProductPriceBuilderTest {
         Map<String, Object> productPriceMap = new LinkedHashMap<>();
         productPriceMap.put("tpnb", tpnb);
         productPriceMap.put("variants", variants);
+        productPriceMap.put("promotions", promotions);
 
         return productPriceMap;
     }
