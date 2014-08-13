@@ -138,10 +138,12 @@ public class PriceResourceTest extends ResourceTest {
         Map actualProductPriceInfo = resource.get(Map.class);
 
         ArrayList<Map<String, Object>> variants = new ArrayList<>();
+        ArrayList<Map<String, String>> promotion = new ArrayList<>();
         variants.add(getVariantInfo(tpnc1, "EUR", null, "1.10", false));
         variants.add(getVariantInfo(tpnc2, "EUR", "1.38", null, false));
-
-        compareResponseMaps(actualProductPriceInfo, getProductPriceMap(tpnb, variants));
+        /* PS-118 -salman :changed to form the response according to IDL */
+        promotion.add(createPromotionInfo("A30718670"));
+        compareResponseMaps(actualProductPriceInfo, getProductPriceMap(tpnb, variants,promotion));
     }
 
     @Test
@@ -224,18 +226,24 @@ public class PriceResourceTest extends ResourceTest {
 
     private Map<String, Object> expectedProductPriceInfo(String tpnb, String tpnc1, String tpnc2) {
         ArrayList<Map<String, Object>> variants = new ArrayList<>();
-        if(!Dockyard.isSpaceOrNull(tpnc1))
-            variants.add(getVariantInfo(tpnc1, "GBP", "1.40", "1.20", true));
+        /* PS-118 -salman :changed to form the response according to IDL */
+        ArrayList<Map<String, String>> promotion=new ArrayList<>();
+
         if(!Dockyard.isSpaceOrNull(tpnc2))
             variants.add(getVariantInfo(tpnc2, "GBP", "1.39", null, true));
+        if(!Dockyard.isSpaceOrNull(tpnc1))
+            variants.add(getVariantInfo(tpnc1, "GBP", "1.40", "1.20", true));
+        /* PS-118 -salman :changed to form the response according to IDL */
+        promotion.add(createPromotionInfo("A30718670"));
 
-        return getProductPriceMap(tpnb, variants);
+        return getProductPriceMap(tpnb, variants,promotion);
     }
-
-    private Map<String, Object> getProductPriceMap(String tpnb, ArrayList<Map<String, Object>> variants) {
+    private Map<String, Object> getProductPriceMap(String tpnb, ArrayList<Map<String, Object>> variants, ArrayList<Map<String, String>> promotion) {
         Map<String, Object> productPriceMap = new LinkedHashMap<>();
         productPriceMap.put("tpnb", tpnb);
         productPriceMap.put("variants", variants);
+        /* PS-118 -salman :changed to form the response according to IDL */
+        productPriceMap.put("promotions", promotion);
         return productPriceMap;
     }
 
@@ -244,14 +252,11 @@ public class PriceResourceTest extends ResourceTest {
         variantInfo1.put("tpnc", tpnc);
         variantInfo1.put("currency", currency);
         if (price != null) variantInfo1.put("price", price);
-        if (promoPrice != null) {
-            variantInfo1.put("promoPrice", promoPrice);
-            if (shouldAddPromotionInfo) {
-                ArrayList<Object> promotions = new ArrayList<>();
-                promotions.add(createPromotionInfo("A30718670"));
-                variantInfo1.put("promotions", promotions);
-            }
-        }
+        //if (promoPrice != null) {
+            variantInfo1.put("promoprice", promoPrice);
+        /* PS-118 -salman :changed to form the response according to IDL */
+        //salman deleted old code of adding promotion
+
         return variantInfo1;
     }
 
@@ -318,12 +323,17 @@ public class PriceResourceTest extends ResourceTest {
         Map actualProductPriceInfo = resource.get(Map.class);
 
         ArrayList<Map<String, Object>> variants = new ArrayList<>();
+        /* PS-118 -salman :changed to form the response according to IDL */
+        ArrayList<Map<String, String>> promotion = new ArrayList<>();
+
         if(!Dockyard.isSpaceOrNull(tpnc1))
             variants.add(getVariantInfo(tpnc1, "EUR", "1.20" ,"1.10", false));
         if(!Dockyard.isSpaceOrNull(tpnc2))
             variants.add(getVariantInfo(tpnc2, "EUR", "1.38", null, false));
+        /* PS-118 -salman :changed to form the response according to IDL */
+        promotion.add(createPromotionInfo("A30718670"));
 
-        compareResponseMaps(actualProductPriceInfo, getProductPriceMap(tpnb, variants));
+        compareResponseMaps(actualProductPriceInfo, getProductPriceMap(tpnb, variants,promotion));
     }
     @Test
     public void shouldReturn404WhenItemIsNotFoundGivenTPNC() throws ItemNotFoundException {
