@@ -97,7 +97,12 @@ public class ProductPriceBuilderTest {
         variantInfo2.put("tpnc", tpnc2);
         variantInfo2.put("currency", "GBP");
         if (includePrice) variantInfo2.put("price", "1.39");
-        if (includePromoPrice) variantInfo2.put("promoprice", "1.20");
+        if (includePromoPrice){
+            variantInfo2.put("promoprice", "1.20");
+        }else if(includePromoPrice == false){
+            variantInfo2.put("promoprice", null);
+            promotions =  Arrays.asList();
+        }
 
         ArrayList<Map<String, Object>> variants = new ArrayList<>();
         variants.add(variantInfo1);
