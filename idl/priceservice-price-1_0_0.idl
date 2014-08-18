@@ -1,0 +1,136 @@
+﻿@tidl 1.0.0;
+
+interface Price exposes PriceService {
+
+	@description "
+#overview
+selling price associated 
+		";
+	@owner "Andrew King", "";
+	@author "Rakesh Ravuri", "rakesh.ravuri@in.tesco.com";
+	@reviewer "", "";
+	@organisation "Tesco";
+	@organisationDomainName "tesco.com";
+	@namespacePrefix "Tesco.Com.Services";
+	@version 1.0.0, "RC","2013/3/18","initial internal release";
+	@version 1.0.0, "Live","2013/6/6","initial 3.1 release for mobile";
+
+	Price get(mandatory string productid,decimal quantity,string uom,datetime saledate, string channel, string zone,string userId){
+		@description "get the selling price of the product for sale date . (if sale date not specified defaults to today)";
+		@parameter productid,"productId in form type-identifier e.g EAN-309971491030  , TPNC-2365624878 etc.,";
+		@parameter quantity,"e.g 1,10,1.5";
+		@parameter uom," Kg,liters etc.,";
+		@parameter saledate,"sale date";	
+		@parameter channel,"web, mobile";
+		@parameter zone,"postcode, custom region, store e.g postcode:al7tw or store:6061 etc.,";
+		@parameter userId,"uuid of the customer, seller, employee as returned by the identity api";
+		@return "price details";
+	}
+	
+	Price calculateTender(mandatory string productid, set<Tender> tenderFromBody, decimal quantity,string uom, datetime saledate, string channel, 
+                                                       string zone,string userId){
+		@description "get the selling price of the product for sale date . (if sale date not specified defaults to today)";
+		@parameter productid,"productId in form type-identifier e.g EAN-309971491030  , TPNC-2365624878 etc.,";
+		@parameter tenderFromBody,"voucher, cash, etc.";
+		@parameter quantity,"e.g 1,10,1.5";
+		@parameter uom,"Kg,liters etc.,";		
+		@parameter saledate,"sale date";	
+		@parameter channel,"web, mobile";
+		@parameter zone,"postcode, custom region, store e.g postcode:al7tw or store:6061 etc.,";
+		@parameter userId,"uuid of the customer, seller, employee as returned by the identity api";
+		@return "price details corresponding to tender types";
+	}
+
+
+	list<Price> calculateTotal(mandatory set<LineItem> lineItemsFromBody,string channel, 
+		string zone, datetime validFrom,datetime validTill, string applicablePromotionTypes, string userId){
+		@description "calculates the total price and the ";
+		@parameter lineItemsFromBody,"list of lineitems for which the price is calculated";
+		@parameter channel, "web,mobile";
+		@parameter zone, "postcode, custom region, store e.g postcode:al7tw or store:6061 etc.,";
+		@parameter validFrom, "date from which the price needs to valid from, inclusive";
+		@parameter validTill, "date till which the price needs to valid, inclusive";
+		@parameter applicablePromotionTypes, "default is ALL, specifies the specific list of promotion types that need to be
+			applied in calculating the price";
+		@parameter userId, "";
+		@return "list of price details corresponding to line items";
+	}
+
+
+	set<Price> retrievePrice(set<string> productIdsFromBody,decimal quantity,string uom,datetime saledate, string channel, string zone,string userId){
+		@description "Sets the selling prices of the products for a specific sale date. Note: If the sale date is not specified, the current date is used 
+                                                            by default.)";
+		@parameter productIdsFromBody,"The productIds in form type-identifier. For example, EAN-309971491030, TPNC-2365624878.";
+		@parameter quantity,"For example, 1,10,1.5";
+		@parameter uom,"The unit of meaure. Examples include Kg or liters.";
+		@parameter saledate,"The sale date on which the price is applicable.";	
+		@parameter channel,"The sale channel to which the price is applicable. For example, web or mobile.";
+		@parameter zone,"The postcode, custom region, or the store to which the price is appliable. For example, postcode:al7tw or store:6061.";
+		@parameter userId,"The uuid of the customer, seller, or employee as returned by the Identity service.";
+		@return "Returns the list of price details corresponding to product ids specified.";
+	}
+
+	type Tender(string type, Money value){
+		@description "type representing tender";
+		@parameter type, "tender type like voucher, cash, etc";
+		@parameter value, " value of the tender";
+	}
+
+	type Price(mandatory Money totalSellingPrice, Money totalDiscount, list<VAT> vats,
+		datetime validFrom,datetime validTill, PriceType pricetype, string wasPrice, string wasWasPrice, set<PromotionSummary> 
+                                  triggeredPromotions, set<LineItem> linePrices){
+		@description "a struct representing price";
+		@parameter totalSellingPrice, "total selling price of the list of items with the discount applied";
+		@parameter totalDiscount, " total aggregated discount across all the line items.";
+		@parameter vats, "applicable VAT amounts for all items in the list";
+		@parameter validFrom, "the date since when this price is applicable, may be null if appropriate permissions are present";
+		@parameter validTill, "the date till wich this price is valid";
+		@parameter pricetype, "price types like normal, price-cut, markdown";
+		@parameter wasPrice, "previous selling price";
+		@parameter wasWasPrice, "previous to previous selling price";
+		@parameter triggeredPromotions, "set of promotions triggered for this product list";
+		@parameter linePrices, "list of prices at line level";
+	}
+
+	type LineItem(mandatory string productId,string uom, decimal quantity, 
+		Money unitSellingPrice,Money totalSellingPrice, Money discount, 
+		set<VAT> vats,set<PromotionSummary> promotions){
+		@description "";
+		@parameter productId,"productId in form type-identifier e.g uuid, EAN-309971491030  , TPNC-2365624878 etc.,";
+		@parameter uom, "Unit of Measure e.g. Kg , Liters, catch weight etc.,";
+		@parameter quantity,"quantity in units of uom";
+		@parameter unitSellingPrice, "retail price associated with this product for single unit specified, with out any discount";
+		@parameter totalSellingPrice, "retail price associated with this product for qunatity of units specified, with discount applied";
+		@parameter discount, "discount for the line item of specified quantity based on the promotions listed";
+		@parameter vats,"applicable vat amounts";
+		@parameter promotions, "list of promotions triggered for this item"; 
+	}
+	
+	enumeration priceType(Normal, PriceCut, MarkDown){
+		@description "This lists the complex Price Type";
+		@value Normal, "normal price type";
+		@value PriceCut, "pricecut price type";
+		@value MarkDown, "markdown price type";
+	}
+	
+	type VAT(string band,Money amount, decimal percentage)
+	{
+		@parameter band,"applicable VAT band at the item level";
+		@parameter amount, "applicable VAT amount at the item level for the specified quantity"; 
+		@parameter percentage, "vat percentage applied";
+	}
+
+	type PromotionSummary(mandatory string id, string type, Money reward){
+		@description "a struct representing price";
+		@parameter id, "An identifier for the promotion";
+		@parameter type, "promotion type, e.g local multisaver, multisaver, linksave, extended promotion etc.,";
+		@parameter reward, "amount of the reward, e.g ?1, 100 CC points";
+	}
+
+	type Money(mandatory decimal amount,mandatory string currency){
+		@description "a struct representing money";
+		@parameter amount, "currency amount";
+		@parameter currency, "currency of the amount in ISO or type of the reward, e.g CC Points, etc.,";
+	}
+}
+ 

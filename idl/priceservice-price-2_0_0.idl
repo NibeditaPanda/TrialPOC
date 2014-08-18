@@ -10,7 +10,7 @@ API to interact with Tesco's base price and promotion details.
 Price Api can be used for price information.
 ## Examples
 ```e.g. in http
-http://api.example.com/v1/price/...
+http://api.example.com/v2/price/...
 ``` ";
 
     @owner "Price Service Team", "Price Service team email", "2.0.0";
@@ -20,30 +20,31 @@ http://api.example.com/v1/price/...
 	@organisation "Tesco";
 	@organisationDomainName "tesco.com";
 	@namespacePrefix "tesco.com.services";
-	@version 1.0.0, "draft","2014/8/01","first draft of version 2.0";
+	@version 2.0.0, "draft","2014/8/18","first draft of version 2.0";
 
-    Price get(mandatory string tpnIdentifier, mandatory string tpn, string store) throws ProductNotFoundException, StoreNotFoundException, InvalidRequestException, InternalServerErrorException {
-    	@description "Find price of product variants by product's base TPNB or variants' TPNC
+    Price get(mandatory tpnIdentifierEnumeration tpnIdentifier, mandatory string tpn, string store) throws ProductNotFoundException, StoreNotFoundException, ProductTypeMismatchException, InvalidRequestException, InternalServerErrorException {
+    	@description "Find price of product variants by product's base TPNB or variants' TPNC: currently provides prices for all products sold in store in the the UK
 
         #Overview
           End point to retrieve information about price for a product by product item number
         ##Example
-          $ curl -I http://188.226.184.77/price/B/050017786
+          $ curl -I http://188.226.184.77/v2/price/B/050017786
             HTTP/1.1 200 OK
             Content-Type: application/json
             
-          $ curl http://188.226.184.77/price/B/050017786
+          $ curl http://188.226.184.77/v2/price/B/050017786
             [{"tpnb":"050017786","variants":[{"tpnc":"050017786","currency":"GBP","price":"0.29"}]}]
 
        	  Get price for a product with store id
-          $ curl http://188.226.184.77/price/B/050017786?store=2031
-       "  ;
+          $ curl http://188.226.184.77/v2/price/B/050017786?store=2031
 
-        @parameter tpnIdentifier, "Type of identifier(B => TPNB, C => TPNC)";
+		"  ;
+
+        @parameter tpnIdentifier, "Type of identifier ( B (or b) => TPNB, C (or c) => TPNC )";
 	    @parameter tpn, "TPNB/TPNC of Product";
         @parameter store, "ID of Store if a store-specific price is desired";
         @return "Price information for a product";
-        @since 1.0.0;
+        @since 2.0.0;
     }
 
     type Price(string tpnb, list<Variant> variants, list<Promotion> promotions) {
@@ -51,23 +52,37 @@ http://api.example.com/v1/price/...
         @parameter tpnb, "TPNB of the product";
         @parameter variants, "List of price information by TPNC";
 		@parameter promotions, "List of promotion information by offer";
+	@since 2.0.0;
     }
 
-	type Variant(string tpnc, string price, string promoprice) {
+	type Variant(string tpnc, string currency, string sellingUOM, string price, string promoprice) {
         @description "Current effective prices for TPNC";
         @parameter tpnc, "TPNC of the product";
 		@parameter currency, "Currency of prices";
+		@parameter sellingUOM, "The selling unit of measure applicable to prices";
         @parameter price, "Regular price of the TPNC for UK national zone if no store specified, or specified store";
 		@parameter promoprice, "Promotion price of the TPNC for UK national zone if no store specified, or specified store: null if no effective promotion price";
+	@since 2.0.0;
 	}
 
-	type Promotion(string offerName, string effectiveDate, string endDate) {
+	type Promotion(string offerID, string offerName, string effectiveDate, string endDate, string customerFriendlyDescription1, string customerFriendlyDescription2) {
         @description "Promotion information for offer currently effective on the TPNB";
-        @parameter offerName, "Offer id of the promotion";
+        @parameter offerID, "Offer id of the promotion";
+		@parameter offerName, "Description of the promotion";
 		@parameter effectiveDate, "Effective date of the promotion";
 		@parameter endDate, "End date of the promotion";
         @parameter customerFriendlyDescription1, "1st customer friendly Promotion Description, as set up for labels and POS";
-		@parameter customerFriendlyDescription2, "2st customer friendly Promotion Description, as set up for labels and POS";
+		@parameter customerFriendlyDescription2, "2nd customer friendly Promotion Description, as set up for labels and POS";
+	@since 2.0.0;
+	}
+
+enumeration tpnIdentifierEnumeration(B, b, C, c){
+		@description "List of possible values for tpnIdentifier";
+		@value B, "TPNB";
+		@value b, "TPNB";
+		@value C, "TPNC";
+		@value c, "TPNC";
+		@since 2.0.0;
 	}
 
 	exception ProductNotFoundException(
@@ -77,6 +92,7 @@ http://api.example.com/v1/price/...
 		@description "Exception indicating that no price for the item was found for the specified product";
 		@parameter message, "message: Product not found";
 		@parameter statusCode, "404";
+		@since 2.0.0;
 	}
 
 	exception StoreNotFoundException(
@@ -86,6 +102,17 @@ http://api.example.com/v1/price/...
 		@description "Exception indicating that the specified store number was not found";
 		@parameter message, "message: Store not found";
 		@parameter statusCode, "404";
+		@since 2.0.0;
+	}
+
+	exception ProductTypeMismatchException(
+		string message,
+		HttpStatusCode statusCode)
+	{
+		@description "Exception indicating that the product number specified is inconsistent with the product type specified";
+		@parameter message, "message: TPN Identifier and Value Mismatch - Invalid Request";
+		@parameter statusCode, "406";
+		@since 2.0.0;
 	}
 
 	exception InvalidRequestException(
@@ -95,6 +122,7 @@ http://api.example.com/v1/price/...
 		@description "Exception indicating that the request is not understood by the service";
 		@parameter message, "error: Invalid request";
 		@parameter statusCode, "400";
+		@since 2.0.0;
 	}
 
 	exception InternalServerErrorException(
@@ -104,6 +132,7 @@ http://api.example.com/v1/price/...
 		@description "Exception indicating that an internal server error occurred";
 		@parameter message, "error: Internal server error";
 		@parameter statusCode, "500";
+		@since 2.0.0;
 	}
 
 }
