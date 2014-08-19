@@ -20,7 +20,9 @@ public class HTTPResponses {
     }
 
     public static Response serverError() {
-        return Response.serverError().entity(String.format("{\"message\":\"%s\"}", INTERNAL_SERVER_ERROR)).build();
+        /*Added By Abrar - PS 166 - Modified message to Error  - Start*/
+        return Response.serverError().entity(String.format("{\"error\":\"%s\"}", INTERNAL_SERVER_ERROR)).build();
+        /*Added By Abrar - PS 166 - Modified message to Error  - End*/
     }
    /*Added By Surya - PS 30 - Request handling for TPN identifier and value Mismatch  - Start*/
     public static Response requestNotAllowed(String message) {

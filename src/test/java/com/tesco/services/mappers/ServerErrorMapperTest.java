@@ -13,8 +13,9 @@ public class ServerErrorMapperTest {
         ServerErrorMapper serverErrorMapper = new ServerErrorMapper();
         Exception exception = new Exception("Internal Server Error.");
         Response response = serverErrorMapper.toResponse(exception);
-
-        assertThat(response.getEntity().toString()).isEqualTo("{\"message\":\"Internal Server Error\"}");
+        /*Modified by Abrar for PS-166- Start */
+        assertThat(response.getEntity().toString()).isEqualTo("{\"error\":\"Internal Server Error\"}");
+        /*Modified by Abrar for PS-166- End */
         assertThat(response.getStatus() == 500);
     }
 }
