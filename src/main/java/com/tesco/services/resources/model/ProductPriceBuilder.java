@@ -61,7 +61,6 @@ public class ProductPriceBuilder implements ProductPriceVisitor {
         if (priceZoneSaleInfo == null && promoZoneSaleInfo == null) return;
 
         Map<String, Object> variantInfo = new LinkedHashMap<>();
-        Map<String, Object> variantInfo_promo = new LinkedHashMap<>();
         variantInfo.put(TPNC, productVariant.getTPNC());
         variantInfo.put(CURRENCY, currency);
         variants.add(variantInfo);
@@ -81,13 +80,13 @@ public class ProductPriceBuilder implements ProductPriceVisitor {
             variantInfo.put(PROMO_PRICE, null);
         }
        if (promoZoneSaleInfo != null && promotions.size()==0) {
-            addPromotionInfo(promoZoneSaleInfo,variantInfo_promo,promotions);
+            addPromotionInfo(promoZoneSaleInfo,promotions);
         }
     }
 
     /**Modified By Nibedita - PS-118- Positive Scenario
      * Given the  price IDL ,When the price rest calls are requested, then the response JSON should be as per format mentioned in IDL  */
-    private void addPromotionInfo(SaleInfo promoZoneSaleInfo, Map<String, Object> variantInfo_promo,List<Map<String, String>> promotion_info) {
+    private void addPromotionInfo(SaleInfo promoZoneSaleInfo,List<Map<String, String>> promotion_info) {
         Collection<Promotion> promotions = promoZoneSaleInfo.getPromotions();
 
         if (promotions.isEmpty()) return;

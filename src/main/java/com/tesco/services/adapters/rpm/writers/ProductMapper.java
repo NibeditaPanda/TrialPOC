@@ -38,6 +38,11 @@ public class ProductMapper {
         String tpnb = item.split("-")[0];
         String tpncHeader = CSVHeaders.Price.TPNC;
         String tpnc = headerToValueMap.get(tpncHeader);
+        /**Added By Nibedita/Mukund - PS-112
+         * Given the  price End Point,When the price rest calls are requested, then the response JSON should contain selling UOM for the tpnc line with IDL  */
+        String sellingUOMHeader = CSVHeaders.Price.SELLING_UOM;
+        String sellingUOM = headerToValueMap.get(sellingUOMHeader);
+
         Product product;
        /* Modified by Salman,Rohan and Surya -This check is to Create a new Product from the Price Extracts Even though Promotions Exit as a part of Promotion Purge - Start*/
         if(priceExtractDataList.contains(tpnb)){
@@ -50,6 +55,10 @@ public class ProductMapper {
        /* Modified by Salman,Rohan and Surya -This check is to Create a new Product from the Price Extracts Even though Promotions Exit as a part of Promotion Purge - End*/
 
         ProductVariant productVariant = getProductVariant(product, tpnc);
+        /**Added By Nibedita - PS-112
+         * Given the  price End Point,When the price rest calls are requested, then the response JSON should contain selling UOM for the tpnc line with IDL  */
+        productVariant.setSellingUOM(sellingUOM);
+
         final int zoneId = Integer.parseInt(headerToValueMap.get(zoneIdHeader));
         productVariant.addSaleInfo(new SaleInfo(zoneId, headerToValueMap.get(priceHeader)));
         return product;

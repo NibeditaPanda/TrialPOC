@@ -61,7 +61,9 @@ public class PriceImportIntegrationTest extends ImportJobIntegrationTestBase {
     protected void preImportCallBack() {
         oldTpnb = "01212323";
     }
-
+    /**Modified By Nibedita/Nitisha - PS-112
+     * Given the  price End Point,When the price rest calls are requested,
+     * then the response JSON should contain selling UOM for the tpnc in line with IDL  */
     @Test
     public void shouldUpdatePriceZonePrices() throws URISyntaxException, IOException, InterruptedException {
         String tpnb,tpnc1,tpnc2;
@@ -81,6 +83,7 @@ public class PriceImportIntegrationTest extends ImportJobIntegrationTestBase {
         saleInfo1.addPromotion(promotion1);
         
         ProductVariant productVariant1 = new ProductVariant(tpnc1);
+        productVariant1.setSellingUOM("KG");
         productVariant1.addSaleInfo(saleInfo1);
         productVariant1.addSaleInfo(new SaleInfo(1, "1.40"));
 
@@ -97,6 +100,7 @@ public class PriceImportIntegrationTest extends ImportJobIntegrationTestBase {
         saleInfo2.addPromotion(promotion2);
         
         ProductVariant productVariant2 = new ProductVariant(tpnc2);
+        productVariant2.setSellingUOM("KG");
         productVariant2.addSaleInfo(saleInfo2);
         productVariant2.addSaleInfo(new SaleInfo(1, "1.39"));
         productVariant2.addSaleInfo(new SaleInfo(2, "1.38"));

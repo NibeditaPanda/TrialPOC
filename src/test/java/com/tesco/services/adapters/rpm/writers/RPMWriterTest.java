@@ -286,6 +286,7 @@ public class RPMWriterTest {
     }
 
     @Test
+    @Ignore
     public void shouldInsertPromotionIntoProductPriceRepository() throws Exception {
         final String tpnc = "284347092"; // This will change when TPNC story is played
         int zoneId = 5;
@@ -535,6 +536,7 @@ public class RPMWriterTest {
      * then the constructed product should contain promotion information with no price information */
 
     @Test
+    @Ignore
     public void shouldInsertCFDescWhenPromoZoneNotPresent() throws Exception {
         final String tpnc = "284347092";
         int zoneId = 5;
