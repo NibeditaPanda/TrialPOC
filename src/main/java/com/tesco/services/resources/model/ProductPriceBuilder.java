@@ -6,6 +6,7 @@ import com.tesco.services.core.ProductPriceVisitor;
 import com.tesco.services.core.ProductVariant;
 import com.tesco.services.core.Promotion;
 import com.tesco.services.core.SaleInfo;
+import com.tesco.services.utility.Dockyard;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,6 +22,11 @@ public class ProductPriceBuilder implements ProductPriceVisitor {
     /**Modified By Nibedita - PS-118- Positive Scenario
      * Given the  price IDL ,When the price rest calls are requested, then the response JSON should be as per format mentioned in IDL  */
     public static final String PROMO_PRICE = "promoprice";
+    /**Modified By Nibedita - PS-173
+     * Given the  price IDL ,When the price rest calls are requested and selling UOM filed is available in price_zone.csv,
+     * then the response JSON should display selling UOM for the tpnc's in line with IDL  */
+    public static final String SELLING_UOM = "sellingUOM";
+
 
     public static final String PROMOTION_INFO = "promotions";
     public static final String CURRENCY = "currency";
@@ -63,6 +69,12 @@ public class ProductPriceBuilder implements ProductPriceVisitor {
         Map<String, Object> variantInfo = new LinkedHashMap<>();
         variantInfo.put(TPNC, productVariant.getTPNC());
         variantInfo.put(CURRENCY, currency);
+        /**Modified By Nibedita - PS-173
+         * Given the  price IDL ,When the price rest calls are requested and selling UOM filed is available in price_zone.csv,
+         * then the response JSON should display selling UOM for the tpnc's in line with IDL  */
+        if(!Dockyard.isSpaceOrNull(productVariant.getSellingUOM())) {
+            variantInfo.put(SELLING_UOM, productVariant.getSellingUOM());
+        }
         variants.add(variantInfo);
 
 
@@ -79,7 +91,7 @@ public class ProductPriceBuilder implements ProductPriceVisitor {
         if (promoZoneSaleInfo == null) {
             variantInfo.put(PROMO_PRICE, null);
         }
-       if (promoZoneSaleInfo != null && promotions.size()==0) {
+        if (promoZoneSaleInfo != null && promotions.size()==0) {
             addPromotionInfo(promoZoneSaleInfo,promotions);
         }
     }

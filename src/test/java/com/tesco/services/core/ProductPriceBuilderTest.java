@@ -23,6 +23,8 @@ public class ProductPriceBuilderTest {
     private final String tpnc1 = "82345";
     private final String tpnc2 = "94553";
     private final String tpnc3 = "94554";
+    public static final String SELLING_UOM = "sellingUOM";
+    private final String sellinguom_val="KG";
     private ProductPriceBuilder productPriceVisitor;
     private String currency;
 
@@ -83,6 +85,8 @@ public class ProductPriceBuilderTest {
         List<Map<String, String>> promotions = new ArrayList<>();
         variantInfo1.put("tpnc", tpnc1);
         variantInfo1.put("currency", "GBP");
+        /** PS-173 -Salman: changed to include sellingUOM field in expected product object for test */
+        variantInfo1.put(SELLING_UOM, sellinguom_val);
         if (includePrice) variantInfo1.put("price", "1.40");
         if (includePromoPrice) {
             variantInfo1.put("promoprice", "1.30");
@@ -96,6 +100,8 @@ public class ProductPriceBuilderTest {
         Map<String, Object> variantInfo2 = new LinkedHashMap<>();
         variantInfo2.put("tpnc", tpnc2);
         variantInfo2.put("currency", "GBP");
+        /** PS-173 -Salman: changed to include sellingUOM field in expected product object for test */
+        variantInfo2.put(SELLING_UOM, sellinguom_val);
         if (includePrice) variantInfo2.put("price", "1.39");
         if (includePromoPrice){
             variantInfo2.put("promoprice", "1.20");
@@ -122,10 +128,14 @@ public class ProductPriceBuilderTest {
         saleInfoWithPromotion.addPromotion(createPromotion("A30718669"));
 
         ProductVariant productVariant1 = new ProductVariant(tpnc1);
+        /** PS-173 :Salman: setting sellingUOM values to productVariant1 and productVariant2 while
+         * creating product variants for test */
+        productVariant1.setSellingUOM(sellinguom_val);
         productVariant1.addSaleInfo(new SaleInfo(1, "1.40"));
         productVariant1.addSaleInfo(saleInfoWithPromotion);
 
         ProductVariant productVariant2 = new ProductVariant(tpnc2);
+        productVariant2.setSellingUOM(sellinguom_val);
         productVariant2.addSaleInfo(new SaleInfo(1, "1.39"));
         productVariant2.addSaleInfo(new SaleInfo(2, "1.38"));
         productVariant2.addSaleInfo(new SaleInfo(5, "1.20"));
@@ -140,12 +150,12 @@ public class ProductPriceBuilderTest {
 
     private Promotion createPromotion(String offerId) {
         return new PromotionBuilder().
-                    offerId(offerId).
-                    offerName("Test Offer Name " + offerId).
-                    startDate("20130729").
-                    endDate("20130819").
-                    description1("Test Description 1 " + offerId).
-                    description2("Test Description 2 " + offerId).
+                offerId(offerId).
+                offerName("Test Offer Name " + offerId).
+                startDate("20130729").
+                endDate("20130819").
+                description1("Test Description 1 " + offerId).
+                description2("Test Description 2 " + offerId).
                 createPromotion();
     }
 

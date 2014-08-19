@@ -43,15 +43,17 @@ public class PriceResourceTest extends ResourceTest {
     private static Configuration testConfiguration ;
     private CouchbaseConnectionManager couchbaseConnectionManager;
     private CouchbaseTestManager couchbaseTestManager;
-   private CouchbaseWrapper couchbaseWrapper;
+    private CouchbaseWrapper couchbaseWrapper;
     private AsyncCouchbaseWrapper asyncCouchbaseWrapper;
     private ObjectMapper mapper ;
     private ProductRepository productRepository;
     private StoreRepository storeRepository;
+    private static String SELLING_UOM = "sellingUOM";
+    private static String SELLING_UOM_VAL = "KG";
 
     @Override
     protected void setUpResources() throws Exception {
-       // couchbaseConnectionManager = new CouchbaseConnectionManager(testConfiguration);
+        // couchbaseConnectionManager = new CouchbaseConnectionManager(testConfiguration);
         testConfiguration = TestConfiguration.load();
 
         if (testConfiguration.isDummyCouchbaseMode()){
@@ -120,7 +122,7 @@ public class PriceResourceTest extends ResourceTest {
 
     @Test
     public void shouldReturnPricesWhenStoreIdIsSpecified() throws IOException, ItemNotFoundException {
-      //  ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
+        //  ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
 
         String tpnb = "050925811";
         String tpnc1 = "266072275";
@@ -139,8 +141,9 @@ public class PriceResourceTest extends ResourceTest {
 
         ArrayList<Map<String, Object>> variants = new ArrayList<>();
         ArrayList<Map<String, String>> promotion = new ArrayList<>();
-        variants.add(getVariantInfo(tpnc1, "EUR", null, "1.10", false));
-        variants.add(getVariantInfo(tpnc2, "EUR", "1.38", null, false));
+        /** PS-173 -salman :changed to add sellingUOM value to variant */
+        variants.add(getVariantInfo(tpnc1, "EUR", null, "1.10","KG"));
+        variants.add(getVariantInfo(tpnc2, "EUR", "1.38", null,"KG"));
         /* PS-118 -salman :changed to form the response according to IDL */
         promotion.add(createPromotionInfo("A30718670"));
         compareResponseMaps(actualProductPriceInfo, getProductPriceMap(tpnb, variants,promotion));
@@ -157,7 +160,7 @@ public class PriceResourceTest extends ResourceTest {
 
     @Test
     public void shouldReturn404WhenStoreIsNotFound() throws Exception {
-       // ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
+        // ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
         productRepository.put(createProductWithVariants("050925811", "266072275", "266072276"));
 
         WebResource resource = client().resource("/price/B/050925811?store=2099");
@@ -169,7 +172,7 @@ public class PriceResourceTest extends ResourceTest {
 
     @Test
     public void shouldReturn404WhenStoreIsInvalid() throws Exception {
-      //  ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
+        //  ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
         productRepository.put(createProductWithVariants("050925811", "266072275", "266072276"));
 
         WebResource resource = client().resource("/price/B/050925811?store=invalidstore");
@@ -191,8 +194,10 @@ public class PriceResourceTest extends ResourceTest {
     private Product createProductWithVariants(String tpnb, String tpnc1, String tpnc2) {
         ProductVariant productVariant1 = null;
         ProductVariant productVariant2 = null;
+        /** PS-173 -salman :adding sellingUOM value to variant while product is built */
         if(!Dockyard.isSpaceOrNull(tpnc1)) {
             productVariant1 = new ProductVariant(tpnc1);
+            productVariant1.setSellingUOM(SELLING_UOM_VAL);
             productVariant1.addSaleInfo(new SaleInfo(1, "1.40"));
             SaleInfo promoSaleInfo = new SaleInfo(5, "1.20");
             promoSaleInfo.addPromotion(createPromotion("A30718670"));
@@ -201,6 +206,7 @@ public class PriceResourceTest extends ResourceTest {
         }
         if(!Dockyard.isSpaceOrNull(tpnc2)) {
             productVariant2 = new ProductVariant(tpnc2);
+            productVariant2.setSellingUOM(SELLING_UOM_VAL);
             productVariant2.addSaleInfo(new SaleInfo(1, "1.39"));
             productVariant2.addSaleInfo(new SaleInfo(6, "1.38"));
         }
@@ -230,9 +236,9 @@ public class PriceResourceTest extends ResourceTest {
         ArrayList<Map<String, String>> promotion=new ArrayList<>();
 
         if(!Dockyard.isSpaceOrNull(tpnc2))
-            variants.add(getVariantInfo(tpnc2, "GBP", "1.39", null, true));
+            variants.add(getVariantInfo(tpnc2, "GBP", "1.39", null,"KG"));
         if(!Dockyard.isSpaceOrNull(tpnc1))
-            variants.add(getVariantInfo(tpnc1, "GBP", "1.40", "1.20", true));
+            variants.add(getVariantInfo(tpnc1, "GBP", "1.40", "1.20","KG"));
         /* PS-118 -salman :changed to form the response according to IDL */
         promotion.add(createPromotionInfo("A30718670"));
 
@@ -246,14 +252,15 @@ public class PriceResourceTest extends ResourceTest {
         productPriceMap.put("promotions", promotion);
         return productPriceMap;
     }
-
-    private Map<String, Object> getVariantInfo(String tpnc, String currency, String price, String promoPrice, boolean shouldAddPromotionInfo) {
+    /** PS-173 -salman :Added function parameter to  incorporate sellingUOM value */
+    private Map<String, Object> getVariantInfo(String tpnc, String currency, String price, String promoPrice,String sellinguom) {
         Map<String, Object> variantInfo1 = new LinkedHashMap<>();
         variantInfo1.put("tpnc", tpnc);
-        variantInfo1.put("currency", currency);
+        variantInfo1.put("currency",currency);
+        variantInfo1.put(SELLING_UOM,sellinguom);
         if (price != null) variantInfo1.put("price", price);
         //if (promoPrice != null) {
-            variantInfo1.put("promoprice", promoPrice);
+        variantInfo1.put("promoprice", promoPrice);
         /* PS-118 -salman :changed to form the response according to IDL */
         //salman deleted old code of adding promotion
 
@@ -279,7 +286,7 @@ public class PriceResourceTest extends ResourceTest {
         String tpnc2 = null;
         Product product = createProductWithVariants(tpnb, tpnc, tpnc2);
         productRepository.put(product);
-       if(!Dockyard.isSpaceOrNull(tpnb) && !Dockyard.isSpaceOrNull(tpnc)) {
+        if(!Dockyard.isSpaceOrNull(tpnb) && !Dockyard.isSpaceOrNull(tpnc)) {
             couchbaseWrapper.set(tpnb, tpnc);
             couchbaseWrapper.set(tpnc, tpnb);
         }
@@ -327,9 +334,9 @@ public class PriceResourceTest extends ResourceTest {
         ArrayList<Map<String, String>> promotion = new ArrayList<>();
 
         if(!Dockyard.isSpaceOrNull(tpnc1))
-            variants.add(getVariantInfo(tpnc1, "EUR", "1.20" ,"1.10", false));
+            variants.add(getVariantInfo(tpnc1, "EUR", "1.20" ,"1.10","KG"));
         if(!Dockyard.isSpaceOrNull(tpnc2))
-            variants.add(getVariantInfo(tpnc2, "EUR", "1.38", null, false));
+            variants.add(getVariantInfo(tpnc2, "EUR", "1.38", null,"KG"));
         /* PS-118 -salman :changed to form the response according to IDL */
         promotion.add(createPromotionInfo("A30718670"));
 
