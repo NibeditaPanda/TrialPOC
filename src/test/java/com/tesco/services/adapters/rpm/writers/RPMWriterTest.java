@@ -576,5 +576,34 @@ public class RPMWriterTest {
         expectedPromotion.setCFDescription2(description2);
         assertThat(actualProducts.get(1)).isEqualTo(expectedProduct);
     }
+    /**
+     * Added By Nitisha - PS-112 - Apending SellingUOM info to Product variant
+     * Given the tpnb , tpnc ,Price_zone, selling reatil and selling UOM details ,
+     * The product variant should carry the newly added SellingUOM details while building a PRODUCT */
+
+    @Test
+    public void shouldAppendSellingUOMForPriceZoneExtarct() throws IOException, ParserConfigurationException, ColumnNotFoundException, SAXException, JAXBException {
+        String tpnb = "123456789";
+        String tpnc = "987654321";
+        ProductVariant productVariant = new ProductVariant(tpnc);
+        int zoneId = 1;
+        String price = "2.4";
+        productVariant.addSaleInfo(new SaleInfo(zoneId, price));
+        productVariant.setSellingUOM(selling_UOM);
+        final Product product = createProduct(tpnb, productVariant);
+        mockAsyncProductInsert();
+        Map<String, String> productInfoMap = productInfoMap(tpnb,tpnc, zoneId, price);
+        when(rpmPriceReader.getNext()).thenReturn(productInfoMap).thenReturn(null);
+        when(productRepository.getByTPNB(tpnb)).thenReturn(Optional.<Product>absent());
+        this.rpmWriter.write();
+        verify(productRepository).insertProduct(argThat(new CapturingMatcher<Product>() {
+            @Override
+            public boolean matches(Object o) {
+                Product prod = (Product) o;
+                return new RPMComparator().compare(prod,product);
+            }
+        }),any(Listener.class));
+
+    }
 
 }
