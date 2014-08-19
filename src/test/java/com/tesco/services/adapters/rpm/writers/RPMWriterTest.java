@@ -94,7 +94,9 @@ public class RPMWriterTest {
     @Mock
     private ObjectMapper mapper;
     private int zoneId = 1;
-
+    /*Added by Nitisha and Surya for Junit Corrections for PS-112 - Start*/
+    private String selling_UOM = "KG";
+    /*Added by Nitisha and Surya for Junit Corrections for PS-112 - End*/
     @Before
     public void setUp() throws Exception {
         rpmWriter = new RPMWriter("./src/test/java/resources/com/tesco/adapters/sonetto/PromotionsDataExport.xml",
@@ -126,7 +128,9 @@ public class RPMWriterTest {
         int zoneId = 1;
         String price = "2.4";
         productVariant.addSaleInfo(new SaleInfo(zoneId, price));
-
+        /*Added by Nitisha and Surya for PS-112 Junits corrections- Start */
+        productVariant.setSellingUOM(selling_UOM);
+        /*Added by Nitisha and Surya for PS-112 Junits corrections- Start */
        final Product product = createProduct(tpnb, productVariant);
         //final Product product = createProductWithVariant(tpnb,tpnc);
         mockAsyncProductInsert();
@@ -188,7 +192,6 @@ public class RPMWriterTest {
     }
 
     @Test
-    @Ignore
     public void shouldInsertPriceZonePricesForMultipleVariants() throws Exception {
         String tpnb = "1123";
         String tpnc = "284347092";
@@ -218,8 +221,9 @@ public class RPMWriterTest {
             }
         }),any(Listener.class));
        // inOrder.verify(productRepository).put(expectedProduct);
-
-        ProductVariant expectedProductVariant2 = createProductVariant(tpnc, 2, "2.4", null);
+        /*Added by Nitisha and Surya for PS-112 Junits corrections- Start */
+        ProductVariant expectedProductVariant2 = createProductVariant(tpnc, 3, "3.0", null);
+       /*Added by Nitisha and Surya for PS-112 Junits corrections- End */
         expectedProduct.addProductVariant(expectedProductVariant2);
         inOrder.verify(productRepository).insertProduct(argThat(new CapturingMatcher<Product>() {
             @Override
@@ -237,6 +241,10 @@ public class RPMWriterTest {
         productInfoMap.put(CSVHeaders.Price.TPNC, tpnc);
         productInfoMap.put(CSVHeaders.Price.PRICE_ZONE_ID, String.valueOf(zoneId));
         productInfoMap.put(CSVHeaders.Price.PRICE_ZONE_PRICE, price);
+      /*Added by Nitisha and Surya for PS-112 Junits corrections- Start */
+        productInfoMap.put(CSVHeaders.Price.SELLING_UOM, selling_UOM);
+        /*Added by Nitisha and Surya for PS-112 Junits corrections- End */
+
 
         return productInfoMap;
     }
@@ -286,7 +294,6 @@ public class RPMWriterTest {
     }
 
     @Test
-    @Ignore
     public void shouldInsertPromotionIntoProductPriceRepository() throws Exception {
         final String tpnc = "284347092"; // This will change when TPNC story is played
         int zoneId = 5;
@@ -443,6 +450,10 @@ public class RPMWriterTest {
         SaleInfo saleInfo = new SaleInfo(zoneId, price);
         if (promotion != null) saleInfo.addPromotion(promotion);
         productVariant.addSaleInfo(saleInfo);
+        /*Added by Nitisha and Surya for PS-112 Junits corrections- Start */
+        productVariant.setSellingUOM(selling_UOM);
+        /*Added by Nitisha and Surya for PS-112 Junits corrections- End */
+
         return productVariant;
     }
 
@@ -536,7 +547,6 @@ public class RPMWriterTest {
      * then the constructed product should contain promotion information with no price information */
 
     @Test
-    @Ignore
     public void shouldInsertCFDescWhenPromoZoneNotPresent() throws Exception {
         final String tpnc = "284347092";
         int zoneId = 5;
