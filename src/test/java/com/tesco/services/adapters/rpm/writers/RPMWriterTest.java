@@ -634,6 +634,7 @@ public class RPMWriterTest {
         productInfoMap.put(CSVHeaders.Price.PRICE_ZONE_ID, String.valueOf(zoneId));
         productInfoMap.put(CSVHeaders.Price.PRICE_ZONE_PRICE, selling_retail);
         when(rpmPriceReader.getNext()).thenReturn(productInfoMap).thenReturn(null);
+        when(productRepository.getByTPNB(TPNB)).thenReturn(Optional.<Product>absent());
 
         this.rpmWriter.write();
         verify(productRepository).insertProduct(argThat(new CapturingMatcher<Product>() {
