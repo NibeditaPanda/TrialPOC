@@ -70,11 +70,10 @@ public class ItemPurgeResource {
             productRepository.purgeUnUpdatedItems(couchbaseClient,configuration);
         }catch(InvalidViewException e){
             logger.error("error : Item purge failed due to error "+e);
-            return Response.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR).entity("{\"message\":\"Item purge failed as View not found\"}").build();
+            return Response.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR).entity("{\"error\":\"Item purge failed as View not found\"}").build();
         } catch (Exception e) {
             logger.error("error : Item purge failed due to error "+e);
-            e.printStackTrace();
-            return Response.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR).entity("{\"message\":\"Item purge failed due to error\"}").build();
+            return Response.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR).entity("{\"error\":\"Item purge failed due to error\"}").build();
         }
         logger.info("message : Purge operation completed");
         return Response.ok("{\"message\":\"Purge Completed\"}").build();
