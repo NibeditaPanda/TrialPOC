@@ -2,6 +2,8 @@ package com.tesco.services.repositories;
 
 import com.couchbase.client.CouchbaseClient;
 import com.couchbase.client.protocol.views.DesignDocument;
+import com.couchbase.client.protocol.views.InvalidViewException;
+import com.couchbase.client.protocol.views.View;
 import com.couchbase.client.protocol.views.ViewDesign;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,11 +14,13 @@ import com.tesco.couchbase.listeners.CreateDesignDocListener;
 import com.tesco.couchbase.listeners.Listener;
 import com.tesco.couchbase.testutils.*;
 import com.tesco.services.Configuration;
+import com.tesco.services.adapters.rpm.comparators.RPMComparator;
 import com.tesco.services.core.Product;
 import com.tesco.services.core.ProductVariant;
 import com.tesco.services.core.Promotion;
 import com.tesco.services.core.SaleInfo;
 import com.tesco.services.resources.TestConfiguration;
+import com.tesco.services.utility.Dockyard;
 import net.spy.memcached.internal.OperationFuture;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.Before;
@@ -24,6 +28,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.internal.matchers.CapturingMatcher;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -31,9 +36,14 @@ import java.util.Calendar;
 import java.util.HashMap;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class ProductRepositoryTest /*extends IntegrationTest*/{
     private String tpnb = "123455";
@@ -140,33 +150,27 @@ public class ProductRepositoryTest /*extends IntegrationTest*/{
             System.out.println("Product not found");
         }
     }
+
     @Test
-    public void mapTPNCtpTPNB(){
+    public void mapTPNC_TPNBwithAsycCode(){
         String TPNC = "271871871";
         String TPNB = "056428171";
-        couchbaseWrapper.set(TPNC, TPNB);
+        productRepository.mapTPNC_TPNB(TPNC,TPNB);
+        //couchbaseWrapper.set(TPNC, TPNB);
         String mappedTPNCtoTPNB = (String) couchbaseWrapper.get(TPNC);
-        assertThat(mappedTPNCtoTPNB.equals(TPNB));
-
-    }
-    @Test
-    public void mapTPNC_TPNB(){
-        String TPNC = "271871871";
-        String TPNB = "056428171";
-        couchbaseWrapper.set(TPNC, TPNB);
-        String mappedTPNCtoTPNB = (String) couchbaseWrapper.get(TPNC);
-        assertThat(mappedTPNCtoTPNB.equals(TPNB));
-
-        couchbaseWrapper.set(TPNB, TPNC);
+        mappedTPNCtoTPNB = Dockyard.replaceOldValCharWithNewVal(mappedTPNCtoTPNB, "\"", "");
         String mappedTPNBtoTPNC = (String) couchbaseWrapper.get(TPNB);
-        assertThat(mappedTPNCtoTPNB.equals(TPNC));
+        mappedTPNBtoTPNC = Dockyard.replaceOldValCharWithNewVal(mappedTPNBtoTPNC, "\"", "");
+
+        assertEquals(mappedTPNCtoTPNB, TPNB);
+        assertEquals(mappedTPNBtoTPNC, TPNC);
+
 
     }
+
     /*Added by Surya for PS-114. This Junit will Delete the elements from CB -  Start*/
     @Test
     public void deleteTPNBToTPNCToVaraintDependencies() throws Exception {
-
-        // final CouchbaseClient couchbaseClient = mock(CouchbaseClient.class);
 
         String TPNC = "271871871";
         String TPNB = "056428171";
@@ -203,6 +207,8 @@ public class ProductRepositoryTest /*extends IntegrationTest*/{
 
         couchbaseClient.set(TPNCForVar2, mapper.writeValueAsString(variant2));
         couchbaseClient.set(variant2, mapper.writeValueAsString(TPNCForVar2));
+        checkforView(couchbaseClient,testConfiguration);
+
         productRepository.purgeUnUpdatedItems(couchbaseClient,testConfiguration);
 
         /* assertNull function checks if the object is null;
@@ -229,50 +235,26 @@ public class ProductRepositoryTest /*extends IntegrationTest*/{
     }
 
     /*Added by Surya for PS-114. This Junit will Delete the elements from CB -  End*/
-    @Ignore
-    @Test
-    public void testView() throws Exception {
-        TestListener<Void, Exception> listener = new TestListener<>();
-        createView(listener);
-        // CouchbaseClient couchbaseClient = new CouchbaseConnectionManager(new TestConfiguration()).getCouchbaseClient();
-        String last_update_date_key ="";
-        DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE,-(testConfiguration.getLastUpdatedPurgeDays()));
-        last_update_date_key = dateFormat.format(cal.getTime());
-        Product product = new Product(tpnb);
-        product.setLast_updated_date(last_update_date_key);
-        couchbaseWrapper.set(getProductKey(tpnb),mapper.writeValueAsString(product));
-        productRepository.purgeUnUpdatedItems(couchbaseClient,testConfiguration);
-        assertThat(productRepository.getByTPNB(tpnb).isPresent()).isFalse();
-
-
-    }
-    private void createView(final Listener<Void, Exception> listener) {
-        final DesignDocument designDoc = new DesignDocument(testConfiguration.getCouchBaseDesignDocName());
-        designDoc.setView(new ViewDesign(testConfiguration.getCouchBaseViewName(),
+    /*Added by Surya for View check to avoid Junit Failures - Start*/
+    private void createView(Configuration configuration, CouchbaseClient couchbaseClient)throws Exception{
+        final DesignDocument designDoc = new DesignDocument(configuration.getCouchBaseDesignDocName());
+        designDoc.setView(new ViewDesign(configuration.getCouchBaseViewName(),
                 "function (doc, meta) {\n" +
-                        "  if (doc.last_updated_date) {\n" +
+                        "  if (doc.last_updated_date && meta.type == \"json\" ) {\n" +
                         "    emit(doc.last_updated_date, {KEY: meta.id});\n" +
                         "  }\n" +
                         "}"
         ));
 
-        asyncCouchbaseWrapper.createDesignDoc(designDoc, new CreateDesignDocListener(asyncCouchbaseWrapper, designDoc) {
-            @Override
-            public void process() {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                listener.onComplete(null);
-            }
-
-            @Override
-            public void onException(Exception e) {
-                listener.onException(e);
-            }
-        });
+        couchbaseClient.createDesignDoc(designDoc);
     }
+    public void checkforView(CouchbaseClient couchbaseClient, Configuration configuration) throws Exception {
+        try {
+            View view = couchbaseClient.getView(configuration.getCouchBaseDesignDocName(), configuration.getCouchBaseViewName());
+        }catch(InvalidViewException e){
+            createView(configuration, couchbaseClient);
+            Thread.sleep(50);
+        }
+    }
+    /*Added by Surya for View check to avoid Junit Failures - End*/
 }

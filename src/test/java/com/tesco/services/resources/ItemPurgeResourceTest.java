@@ -1,6 +1,10 @@
 package com.tesco.services.resources;
 
 import com.couchbase.client.CouchbaseClient;
+import com.couchbase.client.protocol.views.DesignDocument;
+import com.couchbase.client.protocol.views.InvalidViewException;
+import com.couchbase.client.protocol.views.View;
+import com.couchbase.client.protocol.views.ViewDesign;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -75,7 +79,10 @@ public class ItemPurgeResourceTest extends ResourceTest {
     }
 
     @Test
-    public void shouldStartItemPurge() throws IOException {
+    public void shouldStartItemPurge() throws Exception {
+        /*Added by Surya for View check to avoid Junit Failures - Start*/
+        checkforView(couchbaseClient,testConfiguration);
+        /*Added by Surya for View check to avoid Junit Failures - End*/
         WebResource resource = client().resource("/itempurge/purge");
         ClientResponse response = resource.post(ClientResponse.class);
         String responseText = response.getEntity(String.class);
@@ -83,6 +90,26 @@ public class ItemPurgeResourceTest extends ResourceTest {
         assertThat(responseText).isEqualTo("{\"message\":\"Purge Completed\"}");
         assertThat(response.getStatus()).isEqualTo(200);
     }
+   /*Added by Surya for View check to avoid Junit Failures - Start*/
+        private void createView(Configuration configuration, CouchbaseClient couchbaseClient)throws Exception{
+        final DesignDocument designDoc = new DesignDocument(configuration.getCouchBaseDesignDocName());
+        designDoc.setView(new ViewDesign(configuration.getCouchBaseViewName(),
+                "function (doc, meta) {\n" +
+                        "  if (doc.last_updated_date && meta.type == \"json\" ) {\n" +
+                        "    emit(doc.last_updated_date, {KEY: meta.id});\n" +
+                        "  }\n" +
+                        "}"
+        ));
 
-
+        couchbaseClient.createDesignDoc(designDoc);
+    }
+    public void checkforView(CouchbaseClient couchbaseClient, Configuration configuration) throws Exception {
+        try {
+            View view = couchbaseClient.getView(configuration.getCouchBaseDesignDocName(), configuration.getCouchBaseViewName());
+        }catch(InvalidViewException e){
+            createView(configuration, couchbaseClient);
+            Thread.sleep(50);
+        }
+    }
+        /*Added by Surya for View check to avoid Junit Failures - End*/
 }
