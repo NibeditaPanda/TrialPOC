@@ -179,6 +179,7 @@ public class ProductPriceBuilderTest {
         List<Map<String, String>> promotions = new ArrayList<>();
         variantInfo1.put("tpnc", tpnc1);
         variantInfo1.put("currency", "GBP");
+        variantInfo1.put("sellingUOM", "");
         if (includePrice) variantInfo1.put("price", "1.40");
         if (includePromoPrice) {
             variantInfo1.put("promoprice", "1.30");
@@ -192,6 +193,7 @@ public class ProductPriceBuilderTest {
         Map<String, Object> variantInfo2 = new LinkedHashMap<>();
         variantInfo2.put("tpnc", tpnc2);
         variantInfo2.put("currency", "GBP");
+        variantInfo2.put("sellingUOM", "");
         if (includePrice) variantInfo2.put("price", "1.39");
         if (includePromoPrice){
             variantInfo2.put("promoprice", "1.20");

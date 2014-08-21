@@ -72,11 +72,8 @@ public class ProductPriceBuilder implements ProductPriceVisitor {
         /**Modified By Nibedita - PS-173
          * Given the  price IDL ,When the price rest calls are requested and selling UOM filed is available in price_zone.csv,
          * then the response JSON should display selling UOM for the tpnc's in line with IDL  */
-        if(!Dockyard.isSpaceOrNull(productVariant.getSellingUOM())) {
-            variantInfo.put(SELLING_UOM, productVariant.getSellingUOM());
-        }
+        variantInfo.put(SELLING_UOM, productVariant.getSellingUOM());
         variants.add(variantInfo);
-
 
         if (priceZoneSaleInfo != null ) {
             variantInfo.put(PRICE, priceZoneSaleInfo.getPrice());
