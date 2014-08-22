@@ -9,7 +9,7 @@ public interface CSVHeaders {
         String PRICE_ZONE_PRICE = "SELLING_RETAIL";
         /**Added/Modified By Nibedita/Mukund - PS-112
          * Given the  price End Point,When the price rest calls are requested, then the response JSON should contain selling UOM for the tpnc line with IDL  */
-        String SELLING_UOM = "sellingUOM";
+        String SELLING_UOM = "SELLING_UOM";
         String[] PRICE_ZONE_HEADERS = {TPNC,ITEM, PRICE_ZONE_ID, PRICE_ZONE_PRICE,SELLING_UOM};
 
         String PROMO_ZONE_ID = "PROMO_ZONE_ID";
