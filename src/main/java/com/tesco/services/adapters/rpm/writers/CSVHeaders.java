@@ -10,11 +10,11 @@ public interface CSVHeaders {
         /**Added/Modified By Nibedita/Mukund - PS-112
          * Given the  price End Point,When the price rest calls are requested, then the response JSON should contain selling UOM for the tpnc line with IDL  */
         String SELLING_UOM = "SELLING_UOM";
-        String[] PRICE_ZONE_HEADERS = {TPNC,ITEM, PRICE_ZONE_ID, PRICE_ZONE_PRICE,SELLING_UOM};
+        String[] PRICE_ZONE_HEADERS = {ITEM,TPNC, PRICE_ZONE_ID, PRICE_ZONE_PRICE,SELLING_UOM};
 
         String PROMO_ZONE_ID = "PROMO_ZONE_ID";
         String PROMO_ZONE_PRICE = "SIMPLE_PROMO_RETAIL";
-        String[] PROMO_ZONE_HEADERS = {TPNC, ITEM, PROMO_ZONE_ID, PROMO_ZONE_PRICE};
+        String[] PROMO_ZONE_HEADERS = {ITEM, TPNC, PROMO_ZONE_ID, PROMO_ZONE_PRICE};
     }
 
     static interface StoreZone {
@@ -33,7 +33,7 @@ public interface CSVHeaders {
         String OFFER_NAME = "OFFER_NAME";
         String START_DATE = "EFFECTIVE_DATE";
         String END_DATE = "END_DATE";
-        String[] HEADERS = {TPNC, ITEM, ZONE_ID, OFFER_ID, OFFER_NAME, START_DATE, END_DATE};
+        String[] HEADERS = {ITEM, TPNC, ZONE_ID, OFFER_ID, OFFER_NAME, START_DATE, END_DATE};
     }
 
     static interface PromoDescExtract {
