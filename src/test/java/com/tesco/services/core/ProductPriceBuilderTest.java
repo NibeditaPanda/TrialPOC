@@ -24,7 +24,7 @@ public class ProductPriceBuilderTest {
     private final String tpnc2 = "94553";
     private final String tpnc3 = "94554";
     public static final String SELLING_UOM = "sellingUOM";
-    private final String sellinguom_val="KG";
+    private String sellinguom_val="KG";
     private ProductPriceBuilder productPriceVisitor;
     private String currency;
 
@@ -168,5 +168,59 @@ public class ProductPriceBuilderTest {
         promotionInfo.put("customerFriendlyDescription1", promotion.getCFDescription1());
         promotionInfo.put("customerFriendlyDescription2", promotion.getCFDescription2());
         return promotionInfo;
+    }
+
+    /**
+     * @Added by Abrar for PS-173
+     * This method will return the Product without Selling UOM.
+     */
+    private Map<String, Object> expectedProductPriceMapWithOutSellingUOM(boolean includePrice, boolean includePromoPrice) {
+        Map<String, Object> variantInfo1 = new LinkedHashMap<>();
+        List<Map<String, String>> promotions = new ArrayList<>();
+        variantInfo1.put("tpnc", tpnc1);
+        variantInfo1.put("currency", "GBP");
+        if (includePrice) variantInfo1.put("price", "1.40");
+        if (includePromoPrice) {
+            variantInfo1.put("promoprice", "1.30");
+            promotions = Arrays.asList(createPromotionInfo("A30718669"), createPromotionInfo("A30718670"));
+            //variantInfo1.put("promotions", promotions);
+        }else if(includePromoPrice == false){
+            variantInfo1.put("promoprice", null);
+            promotions =  Arrays.asList();
+        }
+
+        Map<String, Object> variantInfo2 = new LinkedHashMap<>();
+        variantInfo2.put("tpnc", tpnc2);
+        variantInfo2.put("currency", "GBP");
+        if (includePrice) variantInfo2.put("price", "1.39");
+        if (includePromoPrice){
+            variantInfo2.put("promoprice", "1.20");
+        }else if(includePromoPrice == false){
+            variantInfo2.put("promoprice", null);
+            promotions =  Arrays.asList();
+        }
+
+        ArrayList<Map<String, Object>> variants = new ArrayList<>();
+        variants.add(variantInfo1);
+        variants.add(variantInfo2);
+
+        Map<String, Object> productPriceMap = new LinkedHashMap<>();
+        productPriceMap.put("tpnb", tpnb);
+        productPriceMap.put("variants", variants);
+        productPriceMap.put("promotions", promotions);
+
+        return productPriceMap;
+    }
+    /**
+     * @Added by Abrar for PS-173
+     * This Test case will set up the Product with NULL SellingUOM and will compare the Builder output.The builder Output should not contain SellingUOM as it is NULL.
+     */
+    @Test
+    public void shouldNotAddSellingUOMInfoWhenItIsNull(){
+        sellinguom_val="";
+        Product productWithVariants = createProductWithVariants();
+        productWithVariants.accept(productPriceVisitor);
+
+        assertThat(productPriceVisitor.getPriceInfo()).isEqualTo(expectedProductPriceMapWithOutSellingUOM(true, true));
     }
 }

@@ -615,5 +615,38 @@ public class RPMWriterTest {
         }),any(Listener.class));
 
     }
+    /**
+     * Added By Abrar - PS-112 - Insert Null SellingUOM when Selling UOM data is not present in the Extract
+     * When the selling UOM is NULL(Data not available in Extract), a Null should be inserted. This test case will pass only if Mocked(Null SellingUOM) and Expected(Null sellingUOM) Products are same */
+@Test
+    public void shouldInsertNullwhenSellingUOMdataisMissinginExtarct() throws IOException, ParserConfigurationException, ColumnNotFoundException, SAXException, JAXBException {
+        String TPNB = "123456789";
+        String TPNC = "987654321";
+        int zoneId = 1;
+        String selling_retail = "1.0";
+        ProductVariant productVariant = new ProductVariant(TPNC);
+        SaleInfo saleInfo = new SaleInfo(zoneId, selling_retail);
+        productVariant.addSaleInfo(saleInfo);
+        final Product expectedProduct = createProduct(TPNB,productVariant);
+        Map<String, String> productInfoMap = new HashMap<>();
+        productInfoMap.put(CSVHeaders.Price.ITEM, TPNB);
+        productInfoMap.put(CSVHeaders.Price.TPNC, TPNC);
+        productInfoMap.put(CSVHeaders.Price.PRICE_ZONE_ID, String.valueOf(zoneId));
+        productInfoMap.put(CSVHeaders.Price.PRICE_ZONE_PRICE, selling_retail);
+        when(rpmPriceReader.getNext()).thenReturn(productInfoMap).thenReturn(null);
+        when(productRepository.getByTPNB(TPNB)).thenReturn(Optional.<Product>absent());
+
+        this.rpmWriter.write();
+        verify(productRepository).insertProduct(argThat(new CapturingMatcher<Product>() {
+            @Override
+            public boolean matches(Object o) {
+                Product prod = (Product) o;
+                return new RPMComparator().compare(prod,expectedProduct);
+            }
+        }),any(Listener.class));
+
+
+
+    }
 
 }
