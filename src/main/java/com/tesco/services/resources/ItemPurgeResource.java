@@ -2,15 +2,10 @@ package com.tesco.services.resources;
 
 import com.couchbase.client.CouchbaseClient;
 import com.couchbase.client.protocol.views.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tesco.couchbase.AsyncCouchbaseWrapper;
 import com.tesco.couchbase.CouchbaseWrapper;
-import com.tesco.couchbase.listeners.CreateDesignDocListener;
-import com.tesco.couchbase.listeners.GetViewListener;
-import com.tesco.couchbase.listeners.Listener;
 import com.tesco.services.Configuration;
-import com.tesco.services.repositories.CouchbaseConnectionManager;
 import com.tesco.services.repositories.ProductRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,14 +16,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Iterator;
 
 import static com.tesco.services.resources.HTTPResponses.badRequest;
-import static com.tesco.services.resources.HTTPResponses.ok;
-import static com.tesco.services.resources.HTTPResponses.serverError;
 
 /**
  * Created by QT00 on 06/08/2014.

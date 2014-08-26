@@ -24,6 +24,10 @@ logging:
   level: INFO
   file:
     enabled: true
+    #threshold should be commented/uncommented to enable the logging into log file based on severity required
+    threshold: INFO
+    #threshold: WARN
+    #threshold: ERROR
     currentLogFilename: ./logs/price-service.log
     archivedLogFilenamePattern: ./logs/price-service-%d.log.gz
   syslog:
