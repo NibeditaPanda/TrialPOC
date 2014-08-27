@@ -6,11 +6,11 @@ sonetto.shelfUrl : http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/S
 sonetto.promotions.data.dump : src/main/resources/com/tesco/services/adapters/sonetto/PromotionsDataExport.xml
 sonetto.promotions.xsd : templates/Promotions.xsd
 
-rpm.store.data.dump : /appl/priceservice/latest/tsl_rpm_price_srvc_store_zone_1.csv
-rpm.price.zone.data.dump : /appl/priceservice/latest/tsl_rpm_price_srvc_price_zone_1.csv
-rpm.promo.zone.data.dump : /appl/priceservice/latest/tsl_rpm_price_srvc_prom_zone_1.csv
-rpm.promo.extract.data.dump : /appl/priceservice/latest/tsl_rpm_price_srvc_prom_extract_1.csv
-rpm.promo.desc.extract.data.dump : /appl/priceservice/latest/CH_offers_1.csv
+rpm.store.data.dump : /appl/priceservice/latest/STORE_ZONE.csv
+rpm.price.zone.data.dump : /appl/priceservice/latest/PRICE_ZONE.csv
+rpm.promo.zone.data.dump : /appl/priceservice/latest/PROM_ZONE.csv
+rpm.promo.extract.data.dump : /appl/priceservice/latest/PROM_EXTRACT.csv
+rpm.promo.desc.extract.data.dump : /appl/priceservice/latest/PROM_DESC_EXTRACT_full_dump.csv
 
 
 couchbase.nodes:
