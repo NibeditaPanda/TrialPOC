@@ -5,11 +5,6 @@ import com.google.common.base.Optional;
 import com.tesco.couchbase.AsyncCouchbaseWrapper;
 import com.tesco.couchbase.CouchbaseWrapper;
 import com.tesco.couchbase.listeners.Listener;
-import com.tesco.couchbase.testutils.AsyncCouchbaseWrapperStub;
-import com.tesco.couchbase.testutils.BucketTool;
-import com.tesco.couchbase.testutils.CouchbaseTestManager;
-import com.tesco.couchbase.testutils.CouchbaseWrapperStub;
-import com.tesco.services.Configuration;
 import com.tesco.services.adapters.core.exceptions.ColumnNotFoundException;
 import com.tesco.services.adapters.rpm.comparators.RPMComparator;
 import com.tesco.services.adapters.rpm.readers.PriceServiceCSVReader;
@@ -21,12 +16,9 @@ import com.tesco.services.core.Promotion;
 import com.tesco.services.core.SaleInfo;
 import com.tesco.services.core.Store;
 import com.tesco.services.repositories.*;
-import com.tesco.services.resources.TestConfiguration;
 import com.tesco.services.utility.Dockyard;
 import net.spy.memcached.internal.OperationFuture;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -95,10 +87,10 @@ public class RPMWriterTest {
     private ObjectMapper mapper;
     private int zoneId = 1;
     /*Added by Nitisha and Surya for Junit Corrections for PS-112 - Start*/
-    private String selling_UOM = "KG";
+    private String sellingUOM = "KG";
     /*Added by Nitisha and Surya for Junit Corrections for PS-112 - End*/
     @Before
-    public void setUp() throws Exception {
+    public void setUp() throws IOException,ColumnNotFoundException {
         rpmWriter = new RPMWriter("./src/test/java/resources/com/tesco/adapters/sonetto/PromotionsDataExport.xml",
                 sonettoPromotionXMLReader,
                 promotionRepository,
@@ -121,18 +113,16 @@ public class RPMWriterTest {
     }
 
     @Test
-    public void shouldInsertPriceZonePrice() throws Exception {
+    public void shouldInsertPriceZonePrice() throws IOException,ParserConfigurationException,JAXBException,SAXException,ColumnNotFoundException {
         String tpnb = "059428124";
         String tpnc = "284347092";
         ProductVariant productVariant = new ProductVariant(tpnc);
-        int zoneId = 1;
         String price = "2.4";
         productVariant.addSaleInfo(new SaleInfo(zoneId, price));
         /*Added by Nitisha and Surya for PS-112 Junits corrections- Start */
-        productVariant.setSellingUOM(selling_UOM);
+        productVariant.setSellingUOM(sellingUOM);
         /*Added by Nitisha and Surya for PS-112 Junits corrections- Start */
        final Product product = createProduct(tpnb, productVariant);
-        //final Product product = createProductWithVariant(tpnb,tpnc);
         mockAsyncProductInsert();
         Map<String, String> productInfoMap = productInfoMap(tpnb,tpnc, zoneId, price);
         when(rpmPriceReader.getNext()).thenReturn(productInfoMap).thenReturn(null);
@@ -148,7 +138,7 @@ public class RPMWriterTest {
     }
 
     @Test
-    public void shouldInsertMultiplePriceZonePricesForAVariant() throws Exception {
+    public void shouldInsertMultiplePriceZonePricesForAVariant() throws  IOException,ParserConfigurationException,JAXBException,SAXException,ColumnNotFoundException {
         String itemNumber = "0123";
         String tpnc = "284347092";
 
@@ -159,7 +149,6 @@ public class RPMWriterTest {
         Product product = createProductWithVariant(itemNumber, tpnc);
         mockAsyncProductInsert();
 //Changes made By Surya for PS-120 . The JUnit should pass for the Code which will Create a new Product for the first time and then amend Multiple Price zones- Start
-       // when(productRepository.getByTPNB(itemNumber)).thenReturn(Optional.<Product>absent()).thenReturn(Optional.of(product));
         when(productRepository.getByTPNB(itemNumber)).thenReturn(Optional.of(product));
  //Changes made By Surya for PS-120 . The JUnit should pass for the Code which will Create a new Product for the first time and then amend Multiple Price zones - End
 
@@ -178,7 +167,6 @@ public class RPMWriterTest {
                 return new RPMComparator().compare(prod,expectedProduct);
             }
         }),any(Listener.class));
-      //  inOrder.verify(productRepository).put(expectedProduct);
 
         expectedProductVariant.addSaleInfo(new SaleInfo(4, "4.4"));
         inOrder.verify(productRepository).insertProduct(argThat(new CapturingMatcher<Product>() {
@@ -188,11 +176,10 @@ public class RPMWriterTest {
                 return new RPMComparator().compare(prod,expectedProduct);
             }
         }),any(Listener.class));
-       // inOrder.verify(productRepository).put(expectedProduct);
     }
 
     @Test
-    public void shouldInsertPriceZonePricesForMultipleVariants() throws Exception {
+    public void shouldInsertPriceZonePricesForMultipleVariants() throws  IOException,ParserConfigurationException,JAXBException,SAXException,ColumnNotFoundException {
         String tpnb = "1123";
         String tpnc = "284347092";
         String tpnc2 = "304347092";
@@ -220,7 +207,6 @@ public class RPMWriterTest {
                 return new RPMComparator().compare(prod,expectedProduct);
             }
         }),any(Listener.class));
-       // inOrder.verify(productRepository).put(expectedProduct);
         /*Added by Nitisha and Surya for PS-112 Junits corrections- Start */
         ProductVariant expectedProductVariant2 = createProductVariant(tpnc, 3, "3.0", null);
        /*Added by Nitisha and Surya for PS-112 Junits corrections- End */
@@ -232,7 +218,6 @@ public class RPMWriterTest {
                 return new RPMComparator().compare(prod,expectedProduct);
             }
         }),any(Listener.class));
-        //inOrder.verify(productRepository).put(expectedProduct);
     }
 
     private Map<String, String> productInfoMap(String itemNumber, String tpnc, int zoneId, String price) {
@@ -242,7 +227,7 @@ public class RPMWriterTest {
         productInfoMap.put(CSVHeaders.Price.PRICE_ZONE_ID, String.valueOf(zoneId));
         productInfoMap.put(CSVHeaders.Price.PRICE_ZONE_PRICE, price);
       /*Added by Nitisha and Surya for PS-112 Junits corrections- Start */
-        productInfoMap.put(CSVHeaders.Price.SELLING_UOM, selling_UOM);
+        productInfoMap.put(CSVHeaders.Price.SELLING_UOM, sellingUOM);
         /*Added by Nitisha and Surya for PS-112 Junits corrections- End */
 
 
@@ -260,8 +245,9 @@ public class RPMWriterTest {
     }
 
     @Test
-    public void shouldInsertPromoZonePrice() throws Exception {
-        final String tpnc = "284347092"; // This will change when TPNC story is played
+    public void shouldInsertPromoZonePrice() throws IOException,ParserConfigurationException,JAXBException,SAXException,ColumnNotFoundException {
+        // This will change when TPNC story is played
+        final String tpnc = "284347092";
         int priceZoneId = 2;
         String price = "2.3";
         ProductVariant productVariant = createProductVariant(tpnc, priceZoneId, price, null);
@@ -290,13 +276,13 @@ public class RPMWriterTest {
                 return new RPMComparator().compare(prod,expectedProduct);
             }
         }),any(Listener.class));
-       // verify(productRepository).put(expectedProduct);
     }
 
     @Test
-    public void shouldInsertPromotionIntoProductPriceRepository() throws Exception {
-        final String tpnc = "284347092"; // This will change when TPNC story is played
-        int zoneId = 5;
+    public void shouldInsertPromotionIntoProductPriceRepository() throws IOException,ParserConfigurationException,JAXBException,SAXException,ColumnNotFoundException {
+       // This will change when TPNC story is played
+        final String tpnc = "284347092";
+        int zoneIds = 5;
         String price = "2.3";
 
         String tpnb = "070461113";
@@ -307,25 +293,22 @@ public class RPMWriterTest {
         String description1 = "description1";
         String description2 = "description2";
 
-        when(rpmPromotionReader.getNext()).thenReturn(promotionInfoMap(tpnb,tpnc, zoneId, offerId, offerName, startDate, endDate)).thenReturn(null);
-        when(rpmPromotionDescReader.getNext()).thenReturn(promotionDescInfoMap(tpnb, zoneId, offerId, description1, description2)).thenReturn(null);
+        when(rpmPromotionReader.getNext()).thenReturn(promotionInfoMap(tpnb,tpnc, zoneIds, offerId, offerName, startDate, endDate)).thenReturn(null);
+        when(rpmPromotionDescReader.getNext()).thenReturn(promotionDescInfoMap(tpnb, zoneIds, offerId, description1, description2)).thenReturn(null);
         mockAsyncProductInsert();
 
-        ProductVariant productVariant = createProductVariant(tpnc, zoneId, price, null);
-        ProductVariant productVariant2 = createProductVariant(tpnc, zoneId, price, createPromotion(offerId,zoneId, offerName, startDate, endDate));
+        ProductVariant productVariant = createProductVariant(tpnc, zoneIds, price, null);
+        ProductVariant productVariant2 = createProductVariant(tpnc, zoneIds, price, createPromotion(offerId,zoneIds, offerName, startDate, endDate));
         when(productRepository.getByTPNB(tpnb)).thenReturn(Optional.of(createProduct(tpnb, productVariant)), Optional.of(createProduct(tpnb, productVariant2)));
         when(productRepository.getProductTPNC(tpnb)).thenReturn(getTPNCForTPNB(tpnc));
-       /* if(!productRepository.isSpaceOrNull(tpnb))
-        {
-            couchbaseWrapper.set(tpnb,tpnc);
-        }*/
+
         this.rpmWriter.write();
 
          ArgumentCaptor<Product> arguments = ArgumentCaptor.forClass(Product.class);
          verify(productRepository, atLeastOnce()).insertProduct(arguments.capture(),any(Listener.class));
 
-        Promotion expectedPromotion = createPromotion(offerId,zoneId, offerName, startDate, endDate);
-        ProductVariant expectedProductVariant = createProductVariant(tpnc, zoneId, price, expectedPromotion);
+        Promotion expectedPromotion = createPromotion(offerId,zoneIds, offerName, startDate, endDate);
+        ProductVariant expectedProductVariant = createProductVariant(tpnc, zoneIds, price, expectedPromotion);
 
         Product expectedProduct = createProduct(tpnb, expectedProductVariant);
 
@@ -373,7 +356,7 @@ public class RPMWriterTest {
     }
 
     @Test
-    public void shouldInsertStorePriceZones() throws Exception {
+    public void shouldInsertStorePriceZones() throws IOException,ParserConfigurationException,JAXBException,SAXException,ColumnNotFoundException {
         String firstStoreId = "2002";
         String secondStoreId = "2003";
         mockAsyncStoreInsert();
@@ -400,12 +383,10 @@ public class RPMWriterTest {
                 return new RPMComparator().compare(store,secondStore);
             }
         }),any(Listener.class));
-       // inOrder.verify(storeRepository).put(new Store(firstStoreId, Optional.of(1), Optional.<Integer>absent(), "GBP"));
-        //inOrder.verify(storeRepository).put(new Store(secondStoreId, Optional.of(2), Optional.<Integer>absent(), "EUR"));
     }
 
     @Test
-    public void shouldInsertStorePriceAndPromoZones() throws Exception {
+    public void shouldInsertStorePriceAndPromoZones() throws IOException,ParserConfigurationException,JAXBException,SAXException,ColumnNotFoundException {
         String storeId = "2002";
 
         when(storeZoneReader.getNext()).thenReturn(getStoreInfoMap(storeId, 1, 1, "GBP")).thenReturn(getStoreInfoMap(storeId, 5, 2, "GBP")).thenReturn(null);
@@ -431,8 +412,6 @@ public class RPMWriterTest {
                 return new RPMComparator().compare(store,secondStore);
             }
         }),any(Listener.class));
-      //  inOrder.verify(storeRepository).put(new Store(storeId, Optional.of(1), Optional.<Integer>absent(), "GBP"));
-       // inOrder.verify(storeRepository).put(new Store(storeId, Optional.of(1), Optional.of(5), "GBP"));
     }
 
     private Map<String, String> getStoreInfoMap(String firstStoreId, int zoneId, int zoneType, String currency) {
@@ -448,10 +427,12 @@ public class RPMWriterTest {
     private ProductVariant createProductVariant(String tpnc, int zoneId, String price, Promotion promotion) {
         ProductVariant productVariant = new ProductVariant(tpnc);
         SaleInfo saleInfo = new SaleInfo(zoneId, price);
-        if (promotion != null) saleInfo.addPromotion(promotion);
+        if (promotion != null){
+            saleInfo.addPromotion(promotion);
+        }
         productVariant.addSaleInfo(saleInfo);
         /*Added by Nitisha and Surya for PS-112 Junits corrections- Start */
-        productVariant.setSellingUOM(selling_UOM);
+        productVariant.setSellingUOM(sellingUOM);
         /*Added by Nitisha and Surya for PS-112 Junits corrections- End */
 
         return productVariant;
@@ -547,9 +528,9 @@ public class RPMWriterTest {
      * then the constructed product should contain promotion information with no price information */
 
     @Test
-    public void shouldInsertCFDescWhenPromoZoneNotPresent() throws Exception {
+    public void shouldInsertCFDescWhenPromoZoneNotPresent() throws IOException,ParserConfigurationException,JAXBException,SAXException,ColumnNotFoundException {
         final String tpnc = "284347092";
-        int zoneId = 5;
+        int zoneIds = 5;
         String price = null;
         String tpnb = "070461113";
         String offerId = "A01";
@@ -560,12 +541,12 @@ public class RPMWriterTest {
         String description1 = "description1";
         String description2 = "description2";
 
-        when(rpmPromotionReader.getNext()).thenReturn(promotionInfoMap(tpnb, tpnc, zoneId, offerId, offerName, startDate, endDate)).thenReturn(null);
-        when(rpmPromotionDescReader.getNext()).thenReturn(promotionDescInfoMap(tpnb, zoneId, offerId, description1, description2)).thenReturn(null);
+        when(rpmPromotionReader.getNext()).thenReturn(promotionInfoMap(tpnb, tpnc, zoneIds, offerId, offerName, startDate, endDate)).thenReturn(null);
+        when(rpmPromotionDescReader.getNext()).thenReturn(promotionDescInfoMap(tpnb, zoneIds, offerId, description1, description2)).thenReturn(null);
         mockAsyncProductInsert();
 
-        ProductVariant productVariant = createProductVariant(tpnc, zoneId, price, null);
-        ProductVariant productVariant2 = createProductVariant(tpnc, zoneId, price, createPromotion(offerId, zoneId, offerName, startDate, endDate));
+        ProductVariant productVariant = createProductVariant(tpnc, zoneIds, price, null);
+        ProductVariant productVariant2 = createProductVariant(tpnc, zoneIds, price, createPromotion(offerId, zoneIds, offerName, startDate, endDate));
         when(productRepository.getByTPNB(tpnb)).thenReturn(Optional.of(createProduct(tpnb, productVariant)), Optional.of(createProduct(tpnb, productVariant2)));
         when(productRepository.getProductTPNC(tpnb)).thenReturn(getTPNCForTPNB(tpnc));
 
@@ -574,8 +555,8 @@ public class RPMWriterTest {
         ArgumentCaptor<Product> arguments = ArgumentCaptor.forClass(Product.class);
         verify(productRepository, atLeastOnce()).insertProduct(arguments.capture(), any(Listener.class));
 
-        Promotion expectedPromotion = createPromotion(offerId, zoneId, offerName, startDate, endDate);
-        ProductVariant expectedProductVariant = createProductVariant(tpnc, zoneId, price, expectedPromotion);
+        Promotion expectedPromotion = createPromotion(offerId, zoneIds, offerName, startDate, endDate);
+        ProductVariant expectedProductVariant = createProductVariant(tpnc, zoneIds, price, expectedPromotion);
 
         Product expectedProduct = createProduct(tpnb, expectedProductVariant);
 
@@ -596,10 +577,9 @@ public class RPMWriterTest {
         String tpnb = "123456789";
         String tpnc = "987654321";
         ProductVariant productVariant = new ProductVariant(tpnc);
-        int zoneId = 1;
         String price = "2.4";
         productVariant.addSaleInfo(new SaleInfo(zoneId, price));
-        productVariant.setSellingUOM(selling_UOM);
+        productVariant.setSellingUOM(sellingUOM);
         final Product product = createProduct(tpnb, productVariant);
         mockAsyncProductInsert();
         Map<String, String> productInfoMap = productInfoMap(tpnb,tpnc, zoneId, price);
@@ -622,7 +602,6 @@ public class RPMWriterTest {
     public void shouldInsertNullwhenSellingUOMdataisMissinginExtarct() throws IOException, ParserConfigurationException, ColumnNotFoundException, SAXException, JAXBException {
         String TPNB = "123456789";
         String TPNC = "987654321";
-        int zoneId = 1;
         String selling_retail = "1.0";
         ProductVariant productVariant = new ProductVariant(TPNC);
         SaleInfo saleInfo = new SaleInfo(zoneId, selling_retail);
