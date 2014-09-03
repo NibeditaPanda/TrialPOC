@@ -18,4 +18,12 @@ public class DockyardTest {
         flag = false;
         Assert.assertEquals(flag,Dockyard.isSpaceOrNull(val));
     }
+
+    @Test
+    public void checkPriceScaleRound(){
+        String price = "11.2";
+        String currency = "GBP";
+        String actualPrice = "11.20";
+        Assert.assertEquals(actualPrice, Dockyard.priceScaleRoundHalfUp(currency,price));
+    }
 }
