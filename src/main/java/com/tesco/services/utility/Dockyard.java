@@ -1,7 +1,9 @@
 package com.tesco.services.utility;
 
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Currency;
 import java.util.Date;
 
 /**
@@ -33,5 +35,20 @@ public class Dockyard {
         else
             return value;
 
+    }
+
+    /**
+     * This will Scale the price based on the currency provided based on ISO4217 format.
+     * @param currency - based on currency scale of the BigDecimal value to be returned
+     * @param price - amount which needs to be rounded off.
+     * @return - returns String value
+     */
+    public static String priceScaleRoundHalfUp(String currency, String price){
+        String roundedPrice = null;
+        if(!isSpaceOrNull(price) && !isSpaceOrNull(currency)){
+            Currency cur = Currency.getInstance(currency);
+            roundedPrice = String.valueOf(new BigDecimal(price).setScale(cur.getDefaultFractionDigits(), BigDecimal.ROUND_HALF_UP));
+        }
+        return roundedPrice;
     }
 }

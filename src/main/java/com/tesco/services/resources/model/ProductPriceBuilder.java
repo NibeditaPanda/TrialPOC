@@ -74,15 +74,16 @@ public class ProductPriceBuilder implements ProductPriceVisitor {
          * then the response JSON should display selling UOM for the tpnc's in line with IDL  */
         variantInfo.put(SELLING_UOM, productVariant.getSellingUOM());
         variants.add(variantInfo);
-
+        /*Modified by Sushil PS-178 to configure decimal places for price - Start*/
         if (priceZoneSaleInfo != null ) {
-            variantInfo.put(PRICE, priceZoneSaleInfo.getPrice());
+            variantInfo.put(PRICE, Dockyard.priceScaleRoundHalfUp(currency, priceZoneSaleInfo.getPrice()));
         }
         /**Modified By Nibedita - PS-118- Positive Scenario
          * Given the  price IDL ,When the price rest calls are requested, then the response JSON should be as per format mentioned in IDL  */
         if (promoZoneSaleInfo != null) {
-            variantInfo.put(PROMO_PRICE, promoZoneSaleInfo.getPrice());
+            variantInfo.put(PROMO_PRICE, Dockyard.priceScaleRoundHalfUp(currency, promoZoneSaleInfo.getPrice()));
         }
+        /*Modified by Sushil PS-178 to configure decimal places for price - End*/
         /**Modified By Nibedita - PS-118- Positive Scenario
          * Given the  price IDL ,When the price rest calls are requested, then the response JSON should be as per format mentioned in IDL  */
         if (promoZoneSaleInfo == null) {
