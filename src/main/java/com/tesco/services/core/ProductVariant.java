@@ -37,11 +37,12 @@ public class ProductVariant implements PriceVisitable, Serializable {
         if (o == null || getClass() != o.getClass()) return false;
 
         ProductVariant productVariant = (ProductVariant) o;
-
-        if (!tpnc.equals(productVariant.tpnc)) return false;
-        if (!sellingUOM.equals(productVariant.sellingUOM)) return false;
-        if (!zoneIdToSaleInfo.equals(productVariant.zoneIdToSaleInfo)) return false;
-
+        //Pallavi
+        if ((!tpnc.equals(productVariant.tpnc))||(!sellingUOM.equals(productVariant.sellingUOM))||
+                (!zoneIdToSaleInfo.equals(productVariant.zoneIdToSaleInfo)))
+        {
+            return false;
+        }
         return true;
     }
 

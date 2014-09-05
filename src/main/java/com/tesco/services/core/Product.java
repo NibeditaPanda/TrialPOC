@@ -46,17 +46,20 @@ public class Product implements PriceVisitable, Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Product product = (Product) o;
-
-        if (!tpnb.equals(product.tpnb)) return false;
-         /*Modified by Nibedita - for adding last_updated_date field in Product JSON document while import - Story 114 -Start*/
-        if (!last_updated_date.equals(product.last_updated_date)) return false;
-         /*Modified by Nibedita - for adding last_updated_date field in Product JSON document while import - Story 114 -End*/
-        if (!tpncToProductVariant.equals(product.tpncToProductVariant)) return false;
-
+    /*Modified by Pallavi as part of sonar start*/
+        if ((!tpnb.equals(product.tpnb)) || (!last_updated_date.equals(product.last_updated_date))
+                ||(!tpncToProductVariant.equals(product.tpncToProductVariant))){
+            return false;
+        }
+    /*Modified by Pallavi as part of sonar end*/
         return true;
     }
 
@@ -92,7 +95,7 @@ public class Product implements PriceVisitable, Serializable {
             productVariant.accept(productPriceVisitor);
         }
     }
-/*Added by salman for PS-114*/
+    /*Added by salman for PS-114*/
     public Map<String,ProductVariant> getTpncToProductVariant() {
         return tpncToProductVariant;
     }

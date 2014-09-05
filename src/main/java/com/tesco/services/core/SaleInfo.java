@@ -48,15 +48,22 @@ public class SaleInfo implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         SaleInfo saleInfo = (SaleInfo) o;
-
-        if (zoneId != saleInfo.zoneId) return false;
-        if (price != null ? !price.equals(saleInfo.price) : saleInfo.price != null) return false;
-        if (promotions != null ? !promotions.equals(saleInfo.promotions) : saleInfo.promotions != null) return false;
-
+        /*Modified by Pallavi as part of sonar start*/
+        if ((zoneId != saleInfo.zoneId)||(price != null ? !price.equals(saleInfo.price) : saleInfo.price != null)){
+            return false;
+        }
+        if((promotions != null ? !promotions.equals(saleInfo.promotions) : saleInfo.promotions != null)){
+            return false;
+        }
+    /*Modified by Pallavi as part of sonar end*/
         return true;
     }
 
