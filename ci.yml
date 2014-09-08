@@ -1,6 +1,6 @@
 db.bucket.name: PriceServiceTest
 db.bucket.password: tesco
-db.server.url: http://172.28.152.213:8091/pools
+db.server.url: http://188.226.184.77:8091/pools
 
 
 rpm.store.data.dump : src/main/resources/com/tesco/services/adapters/rpm/CSVFiles/latest/STORE_ZONE.csv
