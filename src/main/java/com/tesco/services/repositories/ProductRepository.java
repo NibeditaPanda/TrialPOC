@@ -131,15 +131,48 @@ public class ProductRepository {
         try {
             String itemJson = mapper.writeValueAsString(ITEM);
             String tpncJson = mapper.writeValueAsString(TPNC);
-            if(Dockyard.isSpaceOrNull(couchbaseWrapper.get(TPNC)))
-                couchbaseWrapper.set(TPNC, itemJson);
-            if(Dockyard.isSpaceOrNull(couchbaseWrapper.get(ITEM)))
-                couchbaseWrapper.set(ITEM, tpncJson);
+            if(Dockyard.isSpaceOrNull(couchbaseWrapper.get(TPNC))){
+                //couchbaseWrapper.set(TPNC, itemJson); Changed the Code to Async
+                insertProduct(TPNC,itemJson,new Listener<Void, Exception>() {
+                    @Override
+                    public void onComplete(Void aVoid) {
+                    }
+
+                    @Override
+                    public void onException(Exception e) {
+                    }
+                });
+            }
+
+            if(Dockyard.isSpaceOrNull(couchbaseWrapper.get(ITEM))) {
+                //couchbaseWrapper.set(ITEM, tpncJson); Changed the Code to Async
+                insertProduct(ITEM,tpncJson,new Listener<Void, Exception>() {
+                    @Override
+                    public void onComplete(Void aVoid) {
+                    }
+
+                    @Override
+                    public void onException(Exception e) {
+                    }
+                });
+            }
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
     }
+    public void insertProduct(String key, String value,final Listener<Void, Exception> listener) {
+        asyncCouchbaseWrapper.set(key, value, new SetListener(asyncCouchbaseWrapper, key, value) {
+            @Override
+            public void process() {
+                listener.onComplete(null);
+            }
 
+            @Override
+            public void onException(Exception e) {
+                listener.onException(e);
+            }
+        });
+    }
     public String getProductTPNC(String item) {
 
         String tpnc = (String)couchbaseWrapper.get(item);

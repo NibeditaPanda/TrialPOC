@@ -42,7 +42,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 public class PriceResource {
 
     /*Added by Sushil - PS-83 added logger to log exceptions -Start*/
-    private Logger logger = LoggerFactory.getLogger(getClass().getName());
+    private static final Logger logger = LoggerFactory.getLogger(PriceResource.class);
 
     public static final int NATIONAL_PRICE_ZONE_ID = 1;
     public static final String NATIONAL_ZONE_CURRENCY = "GBP";
@@ -85,16 +85,10 @@ public class PriceResource {
             @Context UriInfo uriInfo) throws IOException {
 
         uriPath = uriInfo.getRequestUri().toString();
-        if (storeQueryParamWasSentWithoutAStoreID(storeId, uriInfo.getQueryParameters()))
-        {
+        if (storeQueryParamWasSentWithoutAStoreID(storeId, uriInfo.getQueryParameters())) {
             logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_BAD_REQUEST+"- {"+HTTPResponses.INVALID_REQUEST+"}");
             return badRequest();
-
-        }
-
-/*
-        ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
-*/
+          }
 
         ProductRepository productRepository = new ProductRepository(couchbaseWrapper,asyncCouchbaseWrapper,mapper);
 
@@ -105,8 +99,7 @@ public class PriceResource {
             String tpnc = tpn;
             try {
                 int item = Integer.parseInt(tpnc);
-            }
-            catch(NumberFormatException ne)
+            }catch(NumberFormatException ne)
             {
                 logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_NOT_FOUND+"- {"+PRODUCT_NOT_FOUND+"} -> ("+tpn+")");
                 return notFound(PRODUCT_NOT_FOUND);
@@ -131,14 +124,12 @@ public class PriceResource {
             }
             productContainer = productRepository.getByTPNB(tpnb,tpnc);
 
-        }
-        else if(tpnIdentifier.equalsIgnoreCase("B"))
+        } else if(tpnIdentifier.equalsIgnoreCase("B"))
         {
     /*Added By Surya - PS 30 - Request handling for TPN identifier and value Mismatch  - Start*/
             try {
                 int item = Integer.parseInt(tpn);
-            }
-            catch(NumberFormatException ne)
+            } catch(NumberFormatException ne)
             {
                 logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_NOT_FOUND+"- {"+PRODUCT_NOT_FOUND+"} -> ("+tpn+")");
                 return notFound(PRODUCT_NOT_FOUND);
@@ -152,15 +143,13 @@ public class PriceResource {
 
             productContainer = productRepository.getByTPNB(tpn);
 
-        }
-        else
+        }else
         {
             logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_BAD_REQUEST+"- {"+HTTPResponses.INVALID_REQUEST+"}");
             return badRequest();
         }
          /*Added By Nibedita - PS 37 - fetch info based on TPNC - End*/
-        if (!productContainer.isPresent())
-        {
+        if (!productContainer.isPresent()) {
             logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_NOT_FOUND+"- {"+PRODUCT_NOT_FOUND+"} -> ("+tpn+")");
             return notFound(PRODUCT_NOT_FOUND);
         }
@@ -190,8 +179,7 @@ public class PriceResource {
 
         Optional<Store> storeContainer = storeRepository.getByStoreId(String.valueOf(storeId));
 
-        if (!storeContainer.isPresent())
-        {
+        if (!storeContainer.isPresent()) {
             logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_NOT_FOUND+"- {"+STORE_NOT_FOUND+"} -> ("+storeIdValue+")");
             return notFound(STORE_NOT_FOUND);
         }

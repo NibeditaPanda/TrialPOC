@@ -59,15 +59,21 @@ public class Store implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Store store = (Store) o;
+    /*Modified by Pallavi as part of sonar start*/
+        if ((!currency.equals(store.currency))||(!storeId.equals(store.storeId))||(priceZoneId != store.priceZoneId)
+                ||(promoZoneId != store.promoZoneId)){
+            return false;
+        }
+    /*Modified by Pallavi as part of sonar end*/
 
-        if (!currency.equals(store.currency)) return false;
-        if (!storeId.equals(store.storeId)) return false;
-        if (priceZoneId != store.priceZoneId) return false;
-        if (promoZoneId != store.promoZoneId) return false;
 
         return true;
     }

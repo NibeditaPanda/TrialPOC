@@ -11,7 +11,6 @@ import com.tesco.couchbase.testutils.BucketTool;
 import com.tesco.couchbase.testutils.CouchbaseTestManager;
 import com.tesco.couchbase.testutils.CouchbaseWrapperStub;
 import com.tesco.services.Configuration;
-import com.tesco.services.IntegrationTest;
 import com.tesco.services.builder.PromotionBuilder;
 import com.tesco.services.core.Product;
 import com.tesco.services.resources.model.ProductPriceBuilder;
@@ -31,12 +30,10 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.*;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class PriceResourceTest extends ResourceTest {
 
@@ -53,11 +50,10 @@ public class PriceResourceTest extends ResourceTest {
 
     @Override
     protected void setUpResources() throws Exception {
-        // couchbaseConnectionManager = new CouchbaseConnectionManager(testConfiguration);
         testConfiguration = TestConfiguration.load();
 
         if (testConfiguration.isDummyCouchbaseMode()){
-            HashMap<String, ImmutablePair<Long, String>> fakeBase = new HashMap<>();
+            Map<String, ImmutablePair<Long, String>> fakeBase = new HashMap<>();
             couchbaseTestManager = new CouchbaseTestManager(new CouchbaseWrapperStub(fakeBase),
                     new AsyncCouchbaseWrapperStub(fakeBase),
                     mock(BucketTool.class));
@@ -80,22 +76,9 @@ public class PriceResourceTest extends ResourceTest {
         addResource(priceResource);
     }
 
-    /*@BeforeClass
-    public static void setUp() throws IOException, URISyntaxException, InterruptedException {
-      IntegrationTest.init();
-    }
-
-    @AfterClass
-    public static void tearDown() throws IOException {
-        IntegrationTest.destroy();
-    }*/
-
-    // Couchbase tests
-    // ==============
     @Test
     public void shouldReturnNationalPricesForMultipleItemsWhenStoreIdIsNotSpecified() throws IOException, ItemNotFoundException {
-        /*ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());*/
-        //ProductRepository productRepository = getProductRepository();
+
         String tpnb = "050925811";
         String tpnc1 = "266072275";
         String tpnc2 = "266072276";
@@ -122,7 +105,6 @@ public class PriceResourceTest extends ResourceTest {
 
     @Test
     public void shouldReturnPricesWhenStoreIdIsSpecified() throws IOException, ItemNotFoundException {
-        //  ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
 
         String tpnb = "050925811";
         String tpnc1 = "266072275";
@@ -139,8 +121,8 @@ public class PriceResourceTest extends ResourceTest {
         assertThat(response.getStatus()).isEqualTo(200);
         Map actualProductPriceInfo = resource.get(Map.class);
 
-        ArrayList<Map<String, Object>> variants = new ArrayList<>();
-        ArrayList<Map<String, String>> promotion = new ArrayList<>();
+        List<Map<String, Object>> variants = new ArrayList<>();
+        List<Map<String, String>> promotion = new ArrayList<>();
         /** PS-173 -salman :changed to add sellingUOM value to variant */
         variants.add(getVariantInfo(tpnc1, "EUR", null, "1.10","KG"));
         variants.add(getVariantInfo(tpnc2, "EUR", "1.38", null,"KG"));
@@ -159,8 +141,7 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     @Test
-    public void shouldReturn404WhenStoreIsNotFound() throws Exception {
-        // ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
+    public void shouldReturn404WhenStoreIsNotFound() throws ItemNotFoundException {
         productRepository.put(createProductWithVariants("050925811", "266072275", "266072276"));
 
         WebResource resource = client().resource("/price/B/050925811?store=2099");
@@ -171,8 +152,7 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     @Test
-    public void shouldReturn404WhenStoreIsInvalid() throws Exception {
-        //  ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
+    public void shouldReturn404WhenStoreIsInvalid() throws ItemNotFoundException {
         productRepository.put(createProductWithVariants("050925811", "266072275", "266072276"));
 
         WebResource resource = client().resource("/price/B/050925811?store=invalidstore");
@@ -183,7 +163,7 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     @Test
-    public void shouldReturn400WhenIncorrectQueryParamIsGiven() throws Exception {
+    public void shouldReturn400WhenIncorrectQueryParamIsGiven() throws ItemNotFoundException {
         WebResource resource = client().resource("/price/B/050925811?storee=store");
         ClientResponse response = resource.get(ClientResponse.class);
 
@@ -211,11 +191,12 @@ public class PriceResourceTest extends ResourceTest {
             productVariant2.addSaleInfo(new SaleInfo(6, "1.38"));
         }
         Product product = new Product(tpnb);
-        if(!Dockyard.isSpaceOrNull(productVariant1))
+        if(!Dockyard.isSpaceOrNull(productVariant1)) {
             product.addProductVariant(productVariant1);
-        if(!Dockyard.isSpaceOrNull(productVariant2))
+        }
+        if(!Dockyard.isSpaceOrNull(productVariant2)) {
             product.addProductVariant(productVariant2);
-
+        }
         return product;
     }
 
@@ -231,20 +212,22 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     private Map<String, Object> expectedProductPriceInfo(String tpnb, String tpnc1, String tpnc2) {
-        ArrayList<Map<String, Object>> variants = new ArrayList<>();
+        List<Map<String, Object>> variants = new ArrayList<>();
         /* PS-118 -salman :changed to form the response according to IDL */
-        ArrayList<Map<String, String>> promotion=new ArrayList<>();
+        List<Map<String, String>> promotion=new ArrayList<>();
 
-        if(!Dockyard.isSpaceOrNull(tpnc2))
+        if(!Dockyard.isSpaceOrNull(tpnc2)){
             variants.add(getVariantInfo(tpnc2, "GBP", "1.39", null,"KG"));
-        if(!Dockyard.isSpaceOrNull(tpnc1))
-            variants.add(getVariantInfo(tpnc1, "GBP", "1.40", "1.20","KG"));
+        }
+        if(!Dockyard.isSpaceOrNull(tpnc1)) {
+            variants.add(getVariantInfo(tpnc1, "GBP", "1.40", "1.20", "KG"));
+        }
         /* PS-118 -salman :changed to form the response according to IDL */
         promotion.add(createPromotionInfo("A30718670"));
 
         return getProductPriceMap(tpnb, variants,promotion);
     }
-    private Map<String, Object> getProductPriceMap(String tpnb, ArrayList<Map<String, Object>> variants, ArrayList<Map<String, String>> promotion) {
+    private Map<String, Object> getProductPriceMap(String tpnb, List<Map<String, Object>> variants, List<Map<String, String>> promotion) {
         Map<String, Object> productPriceMap = new LinkedHashMap<>();
         productPriceMap.put("tpnb", tpnb);
         productPriceMap.put("variants", variants);
@@ -258,8 +241,9 @@ public class PriceResourceTest extends ResourceTest {
         variantInfo1.put("tpnc", tpnc);
         variantInfo1.put("currency",currency);
         variantInfo1.put(SELLING_UOM,sellinguom);
-        if (price != null) variantInfo1.put("price", price);
-        //if (promoPrice != null) {
+        if (price != null){
+            variantInfo1.put("price", price);
+        }
         variantInfo1.put("promoprice", promoPrice);
         /* PS-118 -salman :changed to form the response according to IDL */
         //salman deleted old code of adding promotion
@@ -280,7 +264,6 @@ public class PriceResourceTest extends ResourceTest {
 
     @Test
     public void shouldReturnNationalPricesForMultipleItemsWhenStoreIdIsNotSpecifiedwithTPNC() throws IOException, ItemNotFoundException {
-//        ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
         String tpnb = "070461113";
         String tpnc = "284347092";
         String tpnc2 = null;
@@ -294,7 +277,6 @@ public class PriceResourceTest extends ResourceTest {
             couchbaseWrapper.set(tpnb, tpnc2);
             couchbaseWrapper.set(tpnc2, tpnb);
         }
-        //when(productRepository.getMappedTPNCorTPNB(tpnc)).thenReturn(getTPNBForTPNC(tpnb));
         WebResource resource = client().resource(String.format("/price/C/%s", tpnc));
 
         ClientResponse response = resource.get(ClientResponse.class);
@@ -304,8 +286,7 @@ public class PriceResourceTest extends ResourceTest {
         compareResponseMaps(actualProductPriceInfo, expectedProductPriceInfo(tpnb, tpnc, tpnc2));
     }
     @Test
-    public void shouldReturnNationalPricesForMultipleItemsWhenStoreIdIsNotSpecifiedwithTPNC_STORE() throws IOException, ItemNotFoundException {
-//        ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
+    public void shouldReturnNationalPricesForMultipleItemsWhenStoreIdIsNotSpecifiedwithTPNCToSTORE() throws IOException, ItemNotFoundException {
         String tpnb = "070461113";
         String tpnc1 = "284347092";
         String tpnc2 = null;
@@ -329,14 +310,16 @@ public class PriceResourceTest extends ResourceTest {
         assertThat(response.getStatus()).isEqualTo(200);
         Map actualProductPriceInfo = resource.get(Map.class);
 
-        ArrayList<Map<String, Object>> variants = new ArrayList<>();
+        List<Map<String, Object>> variants = new ArrayList<>();
         /* PS-118 -salman :changed to form the response according to IDL */
-        ArrayList<Map<String, String>> promotion = new ArrayList<>();
+        List<Map<String, String>> promotion = new ArrayList<>();
 
-        if(!Dockyard.isSpaceOrNull(tpnc1))
-            variants.add(getVariantInfo(tpnc1, "EUR", "1.20" ,"1.10","KG"));
-        if(!Dockyard.isSpaceOrNull(tpnc2))
-            variants.add(getVariantInfo(tpnc2, "EUR", "1.38", null,"KG"));
+        if(!Dockyard.isSpaceOrNull(tpnc1)) {
+            variants.add(getVariantInfo(tpnc1, "EUR", "1.20", "1.10", "KG"));
+        }
+        if(!Dockyard.isSpaceOrNull(tpnc2)) {
+            variants.add(getVariantInfo(tpnc2, "EUR", "1.38", null, "KG"));
+        }
         /* PS-118 -salman :changed to form the response according to IDL */
         promotion.add(createPromotionInfo("A30718670"));
 
@@ -354,7 +337,7 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     @Test
-    public void shouldReturn404WhenStoreIsNotFoundGivenTPNC() throws Exception {
+    public void shouldReturn404WhenStoreIsNotFoundGivenTPNC() throws ItemNotFoundException {
         String tpnb = "070461113";
         String tpnc1 = "284347092";
         String tpnc2 = null;
@@ -375,8 +358,7 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     @Test
-    public void shouldReturn404WhenStoreIsInvalidGivenTPNC() throws Exception {
-        //  ProductRepository productRepository = new ProductRepository(couchbaseConnectionManager.getCouchbaseClient());
+    public void shouldReturn404WhenStoreIsInvalidGivenTPNC() throws ItemNotFoundException {
         String tpnb = "070461113";
         String tpnc1 = "284347092";
         String tpnc2 = null;
@@ -397,7 +379,7 @@ public class PriceResourceTest extends ResourceTest {
     }
 
     @Test
-    public void shouldReturn400WhenIncorrectQueryParamIsGivenTPNC() throws Exception {
+    public void shouldReturn400WhenIncorrectQueryParamIsGivenTPNC() throws ItemNotFoundException {
         WebResource resource = client().resource("/price/C/284347092?storee=store");
         ClientResponse response = resource.get(ClientResponse.class);
 
