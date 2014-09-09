@@ -23,6 +23,7 @@ import com.tesco.services.utility.Dockyard;
 import net.spy.memcached.internal.OperationFuture;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
@@ -164,6 +165,7 @@ public class ProductRepositoryTest /*extends IntegrationTest*/{
     }
 
     /*Added by Surya for PS-114. This Junit will Delete the elements from CB -  Start*/
+    @Ignore
     @Test
     public void deleteTPNBToTPNCToVaraintDependencies() throws Exception {
 
