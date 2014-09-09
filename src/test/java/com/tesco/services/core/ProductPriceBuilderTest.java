@@ -121,9 +121,49 @@ public class ProductPriceBuilderTest {
 
         return productPriceMap;
     }
+    private Map<String, Object> expectedProductPriceMapForIQD(boolean includePrice, boolean includePromoPrice) {
+        Map<String, Object> variantInfo1 = new LinkedHashMap<>();
+        List<Map<String, String>> promotions = new ArrayList<>();
+        variantInfo1.put("tpnc", tpnc1);
+        variantInfo1.put("currency", "IQD");
+        /** PS-173 -Salman: changed to include sellingUOM field in expected product object for test */
+        variantInfo1.put(SELLING_UOM, sellinguom_val);
+        if (includePrice) variantInfo1.put("price", "1.401");
+        if (includePromoPrice) {
+            variantInfo1.put("promoprice", "1.301");
+            promotions = Arrays.asList(createPromotionInfo("A30718669"), createPromotionInfo("A30718670"));
+            //variantInfo1.put("promotions", promotions);
+        }else if(includePromoPrice == false){
+            variantInfo1.put("promoprice", null);
+            promotions =  Arrays.asList();
+        }
 
+        Map<String, Object> variantInfo2 = new LinkedHashMap<>();
+        variantInfo2.put("tpnc", tpnc2);
+        variantInfo2.put("currency", "IQD");
+        /** PS-173 -Salman: changed to include sellingUOM field in expected product object for test */
+        variantInfo2.put(SELLING_UOM, sellinguom_val);
+        if (includePrice) variantInfo2.put("price", "1.391");
+        if (includePromoPrice){
+            variantInfo2.put("promoprice", "1.201");
+        }else if(includePromoPrice == false){
+            variantInfo2.put("promoprice", null);
+            promotions =  Arrays.asList();
+        }
+
+        ArrayList<Map<String, Object>> variants = new ArrayList<>();
+        variants.add(variantInfo1);
+        variants.add(variantInfo2);
+
+        Map<String, Object> productPriceMap = new LinkedHashMap<>();
+        productPriceMap.put("tpnb", tpnb);
+        productPriceMap.put("variants", variants);
+        productPriceMap.put("promotions", promotions);
+
+        return productPriceMap;
+    }
     private Product createProductWithVariants() {
-        SaleInfo saleInfoWithPromotion = new SaleInfo(5, "1.30");
+        SaleInfo saleInfoWithPromotion = new SaleInfo(5, "1.30123");
         saleInfoWithPromotion.addPromotion(createPromotion("A30718670"));
         saleInfoWithPromotion.addPromotion(createPromotion("A30718669"));
 
@@ -131,15 +171,15 @@ public class ProductPriceBuilderTest {
         /** PS-173 :Salman: setting sellingUOM values to productVariant1 and productVariant2 while
          * creating product variants for test */
         productVariant1.setSellingUOM(sellinguom_val);
-        productVariant1.addSaleInfo(new SaleInfo(1, "1.40"));
+        productVariant1.addSaleInfo(new SaleInfo(1, "1.40123"));
         productVariant1.addSaleInfo(saleInfoWithPromotion);
 
         ProductVariant productVariant2 = new ProductVariant(tpnc2);
         productVariant2.setSellingUOM(sellinguom_val);
-        productVariant2.addSaleInfo(new SaleInfo(1, "1.39"));
-        productVariant2.addSaleInfo(new SaleInfo(2, "1.38"));
-        productVariant2.addSaleInfo(new SaleInfo(5, "1.20"));
-        productVariant2.addSaleInfo(new SaleInfo(14, "1.10"));
+        productVariant2.addSaleInfo(new SaleInfo(1, "1.39123"));
+        productVariant2.addSaleInfo(new SaleInfo(2, "1.38123"));
+        productVariant2.addSaleInfo(new SaleInfo(5, "1.20123"));
+        productVariant2.addSaleInfo(new SaleInfo(14, "1.10123"));
 
         Product product = new Product(tpnb);
         product.addProductVariant(productVariant1);
@@ -224,5 +264,19 @@ public class ProductPriceBuilderTest {
         productWithVariants.accept(productPriceVisitor);
 
         assertThat(productPriceVisitor.getPriceInfo()).isEqualTo(expectedProductPriceMapWithOutSellingUOM(true, true));
+    }
+
+    /**
+     * This will test decimal places for price based on currency.
+     */
+    @Test
+    public void shouldBuildProductPriceWithCurrencyDecimal(){
+        currency = "IQD";
+        productPriceVisitor = new ProductPriceBuilder(Optional.of(priceZoneId), Optional.of(promoZoneId), currency);
+        Product productWithVariants = createProductWithVariants();
+
+        productWithVariants.accept(productPriceVisitor);
+
+        assertThat(productPriceVisitor.getPriceInfo()).isEqualTo(expectedProductPriceMapForIQD(true, true));
     }
 }
