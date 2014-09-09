@@ -175,20 +175,22 @@ public class PriceResourceTest extends ResourceTest {
         ProductVariant productVariant1 = null;
         ProductVariant productVariant2 = null;
         /** PS-173 -salman :adding sellingUOM value to variant while product is built */
+        /** PS-178 - Mukund :Modified the Price - Added extra decimals */
+
         if(!Dockyard.isSpaceOrNull(tpnc1)) {
             productVariant1 = new ProductVariant(tpnc1);
             productVariant1.setSellingUOM(SELLING_UOM_VAL);
-            productVariant1.addSaleInfo(new SaleInfo(1, "1.40"));
-            SaleInfo promoSaleInfo = new SaleInfo(5, "1.20");
+            productVariant1.addSaleInfo(new SaleInfo(1, "1.40123"));
+            SaleInfo promoSaleInfo = new SaleInfo(5, "1.20123");
             promoSaleInfo.addPromotion(createPromotion("A30718670"));
             productVariant1.addSaleInfo(promoSaleInfo);
-            productVariant1.addSaleInfo(new SaleInfo(14, "1.10"));
+            productVariant1.addSaleInfo(new SaleInfo(14, "1.10123"));
         }
         if(!Dockyard.isSpaceOrNull(tpnc2)) {
             productVariant2 = new ProductVariant(tpnc2);
             productVariant2.setSellingUOM(SELLING_UOM_VAL);
-            productVariant2.addSaleInfo(new SaleInfo(1, "1.39"));
-            productVariant2.addSaleInfo(new SaleInfo(6, "1.38"));
+            productVariant2.addSaleInfo(new SaleInfo(1, "1.39123"));
+            productVariant2.addSaleInfo(new SaleInfo(6, "1.38123"));
         }
         Product product = new Product(tpnb);
         if(!Dockyard.isSpaceOrNull(productVariant1)) {
@@ -227,6 +229,27 @@ public class PriceResourceTest extends ResourceTest {
 
         return getProductPriceMap(tpnb, variants,promotion);
     }
+
+            /* PS-178 - Mukund :Builds Product Price Info with decimal standards */
+    private Map<String, Object> expectedProductPriceInfoWithDecimalStandards(String tpnb, String tpnc1, String tpnc2) {
+        List<Map<String, Object>> variants = new ArrayList<>();
+        List<Map<String, String>> promotion=new ArrayList<>();
+        String tpnc1Price = "1.40123";
+        String tpnc1PromoPrice = "1.20123";
+        String tpnc2Price = "1.39123";
+
+        if(!Dockyard.isSpaceOrNull(tpnc2)){
+            variants.add(getVariantInfo(tpnc2, "GBP", Dockyard.priceScaleRoundHalfUp("GBP",tpnc2Price), null,"KG"));
+        }
+        if(!Dockyard.isSpaceOrNull(tpnc1)) {
+            variants.add(getVariantInfo(tpnc1, "GBP", Dockyard.priceScaleRoundHalfUp("GBP",tpnc1Price), Dockyard.priceScaleRoundHalfUp("GBP",tpnc1PromoPrice), "KG"));
+        }
+        /* PS-118 -salman :changed to form the response according to IDL */
+        promotion.add(createPromotionInfo("A30718670"));
+
+        return getProductPriceMap(tpnb, variants,promotion);
+    }
+
     private Map<String, Object> getProductPriceMap(String tpnb, List<Map<String, Object>> variants, List<Map<String, String>> promotion) {
         Map<String, Object> productPriceMap = new LinkedHashMap<>();
         productPriceMap.put("tpnb", tpnb);
@@ -389,5 +412,26 @@ public class PriceResourceTest extends ResourceTest {
     public String getTPNBForTPNC(String tpnb) {
         return tpnb;
     }
+
+   /* Added By Mukund for PS-178*/
+    @Test
+    public void shouldReturnNationalPricesWithDecimalValidationForMultipleItemsWhenStoreIdIsNotSpecified() throws IOException, ItemNotFoundException {
+
+        String tpnb = "050925811";
+        String tpnc1 = "266072275";
+        String tpnc2 = "266072276";
+        Product product = createProductWithVariants(tpnb, tpnc1, tpnc2);
+        //Inserted Product have more than 2 decimals
+        productRepository.put(product);
+
+        WebResource resource = client().resource(String.format("/price/B/%s", tpnb));
+
+        ClientResponse response = resource.get(ClientResponse.class);
+        assertThat(response.getStatus()).isEqualTo(200);
+        Map actualProductPriceInfo = resource.get(Map.class);
+        //Expected Product will be constructed with decimals standards and then the the actual and expected maps are compared
+       compareResponseMaps(actualProductPriceInfo, expectedProductPriceInfoWithDecimalStandards(tpnb, tpnc1, tpnc2));
+    }
+
 
 }
