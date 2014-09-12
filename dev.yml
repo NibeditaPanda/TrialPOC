@@ -6,11 +6,11 @@ sonetto.shelfUrl : http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/S
 sonetto.promotions.data.dump : src/main/resources/com/tesco/services/adapters/sonetto/PromotionsDataExport.xml
 sonetto.promotions.xsd : templates/Promotions.xsd
 
-rpm.store.data.dump : /appl/prcsrvc/data/in/STORE_ZONE.csv
-rpm.price.zone.data.dump : /appl/prcsrvc/data/in/PRICE_ZONE.csv
-rpm.promo.zone.data.dump : /appl/prcsrvc/data/in/PROM_ZONE.csv
-rpm.promo.extract.data.dump : /appl/prcsrvc/data/in/PROM_EXTRACT.csv
-rpm.promo.desc.extract.data.dump : /appl/prcsrvc/data/in/PROM_DESC_EXTRACT_full_dump.csv
+rpm.store.data.dump : /appl/prcsrvce/data/in/STORE_ZONE.csv
+rpm.price.zone.data.dump : /appl/prcsrvce/data/in/PRICE_ZONE.csv
+rpm.promo.zone.data.dump : /appl/prcsrvce/data/in/PROM_ZONE.csv
+rpm.promo.extract.data.dump : /appl/prcsrvce/data/in/PROM_EXTRACT.csv
+rpm.promo.desc.extract.data.dump : /appl/prcsrvce/data/in/PROM_DESC_EXTRACT_full_dump.csv
 
 
 couchbase.nodes:
@@ -37,5 +37,5 @@ logging:
     threshold: INFO
     #threshold: WARN
     #threshold: ERROR
-    currentLogFilename: /appl/prcsrvc/log/price-service.log
-    archivedLogFilenamePattern: /appl/prcsrvc/log/price-service-%d.log.gz
+    currentLogFilename: /appl/prcsrvce/log/price-service.log
+    archivedLogFilenamePattern: /appl/prcsrvce/log/price-service-%d.log.gz
