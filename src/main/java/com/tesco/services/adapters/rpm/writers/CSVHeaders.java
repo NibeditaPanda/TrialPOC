@@ -37,7 +37,8 @@ public interface CSVHeaders {
     }
 
     static interface PromoDescExtract {
-        String ITEM = "bpr_tpn";
+        //BUG PS-179 "bpr_tpn"
+        String ITEM = "ITEM";
         String ZONE_ID = "promo_zone";
         String OFFER_ID = "offer_id";
         String DESC1 = "desc_1";
