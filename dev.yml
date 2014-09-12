@@ -6,11 +6,11 @@ sonetto.shelfUrl : http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/S
 sonetto.promotions.data.dump : src/main/resources/com/tesco/services/adapters/sonetto/PromotionsDataExport.xml
 sonetto.promotions.xsd : templates/Promotions.xsd
 
-rpm.store.data.dump : /appl/priceservice/latest/STORE_ZONE.csv
-rpm.price.zone.data.dump : /appl/priceservice/latest/PRICE_ZONE.csv
-rpm.promo.zone.data.dump : /appl/priceservice/latest/PROM_ZONE.csv
-rpm.promo.extract.data.dump : /appl/priceservice/latest/PROM_EXTRACT.csv
-rpm.promo.desc.extract.data.dump : /appl/priceservice/latest/PROM_DESC_EXTRACT_full_dump.csv
+rpm.store.data.dump : /appl/prcsrvc/data/in/STORE_ZONE.csv
+rpm.price.zone.data.dump : /appl/prcsrvc/data/in/PRICE_ZONE.csv
+rpm.promo.zone.data.dump : /appl/prcsrvc/data/in/PROM_ZONE.csv
+rpm.promo.extract.data.dump : /appl/prcsrvc/data/in/PROM_EXTRACT.csv
+rpm.promo.desc.extract.data.dump : /appl/prcsrvc/data/in/PROM_DESC_EXTRACT_full_dump.csv
 
 
 couchbase.nodes:
@@ -18,8 +18,6 @@ couchbase.nodes:
 couchbase.bucket: PriceService
 couchbase.username: "PriceService"
 couchbase.password: "tesco"
-couchbase.admin.username: "Administrator"
-couchbase.admin.password: "Tesco123"
 
 dummyCouchbaseMode: true
 
@@ -29,8 +27,8 @@ hostedGraphite:
   apikey: 1d226f2e-fcd0-4eba-8c63-89e11b1ba2d9
   period: 5
 http:
-  port: 8081
-  adminPort: 9081
+  port: 8080
+  adminPort: 8081
 logging:
   level: INFO
   file:
@@ -39,5 +37,5 @@ logging:
     threshold: INFO
     #threshold: WARN
     #threshold: ERROR
-    currentLogFilename: ./logs/price-service.log
-    archivedLogFilenamePattern: ./logs/price-service-%d.log.gz
+    currentLogFilename: /appl/prcsrvc/log/price-service.log
+    archivedLogFilenamePattern: /appl/prcsrvc/log/price-service-%d.log.gz
