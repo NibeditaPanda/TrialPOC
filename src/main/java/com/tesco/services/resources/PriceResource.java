@@ -79,7 +79,7 @@ public class PriceResource {
             @ApiResponse(code = 500, message = HTTPResponses.INTERNAL_SERVER_ERROR)
     })
     public Response get(
-            @ApiParam(value = "Type of identifier(B => TPNB, C => TPNC)", required = true) @PathParam("tpnIdentifier") String tpnIdentifier,
+            @ApiParam(value = "Type of identifier(TPNB => TPNB, TPNC => TPNC)", required = true) @PathParam("tpnIdentifier") String tpnIdentifier,
             @ApiParam(value = "TPNB/TPNC of Product", required = true) @PathParam("tpn") String tpn,
             @ApiParam(value = "ID of Store if a store-specific price is desired", required = false) @QueryParam("store") String storeId,
             @Context UriInfo uriInfo) throws IOException {
@@ -94,8 +94,10 @@ public class PriceResource {
 
         Optional<Product> productContainer ;
        /*Added By Nibedita - PS 37 - fetch info based on TPNC - Start*/
+        /*Added By Nitisha - PS 234 - Changed the tpn identifer from "C"/"B"  to "TPNC"/"TPNB"- Start*/
         try {
-        if(tpnIdentifier.equalsIgnoreCase("C")){
+        if(tpnIdentifier.equalsIgnoreCase("TPNC")){
+            /*Added By Nitisha - PS 234 - Changed the tpn identifer from "C"/"B"  to "TPNC"/"TPNB"- END*/
             String tpnc = tpn;
             try {
                 int item = Integer.parseInt(tpnc);
@@ -123,9 +125,10 @@ public class PriceResource {
                 return notFound(PRODUCT_NOT_FOUND);
             }
             productContainer = productRepository.getByTPNB(tpnb,tpnc);
-
-        } else if(tpnIdentifier.equalsIgnoreCase("B"))
+ /*Added By Nitisha - PS 234 - Changed the tpn identifer from "C"/"B"  to "TPNC"/"TPNB"- Start*/
+        } else if(tpnIdentifier.equalsIgnoreCase("TPNB"))
         {
+    /*Added By Nitisha - PS 234 - Changed the tpn identifer from "C"/"B"  to "TPNC"/"TPNB"- End*/
     /*Added By Surya - PS 30 - Request handling for TPN identifier and value Mismatch  - Start*/
             try {
                 int item = Integer.parseInt(tpn);
