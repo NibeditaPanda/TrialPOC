@@ -11,6 +11,7 @@ import com.tesco.services.adapters.core.ImportJob;
 import com.tesco.services.adapters.rpm.writers.ProductMapper;
 import com.tesco.services.adapters.rpm.writers.RPMWriter;
 import com.tesco.services.adapters.rpm.writers.StoreMapper;
+import com.tesco.services.healthChecks.CouchbaseHealthCheck;
 import com.tesco.services.healthChecks.ServiceHealthCheck;
 import com.tesco.services.mappers.InvalidUrlMapper;
 import com.tesco.services.mappers.ServerErrorMapper;
@@ -81,8 +82,8 @@ public class PriceService extends Service<Configuration> {
          */
 //        configureMetrics(configuration);
 
-        environment.addHealthCheck(new ServiceHealthCheck(couchbaseConnectionManager));
-       // environment.addHealthCheck(new CouchbaseHealthCheck(container.getComponent(AsyncCouchbaseWrapper.class)));
+       // environment.addHealthCheck(new ServiceHealthCheck(couchbaseConnectionManager));
+          environment.addHealthCheck(new CouchbaseHealthCheck(container.getComponent(AsyncCouchbaseWrapper.class)));
 
         configureSwagger(environment, configuration);
     }

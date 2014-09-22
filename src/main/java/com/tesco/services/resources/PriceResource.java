@@ -96,7 +96,7 @@ public class PriceResource {
        /*Added By Nibedita - PS 37 - fetch info based on TPNC - Start*/
         /*Added By Nitisha - PS 234 - Changed the tpn identifer from "C"/"B"  to "TPNC"/"TPNB"- Start*/
         try {
-        if(tpnIdentifier.equalsIgnoreCase("TPNC")){
+            if(("TPNC").equalsIgnoreCase(tpnIdentifier)){
             /*Added By Nitisha - PS 234 - Changed the tpn identifer from "C"/"B"  to "TPNC"/"TPNB"- END*/
             String tpnc = tpn;
             try {
@@ -126,8 +126,8 @@ public class PriceResource {
             }
             productContainer = productRepository.getByTPNB(tpnb,tpnc);
  /*Added By Nitisha - PS 234 - Changed the tpn identifer from "C"/"B"  to "TPNC"/"TPNB"- Start*/
-        } else if(tpnIdentifier.equalsIgnoreCase("TPNB"))
-        {
+        } else if(("TPNB").equalsIgnoreCase(tpnIdentifier))
+            {
     /*Added By Nitisha - PS 234 - Changed the tpn identifer from "C"/"B"  to "TPNC"/"TPNB"- End*/
     /*Added By Surya - PS 30 - Request handling for TPN identifier and value Mismatch  - Start*/
             try {

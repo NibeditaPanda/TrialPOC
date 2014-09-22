@@ -165,6 +165,7 @@ public class ProductRepositoryTest /*extends IntegrationTest*/{
     }
 
     /*Added by Surya for PS-114. This Junit will Delete the elements from CB -  Start*/
+
     @Ignore
     @Test
     public void deleteTPNBToTPNCToVaraintDependencies() throws Exception {

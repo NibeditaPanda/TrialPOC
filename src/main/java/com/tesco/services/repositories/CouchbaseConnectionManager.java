@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,16 +15,17 @@ public class CouchbaseConnectionManager {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(CouchbaseConnectionManager.class);
     private final String bucketPassword;
 
-    private List<URI> hosts;
+    private List<URI> hosts=new ArrayList<>();
     private String bucketName;
     private CouchbaseClient couchbaseClient;
 
     public CouchbaseConnectionManager(Configuration configuration) throws URISyntaxException, IOException, InterruptedException {
-        // TODO: Change the db server url to (Subset) of nodes in the cluster to establish a connection
-        hosts = Arrays.asList(
-                new URI(configuration.getDBServerUrl())
-        );
+        //  Changed the db server url to (Subset) of nodes in the cluster to establish a connection
 
+        String[] nodes=configuration.getCouchbaseNodes();
+        for(String node: nodes) {
+            hosts.add(new URI(node));
+        }
         bucketName = configuration.getDBBucketName();
         bucketPassword = configuration.getDBBucketPassword();
         try {
