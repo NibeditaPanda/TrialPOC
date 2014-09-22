@@ -1,6 +1,5 @@
 db.bucket.name: PriceService
 db.bucket.password: tesco
-db.server.url: http://127.0.0.1:8091/pools
 
 sonetto.shelfUrl : http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/Superstore/Online/Product/pos/%s.png
 sonetto.promotions.data.dump : src/main/resources/com/tesco/services/adapters/sonetto/PromotionsDataExport.xml
@@ -14,7 +13,10 @@ rpm.promo.desc.extract.data.dump : src/main/resources/com/tesco/services/adapter
 
 
 couchbase.nodes:
-  - http://127.0.0.1:8091/pools
+  - http://localhost:8091/pools
+  - http://localhost:8091/pools
+  - http://localhost:8091/pools
+
 couchbase.bucket: PriceService
 couchbase.username: "PriceService"
 couchbase.password: "tesco"
