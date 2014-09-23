@@ -19,6 +19,7 @@ import org.xml.sax.SAXException;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import java.text.DateFormat;
@@ -93,33 +94,57 @@ public class RPMWriter {
             });
         }
     }
-
-    private void writePriceZonePrices() throws IOException {
+    /*PS-238 Modified By Nibedita - Code has been changed in order to insert the product once for all ,after building for all available zone and variants - Start*/
+    private void writePriceZonePrices() throws IOException{
         Map<String, String> productInfoMap;
         final ProductMapper productMapper = new ProductMapper(productRepository);
-
+        final String sysdate = Dockyard.getSysDate("yyyyMMdd");
+        Product product = new Product();
+        String prevItem = null;
+        String curItem = null;
+        boolean isNewProduct = false;
+        Map<String,String> mapTpnbTpnc = new HashMap<String,String>();
         while((productInfoMap = rpmPriceReader.getNext()) !=  null) {
-            final Product product = productMapper.mapPriceZonePrice(productInfoMap);
-            /*Added by Nibedita - PS 78 - Store ITEM and TPNC key value - Start*/
-            productRepository.mapTPNC_TPNB(productInfoMap.get("TPNC"),productInfoMap.get("ITEM"));
-            /*Added by Nibedita - PS 78 - Store ITEM and TPNC key value - End*/
-            /*Modified by Nibedita - for adding last_updated_date field in Product JSON document while import - Story 114 -Start*/
-           /* DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-            Date date = new Date();
-            String updated_date = dateFormat.format(date);*/
-            product.setLast_updated_date(Dockyard.getSysDate("yyyyMMdd"));
-            /*Modified by Nibedita - for adding last_updated_date field in Product JSON document while import - Story 114 -End*/
-            productRepository.insertProduct(product,new Listener<Void, Exception>() {
-                @Override
-                public void onComplete(Void aVoid) {
-                }
-                @Override
-                public void onException(Exception e) {
-                }
-            });
+            curItem = productInfoMap.get("ITEM").split("-")[0];
+            if(Dockyard.isSpaceOrNull(prevItem) && !Dockyard.isSpaceOrNull(curItem))
+            {
+                isNewProduct = true;
+            }
+            else if(prevItem != null && !curItem.equals(prevItem)) {
+                insertData(product, mapTpnbTpnc);
+                mapTpnbTpnc.clear();
+                isNewProduct = true;
+            }
+            product = productMapper.mapPriceZonePrice(productInfoMap,isNewProduct);
+            product.setLast_updated_date(sysdate);
+            mapTpnbTpnc.put(productInfoMap.get("ITEM"),productInfoMap.get("TPNC"));
+            prevItem = curItem;
+            isNewProduct = false;
         }
+        if(!Dockyard.isSpaceOrNull(mapTpnbTpnc) && mapTpnbTpnc.size()!=0) {
+            insertData(product, mapTpnbTpnc);
+            mapTpnbTpnc.clear();
+        }
+
     }
 
+    private void insertData(Product product,Map mapTpnbTpnc)
+    {
+        productRepository.insertProduct(product,new Listener<Void, Exception>() {
+            @Override
+            public void onComplete(Void aVoid) {
+            }
+            @Override
+            public void onException(Exception e) {
+            }
+        });
+        for(Object set :mapTpnbTpnc.keySet()){
+            String ITEM = set.toString();
+            productRepository.mapTPNC_TPNB(mapTpnbTpnc.get(ITEM).toString(),ITEM);
+        }
+
+    }
+    /*PS-238 Modified By Nibedita - Code has been changed in order to insert the product once for all ,after building for all available zone and variants - End*/
     private void writePromoZonePrices() throws IOException {
         Map<String, String> productInfoMap;
         final ProductMapper productMapper = new ProductMapper(productRepository);
