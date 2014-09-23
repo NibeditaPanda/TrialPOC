@@ -159,16 +159,9 @@ public class RPMWriterTest {
 
         ProductVariant expectedProductVariant = createProductVariant(tpnc, 2, "2.4", null);
        final Product expectedProduct = createProduct(itemNumber, expectedProductVariant);
-
-        inOrder.verify(productRepository).insertProduct(argThat(new CapturingMatcher<Product>() {
-            @Override
-            public boolean matches(Object o) {
-                Product prod = (Product) o;
-                return new RPMComparator().compare(prod,expectedProduct);
-            }
-        }),any(Listener.class));
-
+        /*PS-238 Modified By Nibedita - to resolve errors after code modification - Start*/
         expectedProductVariant.addSaleInfo(new SaleInfo(4, "4.4"));
+        /*PS-238 Modified By Nibedita - to resolve errors after code modification - End*/
         inOrder.verify(productRepository).insertProduct(argThat(new CapturingMatcher<Product>() {
             @Override
             public boolean matches(Object o) {
@@ -188,7 +181,7 @@ public class RPMWriterTest {
         mockAsyncProductInsert();
 
         when(rpmPriceReader.getNext()).thenReturn(productInfoMap(tpnb, tpnc, 2, "2.4"))
-                .thenReturn(productInfoMap(itemNumber2,tpnc, 3, "3.0"))
+                .thenReturn(productInfoMap(itemNumber2,tpnc2, 3, "3.0"))
                 .thenReturn(null);
 
         Product product = createProductWithVariant(tpnb, tpnc);
@@ -198,19 +191,11 @@ public class RPMWriterTest {
         this.rpmWriter.write();
 
         InOrder inOrder = inOrder(productRepository);
-
       final  Product expectedProduct = createProductWithVariant(tpnb, tpnc);
-        inOrder.verify(productRepository).insertProduct(argThat(new CapturingMatcher<Product>() {
-            @Override
-            public boolean matches(Object o) {
-                Product prod = (Product) o;
-                return new RPMComparator().compare(prod,expectedProduct);
-            }
-        }),any(Listener.class));
-        /*Added by Nitisha and Surya for PS-112 Junits corrections- Start */
-        ProductVariant expectedProductVariant2 = createProductVariant(tpnc, 3, "3.0", null);
-       /*Added by Nitisha and Surya for PS-112 Junits corrections- End */
-        expectedProduct.addProductVariant(expectedProductVariant2);
+        /*PS-238 Modified By Nibedita - to resolve errors after code modification - Start*/
+      ProductVariant expectedProductVariant2 = createProductVariant(tpnc2, 3, "3.0", null);
+      expectedProduct.addProductVariant(expectedProductVariant2);
+        /*PS-238 Modified By Nibedita - to resolve errors after code modification - End*/
         inOrder.verify(productRepository).insertProduct(argThat(new CapturingMatcher<Product>() {
             @Override
             public boolean matches(Object o) {
