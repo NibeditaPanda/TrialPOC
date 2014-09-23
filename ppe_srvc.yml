@@ -1,0 +1,33 @@
+db.bucket.name: PriceService
+db.bucket.password: tesco
+
+couchbase.nodes:
+  - http://ukirs031.global.tesco.org:8091/pools
+  - http://ukirs032.global.tesco.org:8091/pools
+  - http://ukirs033.global.tesco.org:8091/pools
+  - http://ukirs034.global.tesco.org:8091/pools
+
+couchbase.bucket: PriceService
+couchbase.username: "PriceService"
+couchbase.password: "tesco"
+
+dummyCouchbaseMode: true
+
+hostedGraphite:
+  hostname: carbon.hostedgraphite.com
+  port: 2003
+  apikey: 1d226f2e-fcd0-4eba-8c63-89e11b1ba2d9
+  period: 5
+http:
+  port: 8081
+  adminPort: 8082
+logging:
+  level: INFO
+  file:
+    enabled: true
+    #threshold should be commented/uncommented to enable the logging into log file based on severity required
+    #threshold: INFO
+    #threshold: WARN
+    threshold: ERROR
+    currentLogFilename: /appl/prcsrvce/log/price-service.log
+    archivedLogFilenamePattern: /appl/prcsrvce/log/price-service-%d.log.gz
