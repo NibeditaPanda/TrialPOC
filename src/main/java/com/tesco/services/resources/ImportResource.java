@@ -5,6 +5,7 @@ import com.tesco.couchbase.AsyncCouchbaseWrapper;
 import com.tesco.couchbase.CouchbaseWrapper;
 import com.tesco.services.Configuration;
 import com.tesco.services.adapters.core.ImportJob;
+import com.tesco.services.exceptions.ImportInProgressException;
 import com.tesco.services.repositories.CouchbaseConnectionManager;
 import com.tesco.services.repositories.ProductRepository;
 import com.yammer.metrics.annotation.ExceptionMetered;
@@ -14,12 +15,11 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import java.util.concurrent.Semaphore;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.ok;
@@ -31,6 +31,8 @@ import static javax.ws.rs.core.Response.ok;
 public class ImportResource {
     /*Added by Sushil - PS-83 added logger to log exceptions -Start*/
     private Logger logger = LoggerFactory.getLogger(getClass().getName());
+    /*Added by Salman - PS-242 added semaphore -Start*/
+    public static Semaphore importSemaphore = new Semaphore(1);
 
     private Configuration configuration;
     private CouchbaseConnectionManager couchbaseConnectionManager;
@@ -53,7 +55,14 @@ public class ImportResource {
     @Timed(name = "postImport-Timer", group = "PriceServices")
     @ExceptionMetered(name = "postImport-Failures", group = "PriceServices")
     public Response importData() {
+        /** Added by Salman - PS-242 added new condition to prevent importing data when one
+         import is already in progress **/
+        if (!importSemaphore.tryAcquire()) {
+            logger.info("Import already running");
+            throw new ImportInProgressException();
+        }
         try {
+            ImportJob.errorString=null;
             final ImportJob importJob = new ImportJob(configuration.getRPMStoreDataPath(),
                     configuration.getSonettoPromotionsXMLDataPath(),
                     configuration.getSonettoPromotionXSDDataPath(),
@@ -73,5 +82,21 @@ public class ImportResource {
         }
         /*Added by Sushil - PS-83 added logger to log exceptions -End*/
         return ok("{\"message\":\"Import Started.\"}").build();
+    }
+
+    /** Added by Salman - PS-242 added new GET call to check if import is completed or errored out */
+    @GET
+    @Path("/importInProgress")
+    public Response isImportInProgress() {
+        String val = importSemaphore.availablePermits() >= 1 ? "false" : "true";
+
+        if(importSemaphore.availablePermits() <1){
+            return Response.ok("{\"import\":\"progress\"}").build();
+        }else if(ImportJob.errorString!=null){
+            System.out.println(ImportJob.errorString);
+            return Response.ok(String.format("{\"import\":\"aborted\",\n \"error\":\"%s\"}",ImportJob.errorString)).build();
+        }else{
+            return Response.ok("{\"import\":\"completed\"}").build();
+        }
     }
 }

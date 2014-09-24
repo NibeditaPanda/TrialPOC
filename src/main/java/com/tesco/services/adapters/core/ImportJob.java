@@ -11,6 +11,7 @@ import com.tesco.services.adapters.rpm.writers.CSVHeaders;
 import com.tesco.services.adapters.rpm.writers.RPMWriter;
 import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
 import com.tesco.services.repositories.*;
+import com.tesco.services.resources.ImportResource;
 import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 import org.xml.sax.SAXException;
@@ -39,6 +40,8 @@ public class ImportJob implements Runnable {
 
     private String sonettoPromotionsXMLFilePath;
     private String sonettoShelfImageUrl;
+    /** Added by Salman - PS-242 added static error string for import error handling */
+    public static String errorString=null ;
 
     public  ImportJob(String rpmStoreZoneCsvFilePath,
                       String sonettoPromotionsXMLFilePath,
@@ -85,14 +88,20 @@ public class ImportJob implements Runnable {
     public void run() {
         try {
             logger.info("Firing up imports...");
-
             fetchAndSavePriceDetails();
-
             logger.info("Successfully imported data for " + new Date());
 
+/** Added by Salman - PS-242 Added finally block and exception to handle error for import */
+        } catch(ArrayIndexOutOfBoundsException exception){
+            errorString="Array index out of bound Exception";
+            logger.error("Error importing data", exception);
+
         } catch (Exception exception) {
+            errorString=exception.getMessage();
             logger.error("Error importing data", exception);
             // TODO: Do error handling / recovery. As per previous implementation using Mongo, the files were deleted.
+        }finally{
+            ImportResource.importSemaphore.release();
         }
     }
 
