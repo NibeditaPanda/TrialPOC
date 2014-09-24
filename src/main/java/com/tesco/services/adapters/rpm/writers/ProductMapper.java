@@ -13,8 +13,6 @@ import java.util.Map;
 
 public class ProductMapper {
     private ProductRepository productRepository;
-    private AsyncReadWriteProductRepository asyncReadWriteProductRepository;
-    private Logger logger = LoggerFactory.getLogger("RPM Import");
     private  Product product;
 
     public ProductMapper(ProductRepository productRepository) {
@@ -65,7 +63,6 @@ public class ProductMapper {
 
 
   private Product mapToProductForPromoZone(Map<String, String> headerToValueMap, String zoneIdHeader, String priceHeader) {
-        //priceExtractDataList.clear();
         String itemHeader = CSVHeaders.Price.ITEM;
         String item = headerToValueMap.get(itemHeader);
         String tpncHeader = CSVHeaders.Price.TPNC;
@@ -86,7 +83,6 @@ public Product mapPromotion(Map<String, String> promotionInfoMap) {
         String tpncHeader = CSVHeaders.PromoExtract.TPNC;
         String tpnc = promotionInfoMap.get(tpncHeader);
         Product product = getProduct(item.split("-")[0]);
-        //Product product = getProductIdentified(tpnc.split("-")[0]);
 
         ProductVariant productVariant = getProductVariant(product, tpnc);
 
@@ -110,7 +106,7 @@ final int zoneId = Integer.parseInt(promotionInfoMap.get(CSVHeaders.PromoExtract
         productVariant.addSaleInfo(saleInfo);
         }
 /*Modified by Nibedita - to process the promotion construct for the product if the data is available in RPM and not in promo zone extract - PS-116 - End*/
-        else if (saleInfo != null && saleInfo.getPromotions().size()==0)
+        else if (saleInfo != null && saleInfo.getPromotions().isEmpty())
         {
         Promotion promotion = new Promotion();
         promotion.setOfferId(promotionInfoMap.get(CSVHeaders.PromoExtract.OFFER_ID));
@@ -164,30 +160,6 @@ final int zoneId = Integer.parseInt(promotionDescInfoMap.get(CSVHeaders.PromoDes
 
 private Product getProduct(String tpnb) {
         return productRepository.getByTPNB(tpnb).or(new Product(tpnb));
-        }
-
-private Product getProductIdentified(String tpnb) {
-        Product productToBeInserted;
-        productRepository.getProductByTPNB(tpnb, new Listener<Product, Exception>() {
-@Override
-public void onComplete(Product product) {
-        if(product == null){
-        //Use Phaser or any future methods that is required
-        }
-        else{
-        }
-        }
-@Override
-public void onException(Exception e) {
-        }
-        }) ;
-        if(productRepository.getProductIdentified()==null){
-        productToBeInserted = new Product(tpnb);
-        }
-        else{
-        productToBeInserted = productRepository.getProductIdentified();
-        }
-        return productToBeInserted;
         }
 
 private ProductVariant getProductVariant(Product product, String tpnc) {

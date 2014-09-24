@@ -47,7 +47,7 @@ public StoreRepository(CouchbaseWrapper couchbaseWrapper,AsyncCouchbaseWrapper a
         try {
             couchbaseWrapper.set(getStoreKey(storeId), mapper.writeValueAsString(store));
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logger.error(String.format("JSON Error encountered in StoreRepository.put ->%s", e.getMessage()));
         }
 
     }
