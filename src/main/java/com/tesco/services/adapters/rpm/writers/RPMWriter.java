@@ -1,13 +1,11 @@
 package com.tesco.services.adapters.rpm.writers;
 
-import com.tesco.couchbase.AsyncCouchbaseWrapper;
 import com.tesco.couchbase.listeners.Listener;
 import com.tesco.services.adapters.core.exceptions.ColumnNotFoundException;
 import com.tesco.services.adapters.rpm.readers.PriceServiceCSVReader;
 import com.tesco.services.adapters.sonetto.SonettoPromotionXMLReader;
 import com.tesco.services.core.Product;
 import com.tesco.services.core.Store;
-import com.tesco.services.repositories.AsyncReadWriteProductRepository;
 import com.tesco.services.repositories.ProductRepository;
 import com.tesco.services.repositories.PromotionRepository;
 import com.tesco.services.repositories.StoreRepository;
@@ -22,19 +20,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-
 public class RPMWriter {
-    //TODO: More logging statements
     private Logger logger = LoggerFactory.getLogger("RPM Import");
 
     private String sonettoPromotionsXMLFilePath;
 
     private ProductRepository productRepository;
-    private AsyncReadWriteProductRepository asyncReadWriteProductRepository;
     private StoreRepository storeRepository;
     private PriceServiceCSVReader rpmPriceReader;
     private PriceServiceCSVReader rpmPromoPriceReader;
@@ -69,8 +60,7 @@ public class RPMWriter {
         this.rpmPromotionDescReader = rpmPromotionDescReader;
     }
     public void write() throws IOException, ParserConfigurationException, JAXBException, ColumnNotFoundException, SAXException {
-        // Using Couchbase
-        // ===============
+
         logger.info("Importing price zone prices into Couchbase");
         writePriceZonePrices();
         writePromoZonePrices();
@@ -121,7 +111,7 @@ public class RPMWriter {
             prevItem = curItem;
             isNewProduct = false;
         }
-        if(!Dockyard.isSpaceOrNull(mapTpnbTpnc) && mapTpnbTpnc.size()!=0) {
+        if(!Dockyard.isSpaceOrNull(mapTpnbTpnc) && !mapTpnbTpnc.isEmpty()) {
             insertData(product, mapTpnbTpnc);
             mapTpnbTpnc.clear();
         }
