@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Downloads files from the fileshare server and copy it into dev server
+# Downloads files from the fileshare server and copy it into dev server.
 set -o pipefail
 . ./config.sh
 
