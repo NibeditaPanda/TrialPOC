@@ -61,7 +61,7 @@ public class ProductRepository {
             try {
                 product = mapper.readValue(productJson,Product.class);
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("Caught exception in ProductRepository.getByTPNB -> " + e.getMessage());
             }
         }
         return (product != null) ? Optional.of(product) : Optional.<Product>absent();
@@ -76,7 +76,7 @@ public class ProductRepository {
             String productJson = mapper.writeValueAsString(product);
             couchbaseWrapper.set(getProductKey(product.getTPNB()), productJson);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logger.error("Caught exception in ProductRepository.put -> " + e.getMessage());
         }
     }
 
@@ -157,7 +157,7 @@ public class ProductRepository {
                 });
             }
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logger.error("Caught exception in ProductRepository.mapTPNC_TPNB -> " + e.getMessage());
         }
     }
     public void insertProduct(String key, String value,final Listener<Void, Exception> listener) {
