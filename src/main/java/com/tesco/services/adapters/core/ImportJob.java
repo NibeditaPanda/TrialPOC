@@ -40,8 +40,17 @@ public class ImportJob implements Runnable {
 
     private String sonettoPromotionsXMLFilePath;
     private String sonettoShelfImageUrl;
-    /** Added by Salman - PS-242 added static error string for import error handling */
-    public static String errorString=null ;
+    private static String errorString=null ;
+
+
+    public static String getErrorString() {
+        return errorString;
+    }
+
+    public static void setErrorString(String errorString) {
+        ImportJob.errorString = errorString;
+    }
+
 
     public  ImportJob(String rpmStoreZoneCsvFilePath,
                       String sonettoPromotionsXMLFilePath,
@@ -93,15 +102,15 @@ public class ImportJob implements Runnable {
 
 /** Added by Salman - PS-242 Added finally block and exception to handle error for import */
         } catch(ArrayIndexOutOfBoundsException exception){
-            errorString="Array index out of bound Exception";
+            setErrorString("Array index out of bound Exception");
             logger.error("Error importing data", exception);
 
         } catch (Exception exception) {
-            errorString=exception.getMessage();
+            setErrorString(exception.getMessage());
             logger.error("Error importing data", exception);
             // TODO: Do error handling / recovery. As per previous implementation using Mongo, the files were deleted.
         }finally{
-            ImportResource.importSemaphore.release();
+            ImportResource.getImportSemaphore().release();
         }
     }
 
@@ -112,12 +121,6 @@ public class ImportJob implements Runnable {
         UUIDGenerator uuidGenerator = new UUIDGenerator();
         ObjectMapper mapper = new ObjectMapper();
 
-       /* final CouchbaseClient couchbaseClient = couchbaseConnectionManager.getCouchbaseClient();
-        PromotionRepository promotionRepository = new PromotionRepository(uuidGenerator, couchbaseClient);
-        ProductRepository productRepository = new ProductRepository(couchbaseClient);
-         StoreRepository storeRepository = new StoreRepository(couchbaseClient);*/
-        //AsyncReadWriteProductRepository asyncReadWriteProductRepository = new AsyncReadWriteProductRepository(couchbaseClient);
-        //final CouchbaseClient couchbaseClient = couchbaseConnectionManager.getCouchbaseClient();
 
         PromotionRepository promotionRepository = new PromotionRepository(uuidGenerator, couchbaseWrapper);
         ProductRepository productRepository = new ProductRepository(couchbaseWrapper,asyncCouchbaseWrapper,mapper);

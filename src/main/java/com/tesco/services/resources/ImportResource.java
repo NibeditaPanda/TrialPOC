@@ -32,12 +32,17 @@ public class ImportResource {
     /*Added by Sushil - PS-83 added logger to log exceptions -Start*/
     private Logger logger = LoggerFactory.getLogger(getClass().getName());
     /*Added by Salman - PS-242 added semaphore -Start*/
-    public static Semaphore importSemaphore = new Semaphore(1);
+    private static Semaphore importSemaphore = new Semaphore(1);
 
     private Configuration configuration;
     private CouchbaseConnectionManager couchbaseConnectionManager;
     private CouchbaseWrapper couchbaseWrapper;
     private AsyncCouchbaseWrapper asyncCouchbaseWrapper;
+
+    public static Semaphore getImportSemaphore() {
+        return importSemaphore;
+    }
+
 
     public ImportResource(Configuration configuration, CouchbaseConnectionManager couchbaseConnectionManager) {
         this.configuration = configuration;
@@ -62,7 +67,7 @@ public class ImportResource {
             throw new ImportInProgressException();
         }
         try {
-            ImportJob.errorString=null;
+            ImportJob.setErrorString(null);
             final ImportJob importJob = new ImportJob(configuration.getRPMStoreDataPath(),
                     configuration.getSonettoPromotionsXMLDataPath(),
                     configuration.getSonettoPromotionXSDDataPath(),
@@ -88,13 +93,12 @@ public class ImportResource {
     @GET
     @Path("/importInProgress")
     public Response isImportInProgress() {
-        String val = importSemaphore.availablePermits() >= 1 ? "false" : "true";
 
         if(importSemaphore.availablePermits() <1){
             return Response.ok("{\"import\":\"progress\"}").build();
-        }else if(ImportJob.errorString!=null){
-            System.out.println(ImportJob.errorString);
-            return Response.ok(String.format("{\"import\":\"aborted\",\n \"error\":\"%s\"}",ImportJob.errorString)).build();
+        }else if(ImportJob.getErrorString()!=null){
+
+            return Response.ok(String.format("{\"import\":\"aborted\",\n \"error\":\"%s\"}",ImportJob.getErrorString())).build();
         }else{
             return Response.ok("{\"import\":\"completed\"}").build();
         }
