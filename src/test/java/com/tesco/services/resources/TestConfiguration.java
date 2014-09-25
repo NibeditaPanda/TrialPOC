@@ -6,6 +6,7 @@ import com.fasterxml.jackson.dataformat.yaml.snakeyaml.Yaml;
 import com.tesco.services.Configuration;
 import com.tesco.services.HostedGraphiteConfiguration;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
@@ -35,6 +36,8 @@ public class TestConfiguration extends Configuration {
     }
 
     public static TestConfiguration load() {
+        Logger logger = LoggerFactory.getLogger("TestConfiguration");
+
         ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
         try {
             String config;
@@ -46,7 +49,8 @@ public class TestConfiguration extends Configuration {
             }
             return objectMapper.readValue(new File(config), TestConfiguration.class);
         } catch (IOException e) {
-            e.printStackTrace();
+            //Modified by Pallavi as part of code refactor
+            logger.info("Error in TestConfiguration", e.getMessage());
             return null;
         }
     }

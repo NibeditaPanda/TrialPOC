@@ -12,7 +12,8 @@ public class DockyardTest {
     {
         String val = " ";
         boolean flag;
-       if(val.equals(null) || val.equals("") || val.equals(" "))
+        //Modified by Pallavi as part of code refactor
+       if(val==null || val=="" || val==" ")
         flag = true;
        else
         flag = false;
