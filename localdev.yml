@@ -23,7 +23,7 @@ couchbase.admin.password: "tesco123"
 
 dummyCouchbaseMode: true
 
-#For testing purpose
+#For testing
 hostedGraphite:
   hostname: carbon.hostedgraphite.com
   port: 2003
