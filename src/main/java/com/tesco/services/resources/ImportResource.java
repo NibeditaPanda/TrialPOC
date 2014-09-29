@@ -7,7 +7,6 @@ import com.tesco.services.Configuration;
 import com.tesco.services.adapters.core.ImportJob;
 import com.tesco.services.exceptions.ImportInProgressException;
 import com.tesco.services.repositories.CouchbaseConnectionManager;
-import com.tesco.services.repositories.ProductRepository;
 import com.yammer.metrics.annotation.ExceptionMetered;
 import com.yammer.metrics.annotation.Metered;
 import com.yammer.metrics.annotation.Timed;
@@ -18,10 +17,8 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import java.util.concurrent.Semaphore;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.ok;
 
 @Path("/admin")

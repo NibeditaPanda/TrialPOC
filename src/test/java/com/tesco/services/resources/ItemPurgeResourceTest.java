@@ -18,19 +18,15 @@ import com.tesco.services.Configuration;
 import com.tesco.services.repositories.CouchbaseConnectionManager;
 import com.yammer.dropwizard.testing.ResourceTest;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.io.IOException;
 import java.util.HashMap;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by QT00 on 07/08/2014.

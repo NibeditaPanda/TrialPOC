@@ -1,7 +1,7 @@
 package com.tesco.services.resources;
 
 import com.couchbase.client.CouchbaseClient;
-import com.couchbase.client.protocol.views.*;
+import com.couchbase.client.protocol.views.InvalidViewException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tesco.couchbase.AsyncCouchbaseWrapper;
 import com.tesco.couchbase.CouchbaseWrapper;
@@ -11,7 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;

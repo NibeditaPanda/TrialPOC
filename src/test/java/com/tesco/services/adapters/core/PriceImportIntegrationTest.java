@@ -10,7 +10,6 @@ import com.tesco.services.core.Product;
 import com.tesco.services.core.ProductVariant;
 import com.tesco.services.core.Promotion;
 import com.tesco.services.core.SaleInfo;
-import com.tesco.services.repositories.CouchbaseConnectionManager;
 import com.tesco.services.repositories.ProductRepository;
 import com.tesco.services.resources.TestConfiguration;
 import com.tesco.services.utility.Dockyard;

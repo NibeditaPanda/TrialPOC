@@ -7,9 +7,7 @@ import org.junit.Test;
 import java.util.HashMap;
 
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class PriceServiceCSVReaderImplTest {
     final String itemHeader = "ITEM";

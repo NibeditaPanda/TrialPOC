@@ -1,13 +1,11 @@
 package com.tesco.services.adapters.core;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tesco.couchbase.AsyncCouchbaseWrapper;
 import com.tesco.couchbase.CouchbaseWrapper;
 import com.tesco.couchbase.testutils.AsyncCouchbaseWrapperStub;
 import com.tesco.couchbase.testutils.BucketTool;
 import com.tesco.couchbase.testutils.CouchbaseTestManager;
 import com.tesco.couchbase.testutils.CouchbaseWrapperStub;
-import com.tesco.services.IntegrationTest;
 import com.tesco.services.adapters.core.exceptions.ColumnNotFoundException;
 import com.tesco.services.repositories.CouchbaseConnectionManager;
 import com.tesco.services.resources.TestConfiguration;
@@ -22,13 +20,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 
-import static com.tesco.services.adapters.core.TestFiles.RPM_PRICE_ZONE_PRICE_CSV_FILE_PATH;
-import static com.tesco.services.adapters.core.TestFiles.RPM_PROMO_DESC_EXTRACT_CSV_FILE_PATH;
-import static com.tesco.services.adapters.core.TestFiles.RPM_PROMO_EXTRACT_CSV_FILE_PATH;
-import static com.tesco.services.adapters.core.TestFiles.RPM_PROMO_ZONE_PRICE_CSV_FILE_PATH;
-import static com.tesco.services.adapters.core.TestFiles.RPM_STORE_ZONE_CSV_FILE_PATH;
-import static com.tesco.services.adapters.core.TestFiles.SONETTO_PROMOTIONS_XML_FILE_PATH;
-import static com.tesco.services.adapters.core.TestFiles.SONETTO_PROMOTIONS_XSD_FILE_PATH;
+import static com.tesco.services.adapters.core.TestFiles.*;
 import static org.mockito.Mockito.mock;
 
 public abstract class ImportJobIntegrationTestBase /*extends IntegrationTest*/ {

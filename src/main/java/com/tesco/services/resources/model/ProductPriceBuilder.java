@@ -1,18 +1,10 @@
 package com.tesco.services.resources.model;
 
 import com.google.common.base.Optional;
-import com.tesco.services.core.Product;
-import com.tesco.services.core.ProductPriceVisitor;
-import com.tesco.services.core.ProductVariant;
-import com.tesco.services.core.Promotion;
-import com.tesco.services.core.SaleInfo;
+import com.tesco.services.core.*;
 import com.tesco.services.utility.Dockyard;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ProductPriceBuilder implements ProductPriceVisitor {
     public static final String VARIANTS = "variants";

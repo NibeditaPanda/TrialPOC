@@ -12,7 +12,6 @@ import com.tesco.couchbase.AsyncCouchbaseWrapper;
 import com.tesco.couchbase.CouchbaseWrapper;
 import com.tesco.couchbase.testutils.*;
 import com.tesco.services.Configuration;
-import com.tesco.services.adapters.core.exceptions.ColumnNotFoundException;
 import com.tesco.services.core.Product;
 import com.tesco.services.core.ProductVariant;
 import com.tesco.services.core.Promotion;
@@ -29,10 +28,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.DateFormat;
@@ -44,7 +40,6 @@ import java.util.Map;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 

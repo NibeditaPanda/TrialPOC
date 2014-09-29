@@ -1,14 +1,11 @@
 package com.tesco.services.adapters.rpm.writers;
 
-import com.tesco.couchbase.listeners.Listener;
-import com.tesco.services.core.*;
-import com.tesco.services.repositories.AsyncReadWriteProductRepository;
+import com.tesco.services.core.Product;
+import com.tesco.services.core.ProductVariant;
+import com.tesco.services.core.Promotion;
+import com.tesco.services.core.SaleInfo;
 import com.tesco.services.repositories.ProductRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class ProductMapper {

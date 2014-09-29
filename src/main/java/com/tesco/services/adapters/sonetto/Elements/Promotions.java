@@ -7,9 +7,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
-import static ch.lambdaj.Lambda.filter;
-import static ch.lambdaj.Lambda.having;
-import static ch.lambdaj.Lambda.on;
+import static ch.lambdaj.Lambda.*;
 import static com.googlecode.totallylazy.Sequences.sequence;
 import static org.hamcrest.CoreMatchers.is;
 

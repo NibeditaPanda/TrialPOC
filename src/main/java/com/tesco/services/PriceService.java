@@ -12,7 +12,6 @@ import com.tesco.services.adapters.rpm.writers.ProductMapper;
 import com.tesco.services.adapters.rpm.writers.RPMWriter;
 import com.tesco.services.adapters.rpm.writers.StoreMapper;
 import com.tesco.services.healthChecks.CouchbaseHealthCheck;
-import com.tesco.services.healthChecks.ServiceHealthCheck;
 import com.tesco.services.mappers.InvalidUrlMapper;
 import com.tesco.services.mappers.ServerErrorMapper;
 import com.tesco.services.metrics.ResourceMetricsListener;
@@ -40,10 +39,11 @@ import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.PicoContainer;
 import org.picocontainer.injectors.FactoryInjector;
 
-import java.io.IOException;
-import java.lang.management.MemoryUsage;
 import java.lang.reflect.Type;
-import java.net.*;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -66,24 +66,12 @@ public class PriceService extends Service<Configuration> {
         MutablePicoContainer container = configureDependencies(configuration);
 
         final CouchbaseConnectionManager couchbaseConnectionManager = new CouchbaseConnectionManager(configuration);
-        /*
-        environment.addResource(new PriceResource(couchbaseConnectionManager));
-        final PromotionRepository promotionRepository = new PromotionRepository(new UUIDGenerator(), null);
-        environment.addResource(new PromotionResource(promotionRepository));
-        environment.addResource(new VersionResource());
-        environment.addResource(new ImportResource(configuration, couchbaseConnectionManager));*/
 
         registerResources(environment, container);
         environment.addProvider(new InvalidUrlMapper());
         environment.addProvider(new ServerErrorMapper());
 
-        /**
-         *   @Toy commented out Graphite because tesco boxes don't have access to the Internet at the moment
-         */
-//        configureMetrics(configuration);
-
-       // environment.addHealthCheck(new ServiceHealthCheck(couchbaseConnectionManager));
-          environment.addHealthCheck(new CouchbaseHealthCheck(container.getComponent(AsyncCouchbaseWrapper.class)));
+        environment.addHealthCheck(new CouchbaseHealthCheck(container.getComponent(AsyncCouchbaseWrapper.class)));
 
         configureSwagger(environment, configuration);
     }
@@ -102,9 +90,11 @@ public class PriceService extends Service<Configuration> {
         resourceList.add(PromotionResource.class);
         resourceList.add(ItemPurgeResource.class);
 
-        // Lets actually add the resources. We have to do it in two places.
-        // 1 is in the environment to let jersey know about them
-        // 2 is in pico to let pico know it has to resolve dependencies for them
+        /**
+         * Lets actually add the resources. We have to do it in two places.
+         * 1 is in the environment to let jersey know about them
+         * 2 is in pico to let pico know it has to resolve dependencies for them
+         */
         for (Class resource : resourceList) {
             if(resourceAdaptors.containsKey(resource)){
                 container.addAdapter(resourceAdaptors.get(resource));
@@ -114,8 +104,6 @@ public class PriceService extends Service<Configuration> {
             environment.addResource(resource);
         }
 
-        // And now for the dangerous singletons ;)
-       // environment.addResource(new MemoryUsage());
         environment.addResource(new VersionResource());
 
         // Add Pico as a provider for dependencies to the environment
@@ -147,8 +135,6 @@ public class PriceService extends Service<Configuration> {
         return new FactoryInjector<PromotionResource>() {
             @Override
             public PromotionResource getComponentInstance(PicoContainer picoContainer, Type type) {
-                //CouchbaseWrapper couchbaseWrapper = picoContainer.getComponent(CouchbaseWrapper.class);
-                //ObjectMapper mapper = picoContainer.getComponent(ObjectMapper.class);
                 PromotionRepository promotionRepository = picoContainer.getComponent(PromotionRepository.class);
                 return new PromotionResource(promotionRepository);
             }
@@ -184,7 +170,6 @@ public class PriceService extends Service<Configuration> {
         CouchbaseResource couchbaseResource = new ConcreteCouchbaseResource(couchbaseNodes, couchbaseBucket, couchbaseUsername, couchbasePassword);
         container.addComponent(couchbaseResource.getCouchbaseWrapper());
         container.addComponent(couchbaseResource.getAsyncCouchbaseWrapper());
-       // container.addComponent(new ProductKeyGenerator());
 
         // Mapper
         ObjectMapper objectMapper = new ObjectMapper();
@@ -198,17 +183,6 @@ public class PriceService extends Service<Configuration> {
 
         //Async Repos
         container.addComponent(AsyncReadWriteProductRepository.class);
-       // container.addComponent(AsyncReadWriteStoreRepository.class);
-
-        //container.addComponent(AsyncIndexRepository.class);
-        //container.addComponent(AsyncCommercialHierarchyRepository.class);
-        //container.addComponent(ProductViewRepository.class);
-
-        // Sonetto Adapter yet to be implemented
-        //container.addComponent(SonettoProductsUpdater.class);
-        //container.addComponent(SonettoProductsExtraInfoUpdater.class);
-        //container.addComponent(SonettoController.class);
-        //container.addComponent(SonettoProductExtraInfoTransformer.class);
 
         // RPM Adapter
         container.addComponent(ImportJob.class);

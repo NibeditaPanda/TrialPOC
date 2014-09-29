@@ -7,7 +7,6 @@ import com.tesco.couchbase.CouchbaseWrapper;
 import com.tesco.couchbase.testutils.*;
 import com.tesco.services.adapters.core.exceptions.ColumnNotFoundException;
 import com.tesco.services.core.Store;
-import com.tesco.services.repositories.CouchbaseConnectionManager;
 import com.tesco.services.repositories.StoreRepository;
 import com.tesco.services.resources.TestConfiguration;
 import org.apache.commons.configuration.ConfigurationException;

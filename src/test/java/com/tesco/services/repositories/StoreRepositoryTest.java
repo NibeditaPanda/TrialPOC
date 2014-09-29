@@ -5,10 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 import com.tesco.couchbase.AsyncCouchbaseWrapper;
 import com.tesco.couchbase.CouchbaseWrapper;
-import com.tesco.couchbase.listeners.SetListener;
 import com.tesco.couchbase.testutils.*;
 import com.tesco.services.Configuration;
-import com.tesco.services.IntegrationTest;
 import com.tesco.services.adapters.rpm.writers.CSVHeaders;
 import com.tesco.services.adapters.rpm.writers.StoreMapper;
 import com.tesco.services.core.Store;
@@ -21,16 +19,13 @@ import org.junit.Test;
 import org.junit.rules.TestName;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
@@ -43,7 +38,6 @@ public class StoreRepositoryTest/* extends IntegrationTest*/ {
     private Store store;
     private StoreRepository storeRepository;
 
-
     private CouchbaseTestManager couchbaseTestManager;
     @Mock
     private CouchbaseWrapper couchbaseWrapper;
@@ -55,7 +49,7 @@ public class StoreRepositoryTest/* extends IntegrationTest*/ {
 
     @Before
     public void setUp() throws Exception {
-       // String bucketName = "PriceService";///should be name.getMethodName();
+
         Configuration testConfiguration = TestConfiguration.load();
 
         if (testConfiguration.isDummyCouchbaseMode()){
@@ -118,8 +112,7 @@ public class StoreRepositoryTest/* extends IntegrationTest*/ {
         try {
              assertThat(storeRepository.getStoreIdentified().equals(store));
         } catch (Exception e) {
-           //Modified by Pallavi as part of code refactor
-        logger.info("Error in StoreRepositoryTest",e.getMessage());
+            logger.info("Error in StoreRepositoryTest.getStoreWithStoreIdWithAsyncCouchBaseWrapper-> ",e.getMessage());
         }
 
     }
@@ -134,9 +127,7 @@ public class StoreRepositoryTest/* extends IntegrationTest*/ {
                 System.out.println("Store not Found");
             }
         } catch (Exception e) {
-            //Modified by Pallavi as part of code refactor
-            logger.info("Error in StoreRepositoryTest",e.getMessage());
-
+            logger.info("Error in StoreRepositoryTest.getNullWhenStoreIdNotPresentWithAsyncCouchBaseWrapper-> ",e.getMessage());
         }
 
     }
@@ -149,8 +140,7 @@ public class StoreRepositoryTest/* extends IntegrationTest*/ {
         try {
             listener.getResult();
         } catch (Exception e) {
-            //Modified by Pallavi as part of code refactor
-            logger.info("Error in StoreRepositoryTest",e.getMessage());
+            logger.info("Error in StoreRepositoryTest.setStoreIdsWithAsyncCouchBaseWrapper->",e.getMessage());
         }
 
     }
@@ -164,8 +154,7 @@ public class StoreRepositoryTest/* extends IntegrationTest*/ {
         try {
             listener.getResult();
         } catch (Exception e) {
-            //Modified by Pallavi as part of code refactor
-            logger.info("Error in StoreRepositoryTest",e.getMessage());
+            logger.info("Error in StoreRepositoryTest.storeMapperTestWithAsyncCouchBaseWrapper-> ",e.getMessage());
         }
 
     }

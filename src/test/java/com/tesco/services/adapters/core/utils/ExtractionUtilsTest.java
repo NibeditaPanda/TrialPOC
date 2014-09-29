@@ -11,7 +11,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 public class ExtractionUtilsTest {
     @Test
     public void shouldGetHeaderIndex() throws ColumnNotFoundException {
-        List<String> headers = asList(new String[]{"ITEM", "ZONE_ID"});
+        List<String> headers = asList("ITEM", "ZONE_ID");
         assertThat(ExtractionUtils.getHeaderIndex(headers, "ITEM")).isEqualTo(0);
         assertThat(ExtractionUtils.getHeaderIndex(headers, "ZONE_ID")).isEqualTo(1);
     }

@@ -1,10 +1,8 @@
 package com.tesco.services.core;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wordnik.swagger.annotations.ApiModel;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -13,12 +11,23 @@ import java.util.Map;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
+/**
+ * <p>
+ *     Class to build and maintain the product document. The class works in closely coupled
+ * with ProductRepository and ProductVariant classes.
+ * The value of TPNB is taken as the token and the keyword PRODUCT_ is prefixed to build the
+ * key for the document. E.g., PRODUCT_<TPNB> and the corresponding value is the complete
+ * document which will have all the details of the product.
+ * </p>
+ *
+ * @return Returns an instance of the Product class.
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 public class Product implements PriceVisitable, Serializable {
     @JsonProperty
     private String tpnb;
-    /*Modified by Nibedita - for adding last_updated_date field in Product JSON document while import - Story 114 -Start*/
+
     @JsonProperty
     private String last_updated_date;
 
@@ -29,7 +38,7 @@ public class Product implements PriceVisitable, Serializable {
     public void setLast_updated_date(String last_updated_date) {
         this.last_updated_date = last_updated_date;
     }
-    /*Modified by Nibedita - for adding last_updated_date field in Product JSON document while import - Story 114 -End*/
+
     @JsonProperty
     private Map<String, ProductVariant> tpncToProductVariant = new HashMap<>();
 
@@ -54,12 +63,13 @@ public class Product implements PriceVisitable, Serializable {
         }
 
         Product product = (Product) o;
-    /*Modified by Pallavi as part of sonar start*/
-        if ((!tpnb.equals(product.tpnb)) || (!last_updated_date.equals(product.last_updated_date))
-                ||(!tpncToProductVariant.equals(product.tpncToProductVariant))){
+
+        if ((!tpnb.equals(product.tpnb)) ||
+                (!last_updated_date.equals(product.last_updated_date)) ||
+                (!tpncToProductVariant.equals(product.tpncToProductVariant))){
             return false;
         }
-    /*Modified by Pallavi as part of sonar end*/
+
         return true;
     }
 
@@ -69,7 +79,7 @@ public class Product implements PriceVisitable, Serializable {
         result = 31 * result + tpncToProductVariant.hashCode();
         return result;
     }
-    /*Modified by Nibedita - for adding last_updated_date field in Product JSON document while import - Story 114 -Start*/
+
     @Override
     public String toString() {
         return "Product{" +
@@ -78,7 +88,7 @@ public class Product implements PriceVisitable, Serializable {
                 ", tpncToProductVariant=" + tpncToProductVariant +
                 '}';
     }
-    /*Modified by Nibedita - for adding last_updated_date field in Product JSON document while import - Story 114 -End*/
+
     public ProductVariant getProductVariantByTPNC(String tpnc) {
         return tpncToProductVariant.get(tpnc);
     }
@@ -95,7 +105,7 @@ public class Product implements PriceVisitable, Serializable {
             productVariant.accept(productPriceVisitor);
         }
     }
-    /*Added by salman for PS-114*/
+
     public Map<String,ProductVariant> getTpncToProductVariant() {
         return tpncToProductVariant;
     }

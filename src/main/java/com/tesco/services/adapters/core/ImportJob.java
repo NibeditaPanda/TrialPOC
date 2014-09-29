@@ -1,6 +1,5 @@
 package com.tesco.services.adapters.core;
 
-import com.couchbase.client.CouchbaseClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tesco.couchbase.AsyncCouchbaseWrapper;
 import com.tesco.couchbase.CouchbaseWrapper;
