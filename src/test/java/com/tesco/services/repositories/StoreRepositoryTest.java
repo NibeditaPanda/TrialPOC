@@ -23,6 +23,9 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.HashMap;
 import java.util.Map;
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -32,6 +35,7 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
 public class StoreRepositoryTest/* extends IntegrationTest*/ {
+     Logger logger = LoggerFactory.getLogger("StoreRepositoryTest");
     @Rule
     public TestName name = new TestName();
 
@@ -114,7 +118,8 @@ public class StoreRepositoryTest/* extends IntegrationTest*/ {
         try {
              assertThat(storeRepository.getStoreIdentified().equals(store));
         } catch (Exception e) {
-            e.printStackTrace();
+           //Modified by Pallavi as part of code refactor
+        logger.info("Error in StoreRepositoryTest",e.getMessage());
         }
 
     }
@@ -129,7 +134,9 @@ public class StoreRepositoryTest/* extends IntegrationTest*/ {
                 System.out.println("Store not Found");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            //Modified by Pallavi as part of code refactor
+            logger.info("Error in StoreRepositoryTest",e.getMessage());
+
         }
 
     }
@@ -142,7 +149,8 @@ public class StoreRepositoryTest/* extends IntegrationTest*/ {
         try {
             listener.getResult();
         } catch (Exception e) {
-            e.printStackTrace();
+            //Modified by Pallavi as part of code refactor
+            logger.info("Error in StoreRepositoryTest",e.getMessage());
         }
 
     }
@@ -156,7 +164,8 @@ public class StoreRepositoryTest/* extends IntegrationTest*/ {
         try {
             listener.getResult();
         } catch (Exception e) {
-            e.printStackTrace();
+            //Modified by Pallavi as part of code refactor
+            logger.info("Error in StoreRepositoryTest",e.getMessage());
         }
 
     }

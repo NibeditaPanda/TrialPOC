@@ -66,7 +66,8 @@ public StoreRepository(CouchbaseWrapper couchbaseWrapper,AsyncCouchbaseWrapper a
             try {
                 store = mapper.readValue((String)storeJson,Store.class);
             } catch (IOException e) {
-                e.printStackTrace();
+                //Modified by Pallavi as part of code refactor
+                logger.info("Error in StoreRepository",e.getMessage());
             }
         }
         return (store != null) ? Optional.of(store) : Optional.<Store>absent();

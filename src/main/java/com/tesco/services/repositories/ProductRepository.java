@@ -196,7 +196,8 @@ public class ProductRepository {
                 productvar.addProductVariant(productVariant);
 
             } catch (IOException e) {
-                e.printStackTrace();
+                //Modified by Pallavi as part of code refactor
+                logger.info("Error in ProductRepository",e.getMessage());
             }
         }
         return (productvar != null) ? Optional.of(productvar) : Optional.<Product>absent();
@@ -309,7 +310,8 @@ public class ProductRepository {
             try {
                 product = mapper.readValue(productJson,Product.class);
             } catch (IOException e) {
-                e.printStackTrace();
+                //Modified by Pallavi as part of code refactor
+                logger.info("Error in ProductRepository",e.getMessage());
             }
         }
         return (product != null) ? Optional.of(product) : Optional.<Product>absent();

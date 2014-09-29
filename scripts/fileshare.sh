@@ -1,8 +1,16 @@
 #!/bin/bash
+# Downloads files from the fileshare server and copy it into dev server
+. $PSHOME/profile
 
-# Downloads files from the fileshare server and copy it into dev server.
+RC=$?
+if [[ $RC -ne 0 ]] ; then
+  # Error exit
+  echo "$(date '+%y/%m/%d %T') : Return code: ${RC} : ERROR : $0 failed calling profile script for variable setup"
+  exit 1
+fi
+
 set -o pipefail
-. ./config.sh
+. $PSHOME/usr/local/scripts/config.sh
 
 RC=$?
 if [[ $RC -ne 0 ]] ; then
@@ -48,6 +56,7 @@ fi
 echo "Job $PROG_NAME started by $USER"
 echo "$(date '+%Y-%m-%d %T') : Job $PROG_NAME started by $USER" >> $LOG_FILE
 
+#Assigning values from command line parameters
 SERVER=$1
 DEST=$2
 
