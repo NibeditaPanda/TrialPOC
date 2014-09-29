@@ -1,0 +1,43 @@
+db.bucket.name: PriceServiceTest
+db.bucket.password: tesco
+
+sonetto.shelfUrl : http://ui.tescoassets.com/Groceries/UIAssets/I/Sites/Retail/Superstore/Online/Product/pos/%s.png
+sonetto.promotions.data.dump : src/main/resources/com/tesco/services/adapters/sonetto/PromotionsDataExport.xml
+sonetto.promotions.xsd : templates/Promotions.xsd
+
+rpm.store.data.dump : D:/Extracts/appl/prcsrvce/data/in_reg/STORE_ZONE.csv
+rpm.price.zone.data.dump : D:/Extracts/appl/prcsrvce/data/in_reg/PRICE_ZONE.csv
+rpm.promo.zone.data.dump : D:/Extracts/appl/prcsrvce/data/in_reg/PROM_ZONE.csv
+rpm.promo.extract.data.dump : D:/Extracts/appl/prcsrvce/data/in_reg/PROM_EXTRACT.csv
+rpm.promo.desc.extract.data.dump : D:/Extracts/appl/prcsrvce/data/in_reg/PROM_DESC_EXTRACT_full_dump.csv
+
+couchbase.nodes:
+  - http://localhost:8091/pools
+
+couchbase.bucket: PriceServiceTest
+couchbase.username: "PriceServiceTest"
+couchbase.password: "tesco"
+
+
+couchbase.designdoc.design.name: "dev_test"
+couchbase.designdoc.view.name: "testView"
+couchbase.designdoc.view.pageno: 10
+priceservice.price.last_updated_days: 2
+
+dummyCouchbaseMode: true
+
+
+http:
+  port: 8082
+  adminPort: 8083
+
+logging:
+  level: INFO
+  file:
+    enabled: true
+    #threshold should be commented/uncommented to enable the logging into log file based on severity required
+    threshold: INFO
+    #threshold: WARN
+    #threshold: ERROR
+    currentLogFilename: ./logs/price-service_reg.log
+    archivedLogFilenamePattern: ./logs/price-service_reg-%d.log.gz
