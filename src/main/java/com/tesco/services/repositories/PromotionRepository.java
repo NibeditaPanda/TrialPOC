@@ -22,7 +22,6 @@ public class PromotionRepository {
    }
 
     public List<Promotion> getPromotionsByOfferIdZoneIdAndItemNumber(String offerId, String itemNumber, int zoneId) {
-        //TODO: Get from couchbase here
         return Collections.EMPTY_LIST;
     }
 
@@ -30,10 +29,6 @@ public class PromotionRepository {
         String uniqueKey = uuidGenerator.getUUID();
         promotion.setUniqueKey(uniqueKey);
 
-        //TODO: Store into couchbase here
     }
 
-    public void updatePromotion(String uniqueKey, Promotion promotion) {
-        //TODO: Store into couchbase here
-    }
 }

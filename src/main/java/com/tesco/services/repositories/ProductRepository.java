@@ -196,8 +196,7 @@ public class ProductRepository {
                 productvar.addProductVariant(productVariant);
 
             } catch (IOException e) {
-                //Modified by Pallavi as part of code refactor
-                logger.info("Error in ProductRepository",e.getMessage());
+                logger.info("Error in ProductRepository.getByTPNB->",e.getMessage());
             }
         }
         return (productvar != null) ? Optional.of(productvar) : Optional.<Product>absent();
@@ -220,7 +219,7 @@ public class ProductRepository {
 
     /**
      * This will get view information from couchbase and process those
-     * products which are not update for more than n days
+     * products which are not update for more than n days.
      *
      * @param configuration - Pass configuration values
      * @param couchbaseClient - to get the couch base connection
@@ -241,12 +240,10 @@ public class ProductRepository {
      * @throws Exception - can throw RuntimeException, InvalidViewException
      */
     private void runView(View view, CouchbaseClient couchbaseClient,Configuration configuration) throws Exception{
-        String last_update_date_key ="";
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE,-(configuration.getLastUpdatedPurgeDays()));
-        last_update_date_key = dateFormat.format(cal.getTime());
-        last_update_date_key =  mapper.writeValueAsString(last_update_date_key);
+        final String last_update_date_key = mapper.writeValueAsString(dateFormat.format(cal.getTime()));
 
         Query query = new Query();
         query.setRangeEnd(last_update_date_key);
@@ -290,8 +287,6 @@ public class ProductRepository {
      * @param couchbaseClient - to get the couch base connection
      */
     public void deleteProduct(String product_key, CouchbaseClient couchbaseClient){
-       final String productKey = product_key;
-
         couchbaseClient.delete(product_key);
     }
         /*Added by Salman for PS-114 to delete the results return from the view - End*/

@@ -132,28 +132,25 @@ public Product mapPromotionDescription(Map<String, String> promotionDescInfoMap)
         String itemHeader = CSVHeaders.PromoDescExtract.ITEM;
         String item = promotionDescInfoMap.get(itemHeader);
         Product product = getProduct(item.split("-")[0]);
-        // Product product = getProductIdentified(tpnc.split("-")[0]);//TODO: Remove the splitting logic once TPNC is given in the CSV extracts
-        /*Added by Nibedita - for PS 78 -  fetch tpnc based on item - Start*/
+
         String tpnc = productRepository.getProductTPNC(item);
-        /*Added by Nibedita - for PS 78 -  fetch tpnc based on item - End*/
+
         ProductVariant productVariant = getProductVariant(product, tpnc);
-final int zoneId = Integer.parseInt(promotionDescInfoMap.get(CSVHeaders.PromoDescExtract.ZONE_ID));
+        final int zoneId = Integer.parseInt(promotionDescInfoMap.get(CSVHeaders.PromoDescExtract.ZONE_ID));
         SaleInfo saleInfo = productVariant.getSaleInfo(zoneId);
-    /*Modified by Nibedita - to process the promotion construct for the product if the data is available in RPM extract only - PS-116 - Start*/
+
         if(saleInfo != null) {
-        String offerId = promotionDescInfoMap.get(CSVHeaders.PromoDescExtract.OFFER_ID);
-        Promotion promotion = saleInfo.getPromotionByOfferId(offerId);
-        if(promotion!=null) {
-        promotion.setCFDescription1(promotionDescInfoMap.get(CSVHeaders.PromoDescExtract.DESC1));
-        promotion.setCFDescription2(promotionDescInfoMap.get(CSVHeaders.PromoDescExtract.DESC2));
+            String offerId = promotionDescInfoMap.get(CSVHeaders.PromoDescExtract.OFFER_ID);
+            Promotion promotion = saleInfo.getPromotionByOfferId(offerId);
+
+            if(promotion!=null) {
+                promotion.setCFDescription1(promotionDescInfoMap.get(CSVHeaders.PromoDescExtract.DESC1));
+                promotion.setCFDescription2(promotionDescInfoMap.get(CSVHeaders.PromoDescExtract.DESC2));
+            }
         }
-        else{
-        saleInfo = null;
-        }
-        }
-        /*Modified by Nibedita - to process the promotion construct for the product if the data is available in RPM extract only - PS-116 - End*/
-        return product;
-        }
+
+    return product;
+}
 
 private Product getProduct(String tpnb) {
         return productRepository.getByTPNB(tpnb).or(new Product(tpnb));

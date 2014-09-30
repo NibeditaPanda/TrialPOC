@@ -107,7 +107,6 @@ public class ImportJob implements Runnable {
         } catch (Exception exception) {
             setErrorString(exception.getMessage());
             logger.error("Error importing data", exception);
-            // TODO: Do error handling / recovery. As per previous implementation using Mongo, the files were deleted.
         }finally{
             ImportResource.getImportSemaphore().release();
         }

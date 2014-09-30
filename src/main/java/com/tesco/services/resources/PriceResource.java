@@ -90,9 +90,8 @@ public class PriceResource {
         try {
             if(("TPNC").equalsIgnoreCase(tpnIdentifier)){
             /*Added By Nitisha - PS 234 - Changed the tpn identifer from "C"/"B"  to "TPNC"/"TPNB"- END*/
-            String tpnc = tpn;
-            try {
-                int item = Integer.parseInt(tpnc);
+                try {
+                int item = Integer.parseInt(tpn);
             }catch(NumberFormatException ne)
             {
                 logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_NOT_FOUND+"- {"+PRODUCT_NOT_FOUND+"} -> ("+tpn+")");
@@ -100,23 +99,23 @@ public class PriceResource {
             }
    /*Added By Surya - PS 30 - Request handling for TPN identifier and value Mismatch  - Start*/
 
-            if(tpnc.startsWith("0")){
+            if(tpn.startsWith("0")){
                 logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_NOT_ACCEPTABLE+"- {"+REQUEST_NOT_ALLOWED+"} -> ("+tpn+")");
 
             return requestNotAllowed(REQUEST_NOT_ALLOWED);
             }
    /*Added By Surya - PS 30 - Request handling for TPN identifier and value Mismatch  - End*/
 
-            String tpnb = productRepository.getMappedTPNCorTPNB(tpnc);
+            String tpnb = productRepository.getMappedTPNCorTPNB(tpn);
             if(!Dockyard.isSpaceOrNull(tpnb)&&tpnb.contains("-")) {
                 tpnb = tpnb.split("-")[0];
             }
             if(Dockyard.isSpaceOrNull(tpnb))
             {
-                logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_NOT_FOUND+"- {"+PRODUCT_NOT_FOUND+"} -> ("+tpnc+")");
+                logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_NOT_FOUND+"- {"+PRODUCT_NOT_FOUND+"} -> ("+ tpn +")");
                 return notFound(PRODUCT_NOT_FOUND);
             }
-            productContainer = productRepository.getByTPNB(tpnb,tpnc);
+            productContainer = productRepository.getByTPNB(tpnb, tpn);
  /*Added By Nitisha - PS 234 - Changed the tpn identifer from "C"/"B"  to "TPNC"/"TPNB"- Start*/
         } else if(("TPNB").equalsIgnoreCase(tpnIdentifier))
             {

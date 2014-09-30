@@ -10,7 +10,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 
-//TODO: Add tests / test drive and implement functionality for couchbase
+
 public class SonettoPromotionXMLReader {
     private String shelfURL;
     private String promotionsDataExportXsd;
@@ -27,11 +27,11 @@ public class SonettoPromotionXMLReader {
         Promotions promotions = u.unmarshal(source, Promotions.class).getValue();
 
         for (Promotion promotion : promotions.getStorePromotions()) {
-            //TODO: Write to db
+
         }
 
         for (Promotion promotion : promotions.getInternetPromotions()) {
-            // TODO: Write to db
+
         }
     }
 }

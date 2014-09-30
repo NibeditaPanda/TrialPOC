@@ -15,8 +15,7 @@ public class Dockyard {
     public static String getSysDate(String date_format) {
         DateFormat dateFormat = new SimpleDateFormat(date_format);
         Date date = new Date();
-        String sys_date = dateFormat.format(date);
-        return sys_date;
+        return dateFormat.format(date);
 
     }
     /*To check null value*/
