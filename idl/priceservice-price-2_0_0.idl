@@ -4,13 +4,13 @@ interface Price exposes PriceService {
 
 	@description
 "# Overview
-API to interact with Tesco's base price and promotion details.
+API to interact with Tesco's base price details.
 
 ## Purpose
 Price Api can be used for price information.
 ## Examples
 ```e.g. in http
-http://price.global.tesco.org/v2/price/...
+        $ curl http://price.global.tesco.org/v2/price/tpnb/050017786?store=2031
 ``` ";
 
     @owner "Price Service Team", "Price Service team email", "2.0.0";
@@ -33,7 +33,6 @@ http://price.global.tesco.org/v2/price/...
             Content-Type: application/json
             
           $ curl http://price.global.tesco.org/v2/price/tpnb/050017786
-            [{"tpnb":"050017786","variants":[{"tpnc":"050017786","currency":"GBP","price":"0.29"}]}]
 
        	  Get price for a product with store id
           $ curl http://price.global.tesco.org/v2/price/tpnb/050017786?store=2031
