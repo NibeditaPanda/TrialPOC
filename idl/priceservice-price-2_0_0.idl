@@ -1,16 +1,16 @@
-@tidl 1.0.0;
+@tidl 2.0.0;
 
 interface Price exposes PriceService {
 
 	@description
 "# Overview
-API to interact with Tesco's base price and promotion details.
+API to interact with Tesco's base price details.
 
 ## Purpose
 Price Api can be used for price information.
 ## Examples
 ```e.g. in http
-http://api.example.com/v2/price/...
+        $ curl http://price.global.tesco.org/v2/price/tpnb/050017786?store=2031
 ``` ";
 
     @owner "Price Service Team", "Price Service team email", "2.0.0";
@@ -20,7 +20,7 @@ http://api.example.com/v2/price/...
 	@organisation "Tesco";
 	@organisationDomainName "tesco.com";
 	@namespacePrefix "tesco.com.services";
-	@version 2.0.0, "draft","2014/8/18","first draft of version 2.0";
+	@version 2.0.0, "dev","2014/10/01","version 2.0.0";
 
     Price get(mandatory tpnIdentifierEnumeration tpnIdentifier, mandatory string tpn, string store) throws ProductNotFoundException, StoreNotFoundException, ProductTypeMismatchException, InvalidRequestException, InternalServerErrorException {
     	@description "Find price of product variants by product's base TPNB or variants' TPNC: currently provides prices for all products sold in store in the the UK
@@ -28,19 +28,18 @@ http://api.example.com/v2/price/...
         #Overview
           End point to retrieve information about price for a product by product item number
         ##Example
-          $ curl -I http://188.226.184.77/v2/price/B/050017786
+          $ curl -I http://price.global.tesco.org/v2/price/tpnb/050017786
             HTTP/1.1 200 OK
             Content-Type: application/json
             
-          $ curl http://188.226.184.77/v2/price/B/050017786
-            [{"tpnb":"050017786","variants":[{"tpnc":"050017786","currency":"GBP","price":"0.29"}]}]
+          $ curl http://price.global.tesco.org/v2/price/tpnb/050017786
 
        	  Get price for a product with store id
-          $ curl http://188.226.184.77/v2/price/B/050017786?store=2031
+          $ curl http://price.global.tesco.org/v2/price/tpnb/050017786?store=2031
 
 		"  ;
 
-        @parameter tpnIdentifier, "Type of identifier ( B (or b) => TPNB, C (or c) => TPNC )";
+        @parameter tpnIdentifier, "Type of identifier ( tpnb => TPNB, tpnc => TPNC )";
 	    @parameter tpn, "TPNB/TPNC of Product";
         @parameter store, "ID of Store if a store-specific price is desired";
         @return "Price information for a product";
@@ -76,12 +75,10 @@ http://api.example.com/v2/price/...
 	@since 2.0.0;
 	}
 
-enumeration tpnIdentifierEnumeration(B, b, C, c){
-		@description "List of possible values for tpnIdentifier";
-		@value B, "TPNB";
-		@value b, "TPNB";
-		@value C, "TPNC";
-		@value c, "TPNC";
+enumeration tpnIdentifierEnumeration(tpnb, tpnc){
+		@description "List of possible values for tpnIdentifier (case-insensitive)";
+		@value tpnb, "TPNB";
+		@value tpnc, "TPNC";
 		@since 2.0.0;
 	}
 
