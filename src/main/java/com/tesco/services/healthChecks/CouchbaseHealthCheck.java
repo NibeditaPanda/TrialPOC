@@ -49,7 +49,7 @@ public class CouchbaseHealthCheck extends HealthCheck {
     }
 
     private boolean serverWarmedUp(Map<String, String> serverStats) {
-        return serverStats.get(EP_DEGRADED_MODE).equals("0");
+        return ("0").equals(serverStats.get(EP_DEGRADED_MODE));
     }
 
     private boolean statsAvailable(Map<String, String> serverStats) {

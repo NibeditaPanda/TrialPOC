@@ -17,6 +17,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
@@ -27,6 +28,7 @@ import java.util.HashMap;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class PriceImportIntegrationTest extends ImportJobIntegrationTestBase {
     private String oldTpnb;
@@ -34,9 +36,11 @@ public class PriceImportIntegrationTest extends ImportJobIntegrationTestBase {
     private AsyncCouchbaseWrapper asyncCouchbaseWrapper;
     private CouchbaseTestManager couchbaseTestManager;
 
+    private static final Logger logger = getLogger(PriceImportIntegrationTest.class);
+
     @Before
     public void setUp() throws IOException, ParserConfigurationException, SAXException, ConfigurationException, JAXBException, ColumnNotFoundException, URISyntaxException, InterruptedException {
-        System.out.println("ImportJobTestBase setup");
+        logger.debug("ImportJobTestBase setup");
         TestConfiguration configuration = new TestConfiguration().load();
         if (configuration.isDummyCouchbaseMode()) {
             HashMap<String, ImmutablePair<Long, String>> fakeBase = new HashMap<>();
@@ -60,12 +64,16 @@ public class PriceImportIntegrationTest extends ImportJobIntegrationTestBase {
     protected void preImportCallBack() {
         oldTpnb = "01212323";
     }
-    /**Modified By Nibedita/Nitisha - PS-112
+
+    /** Modified By
+     * @Author Nibedita/Nitisha - PS-112
      * Given the  price End Point,When the price rest calls are requested,
      * then the response JSON should contain selling UOM for the tpnc in line with IDL  */
     @Test
     public void shouldUpdatePriceZonePrices() throws URISyntaxException, IOException, InterruptedException {
-        String tpnb,tpnc1,tpnc2;
+        String tpnb;
+        String tpnc1;
+        String tpnc2;
         tpnb = tpnc1 = "050925811";
         tpnc2 = "050925811-001";
 

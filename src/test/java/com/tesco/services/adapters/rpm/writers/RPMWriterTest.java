@@ -108,7 +108,7 @@ public class RPMWriterTest {
 
         when(uuidGenerator.getUUID()).thenReturn("uuid");
 
-        when(this.promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber("promotionOfferId", "itemNumber", zoneId)).thenReturn(newArrayList(aPromotionWithDescriptions()));
+        when(this.promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber()).thenReturn(newArrayList(aPromotionWithDescriptions()));
     }
 
     @Test

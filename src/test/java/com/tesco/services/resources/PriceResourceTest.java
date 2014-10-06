@@ -41,8 +41,8 @@ public class PriceResourceTest extends ResourceTest {
     private ObjectMapper mapper;
     private ProductRepository productRepository;
     private StoreRepository storeRepository;
-    private static String SELLING_UOM = "sellingUOM";
-    private static String SELLING_UOM_VAL = "KG";
+    private static String sellingUom = "sellingUOM";
+    private static String sellingUomVal = "KG";
 
     @Override
     protected void setUpResources() throws Exception {
@@ -223,7 +223,7 @@ public class PriceResourceTest extends ResourceTest {
 
         if (!Dockyard.isSpaceOrNull(tpnc1)) {
             productVariant1 = new ProductVariant(tpnc1);
-            productVariant1.setSellingUOM(SELLING_UOM_VAL);
+            productVariant1.setSellingUOM(sellingUomVal);
             productVariant1.addSaleInfo(new SaleInfo(1, "1.40"));
             SaleInfo promoSaleInfo = new SaleInfo(5, "1.20");
             promoSaleInfo.addPromotion(createPromotion("A30718670"));
@@ -232,7 +232,7 @@ public class PriceResourceTest extends ResourceTest {
         }
         if (!Dockyard.isSpaceOrNull(tpnc2)) {
             productVariant2 = new ProductVariant(tpnc2);
-            productVariant2.setSellingUOM(SELLING_UOM_VAL);
+            productVariant2.setSellingUOM(sellingUomVal);
             productVariant2.addSaleInfo(new SaleInfo(1, "1.39"));
             productVariant2.addSaleInfo(new SaleInfo(6, "1.38"));
         }
@@ -291,7 +291,7 @@ public class PriceResourceTest extends ResourceTest {
         Map<String, Object> variantInfo1 = new LinkedHashMap<>();
         variantInfo1.put("tpnc", tpnc);
         variantInfo1.put("currency", currency);
-        variantInfo1.put(SELLING_UOM, sellinguom);
+        variantInfo1.put(sellingUom, sellinguom);
         if (price != null) {
             variantInfo1.put("price", price);
         }

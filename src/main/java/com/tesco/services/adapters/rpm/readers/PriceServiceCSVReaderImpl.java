@@ -18,11 +18,11 @@ import static java.util.Arrays.asList;
 
 public class PriceServiceCSVReaderImpl implements PriceServiceCSVReader {
 
-    private Logger logger = LoggerFactory.getLogger("RPM Import");
+    private static final Logger logger = LoggerFactory.getLogger(PriceServiceCSVReaderImpl.class);
 
     private final CSVReader csvReader;
     private Map<String, Integer> headerIndex = new HashMap<>();
-/*Added By Nibedita - PS-31 - filepath added into constructor parameter for logging extract name - Start*/
+
     public PriceServiceCSVReaderImpl(String filePath, String... headers) throws IOException, ColumnNotFoundException {
         this(new CSVReader(new InputStreamReader(new FileInputStream(filePath), "UTF-8"), ','),filePath, headers);
     }
@@ -32,7 +32,6 @@ public class PriceServiceCSVReaderImpl implements PriceServiceCSVReader {
         List<String> headersInCSVFile = asList(csvReader.readNext());
         List<String> heardersRequiredForServices = new ArrayList();
         logger.info("Headers in the "+filePath.substring(filePath.lastIndexOf("/")+1)+" extract are "+headersInCSVFile);
-/*Added By Nibedita - PS-31 - filepath added into constructor parameter for logging extract name - End*/
 
         for (String header : headers) {
             heardersRequiredForServices.add(header);
@@ -42,7 +41,6 @@ public class PriceServiceCSVReaderImpl implements PriceServiceCSVReader {
             headerIndex.put(header, getHeaderIndex(headersInCSVFile, header));
         }
     }
-
 
     @Override
     public Map<String, String> getNext() throws IOException {

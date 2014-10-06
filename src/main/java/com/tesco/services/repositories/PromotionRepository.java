@@ -12,17 +12,14 @@ public class PromotionRepository {
     private CouchbaseClient couchbaseClient;
     private CouchbaseWrapper couchbaseWrapper;
 
-   /* public PromotionRepository(UUIDGenerator uuidGenerator, CouchbaseClient couchbaseClient) {
-        this.uuidGenerator = uuidGenerator;
-        this.couchbaseClient = couchbaseClient;
-    }*/
+
    public PromotionRepository(UUIDGenerator uuidGenerator, CouchbaseWrapper couchbaseWrapper) {
        this.uuidGenerator = uuidGenerator;
        this.couchbaseWrapper = couchbaseWrapper;
    }
 
-    public List<Promotion> getPromotionsByOfferIdZoneIdAndItemNumber(String offerId, String itemNumber, int zoneId) {
-        return Collections.EMPTY_LIST;
+    public List<Promotion> getPromotionsByOfferIdZoneIdAndItemNumber() {
+        return Collections.emptyList();
     }
 
     public void addPromotion(Promotion promotion) {

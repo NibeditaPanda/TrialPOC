@@ -13,6 +13,7 @@ import com.tesco.services.repositories.*;
 import com.tesco.services.resources.ImportResource;
 import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
@@ -25,7 +26,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class ImportJob implements Runnable {
 
-    private static final Logger logger = getLogger("Price_ImportJob");
+    private static final Logger logger = LoggerFactory.getLogger(ImportJob.class);
 
     private final String rpmStoreZoneCsvFilePath;
     private String sonettoPromotionXSDDataPath;
@@ -99,7 +100,6 @@ public class ImportJob implements Runnable {
             fetchAndSavePriceDetails();
             logger.info("Successfully imported data for " + new Date());
 
-/** Added by Salman - PS-242 Added finally block and exception to handle error for import */
         } catch(ArrayIndexOutOfBoundsException exception){
             setErrorString("Array index out of bound Exception");
             logger.error("Error importing data", exception);
@@ -122,9 +122,7 @@ public class ImportJob implements Runnable {
 
         PromotionRepository promotionRepository = new PromotionRepository(uuidGenerator, couchbaseWrapper);
         ProductRepository productRepository = new ProductRepository(couchbaseWrapper,asyncCouchbaseWrapper,mapper);
-       // AsyncReadWriteProductRepository asyncReadWriteProductRepository = new AsyncReadWriteProductRepository(asyncCouchbaseWrapper,mapper);
         StoreRepository storeRepository = new StoreRepository(couchbaseWrapper,asyncCouchbaseWrapper,mapper);
-
         PriceServiceCSVReader rpmPriceReader = new PriceServiceCSVReaderImpl(rpmPriceZoneDataPath, CSVHeaders.Price.PRICE_ZONE_HEADERS);
         PriceServiceCSVReader rpmPromoPriceReader = new PriceServiceCSVReaderImpl(rpmPromoZoneDataPath, CSVHeaders.Price.PROMO_ZONE_HEADERS);
         PriceServiceCSVReader storeZoneReader = new PriceServiceCSVReaderImpl(rpmStoreZoneCsvFilePath, CSVHeaders.StoreZone.HEADERS);

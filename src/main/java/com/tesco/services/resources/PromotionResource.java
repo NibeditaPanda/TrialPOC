@@ -53,9 +53,7 @@ public class PromotionResource {
         Set<Promotion> results = new HashSet<>();
 
         for( PromotionRequest promotionRequest : uniquePromotionRequest) {
-            List<Promotion> promotions = promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber(promotionRequest.getOfferId(),
-                    promotionRequest.getItemNumber(),
-                    promotionRequest.getZoneId());
+            List<Promotion> promotions = promotionRepository.getPromotionsByOfferIdZoneIdAndItemNumber();
 
             List<Promotion> nonNullPromotions = newArrayList(filter(promotions, notNull()));
             results.addAll(nonNullPromotions);
