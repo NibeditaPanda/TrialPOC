@@ -60,8 +60,9 @@ public class RPMWriter {
         this.rpmPromotionDescReader = rpmPromotionDescReader;
     }
     public void write() throws IOException, ParserConfigurationException, JAXBException, ColumnNotFoundException, SAXException {
-
-        logger.info("Importing price zone prices into Couchbase");
+        if(logger.isInfoEnabled()) {
+            logger.info("Importing price zone prices into Couchbase");
+        }
         writePriceZonePrices();
         writePromoZonePrices();
         writePromotions();

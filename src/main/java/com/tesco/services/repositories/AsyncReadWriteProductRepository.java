@@ -67,7 +67,9 @@ public class AsyncReadWriteProductRepository {
 
     public void insertProduct(Product product, final Listener<Void, Exception> listener) {
         String productKey = getProductKey(product.getTPNB());
-        logger.debug("({}) insertProduct", product);
+        if(logger.isDebugEnabled()) {
+            logger.debug("({}) insertProduct", product);
+        }
         try {
             String jsonProduct = mapper.writeValueAsString(product);
             couchbaseWrapper.set(getProductKey(product.getTPNB()), jsonProduct, new SetListener(couchbaseWrapper, productKey, jsonProduct) {
@@ -92,7 +94,9 @@ public class AsyncReadWriteProductRepository {
 
     public void insertStore(Store store, final Listener<Void, Exception> listener) {
         String storeKey = getStoreKey(store.getStoreId());
-          logger.debug("({}) insertProduct", store);
+        if(logger.isDebugEnabled()) {
+            logger.debug("({}) insertProduct", store);
+        }
         try {
             String jsonStore = mapper.writeValueAsString(store);
             couchbaseWrapper.set(storeKey, jsonStore, new SetListener(couchbaseWrapper, storeKey, jsonStore) {

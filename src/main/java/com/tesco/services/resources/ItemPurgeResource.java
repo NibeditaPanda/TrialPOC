@@ -50,7 +50,8 @@ public class ItemPurgeResource {
     @POST
     @Path("/")
     public Response getRoot(@Context UriInfo uriInfo) {
-        logger.info("message : {"+uriInfo.getRequestUri().toString()+"} "+ HttpServletResponse.SC_BAD_REQUEST+"- {"+HTTPResponses.INVALID_REQUEST+"}");
+        if(logger.isInfoEnabled()){
+        logger.info("message : {"+uriInfo.getRequestUri().toString()+"} "+ HttpServletResponse.SC_BAD_REQUEST+"- {"+HTTPResponses.INVALID_REQUEST+"}");}
         return badRequest();
     }
 
@@ -61,13 +62,16 @@ public class ItemPurgeResource {
             ProductRepository productRepository = new ProductRepository(couchbaseWrapper,asyncCouchbaseWrapper,mapper);
             productRepository.purgeUnUpdatedItems(couchbaseClient,configuration);
         }catch(InvalidViewException e){
-            logger.error("error : Item purge failed due to error "+e);
+            if(logger.isErrorEnabled()){
+            logger.error("error : Item purge failed due to error "+e);}
             return Response.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR).entity("{\"error\":\"Item purge failed as View not found\"}").build();
         } catch (Exception e) {
-            logger.error("error : Item purge failed due to error "+e);
+            if(logger.isErrorEnabled()){
+            logger.error("error : Item purge failed due to error "+e);}
             return Response.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR).entity("{\"error\":\"Item purge failed due to error\"}").build();
         }
-        logger.info("message : Purge operation completed");
+        if(logger.isInfoEnabled()) {
+            logger.info("message : Purge operation completed");}
         return Response.ok("{\"message\":\"Purge Completed\"}").build();
     }
 

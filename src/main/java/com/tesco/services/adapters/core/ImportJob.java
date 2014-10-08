@@ -96,24 +96,34 @@ public class ImportJob implements Runnable {
     @Override
     public void run() {
         try {
-            logger.info("Firing up imports...");
+            if(logger.isInfoEnabled()){
+                logger.info("Firing up imports...");
+            }
             fetchAndSavePriceDetails();
-            logger.info("Successfully imported data for " + new Date());
+            if(logger.isInfoEnabled()){
+                logger.info("Successfully imported data for " + new Date());
+            }
 
         } catch(ArrayIndexOutOfBoundsException exception){
             setErrorString("Array index out of bound Exception");
-            logger.error("Error importing data", exception);
+            if(logger.isErrorEnabled()){
+                logger.error("Error importing data", exception);
+            }
 
         } catch (Exception exception) {
             setErrorString(exception.getMessage());
-            logger.error("Error importing data", exception);
+            if(logger.isErrorEnabled()) {
+                logger.error("Error importing data", exception);
+            }
         }finally{
             ImportResource.getImportSemaphore().release();
         }
     }
 
     private void fetchAndSavePriceDetails() throws IOException, ParserConfigurationException, ConfigurationException, JAXBException, ColumnNotFoundException, SAXException, URISyntaxException, InterruptedException {
-        logger.info("Importing data from RPM....");
+        if(logger.isInfoEnabled()) {
+            logger.info("Importing data from RPM....");
+        }
         SonettoPromotionXMLReader sonettoPromotionXMLReader = new SonettoPromotionXMLReader(sonettoShelfImageUrl, sonettoPromotionXSDDataPath);
 
         UUIDGenerator uuidGenerator = new UUIDGenerator();

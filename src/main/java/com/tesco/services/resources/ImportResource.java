@@ -60,7 +60,9 @@ public class ImportResource {
         /** Added by Salman - PS-242 added new condition to prevent importing data when one
          import is already in progress **/
         if (!importSemaphore.tryAcquire()) {
+            if(logger.isInfoEnabled()){
             logger.info("Import already running");
+            }
             throw new ImportInProgressException();
         }
         try {
@@ -78,8 +80,10 @@ public class ImportResource {
             Thread thread = new Thread(importJob);
             thread.start();
         } catch (ConfigurationException e) {
+            if(logger.isInfoEnabled()){
             logger.info("error : Import Failed - "+((ResponseImpl)Response.serverError().build()).getStatusType().getStatusCode()+"-{"
                     +((ResponseImpl)Response.serverError().build()).getStatusType().getReasonPhrase()+"}");
+            }
             Response.serverError();
         }
         /*Added by Sushil - PS-83 added logger to log exceptions -End*/

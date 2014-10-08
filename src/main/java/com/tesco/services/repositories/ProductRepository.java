@@ -61,7 +61,9 @@ public class ProductRepository {
             try {
                 product = mapper.readValue(productJson,Product.class);
             } catch (IOException e) {
-                logger.error("Caught exception in ProductRepository.getByTPNB -> " + e.getMessage());
+                if(logger.isErrorEnabled()) {
+                    logger.error("Caught exception in ProductRepository.getByTPNB -> " + e.getMessage());
+                }
             }
         }
         return (product != null) ? Optional.of(product) : Optional.<Product>absent();
@@ -76,7 +78,9 @@ public class ProductRepository {
             String productJson = mapper.writeValueAsString(product);
             couchbaseWrapper.set(getProductKey(product.getTPNB()), productJson);
         } catch (JsonProcessingException e) {
-            logger.error("Caught exception in ProductRepository.put -> " + e.getMessage());
+            if(logger.isErrorEnabled()) {
+                logger.error("Caught exception in ProductRepository.put -> " + e.getMessage());
+            }
         }
     }
 
@@ -108,7 +112,9 @@ public class ProductRepository {
 
     public void insertProduct(Product product, final Listener<Void, Exception> listener) {
         String productKey = getProductKey(product.getTPNB());
-        logger.debug("({}) insertProduct", product);
+        if(logger.isDebugEnabled()) {
+            logger.debug("({}) insertProduct", product);
+        }
         try {
             String jsonProduct = mapper.writeValueAsString(product);
             asyncCouchbaseWrapper.set(productKey, jsonProduct, new SetListener(asyncCouchbaseWrapper, productKey, jsonProduct) {
@@ -157,7 +163,9 @@ public class ProductRepository {
                 });
             }
         } catch (JsonProcessingException e) {
-            logger.error("Caught exception in ProductRepository.mapTPNC_TPNB -> " + e.getMessage());
+            if(logger.isErrorEnabled()) {
+                logger.error("Caught exception in ProductRepository.mapTPNC_TPNB -> " + e.getMessage());
+            }
         }
     }
     public void insertProduct(String key, String value,final Listener<Void, Exception> listener) {
@@ -196,7 +204,9 @@ public class ProductRepository {
                 productvar.addProductVariant(productVariant);
 
             } catch (IOException e) {
-                logger.info("Error in ProductRepository.getByTPNB->",e.getMessage());
+                if(logger.isInfoEnabled()) {
+                    logger.info("Error in ProductRepository.getByTPNB->", e.getMessage());
+                }
             }
         }
         return (productvar != null) ? Optional.of(productvar) : Optional.<Product>absent();
@@ -250,7 +260,9 @@ public class ProductRepository {
         query.setStale(Stale.FALSE);
 
         ViewResponse response = couchbaseClient.query(view, query);
-        logger.info("message : Initializing purge operation for Products Last Updated on "+last_update_date_key);
+        if(logger.isInfoEnabled()) {
+            logger.info("message : Initializing purge operation for Products Last Updated on " + last_update_date_key);
+        }
         for(ViewRow row : response) {
             delete_TPNB_TPNC_VAR(row.getId(), couchbaseClient);
         }
@@ -306,7 +318,9 @@ public class ProductRepository {
                 product = mapper.readValue(productJson,Product.class);
             } catch (IOException e) {
                 //Modified by Pallavi as part of code refactor
-                logger.info("Error in ProductRepository",e.getMessage());
+                if(logger.isInfoEnabled()) {
+                    logger.info("Error in ProductRepository", e.getMessage());
+                }
             }
         }
         return (product != null) ? Optional.of(product) : Optional.<Product>absent();

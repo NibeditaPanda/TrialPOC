@@ -43,7 +43,9 @@ public class CouchbaseHealthCheck extends HealthCheck {
             }
             return true;
         } catch (CouchbaseConnectionUnavailableException e) {
-            logger.error("Connection lost due to :" + e.getMessage());
+            if(logger.isErrorEnabled()) {
+                logger.error("Connection lost due to :" + e.getMessage());
+            }
             return false;
         }
     }
