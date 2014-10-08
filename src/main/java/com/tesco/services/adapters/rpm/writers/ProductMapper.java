@@ -26,8 +26,8 @@ public class ProductMapper {
         return mapToProductForPromoZone(headerToValueMap, CSVHeaders.Price.PROMO_ZONE_ID, CSVHeaders.Price.PROMO_ZONE_PRICE);
     }
     /** PS-238 Modified By Nibedita - add isNewProduct flag to check if the product for the input item is exists or not - Start*/
-    private Product mapToProductForPriceZone(Map<String, String> headerToValueMap, String zoneIdHeader, String priceHeader,boolean isNewProduct)
-    {
+    private Product mapToProductForPriceZone(Map<String, String> headerToValueMap, String zoneIdHeader, String priceHeader,boolean isNewProduct) {
+
     /** PS-238 Modified By Nibedita - add isNewProduct flag to check if the product for the input item is exists or not - End*/
         String itemHeader = CSVHeaders.Price.ITEM;
         String item = headerToValueMap.get(itemHeader);
@@ -90,8 +90,8 @@ final int zoneId = Integer.parseInt(promotionInfoMap.get(CSVHeaders.PromoExtract
         saleInfo = new SaleInfo(zoneId, null);
         productVariant.addSaleInfo(saleInfo);
         }
-        else  if (saleInfo == null && promotionInfoMap.get(CSVHeaders.PromoExtract.OFFER_ID) != null )
-        {
+        else  if (saleInfo == null && promotionInfoMap.get(CSVHeaders.PromoExtract.OFFER_ID) != null ) {
+
         Promotion promotion = new Promotion();
         saleInfo = new SaleInfo(zoneId, null);
         promotion.setOfferId(promotionInfoMap.get(CSVHeaders.PromoExtract.OFFER_ID));
@@ -103,8 +103,8 @@ final int zoneId = Integer.parseInt(promotionInfoMap.get(CSVHeaders.PromoExtract
         productVariant.addSaleInfo(saleInfo);
         }
 /*Modified by Nibedita - to process the promotion construct for the product if the data is available in RPM and not in promo zone extract - PS-116 - End*/
-        else if (saleInfo != null && saleInfo.getPromotions().isEmpty())
-        {
+        else if (saleInfo != null && saleInfo.getPromotions().isEmpty()) {
+
         Promotion promotion = new Promotion();
         promotion.setOfferId(promotionInfoMap.get(CSVHeaders.PromoExtract.OFFER_ID));
         promotion.setZoneId(Integer.parseInt(promotionInfoMap.get(CSVHeaders.PromoExtract.ZONE_ID)));

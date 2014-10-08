@@ -26,8 +26,10 @@ public class StoreMapper {
         int zoneId = Integer.parseInt(storeInfoMap.get(CSVHeaders.StoreZone.ZONE_ID));
         int zoneType = Integer.parseInt(storeInfoMap.get(CSVHeaders.StoreZone.ZONE_TYPE));
 
-        if (zoneType == PRICE_ZONE_TYPE) store.setPriceZoneId(Optional.of(zoneId));
-        if (zoneType == PROMO_ZONE_TYPE) store.setPromoZoneId(Optional.of(zoneId));
+        if (zoneType == PRICE_ZONE_TYPE)
+            store.setPriceZoneId(Optional.of(zoneId));
+        if (zoneType == PROMO_ZONE_TYPE)
+            store.setPromoZoneId(Optional.of(zoneId));
 
         return store;
     }
@@ -53,15 +55,19 @@ public class StoreMapper {
             int zoneId = Integer.parseInt(storeInfoMap.get(CSVHeaders.StoreZone.ZONE_ID));
             int zoneType = Integer.parseInt(storeInfoMap.get(CSVHeaders.StoreZone.ZONE_TYPE));
 
-            if (zoneType == PRICE_ZONE_TYPE)  storeToBeInserted.setPriceZoneId(Optional.of(zoneId));
-            if (zoneType == PROMO_ZONE_TYPE)  storeToBeInserted.setPromoZoneId(Optional.of(zoneId));
+            if (zoneType == PRICE_ZONE_TYPE)
+                storeToBeInserted.setPriceZoneId(Optional.of(zoneId));
+            if (zoneType == PROMO_ZONE_TYPE)
+                storeToBeInserted.setPromoZoneId(Optional.of(zoneId));
         }else{
             storeToBeInserted = storeRepository.getStoreIdentified();
             int zoneId = Integer.parseInt(storeInfoMap.get(CSVHeaders.StoreZone.ZONE_ID));
             int zoneType = Integer.parseInt(storeInfoMap.get(CSVHeaders.StoreZone.ZONE_TYPE));
 
-            if (zoneType == PRICE_ZONE_TYPE)  storeToBeInserted.setPriceZoneId(Optional.of(zoneId));
-            if (zoneType == PROMO_ZONE_TYPE)  storeToBeInserted.setPromoZoneId(Optional.of(zoneId));
+            if (zoneType == PRICE_ZONE_TYPE)
+                storeToBeInserted.setPriceZoneId(Optional.of(zoneId));
+            if (zoneType == PROMO_ZONE_TYPE)
+                storeToBeInserted.setPromoZoneId(Optional.of(zoneId));
     }
         return storeToBeInserted;
     }}

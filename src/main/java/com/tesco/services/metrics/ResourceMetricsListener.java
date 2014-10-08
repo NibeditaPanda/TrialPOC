@@ -21,7 +21,8 @@ public class ResourceMetricsListener implements MetricsRegistryListener {
 
     @Override
     public void onMetricAdded(MetricName name, Metric metric) {
-        if (name.getGroup().equals(RESOURCE_GROUP)) registry.addMetric(name,metric);
+        if (name.getGroup().equals(RESOURCE_GROUP))
+            registry.addMetric(name,metric);
     }
 
 

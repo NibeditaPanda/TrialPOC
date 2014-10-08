@@ -19,16 +19,16 @@ public class Dockyard {
 
     }
     /*To check null value*/
-   public static boolean isSpaceOrNull(Object obj)
-    {
+   public static boolean isSpaceOrNull(Object obj) {
+
         if(obj == " " || obj == null || obj == "")
             return true;
         else
             return false;
     }
     /*To check Null and replace old char with new */
-    public static String replaceOldValCharWithNewVal(String value, String oldChar, String newChar)
-    {
+    public static String replaceOldValCharWithNewVal(String value, String oldChar, String newChar) {
+
         if(!Dockyard.isSpaceOrNull(value) && value.contains(oldChar))
             return(value.replace(oldChar,newChar));
         else

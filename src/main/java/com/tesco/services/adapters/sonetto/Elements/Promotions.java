@@ -21,8 +21,8 @@ public class Promotions {
         return promotionList;
     }
 
-    public List<Promotion> getInternetPromotions()
-    {
+    public List<Promotion> getInternetPromotions() {
+
         return filter(having(on(Promotion.class).isInternetExclusive(), is(true)), promotionList);
     }
 

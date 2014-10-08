@@ -94,8 +94,8 @@ public class PriceResource {
             /*Added By Nitisha - PS 234 - Changed the tpn identifer from "C"/"B"  to "TPNC"/"TPNB"- END*/
                 try {
                 int item = Integer.parseInt(tpn);
-            }catch(NumberFormatException ne)
-            {
+            }catch(NumberFormatException ne) {
+
                 if(logger.isInfoEnabled()) {
                     logger.info("message : {" + uriPath + "} " + HttpServletResponse.SC_NOT_FOUND + "- {" + PRODUCT_NOT_FOUND + "} -> (" + tpn + ")");
                 }
@@ -116,8 +116,8 @@ public class PriceResource {
             if(!Dockyard.isSpaceOrNull(tpnb)&&tpnb.contains("-")) {
                 tpnb = tpnb.split("-")[0];
             }
-            if(Dockyard.isSpaceOrNull(tpnb))
-            {
+            if(Dockyard.isSpaceOrNull(tpnb)) {
+
                 if(logger.isInfoEnabled()) {
                     logger.info("message : {" + uriPath + "} " + HttpServletResponse.SC_NOT_FOUND + "- {" + PRODUCT_NOT_FOUND + "} -> (" + tpn + ")");
                 }
@@ -125,14 +125,14 @@ public class PriceResource {
             }
             productContainer = productRepository.getByTPNB(tpnb, tpn);
  /*Added By Nitisha - PS 234 - Changed the tpn identifer from "C"/"B"  to "TPNC"/"TPNB"- Start*/
-        } else if(("TPNB").equalsIgnoreCase(tpnIdentifier))
-            {
+        } else if(("TPNB").equalsIgnoreCase(tpnIdentifier)) {
+
     /*Added By Nitisha - PS 234 - Changed the tpn identifer from "C"/"B"  to "TPNC"/"TPNB"- End*/
     /*Added By Surya - PS 30 - Request handling for TPN identifier and value Mismatch  - Start*/
             try {
                 int item = Integer.parseInt(tpn);
-            } catch(NumberFormatException ne)
-            {
+            } catch(NumberFormatException ne) {
+
                 if(logger.isInfoEnabled()) {
                     logger.info("message : {" + uriPath + "} " + HttpServletResponse.SC_NOT_FOUND + "- {" + PRODUCT_NOT_FOUND + "} -> (" + tpn + ")");
                 }
@@ -149,8 +149,8 @@ public class PriceResource {
 
             productContainer = productRepository.getByTPNB(tpn);
 
-        }else
-        {
+        }else {
+
             if(logger.isInfoEnabled()) {
                 logger.info("message : {" + uriPath + "} " + HttpServletResponse.SC_BAD_REQUEST + "- {" + HTTPResponses.INVALID_REQUEST + "}");
             }

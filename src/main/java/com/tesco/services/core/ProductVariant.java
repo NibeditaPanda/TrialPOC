@@ -33,14 +33,16 @@ public class ProductVariant implements PriceVisitable, Serializable {
      * Given the  price End Point,When the price rest calls are requested, then the response JSON should contain selling UOM for the tpnc line with IDL  */
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         ProductVariant productVariant = (ProductVariant) o;
         //Pallavi
         if ((!tpnc.equals(productVariant.tpnc))||(!sellingUOM.equals(productVariant.sellingUOM))||
-                (!zoneIdToSaleInfo.equals(productVariant.zoneIdToSaleInfo)))
-        {
+                (!zoneIdToSaleInfo.equals(productVariant.zoneIdToSaleInfo))) {
+
             return false;
         }
         return true;

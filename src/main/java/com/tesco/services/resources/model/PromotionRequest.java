@@ -45,14 +45,19 @@ public class PromotionRequest {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         PromotionRequest that = (PromotionRequest) o;
 
-        if (itemNumber != null ? !itemNumber.equals(that.itemNumber) : that.itemNumber != null) return false;
-        if (offerId != null ? !offerId.equals(that.offerId) : that.offerId != null) return false;
-        if (zoneId != that.zoneId) return false;
+        if (itemNumber != null ? !itemNumber.equals(that.itemNumber) : that.itemNumber != null)
+            return false;
+        if (offerId != null ? !offerId.equals(that.offerId) : that.offerId != null)
+            return false;
+        if (zoneId != that.zoneId)
+            return false;
 
         return true;
     }

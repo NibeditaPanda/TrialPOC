@@ -97,8 +97,8 @@ public class RPMWriter {
         Map<String,String> mapTpnbTpnc = new HashMap<String,String>();
         while((productInfoMap = rpmPriceReader.getNext()) !=  null) {
             curItem = productInfoMap.get("ITEM").split("-")[0];
-            if(Dockyard.isSpaceOrNull(prevItem) && !Dockyard.isSpaceOrNull(curItem))
-            {
+            if(Dockyard.isSpaceOrNull(prevItem) && !Dockyard.isSpaceOrNull(curItem)) {
+
                 isNewProduct = true;
             }
             else if(prevItem != null && !curItem.equals(prevItem)) {
@@ -119,8 +119,8 @@ public class RPMWriter {
 
     }
 
-    private void insertData(Product product,Map mapTpnbTpnc)
-    {
+    private void insertData(Product product,Map mapTpnbTpnc) {
+
         productRepository.insertProduct(product,new Listener<Void, Exception>() {
             @Override
             public void onComplete(Void aVoid) {

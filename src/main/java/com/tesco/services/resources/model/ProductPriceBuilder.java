@@ -56,7 +56,8 @@ public class ProductPriceBuilder implements ProductPriceVisitor {
         SaleInfo priceZoneSaleInfo = priceZoneId.isPresent() ? productVariant.getSaleInfo(priceZoneId.get()) : null;
         SaleInfo promoZoneSaleInfo = promoZoneId.isPresent() ? productVariant.getSaleInfo(promoZoneId.get()) : null;
 
-        if (priceZoneSaleInfo == null && promoZoneSaleInfo == null) return;
+        if (priceZoneSaleInfo == null && promoZoneSaleInfo == null)
+            return;
 
         Map<String, Object> variantInfo = new LinkedHashMap<>();
         variantInfo.put(TPNC, productVariant.getTPNC());
@@ -91,7 +92,8 @@ public class ProductPriceBuilder implements ProductPriceVisitor {
     private void addPromotionInfo(SaleInfo promoZoneSaleInfo,List<Map<String, String>> promotion_info) {
         Collection<Promotion> promotions = promoZoneSaleInfo.getPromotions();
 
-        if (promotions.isEmpty()) return;
+        if (promotions.isEmpty())
+            return;
 
         for (Promotion promotion : promotions) {
             Map<String, String> promotionInfoMap = new LinkedHashMap<>();
