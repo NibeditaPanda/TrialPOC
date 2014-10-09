@@ -5,6 +5,7 @@ import com.tesco.services.core.Product;
 import com.tesco.services.core.Store;
 
 public class RPMComparator {
+    //Compare two product and their TPNB
     public boolean compare(Product product1, Product product2) {
         if (product1 == null || product2 == null)
             return false;
@@ -17,7 +18,7 @@ public class RPMComparator {
 
         return true;
     }
-
+    //Compare two store and their curreny , price zone id and promo zone id
     public boolean compare(Store store1, Store store2) {
         if (store1 == null || store2 == null)
             return false;

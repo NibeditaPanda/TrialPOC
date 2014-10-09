@@ -7,6 +7,9 @@ import com.tesco.services.repositories.StoreRepository;
 
 import java.util.Map;
 
+/**
+ * Creates the data for the stores available in store_zone csv.
+ */
 public class StoreMapper {
     public static final int PRICE_ZONE_TYPE = 1;
     public static final int PROMO_ZONE_TYPE = 2;
@@ -17,7 +20,13 @@ public class StoreMapper {
     public StoreMapper(StoreRepository storeRepository) {
         this.storeRepository = storeRepository;
     }
-
+    /**
+     * <p>
+     * To Get the zone id based on the zone type
+     * </p>
+     * @param storeInfoMap
+     * @return
+     */
     public Store map(Map<String, String> storeInfoMap) {
         String storeId = storeInfoMap.get(CSVHeaders.StoreZone.STORE_ID);
 
