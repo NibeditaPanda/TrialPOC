@@ -27,7 +27,7 @@ import static javax.ws.rs.core.Response.ok;
 //@Produces(ResourceResponse.RESPONSE_TYPE)
 public class ImportResource {
     /*Added by Sushil - PS-83 added logger to log exceptions -Start*/
-    private Logger logger = LoggerFactory.getLogger(getClass().getName());
+    private Logger LOGGER = LoggerFactory.getLogger(getClass().getName());
     /*Added by Salman - PS-242 added semaphore -Start*/
     private static Semaphore importSemaphore = new Semaphore(1);
 
@@ -60,8 +60,8 @@ public class ImportResource {
         /** Added by Salman - PS-242 added new condition to prevent importing data when one
          import is already in progress **/
         if (!importSemaphore.tryAcquire()) {
-            if(logger.isInfoEnabled()){
-            logger.info("Import already running");
+            if(LOGGER.isInfoEnabled()){
+                LOGGER.info("Import already running");
             }
             throw new ImportInProgressException();
         }
@@ -80,8 +80,8 @@ public class ImportResource {
             Thread thread = new Thread(importJob);
             thread.start();
         } catch (ConfigurationException e) {
-            if(logger.isInfoEnabled()){
-            logger.info("error : Import Failed - "+((ResponseImpl)Response.serverError().build()).getStatusType().getStatusCode()+"-{"
+            if(LOGGER.isInfoEnabled()){
+                LOGGER.info("error : Import Failed - "+((ResponseImpl)Response.serverError().build()).getStatusType().getStatusCode()+"-{"
                     +((ResponseImpl)Response.serverError().build()).getStatusType().getReasonPhrase()+"}");
             }
             Response.serverError();

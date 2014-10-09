@@ -30,7 +30,7 @@ public class StoreRepository {
 
     private Store storeIdentified = null;
 
-    private final Logger logger = getLogger(getClass().getName());
+    private final Logger LOGGER = getLogger(getClass().getName());
     public StoreRepository(CouchbaseClient couchbaseClient) {
         this.couchbaseClient = couchbaseClient;
     }
@@ -47,8 +47,9 @@ public StoreRepository(CouchbaseWrapper couchbaseWrapper,AsyncCouchbaseWrapper a
         try {
             couchbaseWrapper.set(getStoreKey(storeId), mapper.writeValueAsString(store));
         } catch (JsonProcessingException e) {
-            if(logger.isErrorEnabled()){
-            logger.error(String.format("JSON Error encountered in StoreRepository.put ->%s", e.getMessage()));}
+            if(LOGGER.isErrorEnabled()){
+                LOGGER.error(String.format("JSON Error encountered in StoreRepository.put ->%s", e.getMessage()));
+            }
         }
 
     }
@@ -68,8 +69,9 @@ public StoreRepository(CouchbaseWrapper couchbaseWrapper,AsyncCouchbaseWrapper a
                 store = mapper.readValue((String)storeJson,Store.class);
             } catch (IOException e) {
                 //Modified by Pallavi as part of code refactor
-                if(logger.isInfoEnabled()){
-                logger.info("Error in StoreRepository",e.getMessage());}
+                if(LOGGER.isInfoEnabled()){
+                    LOGGER.info("Error in StoreRepository",e.getMessage());
+                }
             }
         }
         return (store != null) ? Optional.of(store) : Optional.<Store>absent();
@@ -103,8 +105,9 @@ public StoreRepository(CouchbaseWrapper couchbaseWrapper,AsyncCouchbaseWrapper a
 
     public void insertStore(Store store, final Listener<Void, Exception> listener) {
         String storeKey = getStoreKey(store.getStoreId());
-        if(logger.isDebugEnabled()){
-        logger.debug("({}) insertStore", store);}
+        if(LOGGER.isDebugEnabled()){
+            LOGGER.debug("({}) insertStore", store);
+        }
         try {
             String jsonStore = mapper.writeValueAsString(store);
             asyncCouchbaseWrapper.set(storeKey, jsonStore, new SetListener(asyncCouchbaseWrapper, storeKey, jsonStore) {

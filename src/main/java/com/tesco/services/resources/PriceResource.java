@@ -34,7 +34,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 public class PriceResource {
 
     /*Added by Sushil - PS-83 added logger to log exceptions -Start*/
-    private static final Logger logger = LoggerFactory.getLogger(PriceResource.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PriceResource.class);
 
     public static final int NATIONAL_PRICE_ZONE_ID = 1;
     public static final String NATIONAL_ZONE_CURRENCY = "GBP";
@@ -78,8 +78,8 @@ public class PriceResource {
 
         uriPath = uriInfo.getRequestUri().toString();
         if (storeQueryParamWasSentWithoutAStoreID(storeId, uriInfo.getQueryParameters())) {
-            if(logger.isInfoEnabled()){
-             logger.info("message : {" + uriPath + "} " + HttpServletResponse.SC_BAD_REQUEST + "- {" + HTTPResponses.INVALID_REQUEST + "}");
+            if(LOGGER.isInfoEnabled()){
+                LOGGER.info("message : {" + uriPath + "} " + HttpServletResponse.SC_BAD_REQUEST + "- {" + HTTPResponses.INVALID_REQUEST + "}");
             }
             return badRequest();
           }
@@ -96,16 +96,16 @@ public class PriceResource {
                 int item = Integer.parseInt(tpn);
             }catch(NumberFormatException ne) {
 
-                if(logger.isInfoEnabled()) {
-                    logger.info("message : {" + uriPath + "} " + HttpServletResponse.SC_NOT_FOUND + "- {" + PRODUCT_NOT_FOUND + "} -> (" + tpn + ")");
+                if(LOGGER.isInfoEnabled()) {
+                    LOGGER.info("message : {" + uriPath + "} " + HttpServletResponse.SC_NOT_FOUND + "- {" + PRODUCT_NOT_FOUND + "} -> (" + tpn + ")");
                 }
                 return notFound(PRODUCT_NOT_FOUND);
             }
    /*Added By Surya - PS 30 - Request handling for TPN identifier and value Mismatch  - Start*/
 
             if(tpn.startsWith("0")){
-                if(logger.isInfoEnabled()) {
-                    logger.info("message : {" + uriPath + "} " + HttpServletResponse.SC_NOT_ACCEPTABLE + "- {" + REQUEST_NOT_ALLOWED + "} -> (" + tpn + ")");
+                if(LOGGER.isInfoEnabled()) {
+                    LOGGER.info("message : {" + uriPath + "} " + HttpServletResponse.SC_NOT_ACCEPTABLE + "- {" + REQUEST_NOT_ALLOWED + "} -> (" + tpn + ")");
                 }
 
             return requestNotAllowed(REQUEST_NOT_ALLOWED);
@@ -118,8 +118,8 @@ public class PriceResource {
             }
             if(Dockyard.isSpaceOrNull(tpnb)) {
 
-                if(logger.isInfoEnabled()) {
-                    logger.info("message : {" + uriPath + "} " + HttpServletResponse.SC_NOT_FOUND + "- {" + PRODUCT_NOT_FOUND + "} -> (" + tpn + ")");
+                if(LOGGER.isInfoEnabled()) {
+                    LOGGER.info("message : {" + uriPath + "} " + HttpServletResponse.SC_NOT_FOUND + "- {" + PRODUCT_NOT_FOUND + "} -> (" + tpn + ")");
                 }
                 return notFound(PRODUCT_NOT_FOUND);
             }
@@ -133,14 +133,14 @@ public class PriceResource {
                 int item = Integer.parseInt(tpn);
             } catch(NumberFormatException ne) {
 
-                if(logger.isInfoEnabled()) {
-                    logger.info("message : {" + uriPath + "} " + HttpServletResponse.SC_NOT_FOUND + "- {" + PRODUCT_NOT_FOUND + "} -> (" + tpn + ")");
+                if(LOGGER.isInfoEnabled()) {
+                    LOGGER.info("message : {" + uriPath + "} " + HttpServletResponse.SC_NOT_FOUND + "- {" + PRODUCT_NOT_FOUND + "} -> (" + tpn + ")");
                 }
                 return notFound(PRODUCT_NOT_FOUND);
             }
             if(!tpn.startsWith("0")){
-                if(logger.isInfoEnabled()) {
-                    logger.info("message : {" + uriPath + "} " + HttpServletResponse.SC_NOT_ACCEPTABLE + "- {" + REQUEST_NOT_ALLOWED + "} -> (" + tpn + ")");
+                if(LOGGER.isInfoEnabled()) {
+                    LOGGER.info("message : {" + uriPath + "} " + HttpServletResponse.SC_NOT_ACCEPTABLE + "- {" + REQUEST_NOT_ALLOWED + "} -> (" + tpn + ")");
                 }
 
                 return requestNotAllowed(REQUEST_NOT_ALLOWED);
@@ -151,15 +151,15 @@ public class PriceResource {
 
         }else {
 
-            if(logger.isInfoEnabled()) {
-                logger.info("message : {" + uriPath + "} " + HttpServletResponse.SC_BAD_REQUEST + "- {" + HTTPResponses.INVALID_REQUEST + "}");
+            if(LOGGER.isInfoEnabled()) {
+                LOGGER.info("message : {" + uriPath + "} " + HttpServletResponse.SC_BAD_REQUEST + "- {" + HTTPResponses.INVALID_REQUEST + "}");
             }
             return badRequest();
         }
          /*Added By Nibedita - PS 37 - fetch info based on TPNC - End*/
         if (!productContainer.isPresent()) {
-            if(logger.isInfoEnabled()) {
-                logger.info("message : {" + uriPath + "} " + HttpServletResponse.SC_NOT_FOUND + "- {" + PRODUCT_NOT_FOUND + "} -> (" + tpn + ")");
+            if(LOGGER.isInfoEnabled()) {
+                LOGGER.info("message : {" + uriPath + "} " + HttpServletResponse.SC_NOT_FOUND + "- {" + PRODUCT_NOT_FOUND + "} -> (" + tpn + ")");
             }
             return notFound(PRODUCT_NOT_FOUND);
         }
@@ -168,8 +168,8 @@ public class PriceResource {
             return getPriceResponse(productContainer, Optional.of(NATIONAL_PRICE_ZONE_ID), Optional.of(NATIONAL_PROMO_ZONE_ID), NATIONAL_ZONE_CURRENCY);
         }
         }catch(CouchbaseOperationException e){
-            if(logger.isErrorEnabled()) {
-                logger.error("error   : {" + uriPath + "} {}- {} -> {}", serverError().getStatus(), HTTPResponses.INTERNAL_SERVER_ERROR, e.getMessage());
+            if(LOGGER.isErrorEnabled()) {
+                LOGGER.error("error   : {" + uriPath + "} {}- {} -> {}", serverError().getStatus(), HTTPResponses.INTERNAL_SERVER_ERROR, e.getMessage());
             }
             return serverError();
         }
@@ -185,8 +185,8 @@ public class PriceResource {
         try {
             storeId = Integer.parseInt(storeIdValue);
         } catch (NumberFormatException e) {
-            if(logger.isInfoEnabled()) {
-                logger.info("message : {" + uriPath + "} " + HttpServletResponse.SC_NOT_FOUND + "- {" + STORE_NOT_FOUND + "} -> (" + storeIdValue + ")");
+            if(LOGGER.isInfoEnabled()) {
+                LOGGER.info("message : {" + uriPath + "} " + HttpServletResponse.SC_NOT_FOUND + "- {" + STORE_NOT_FOUND + "} -> (" + storeIdValue + ")");
             }
             return notFound(STORE_NOT_FOUND);
         }
@@ -194,8 +194,8 @@ public class PriceResource {
         Optional<Store> storeContainer = storeRepository.getByStoreId(String.valueOf(storeId));
 
         if (!storeContainer.isPresent()) {
-            if(logger.isInfoEnabled()) {
-                logger.info("message : {" + uriPath + "} " + HttpServletResponse.SC_NOT_FOUND + "- {" + STORE_NOT_FOUND + "} -> (" + storeIdValue + ")");
+            if(LOGGER.isInfoEnabled()) {
+                LOGGER.info("message : {" + uriPath + "} " + HttpServletResponse.SC_NOT_FOUND + "- {" + STORE_NOT_FOUND + "} -> (" + storeIdValue + ")");
             }
             return notFound(STORE_NOT_FOUND);
         }
@@ -214,8 +214,8 @@ public class PriceResource {
     @Path("/{tpnIdentifier}/{tpn}/{path: .*}")
     @ExceptionMetered(name = "getPriceItemNumber-Failures", group = "PriceServices")
     public Response getItem() {
-        if(logger.isInfoEnabled()) {
-            logger.info("message : {" + uriPath + "} " + HttpServletResponse.SC_BAD_REQUEST + "- {" + HTTPResponses.INVALID_REQUEST + "}");
+        if(LOGGER.isInfoEnabled()) {
+            LOGGER.info("message : {" + uriPath + "} " + HttpServletResponse.SC_BAD_REQUEST + "- {" + HTTPResponses.INVALID_REQUEST + "}");
         }
         return badRequest();
     }
@@ -223,8 +223,8 @@ public class PriceResource {
     @GET
     @Path("/")
     public Response getRoot(@Context UriInfo uriInfo) {
-        if(logger.isInfoEnabled()) {
-            logger.info("message : {" + uriInfo.getRequestUri().toString() + "} " + HttpServletResponse.SC_BAD_REQUEST + "- {" + HTTPResponses.INVALID_REQUEST + "}");
+        if(LOGGER.isInfoEnabled()) {
+            LOGGER.info("message : {" + uriInfo.getRequestUri().toString() + "} " + HttpServletResponse.SC_BAD_REQUEST + "- {" + HTTPResponses.INVALID_REQUEST + "}");
         }
         return badRequest();
     }

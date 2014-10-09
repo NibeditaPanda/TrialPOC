@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RPMWriter {
-    private Logger logger = LoggerFactory.getLogger("RPM Import");
+    private static final Logger LOGGER = LoggerFactory.getLogger("RPM Import");
 
     private String sonettoPromotionsXMLFilePath;
 
@@ -60,8 +60,8 @@ public class RPMWriter {
         this.rpmPromotionDescReader = rpmPromotionDescReader;
     }
     public void write() throws IOException, ParserConfigurationException, JAXBException, ColumnNotFoundException, SAXException {
-        if(logger.isInfoEnabled()) {
-            logger.info("Importing price zone prices into Couchbase");
+        if(LOGGER.isInfoEnabled()) {
+            LOGGER.info("Importing price zone prices into Couchbase");
         }
         writePriceZonePrices();
         writePromoZonePrices();
@@ -78,9 +78,11 @@ public class RPMWriter {
             storeRepository.insertStore(store,new Listener<Void, Exception>() {
                 @Override
                 public void onComplete(Void aVoid) {
+                    //it will be implemented later if any requirement comes
                 }
                 @Override
                 public void onException(Exception e) {
+                    //it will be implemented later if any requirement comes
                 }
             });
         }
@@ -124,14 +126,16 @@ public class RPMWriter {
         productRepository.insertProduct(product,new Listener<Void, Exception>() {
             @Override
             public void onComplete(Void aVoid) {
+                //it will be implemented later if any requirement comes
             }
             @Override
             public void onException(Exception e) {
+                //it will be implemented later if any requirement comes
             }
         });
         for(Object set :mapTpnbTpnc.keySet()){
-            String ITEM = set.toString();
-            productRepository.mapTPNC_TPNB(mapTpnbTpnc.get(ITEM).toString(),ITEM);
+            String item = set.toString();
+            productRepository.mapTPNC_TPNB(mapTpnbTpnc.get(item).toString(),item);
         }
 
     }
@@ -145,9 +149,11 @@ public class RPMWriter {
             productRepository.insertProduct(product,new Listener<Void, Exception>() {
                 @Override
                 public void onComplete(Void aVoid) {
+                    //it will be implemented later if any requirement comes
                 }
                 @Override
                 public void onException(Exception e) {
+                    //it will be implemented later if any requirement comes
                 }
             });
         }
@@ -162,9 +168,11 @@ public class RPMWriter {
             productRepository.insertProduct(product,new Listener<Void, Exception>() {
                 @Override
                 public void onComplete(Void aVoid) {
+                    //it will be implemented later if any requirement comes
                 }
                 @Override
                 public void onException(Exception e) {
+                    //it will be implemented later if any requirement comes
                 }
             });
         }
@@ -180,9 +188,11 @@ public class RPMWriter {
             productRepository.insertProduct(product,new Listener<Void, Exception>() {
                 @Override
                 public void onComplete(Void aVoid) {
+                    //it will be implemented later if any requirement comes
                 }
                 @Override
                 public void onException(Exception e) {
+                    //it will be implemented later if any requirement comes
                 }
             });
         }

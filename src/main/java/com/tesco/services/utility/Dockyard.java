@@ -12,8 +12,8 @@ import java.util.Date;
 public class Dockyard {
 
     /*To get the sysdate with the required format*/
-    public static String getSysDate(String date_format) {
-        DateFormat dateFormat = new SimpleDateFormat(date_format);
+    public static String getSysDate(String dateFormatIn) {
+        DateFormat dateFormat = new SimpleDateFormat(dateFormatIn);
         Date date = new Date();
         return dateFormat.format(date);
 

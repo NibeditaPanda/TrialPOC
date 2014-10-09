@@ -48,6 +48,7 @@ public class StoreMapper {
             }
             @Override
             public void onException(Exception e) {
+                //it will be implemented later if any requirement comes
             }
         }) ;
         if(storeRepository.getStoreIdentified() == null){

@@ -18,7 +18,7 @@ import static java.util.Arrays.asList;
 
 public class PriceServiceCSVReaderImpl implements PriceServiceCSVReader {
 
-    private static final Logger logger = LoggerFactory.getLogger(PriceServiceCSVReaderImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PriceServiceCSVReaderImpl.class);
 
     private final CSVReader csvReader;
     private Map<String, Integer> headerIndex = new HashMap<>();
@@ -31,12 +31,12 @@ public class PriceServiceCSVReaderImpl implements PriceServiceCSVReader {
         this.csvReader = csvReader;
         List<String> headersInCSVFile = asList(csvReader.readNext());
         List<String> heardersRequiredForServices = new ArrayList();
-        logger.info("Headers in the "+filePath.substring(filePath.lastIndexOf("/")+1)+" extract are "+headersInCSVFile);
+        LOGGER.info("Headers in the "+filePath.substring(filePath.lastIndexOf("/")+1)+" extract are "+headersInCSVFile);
 
         for (String header : headers) {
             heardersRequiredForServices.add(header);
         }
-        logger.info("Headers Required by the Services for the extract "+filePath.substring(filePath.lastIndexOf("/")+1)+" are "+heardersRequiredForServices);
+        LOGGER.info("Headers Required by the Services for the extract "+filePath.substring(filePath.lastIndexOf("/")+1)+" are "+heardersRequiredForServices);
         for (String header : headers) {
             headerIndex.put(header, getHeaderIndex(headersInCSVFile, header));
         }
