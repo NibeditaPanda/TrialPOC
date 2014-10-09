@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlElement;
 public class Availability {
 
     public Availability() {
+        /*Empty Constructor*/
     }
 
     public Availability(String startDate, String endDate) {

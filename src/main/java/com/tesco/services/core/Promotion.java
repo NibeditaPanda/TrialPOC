@@ -44,6 +44,7 @@ public class Promotion implements Serializable {
     private String endDate;
 
     public Promotion() {
+        /*Empty Constructor*/
     }
 
     public String getUniqueKey() {

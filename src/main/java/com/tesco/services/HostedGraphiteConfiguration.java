@@ -22,7 +22,7 @@ public class HostedGraphiteConfiguration {
     private String apikey;
 
     public HostedGraphiteConfiguration(){
-
+    /*Empty Constructor*/
     }
 
     public HostedGraphiteConfiguration(String hostname, int port, int period, String apikey) {
