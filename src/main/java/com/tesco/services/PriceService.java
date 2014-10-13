@@ -67,6 +67,8 @@ public class PriceService extends Service<Configuration> {
 
         final CouchbaseConnectionManager couchbaseConnectionManager = new CouchbaseConnectionManager(configuration);
 
+        new SingletonParameterObjects(configuration,container);
+
         registerResources(environment, container);
         environment.addProvider(new InvalidUrlMapper());
         environment.addProvider(new ServerErrorMapper());

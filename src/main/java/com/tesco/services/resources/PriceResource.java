@@ -23,13 +23,18 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 
+import static com.google.common.io.Files.readLines;
 import static com.tesco.services.resources.HTTPResponses.*;
+import static java.nio.charset.Charset.defaultCharset;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
-@Path("/price")
-@Api(value = "/price", description = "Price API")
+@Path("/{versionIdentifier}/price")
+@Api(value = "/{versionIdentifier}/price", description = "Price API")
 @Produces(ResourceResponse.RESPONSE_TYPE)
 public class PriceResource {
 
@@ -42,6 +47,7 @@ public class PriceResource {
 
     public static final String STORE_NOT_FOUND = "Store not found";
     public static final String PRODUCT_NOT_FOUND = "Product not found";
+    public static final String VERSION_MISMATCH = "Version Mismatch";
     /*Added By Surya - PS 30 - Request handling for TPN identifier and value Mismatch  - Start*/
     public static final String REQUEST_NOT_ALLOWED = "TPN Identifier and Value Mismatch - Invalid Request";
     /*Added By Surya - PS 30 - Request handling for TPN identifier and value Mismatch  - Start*/
@@ -71,12 +77,26 @@ public class PriceResource {
             @ApiResponse(code = 500, message = HTTPResponses.INTERNAL_SERVER_ERROR)
     })
     public Response get(
+            @ApiParam(value = "Type of Version", required = true) @PathParam("versionIdentifier") String versionIdentifier,
             @ApiParam(value = "Type of identifier(TPNB => TPNB, TPNC => TPNC)", required = true) @PathParam("tpnIdentifier") String tpnIdentifier,
             @ApiParam(value = "TPNB/TPNC of Product", required = true) @PathParam("tpn") String tpn,
             @ApiParam(value = "ID of Store if a store-specific price is desired", required = false) @QueryParam("store") String storeId,
             @Context UriInfo uriInfo) throws IOException {
 
         uriPath = uriInfo.getRequestUri().toString();
+        String version = null;
+       // readLines(new File("version"), defaultCharset()).get(0);
+        BufferedReader br = new BufferedReader(new FileReader("version"));
+        String line=null;
+        while( (line=br.readLine()) != null) {
+            version = line.trim();
+        }
+
+        if(!versionIdentifier.equals(version)){
+            logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_NOT_FOUND+"- {"+VERSION_MISMATCH+"} -> ("+tpn+")");
+            return notFound(VERSION_MISMATCH);
+        }
+
         if (storeQueryParamWasSentWithoutAStoreID(storeId, uriInfo.getQueryParameters())) {
             if(logger.isInfoEnabled()){
              logger.info("message : {" + uriPath + "} " + HttpServletResponse.SC_BAD_REQUEST + "- {" + HTTPResponses.INVALID_REQUEST + "}");

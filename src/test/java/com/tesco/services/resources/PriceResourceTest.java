@@ -25,8 +25,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -34,7 +37,6 @@ import static org.mockito.Mockito.mock;
 public class PriceResourceTest extends ResourceTest {
 
     private static Configuration testConfiguration;
-    private CouchbaseConnectionManager couchbaseConnectionManager;
     private CouchbaseTestManager couchbaseTestManager;
     private CouchbaseWrapper couchbaseWrapper;
     private AsyncCouchbaseWrapper asyncCouchbaseWrapper;
@@ -43,6 +45,7 @@ public class PriceResourceTest extends ResourceTest {
     private StoreRepository storeRepository;
     private static String sellingUom = "sellingUOM";
     private static String sellingUomVal = "KG";
+    private String version = null;
 
     @Override
     protected void setUpResources() throws Exception {
@@ -70,6 +73,12 @@ public class PriceResourceTest extends ResourceTest {
 
         PriceResource priceResource = new PriceResource(couchbaseWrapper, asyncCouchbaseWrapper, mapper);
         addResource(priceResource);
+        // version = readLines(new File("version"), defaultCharset()).get(0);
+        BufferedReader br = new BufferedReader(new FileReader("version"));
+        String line=null;
+        while( (line=br.readLine()) != null) {
+            version = line.trim();
+        }
     }
 
     @Test
@@ -81,9 +90,9 @@ public class PriceResourceTest extends ResourceTest {
         Product product = createProductWithVariants(tpnb, tpnc1, tpnc2);
         productRepository.put(product);
     /*Modified By Pallavi/Abrar - PS 234 - Changed the tpn identifer from "C"/"c"/"B"/"b"  to "TPNC"/"tpnc"/"TPNB"/"tpnb"- Start*/
-        String[] arr = {"/price/tpnb/050925811", "/price/tpnB/050925811", "/price/tpNb/050925811", "/price/tpNB/050925811",
-                "/price/tPnb/050925811", "/price/tPNB/050925811", "/price/Tpnb/050925811", "/price/TpnB/050925811",
-                "/price/TpNb/050925811", "/price/TpNB/050925811", "/price/TPnb/050925811", "/price/TPNB/050925811"};
+        String[] arr = {"/"+version+"/price/tpnb/050925811", "/"+version+"/price/tpnB/050925811", "/"+version+"/price/tpNb/050925811", "/"+version+"/price/tpNB/050925811",
+                "/"+version+"/price/tPnb/050925811", "/"+version+"/price/tPNB/050925811", "/"+version+"/price/Tpnb/050925811", "/"+version+"/price/TpnB/050925811",
+                "/"+version+"/price/TpNb/050925811", "/"+version+"/price/TpNB/050925811", "/"+version+"/price/TPnb/050925811", "/"+version+"/price/TPNB/050925811"};
 
         for (int count = 0; count < arr.length; count++) {
                 WebResource resource = client().resource(String.format(arr[count]));
@@ -117,10 +126,10 @@ public class PriceResourceTest extends ResourceTest {
         String storeId = "2002";
         storeRepository.put(new Store(storeId, Optional.of(6), Optional.of(14), "EUR"));
     /*Modified By Pallavi/Abrar - PS 234 - Changed the tpn identifer from "C"/"c"/"B"/"b"  to "TPNC"/"tpnc"/"TPNB"/"tpnb"- Start*/
-        String[] arr = {"/price/tpnb/050925811?store=2002", "/price/tpnB/050925811?store=2002", "/price/tpNb/050925811?store=2002",
-                "/price/tpNB/050925811?store=2002", "/price/tPnb/050925811?store=2002", "/price/tPNB/050925811?store=2002",
-                "/price/Tpnb/050925811?store=2002", "/price/TpnB/050925811?store=2002", "/price/TpNb/050925811?store=2002",
-                "/price/TpNB/050925811?store=2002", "/price/TPnb/050925811?store=2002", "/price/TPNB/050925811?store=2002"};
+        String[] arr = {"/"+version+"/price/tpnb/050925811?store=2002", "/"+version+"/price/tpnB/050925811?store=2002", "/"+version+"/price/tpNb/050925811?store=2002",
+                "/"+version+"/price/tpNB/050925811?store=2002", "/"+version+"/price/tPnb/050925811?store=2002", "/"+version+"/price/tPNB/050925811?store=2002",
+                "/"+version+"/price/Tpnb/050925811?store=2002", "/"+version+"/price/TpnB/050925811?store=2002", "/"+version+"/price/TpNb/050925811?store=2002",
+                "/"+version+"/price/TpNB/050925811?store=2002", "/"+version+"/price/TPnb/050925811?store=2002", "/"+version+"/price/TPNB/050925811?store=2002"};
 
         for (int count = 0; count < arr.length; count++) {
                 WebResource resource = client().resource(String.format(arr[count]));
@@ -145,10 +154,10 @@ public class PriceResourceTest extends ResourceTest {
     @Test
     public void shouldReturn404WhenItemIsNotFound() throws ItemNotFoundException {
     /*Modified By Pallavi - PS 234 - Changed the tpn identifer from "C"/"c"/"B"/"b"  to "TPNC"/"tpnc"/"TPNB"/"tpnb"- start*/
-        String[] arr = {"/price/tpnb/non_existent_item", "/price/tpnB/non_existent_item", "/price/tpNb/non_existent_item",
-                "/price/tpNB/non_existent_item", "/price/tPnb/non_existent_item", "/price/tPNB/non_existent_item",
-                "/price/Tpnb/non_existent_item", "/price/TpnB/non_existent_item", "/price/TpNb/non_existent_item",
-                "/price/TpNB/non_existent_item", "/price/TPnb/non_existent_item", "/price/TPNB/non_existent_item"};
+        String[] arr = {"/"+version+"/price/tpnb/non_existent_item", "/"+version+"/price/tpnB/non_existent_item", "/"+version+"/price/tpNb/non_existent_item",
+                "/"+version+"/price/tpNB/non_existent_item", "/"+version+"/price/tPnb/non_existent_item", "/"+version+"/price/tPNB/non_existent_item",
+                "/"+version+"/price/Tpnb/non_existent_item", "/"+version+"/price/TpnB/non_existent_item", "/"+version+"/price/TpNb/non_existent_item",
+                "/"+version+"/price/TpNB/non_existent_item", "/"+version+"/price/TPnb/non_existent_item", "/"+version+"/price/TPNB/non_existent_item"};
 
         for (int count = 0; count < arr.length; count++) {
                 WebResource resource = client().resource(String.format(arr[count]));
@@ -163,10 +172,10 @@ public class PriceResourceTest extends ResourceTest {
     public void shouldReturn404WhenStoreIsNotFound() throws ItemNotFoundException {
         productRepository.put(createProductWithVariants("050925811", "266072275", "266072276"));
     /*Modified By Pallavi/Abrar - PS 234 - Changed the tpn identifer from "C"/"c"/"B"/"b"  to "TPNC"/"tpnc"/"TPNB"/"tpnb"- start*/
-        String[] arr = {"/price/tpnb/050925811?store=2099", "/price/tpnB/050925811?store=2099", "/price/tpNb/050925811?store=2099",
-                "/price/tpNB/050925811?store=2099", "/price/tPnb/050925811?store=2099", "/price/tPNB/050925811?store=2099",
-                "/price/Tpnb/050925811?store=2099", "/price/TpnB/050925811?store=2099", "/price/TpNb/050925811?store=2099",
-                "/price/TpNB/050925811?store=2099", "/price/TPnb/050925811?store=2099", "/price/TPNB/050925811?store=2099"};
+        String[] arr = {"/"+version+"/price/tpnb/050925811?store=2099", "/"+version+"/price/tpnB/050925811?store=2099", "/"+version+"/price/tpNb/050925811?store=2099",
+                "/"+version+"/price/tpNB/050925811?store=2099", "/"+version+"/price/tPnb/050925811?store=2099", "/"+version+"/price/tPNB/050925811?store=2099",
+                "/"+version+"/price/Tpnb/050925811?store=2099", "/"+version+"/price/TpnB/050925811?store=2099", "/"+version+"/price/TpNb/050925811?store=2099",
+                "/"+version+"/price/TpNB/050925811?store=2099", "/"+version+"/price/TPnb/050925811?store=2099", "/"+version+"/price/TPNB/050925811?store=2099"};
 
         for (int count = 0; count < arr.length; count++) {
                 WebResource resource = client().resource(String.format(arr[count]));
@@ -182,10 +191,10 @@ public class PriceResourceTest extends ResourceTest {
     public void shouldReturn404WhenStoreIsInvalid() throws ItemNotFoundException {
         productRepository.put(createProductWithVariants("050925811", "266072275", "266072276"));
     /*Modified By Pallavi/Abrar - PS 234 - Changed the tpn identifer from "C"/"c"/"B"/"b"  to "TPNC"/"tpnc"/"TPNB"/"tpnb"- start*/
-        String[] arr = {"/price/tpnb/050925811?store=invalidstore", "/price/tpnB/050925811?store=invalidstore", "/price/tpNb/050925811?store=invalidstore",
-                "/price/tpNB/050925811?store=invalidstore", "/price/tPnb/050925811?store=invalidstore", "/price/tPNB/050925811?store=invalidstore",
-                "/price/Tpnb/050925811?store=invalidstore", "/price/TpnB/050925811?store=invalidstore", "/price/TpNb/050925811?store=invalidstore",
-                "/price/TpNB/050925811?store=invalidstore", "/price/TPnb/050925811?store=invalidstore", "/price/TPNB/050925811?store=invalidstore"};
+        String[] arr = {"/"+version+"/price/tpnb/050925811?store=invalidstore", "/"+version+"/price/tpnB/050925811?store=invalidstore", "/"+version+"/price/tpNb/050925811?store=invalidstore",
+                "/"+version+"/price/tpNB/050925811?store=invalidstore", "/"+version+"/price/tPnb/050925811?store=invalidstore", "/"+version+"/price/tPNB/050925811?store=invalidstore",
+                "/"+version+"/price/Tpnb/050925811?store=invalidstore", "/"+version+"/price/TpnB/050925811?store=invalidstore", "/"+version+"/price/TpNb/050925811?store=invalidstore",
+                "/"+version+"/price/TpNB/050925811?store=invalidstore", "/"+version+"/price/TPnb/050925811?store=invalidstore", "/"+version+"/price/TPNB/050925811?store=invalidstore"};
 
         for (int count = 0; count < arr.length; count++) {
                 WebResource resource = client().resource(String.format(arr[count]));
@@ -200,10 +209,10 @@ public class PriceResourceTest extends ResourceTest {
     @Test
     public void shouldReturn400WhenIncorrectQueryParamIsGiven() throws ItemNotFoundException {
     /*Modified By Pallavi/Abrar - PS 234 - Changed the tpn identifer from "C"/"c"/"B"/"b"  to "TPNC"/"tpnc"/"TPNB"/"tpnb"- start*/
-        String[] arr = {"/price/tpnb/050925811?storee=store", "/price/tpnB/050925811?storee=store", "/price/tpNb/050925811?storee=store",
-                "/price/tpNB/050925811?storee=store", "/price/tPnb/050925811?storee=store", "/price/tPNB/050925811?storee=store",
-                "/price/Tpnb/050925811?storee=store", "/price/TpnB/050925811?storee=store", "/price/TpNb/050925811?storee=store",
-                "/price/TpNB/050925811?storee=store", "/price/TPnb/050925811?storee=store", "/price/TPNB/050925811?storee=store"};
+        String[] arr = {"/"+version+"/price/tpnb/050925811?storee=store", "/"+version+"/price/tpnB/050925811?storee=store", "/"+version+"/price/tpNb/050925811?storee=store",
+                "/"+version+"/price/tpNB/050925811?storee=store", "/"+version+"/price/tPnb/050925811?storee=store", "/"+version+"/price/tPNB/050925811?storee=store",
+                "/"+version+"/price/Tpnb/050925811?storee=store", "/"+version+"/price/TpnB/050925811?storee=store", "/"+version+"/price/TpNb/050925811?storee=store",
+                "/"+version+"/price/TpNB/050925811?storee=store", "/"+version+"/price/TPnb/050925811?storee=store", "/"+version+"/price/TPNB/050925811?storee=store"};
 
         for (int count = 0; count < arr.length; count++) {
                 WebResource resource = client().resource(String.format(arr[count]));
@@ -330,9 +339,9 @@ public class PriceResourceTest extends ResourceTest {
             couchbaseWrapper.set(tpnc2, tpnb);
         }
     /*Modified By Pallavi/Abrar - PS 234 - Changed the tpn identifer from "C"/"c"/"B"/"b"  to "TPNC"/"tpnc"/"TPNB"/"tpnb"- Start*/
-        String[] arr = {"/price/tpnc/284347092", "/price/tpnC/284347092", "/price/tpNc/284347092", "/price/tpNC/284347092",
-                "/price/tPnc/284347092", "/price/tPNC/284347092", "/price/Tpnc/284347092", "/price/TpnC/284347092",
-                "/price/TpNc/284347092", "/price/TpNC/284347092", "/price/TPnc/284347092", "/price/TPNC/284347092"};
+        String[] arr = {"/"+version+"/price/tpnc/284347092", "/"+version+"/price/tpnC/284347092", "/"+version+"/price/tpNc/284347092", "/"+version+"/price/tpNC/284347092",
+                "/"+version+"/price/tPnc/284347092", "/"+version+"/price/tPNC/284347092", "/"+version+"/price/Tpnc/284347092", "/"+version+"/price/TpnC/284347092",
+                "/"+version+"/price/TpNc/284347092", "/"+version+"/price/TpNC/284347092", "/"+version+"/price/TPnc/284347092", "/"+version+"/price/TPNC/284347092"};
 
         for (int count = 0; count < arr.length; count++) {
                 WebResource resource = client().resource(String.format(arr[count]));
@@ -364,10 +373,10 @@ public class PriceResourceTest extends ResourceTest {
             couchbaseWrapper.set(tpnc2, tpnb);
         }
     /*Modified By Pallavi/Abrar - PS 234 - Changed the tpn identifer from "C"/"c"/"B"/"b"  to "TPNC"/"tpnc"/"TPNB"/"tpnb"- start*/
-        String[] arr = {"/price/tpnc/284347092?store=2002", "/price/tpnC/284347092?store=2002", "/price/tpNc/284347092?store=2002",
-                "/price/tpNC/284347092?store=2002", "/price/tPnc/284347092?store=2002", "/price/tPNC/284347092?store=2002",
-                "/price/Tpnc/284347092?store=2002", "/price/TpnC/284347092?store=2002", "/price/TpNc/284347092?store=2002",
-                "/price/TpNC/284347092?store=2002", "/price/TPnc/284347092?store=2002", "/price/TPNC/284347092?store=2002"};
+        String[] arr = {"/"+version+"/price/tpnc/284347092?store=2002", "/"+version+"/price/tpnC/284347092?store=2002", "/"+version+"/price/tpNc/284347092?store=2002",
+                "/"+version+"/price/tpNC/284347092?store=2002", "/"+version+"/price/tPnc/284347092?store=2002", "/"+version+"/price/tPNC/284347092?store=2002",
+                "/"+version+"/price/Tpnc/284347092?store=2002", "/"+version+"/price/TpnC/284347092?store=2002", "/"+version+"/price/TpNc/284347092?store=2002",
+                "/"+version+"/price/TpNC/284347092?store=2002", "/"+version+"/price/TPnc/284347092?store=2002", "/"+version+"/price/TPNC/284347092?store=2002"};
 
         for (int count = 0; count < arr.length; count++) {
                 WebResource resource = client().resource(String.format(arr[count]));
@@ -397,10 +406,10 @@ public class PriceResourceTest extends ResourceTest {
     @Test
     public void shouldReturn404WhenItemIsNotFoundGivenTPNC() throws ItemNotFoundException {
     /*Modified By Pallavi/Abrar - PS 234 - Changed the tpn identifer from "C"/"c"/"B"/"b"  to "TPNC"/"tpnc"/"TPNB"/"tpnb"- Start*/
-        String[] arr = {"/price/tpnc/non_existent_item", "/price/tpnC/non_existent_item", "/price/tpNc/non_existent_item",
-                "/price/tpNC/non_existent_item", "/price/tPnc/non_existent_item", "/price/tPNC/non_existent_item",
-                "/price/Tpnc/non_existent_item", "/price/TpnC/non_existent_item", "/price/TpNc/non_existent_item",
-                "/price/TpNC/non_existent_item", "/price/TPnc/non_existent_item", "/price/TPNC/non_existent_item"};
+        String[] arr = {"/"+version+"/price/tpnc/non_existent_item", "/"+version+"/price/tpnC/non_existent_item", "/"+version+"/price/tpNc/non_existent_item",
+                "/"+version+"/price/tpNC/non_existent_item", "/"+version+"/price/tPnc/non_existent_item", "/"+version+"/price/tPNC/non_existent_item",
+                "/"+version+"/price/Tpnc/non_existent_item", "/"+version+"/price/TpnC/non_existent_item", "/"+version+"/price/TpNc/non_existent_item",
+                "/"+version+"/price/TpNC/non_existent_item", "/"+version+"/price/TPnc/non_existent_item", "/"+version+"/price/TPNC/non_existent_item"};
 
         for (int count = 0; count < arr.length; count++) {
                 WebResource resource = client().resource(String.format(arr[count]));
@@ -427,10 +436,10 @@ public class PriceResourceTest extends ResourceTest {
             couchbaseWrapper.set(tpnc2, tpnb);
         }
     /*Modified By Pallavi/Abrar - PS 234 - Changed the tpn identifer from "C"/"c"/"B"/"b"  to "TPNC"/"tpnc"/"TPNB"/"tpnb"- Start*/
-        String[] arr = {"/price/tpnc/284347092?store=2099", "/price/tpnC/284347092?store=2099", "/price/tpNc/284347092?store=2099",
-                "/price/tpNC/284347092?store=2099", "/price/tPnc/284347092?store=2099", "/price/tPNC/284347092?store=2099",
-                "/price/Tpnc/284347092?store=2099", "/price/TpnC/284347092?store=2099", "/price/TpNc/284347092?store=2099",
-                "/price/TpNC/284347092?store=2099", "/price/TPnc/284347092?store=2099", "/price/TPNC/284347092?store=2099"};
+        String[] arr = {"/"+version+"/price/tpnc/284347092?store=2099", "/"+version+"/price/tpnC/284347092?store=2099", "/"+version+"/price/tpNc/284347092?store=2099",
+                "/"+version+"/price/tpNC/284347092?store=2099", "/"+version+"/price/tPnc/284347092?store=2099", "/"+version+"/price/tPNC/284347092?store=2099",
+                "/"+version+"/price/Tpnc/284347092?store=2099", "/"+version+"/price/TpnC/284347092?store=2099", "/"+version+"/price/TpNc/284347092?store=2099",
+                "/"+version+"/price/TpNC/284347092?store=2099", "/"+version+"/price/TPnc/284347092?store=2099", "/"+version+"/price/TPNC/284347092?store=2099"};
 
         for (int count = 0; count < arr.length; count++) {
                 WebResource resource = client().resource(String.format(arr[count]));
@@ -457,10 +466,10 @@ public class PriceResourceTest extends ResourceTest {
             couchbaseWrapper.set(tpnc2, tpnb);
         }
     /*Modified By Pallavi/Abrar - PS 234 - Changed the tpn identifer from "C"/"c"/"B"/"b"  to "TPNC"/"tpnc"/"TPNB"/"tpnb"- Start*/
-        String[] arr = {"/price/tpnc/284347092?store=invalidstore", "/price/tpnC/284347092?store=invalidstore", "/price/tpNc/284347092?store=invalidstore",
-                "/price/tpNC/284347092?store=invalidstore", "/price/tPnc/284347092?store=invalidstore", "/price/tPNC/284347092?store=invalidstore",
-                "/price/Tpnc/284347092?store=invalidstore", "/price/TpnC/284347092?store=invalidstore", "/price/TpNc/284347092?store=invalidstore",
-                "/price/TpNC/284347092?store=invalidstore", "/price/TPnc/284347092?store=invalidstore", "/price/TPNC/284347092?store=invalidstore"};
+        String[] arr = {"/"+version+"/price/tpnc/284347092?store=invalidstore", "/"+version+"/price/tpnC/284347092?store=invalidstore", "/"+version+"/price/tpNc/284347092?store=invalidstore",
+                "/"+version+"/price/tpNC/284347092?store=invalidstore", "/"+version+"/price/tPnc/284347092?store=invalidstore", "/"+version+"/price/tPNC/284347092?store=invalidstore",
+                "/"+version+"/price/Tpnc/284347092?store=invalidstore", "/"+version+"/price/TpnC/284347092?store=invalidstore", "/"+version+"/price/TpNc/284347092?store=invalidstore",
+                "/"+version+"/price/TpNC/284347092?store=invalidstore", "/"+version+"/price/TPnc/284347092?store=invalidstore", "/"+version+"/price/TPNC/284347092?store=invalidstore"};
 
         for (int count = 0; count < arr.length; count++) {
 
@@ -476,10 +485,10 @@ public class PriceResourceTest extends ResourceTest {
     @Test
     public void shouldReturn400WhenIncorrectQueryParamIsGivenTPNC() throws ItemNotFoundException {
     /*Modified By Pallavi/Abrar - PS 234 - Changed the tpn identifer from "C"/"c"/"B"/"b"  to "TPNC"/"tpnc"/"TPNB"/"tpnb"- Start*/
-        String[] arr = {"/price/tpnc/284347092?storee=store", "/price/tpnC/284347092?storee=store", "/price/tpNc/284347092?storee=store",
-                "/price/tpNC/284347092?storee=store", "/price/tPnc/284347092?storee=store", "/price/tPNC/284347092?storee=store",
-                "/price/Tpnc/284347092?storee=store", "/price/TpnC/284347092?storee=store", "/price/TpNc/284347092?storee=store",
-                "/price/TpNC/284347092?storee=store", "/price/TPnc/284347092?storee=store", "/price/TPNC/284347092?storee=store"};
+        String[] arr = {"/"+version+"/price/tpnc/284347092?storee=store", "/"+version+"/price/tpnC/284347092?storee=store", "/"+version+"/price/tpNc/284347092?storee=store",
+                "/"+version+"/price/tpNC/284347092?storee=store", "/"+version+"/price/tPnc/284347092?storee=store", "/"+version+"/price/tPNC/284347092?storee=store",
+                "/"+version+"/price/Tpnc/284347092?storee=store", "/"+version+"/price/TpnC/284347092?storee=store", "/"+version+"/price/TpNc/284347092?storee=store",
+                "/"+version+"/price/TpNC/284347092?storee=store", "/"+version+"/price/TPnc/284347092?storee=store", "/"+version+"/price/TPNC/284347092?storee=store"};
 
         for (int count = 0; count < arr.length; count++) {
                 WebResource resource = client().resource(String.format(arr[count]));

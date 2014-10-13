@@ -16,7 +16,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 
 import static com.google.common.io.Files.readLines;
@@ -41,7 +43,12 @@ public class VersionResource {
         Optional<String> callback = Optional.fromNullable(queryParameters.getFirst("callback"));
 
         try {
-            String version = readLines(new File("version"), defaultCharset()).get(0);
+            String version = null;
+            BufferedReader br = new BufferedReader(new FileReader("version"));
+            String line=null;
+            while( (line=br.readLine()) != null) {
+                version = line.trim();
+            }
             String versionJson = String.format("{\"version\": \"%s\"}", version);
 
             if (callback.isPresent()) {
