@@ -11,7 +11,7 @@ import java.util.Map;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class CouchbaseHealthCheck extends HealthCheck {
-    private final Logger logger = getLogger(CouchbaseHealthCheck.class);
+    private static final Logger LOGGER = getLogger(CouchbaseHealthCheck.class);
 
     public static final String NAME = "Couchbase Health Check";
     public static final String EP_DEGRADED_MODE = "ep_degraded_mode";
@@ -43,8 +43,8 @@ public class CouchbaseHealthCheck extends HealthCheck {
             }
             return true;
         } catch (CouchbaseConnectionUnavailableException e) {
-            if(logger.isErrorEnabled()) {
-                logger.error("Connection lost due to :" + e.getMessage());
+            if(LOGGER.isErrorEnabled()) {
+                LOGGER.error("Connection lost due to :" + e.getMessage());
             }
             return false;
         }

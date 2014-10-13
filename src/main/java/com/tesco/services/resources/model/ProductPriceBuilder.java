@@ -89,7 +89,7 @@ public class ProductPriceBuilder implements ProductPriceVisitor {
 
     /**Modified By Nibedita - PS-118- Positive Scenario
      * Given the  price IDL ,When the price rest calls are requested, then the response JSON should be as per format mentioned in IDL  */
-    private void addPromotionInfo(SaleInfo promoZoneSaleInfo,List<Map<String, String>> promotion_info) {
+    private void addPromotionInfo(SaleInfo promoZoneSaleInfo,List<Map<String, String>> promotionInfo) {
         Collection<Promotion> promotions = promoZoneSaleInfo.getPromotions();
 
         if (promotions.isEmpty())
@@ -102,7 +102,7 @@ public class ProductPriceBuilder implements ProductPriceVisitor {
             promotionInfoMap.put(END_DATE, promotion.getEndDate());
             promotionInfoMap.put(CUSTOMER_FRIENDLY_DESCRIPTION_1, promotion.getCFDescription1());
             promotionInfoMap.put(CUSTOMER_FRIENDLY_DESCRIPTION_2, promotion.getCFDescription2());
-            promotion_info.add(promotionInfoMap);
+            promotionInfo.add(promotionInfoMap);
         }
 
     }

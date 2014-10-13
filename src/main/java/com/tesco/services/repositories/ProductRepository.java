@@ -33,7 +33,7 @@ public class ProductRepository {
     private ObjectMapper mapper;
     private CouchbaseWrapper couchbaseWrapper;
     private AsyncCouchbaseWrapper asyncCouchbaseWrapper;
-    private final Logger logger = getLogger(getClass().getName());
+    private final Logger LOGGER = getLogger(getClass().getName());
 
     public Product getProductIdentified() {
         return productIdentified;
@@ -61,8 +61,8 @@ public class ProductRepository {
             try {
                 product = mapper.readValue(productJson,Product.class);
             } catch (IOException e) {
-                if(logger.isErrorEnabled()) {
-                    logger.error("Caught exception in ProductRepository.getByTPNB -> " + e.getMessage());
+                if(LOGGER.isErrorEnabled()) {
+                    LOGGER.error("Caught exception in ProductRepository.getByTPNB -> " + e.getMessage());
                 }
             }
         }
@@ -78,8 +78,8 @@ public class ProductRepository {
             String productJson = mapper.writeValueAsString(product);
             couchbaseWrapper.set(getProductKey(product.getTPNB()), productJson);
         } catch (JsonProcessingException e) {
-            if(logger.isErrorEnabled()) {
-                logger.error("Caught exception in ProductRepository.put -> " + e.getMessage());
+            if(LOGGER.isErrorEnabled()) {
+                LOGGER.error("Caught exception in ProductRepository.put -> " + e.getMessage());
             }
         }
     }
@@ -112,8 +112,8 @@ public class ProductRepository {
 
     public void insertProduct(Product product, final Listener<Void, Exception> listener) {
         String productKey = getProductKey(product.getTPNB());
-        if(logger.isDebugEnabled()) {
-            logger.debug("({}) insertProduct", product);
+        if(LOGGER.isDebugEnabled()) {
+            LOGGER.debug("({}) insertProduct", product);
         }
         try {
             String jsonProduct = mapper.writeValueAsString(product);
@@ -133,38 +133,42 @@ public class ProductRepository {
         }
     }
     /*Added By Nibedita - PS 78 - Store ITEM and TPNC key value - Start*/
-    public void mapTPNC_TPNB(String TPNC , String ITEM){
+    public void mapTPNC_TPNB(String tpnc , String item){
         try {
-            String itemJson = mapper.writeValueAsString(ITEM);
-            String tpncJson = mapper.writeValueAsString(TPNC);
-            if(Dockyard.isSpaceOrNull(couchbaseWrapper.get(TPNC))){
+            String itemJson = mapper.writeValueAsString(item);
+            String tpncJson = mapper.writeValueAsString(tpnc);
+            if(Dockyard.isSpaceOrNull(couchbaseWrapper.get(tpnc))){
                 //couchbaseWrapper.set(TPNC, itemJson); Changed the Code to Async
-                insertProduct(TPNC,itemJson,new Listener<Void, Exception>() {
+                insertProduct(tpnc,itemJson,new Listener<Void, Exception>() {
                     @Override
                     public void onComplete(Void aVoid) {
+                        //it will be implemented later if any requirement comes
                     }
 
                     @Override
                     public void onException(Exception e) {
+                        //it will be implemented later if any requirement comes
                     }
                 });
             }
 
-            if(Dockyard.isSpaceOrNull(couchbaseWrapper.get(ITEM))) {
+            if(Dockyard.isSpaceOrNull(couchbaseWrapper.get(item))) {
                 //couchbaseWrapper.set(ITEM, tpncJson); Changed the Code to Async
-                insertProduct(ITEM,tpncJson,new Listener<Void, Exception>() {
+                insertProduct(item,tpncJson,new Listener<Void, Exception>() {
                     @Override
                     public void onComplete(Void aVoid) {
+                        //it will be implemented later if any requirement comes
                     }
 
                     @Override
                     public void onException(Exception e) {
+                        //it will be implemented later if any requirement comes
                     }
                 });
             }
         } catch (JsonProcessingException e) {
-            if(logger.isErrorEnabled()) {
-                logger.error("Caught exception in ProductRepository.mapTPNC_TPNB -> " + e.getMessage());
+            if(LOGGER.isErrorEnabled()) {
+                LOGGER.error("Caught exception in ProductRepository.mapTPNC_TPNB -> " + e.getMessage());
             }
         }
     }
@@ -204,8 +208,8 @@ public class ProductRepository {
                 productvar.addProductVariant(productVariant);
 
             } catch (IOException e) {
-                if(logger.isInfoEnabled()) {
-                    logger.info("Error in ProductRepository.getByTPNB->", e.getMessage());
+                if(LOGGER.isInfoEnabled()) {
+                    LOGGER.info("Error in ProductRepository.getByTPNB->", e.getMessage());
                 }
             }
         }
@@ -253,18 +257,18 @@ public class ProductRepository {
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE,-(configuration.getLastUpdatedPurgeDays()));
-        final String last_update_date_key = mapper.writeValueAsString(dateFormat.format(cal.getTime()));
+        final String lastUpdatedDate = mapper.writeValueAsString(dateFormat.format(cal.getTime()));
 
         Query query = new Query();
-        query.setRangeEnd(last_update_date_key);
+        query.setRangeEnd(lastUpdatedDate);
         query.setStale(Stale.FALSE);
 
         ViewResponse response = couchbaseClient.query(view, query);
-        if(logger.isInfoEnabled()) {
-            logger.info("message : Initializing purge operation for Products Last Updated on " + last_update_date_key);
+        if(LOGGER.isInfoEnabled()) {
+            LOGGER.info("message : Initializing purge operation for Products Last Updated on " + lastUpdatedDate);
         }
         for(ViewRow row : response) {
-            delete_TPNB_TPNC_VAR(row.getId(), couchbaseClient);
+            deleteTpnbTpncVar(row.getId(), couchbaseClient);
         }
     }
     /*Added by Sushil PS-114 to get view information from couchbase and process those products which are not update for more than 2 days- end*/
@@ -273,11 +277,11 @@ public class ProductRepository {
 
     /**
      * This will delete the documents matching with product_key from couchbase.
-     * @param product_key - This key is JSON document key for couchbase database to get the documents
+     * @param productKey - This key is JSON document key for couchbase database to get the documents
      * @param couchbaseClient - to get the couch base connection
      */
-    public void delete_TPNB_TPNC_VAR(String product_key, CouchbaseClient couchbaseClient){
-        Product product= getByTPNBWithCouchBaseClient(product_key.split("_")[1], couchbaseClient).or(new Product());
+    public void deleteTpnbTpncVar(String productKey, CouchbaseClient couchbaseClient){
+        Product product= getByTPNBWithCouchBaseClient(productKey.split("_")[1], couchbaseClient).or(new Product());
         Set<String> tpncList=product.getTpncToProductVariant().keySet();
 
         Iterator tpnciterator =tpncList.iterator();
@@ -290,16 +294,16 @@ public class ProductRepository {
                 deleteProduct(tpnc, couchbaseClient);
             }
         }
-        deleteProduct(product_key, couchbaseClient);
+        deleteProduct(productKey, couchbaseClient);
 
     }
 
     /**
-     * @param product_key - This key is JSON document key for couchbase database to get the documents
+     * @param productKey - This key is JSON document key for couchbase database to get the documents
      * @param couchbaseClient - to get the couch base connection
      */
-    public void deleteProduct(String product_key, CouchbaseClient couchbaseClient){
-        couchbaseClient.delete(product_key);
+    public void deleteProduct(String productKey, CouchbaseClient couchbaseClient){
+        couchbaseClient.delete(productKey);
     }
         /*Added by Salman for PS-114 to delete the results return from the view - End*/
 
@@ -318,8 +322,8 @@ public class ProductRepository {
                 product = mapper.readValue(productJson,Product.class);
             } catch (IOException e) {
                 //Modified by Pallavi as part of code refactor
-                if(logger.isInfoEnabled()) {
-                    logger.info("Error in ProductRepository", e.getMessage());
+                if(LOGGER.isInfoEnabled()) {
+                    LOGGER.info("Error in ProductRepository", e.getMessage());
                 }
             }
         }

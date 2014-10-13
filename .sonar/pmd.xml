@@ -214,9 +214,6 @@
   <rule ref="rulesets/java/unnecessary.xml/UnnecessaryReturn">
     <priority>4</priority>
   </rule>
-  <rule ref="rulesets/java/android.xml/CallSuperLast">
-    <priority>3</priority>
-  </rule>
   <rule ref="rulesets/java/basic.xml/BooleanInstantiation">
     <priority>3</priority>
   </rule>
@@ -296,9 +293,6 @@
     <priority>3</priority>
   </rule>
   <rule ref="rulesets/java/strings.xml/AvoidStringBufferField">
-    <priority>3</priority>
-  </rule>
-  <rule ref="rulesets/java/android.xml/CallSuperFirst">
     <priority>3</priority>
   </rule>
   <rule ref="rulesets/java/clone.xml/CloneMethodMustImplementCloneable">
@@ -655,9 +649,6 @@
     <priority>3</priority>
   </rule>
   <rule ref="rulesets/java/naming.xml/SuspiciousHashcodeMethodName">
-    <priority>3</priority>
-  </rule>
-  <rule ref="rulesets/java/android.xml/DoNotHardCodeSDCard">
     <priority>3</priority>
   </rule>
   <rule ref="rulesets/java/naming.xml/BooleanGetMethodName">

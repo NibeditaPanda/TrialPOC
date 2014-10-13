@@ -26,7 +26,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class ImportJob implements Runnable {
 
-    private static final Logger logger = LoggerFactory.getLogger(ImportJob.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImportJob.class);
 
     private final String rpmStoreZoneCsvFilePath;
     private String sonettoPromotionXSDDataPath;
@@ -96,24 +96,24 @@ public class ImportJob implements Runnable {
     @Override
     public void run() {
         try {
-            if(logger.isInfoEnabled()){
-                logger.info("Firing up imports...");
+            if(LOGGER.isInfoEnabled()){
+                LOGGER.info("Firing up imports...");
             }
             fetchAndSavePriceDetails();
-            if(logger.isInfoEnabled()){
-                logger.info("Successfully imported data for " + new Date());
+            if(LOGGER.isInfoEnabled()){
+                LOGGER.info("Successfully imported data for " + new Date());
             }
 
         } catch(ArrayIndexOutOfBoundsException exception){
             setErrorString("Array index out of bound Exception");
-            if(logger.isErrorEnabled()){
-                logger.error("Error importing data", exception);
+            if(LOGGER.isErrorEnabled()){
+                LOGGER.error("Error importing data", exception);
             }
 
         } catch (Exception exception) {
             setErrorString(exception.getMessage());
-            if(logger.isErrorEnabled()) {
-                logger.error("Error importing data", exception);
+            if(LOGGER.isErrorEnabled()) {
+                LOGGER.error("Error importing data", exception);
             }
         }finally{
             ImportResource.getImportSemaphore().release();
@@ -121,8 +121,8 @@ public class ImportJob implements Runnable {
     }
 
     private void fetchAndSavePriceDetails() throws IOException, ParserConfigurationException, ConfigurationException, JAXBException, ColumnNotFoundException, SAXException, URISyntaxException, InterruptedException {
-        if(logger.isInfoEnabled()) {
-            logger.info("Importing data from RPM....");
+        if(LOGGER.isInfoEnabled()) {
+            LOGGER.info("Importing data from RPM....");
         }
         SonettoPromotionXMLReader sonettoPromotionXMLReader = new SonettoPromotionXMLReader(sonettoShelfImageUrl, sonettoPromotionXSDDataPath);
 

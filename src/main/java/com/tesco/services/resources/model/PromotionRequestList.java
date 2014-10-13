@@ -14,10 +14,12 @@ public class PromotionRequestList {
     private List<PromotionRequest> promotions;
 
     public List<PromotionRequest> getPromotions() {
+
         return promotions;
     }
 
     public void setPromotions(List<PromotionRequest> promotions) {
+
         this.promotions = promotions;
     }
 }

@@ -34,6 +34,7 @@ public class Store implements Serializable {
     }
 
     public Store() {
+        /*Empty Constructor*/
 
     }
 

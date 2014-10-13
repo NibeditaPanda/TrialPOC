@@ -31,7 +31,7 @@ import static com.tesco.services.resources.HTTPResponses.badRequest;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ItemPurgeResource {
 
-    private Logger logger = LoggerFactory.getLogger(getClass().getName());
+    private Logger LOGGER = LoggerFactory.getLogger(getClass().getName());
 
     private Configuration configuration;
     private CouchbaseWrapper couchbaseWrapper;
@@ -50,8 +50,9 @@ public class ItemPurgeResource {
     @POST
     @Path("/")
     public Response getRoot(@Context UriInfo uriInfo) {
-        if(logger.isInfoEnabled()){
-        logger.info("message : {"+uriInfo.getRequestUri().toString()+"} "+ HttpServletResponse.SC_BAD_REQUEST+"- {"+HTTPResponses.INVALID_REQUEST+"}");}
+        if(LOGGER.isInfoEnabled()){
+            LOGGER.info("message : {"+uriInfo.getRequestUri().toString()+"} "+ HttpServletResponse.SC_BAD_REQUEST+"- {"+HTTPResponses.INVALID_REQUEST+"}");
+        }
         return badRequest();
     }
 
@@ -62,16 +63,19 @@ public class ItemPurgeResource {
             ProductRepository productRepository = new ProductRepository(couchbaseWrapper,asyncCouchbaseWrapper,mapper);
             productRepository.purgeUnUpdatedItems(couchbaseClient,configuration);
         }catch(InvalidViewException e){
-            if(logger.isErrorEnabled()){
-            logger.error("error : Item purge failed due to error "+e);}
+            if(LOGGER.isErrorEnabled()){
+                LOGGER.error("error : Item purge failed due to error "+e);
+            }
             return Response.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR).entity("{\"error\":\"Item purge failed as View not found\"}").build();
         } catch (Exception e) {
-            if(logger.isErrorEnabled()){
-            logger.error("error : Item purge failed due to error "+e);}
+            if(LOGGER.isErrorEnabled()){
+                LOGGER.error("error : Item purge failed due to error "+e);
+            }
             return Response.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR).entity("{\"error\":\"Item purge failed due to error\"}").build();
         }
-        if(logger.isInfoEnabled()) {
-            logger.info("message : Purge operation completed");}
+        if(LOGGER.isInfoEnabled()) {
+            LOGGER.info("message : Purge operation completed");
+        }
         return Response.ok("{\"message\":\"Purge Completed\"}").build();
     }
 

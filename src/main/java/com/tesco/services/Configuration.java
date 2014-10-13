@@ -158,9 +158,17 @@ public class Configuration extends com.yammer.dropwizard.config.Configuration {
     @JsonProperty("priceservice.price.last_updated_days")
     private Integer lastUpdatedPurgeDays;
 
-    public String getCouchBaseDesignDocName(){return couchBaseDesignDocName;}
-    public String getCouchBaseViewName(){return couchBaseViewName;}
-    public Integer getPaginationCount(){return paginationCount;}
-    public Integer getLastUpdatedPurgeDays(){return lastUpdatedPurgeDays;}
+    public String getCouchBaseDesignDocName(){
+        return couchBaseDesignDocName;
+    }
+    public String getCouchBaseViewName(){
+        return couchBaseViewName;
+    }
+    public Integer getPaginationCount(){
+        return paginationCount;
+    }
+    public Integer getLastUpdatedPurgeDays(){
+        return lastUpdatedPurgeDays;
+    }
     /*Added by Sushil PS-114 to configure couchbase's design doc and view name- Start*/
 }

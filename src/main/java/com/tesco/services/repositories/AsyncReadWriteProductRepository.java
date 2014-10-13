@@ -16,7 +16,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class AsyncReadWriteProductRepository {
 
-    private final Logger logger = getLogger(getClass().getName());
+    private final Logger LOGGER = getLogger(getClass().getName());
 
     private ObjectMapper mapper;
     private AsyncCouchbaseWrapper couchbaseWrapper;
@@ -67,8 +67,8 @@ public class AsyncReadWriteProductRepository {
 
     public void insertProduct(Product product, final Listener<Void, Exception> listener) {
         String productKey = getProductKey(product.getTPNB());
-        if(logger.isDebugEnabled()) {
-            logger.debug("({}) insertProduct", product);
+        if(LOGGER.isDebugEnabled()) {
+            LOGGER.debug("({}) insertProduct", product);
         }
         try {
             String jsonProduct = mapper.writeValueAsString(product);
@@ -94,8 +94,8 @@ public class AsyncReadWriteProductRepository {
 
     public void insertStore(Store store, final Listener<Void, Exception> listener) {
         String storeKey = getStoreKey(store.getStoreId());
-        if(logger.isDebugEnabled()) {
-            logger.debug("({}) insertProduct", store);
+        if(LOGGER.isDebugEnabled()) {
+            LOGGER.debug("({}) insertProduct", store);
         }
         try {
             String jsonStore = mapper.writeValueAsString(store);

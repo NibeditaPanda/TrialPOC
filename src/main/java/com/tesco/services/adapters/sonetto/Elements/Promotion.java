@@ -22,6 +22,7 @@ public class Promotion {
     private Availability availability;
 
     public Promotion() {
+        /*Empty Constructor*/
     }
 
     public Promotion(String sonettoID, String shelfTalkerImage, boolean internetExclusive) {
