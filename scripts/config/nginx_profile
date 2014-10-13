@@ -1,0 +1,10 @@
+export nginx_userid=prcsrvce
+export nginx_nfiles=1024
+export nginx_ktimeout=25
+export nginx_listenport=8080
+export nginx_app_port1=8081
+export nginx_app_port2=8083
+export nginx_app_port3=8085
+export nginx_version1=v2
+export nginx_version2=
+export nginx_version3=
