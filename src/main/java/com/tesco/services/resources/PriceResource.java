@@ -93,7 +93,9 @@ public class PriceResource {
         }
 
         if(!versionIdentifier.equals(version)){
-            logger.info("message : {"+uriPath+"} "+ HttpServletResponse.SC_NOT_FOUND+"- {"+VERSION_MISMATCH+"} -> ("+tpn+")");
+            if(LOGGER.isInfoEnabled()) {
+                LOGGER.info("message : {" + uriPath + "} " + HttpServletResponse.SC_NOT_FOUND + "- {" + VERSION_MISMATCH + "} -> (" + tpn + ")");
+            }
             return notFound(VERSION_MISMATCH);
         }
 
